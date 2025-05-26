@@ -1,60 +1,38 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const animatedElements = document.querySelectorAll('main section'); // Target all sections
+'use strict';
 
-    // Remove the CSS-driven animation if JS is active, to prevent double animation
-    // and to give control to Intersection Observer
-    animatedElements.forEach(el => {
-        el.style.opacity = '0'; // Keep them initially hidden by JS
-        el.style.animation = 'none'; // Disable CSS animation
+document.addEventListener('DOMContentLoaded', () => {
+    const sections = document.querySelectorAll('main section');
+
+    sections.forEach(section => {
+        section.style.opacity = '0'; // Initially hide sections
+        // Check for specific elements within sections to stagger
+        const elementsToStagger = section.querySelectorAll('.skills-list > li, #experience article > ul > li, #projects > article'); 
+        // Also hide these initially if they are to be staggered
+        elementsToStagger.forEach(el => el.style.opacity = '0');
     });
 
-    const observer = new IntersectionObserver((entries, observerInstance) => {
+    const sectionObserver = new IntersectionObserver((entries, observerInstance) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.style.animation = 'fadeInSlideUp 0.7s ease-out forwards';
-                // entry.target.classList.add('is-visible'); // Or add a class to trigger animation
-                observerInstance.unobserve(entry.target); // Stop observing once animated
+                const section = entry.target;
+                // Animate the section itself
+                section.style.animation = 'refinedFadeInSlideUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+                
+                // Find elements within this section to stagger
+                const elementsToStagger = section.querySelectorAll('.skills-list > li, #experience article > ul > li, #projects > article');
+                
+                elementsToStagger.forEach((el, index) => {
+                    el.style.animation = `refinedFadeInSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards ${index * 0.1 + 0.3}s`; // 0.3s base delay + 0.1s stagger
+                });
+
+                observerInstance.unobserve(section); // Stop observing the section
             }
         });
     }, {
-        threshold: 0.1 // Trigger when 10% of the element is visible
-        // rootMargin: '0px 0px -50px 0px' // Optional: adjust when animation triggers
+        threshold: 0.15 // Trigger when 15% of the section is visible
     });
 
-    animatedElements.forEach(el => {
-        observer.observe(el);
-    });
-
-    // --- Theme Toggle Functionality ---
-    const themeToggle = document.getElementById('theme-toggle');
-    const toggleText = document.querySelector('.theme-toggle-label .toggle-text');
-    const body = document.body;
-
-    // Function to set theme
-    function setTheme(isDark) {
-        if (isDark) {
-            body.classList.add('dark-theme');
-            themeToggle.checked = true;
-            toggleText.textContent = 'Light Mode'; // Update text for dark mode
-            localStorage.setItem('theme', 'dark');
-        } else {
-            body.classList.remove('dark-theme');
-            themeToggle.checked = false;
-            toggleText.textContent = 'Dark Mode'; // Update text for light mode
-            localStorage.setItem('theme', 'light');
-        }
-    }
-
-    // Load saved theme
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        setTheme(true);
-    } else {
-        setTheme(false); // Default to light if no preference or preference is light
-    }
-
-    // Event listener for toggle
-    themeToggle.addEventListener('change', () => {
-        setTheme(themeToggle.checked);
+    sections.forEach(section => {
+        sectionObserver.observe(section);
     });
 });

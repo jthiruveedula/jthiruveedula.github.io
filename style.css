@@ -8,135 +8,45 @@
 }
 
 :root {
-    /* Light Theme Palette (Example) */
-    --md-sys-color-primary-light: #0062A1; /* Adjusted blue */
-    --md-sys-color-on-primary-light: #FFFFFF;
-    --md-sys-color-primary-container-light: #D0E4FF;
-    --md-sys-color-on-primary-container-light: #001D35;
+    /* Wellapp.ai Inspired Light Theme Palette (Adjustments) */
+    --md-sys-color-primary: #0052D4; /* Slightly adjusted blue, potentially a bit deeper or a bit more modern */
+    --md-sys-color-on-primary: #FFFFFF;
+    --md-sys-color-primary-container: #EAF2FF; /* Lighter, less saturated container */
+    --md-sys-color-on-primary-container: #001849;
 
-    --md-sys-color-secondary-light: #50606E;
-    --md-sys-color-on-secondary-light: #FFFFFF;
-    --md-sys-color-secondary-container-light: #D3E5F5;
-    --md-sys-color-on-secondary-container-light: #0D1D29;
+    --md-sys-color-secondary: #565E71; /* Neutral, professional secondary */
+    --md-sys-color-on-secondary: #FFFFFF;
+    --md-sys-color-secondary-container: #DAE2F9; /* Lighter secondary container */
+    --md-sys-color-on-secondary-container: #131C2B;
 
-    --md-sys-color-tertiary-light: #65587B;
-    --md-sys-color-on-tertiary-light: #FFFFFF;
-    --md-sys-color-tertiary-container-light: #EADDFF;
-    --md-sys-color-on-tertiary-container-light: #201634;
+    --md-sys-color-tertiary: #715573; /* Muted tertiary */
+    --md-sys-color-on-tertiary: #FFFFFF;
+    --md-sys-color-tertiary-container: #FAD7FE;
+    --md-sys-color-on-tertiary-container: #29132D;
 
-    --md-sys-color-error-light: #B3261E;
-    --md-sys-color-on-error-light: #FFFFFF;
-    --md-sys-color-error-container-light: #F9DEDC;
-    --md-sys-color-on-error-container-light: #410E0B;
+    --md-sys-color-error: #B00020; /* Standard error */
+    --md-sys-color-on-error: #FFFFFF;
+    --md-sys-color-error-container: #FCD8DF;
+    --md-sys-color-on-error-container: #3E000A;
 
-    --md-sys-color-background-light: #FCFCFF; /* Near white */
-    --md-sys-color-on-background-light: #1A1C1E; /* Dark gray for text */
+    --md-sys-color-background: #F7F8FA; /* Very light gray, common for modern clean sites */
+    --md-sys-color-on-background: #1B1C1E; /* Dark gray for text */
 
-    --md-sys-color-surface-light: #FCFCFF; /* Same as background, differentiated by elevation */
-    --md-sys-color-on-surface-light: #1A1C1E;
-    --md-sys-color-on-surface-variant-light: #42474E; /* For less prominent text/icons */
-    --md-sys-color-outline-light: #72777F; /* For borders */
-    --md-sys-color-shadow-light: #000000; /* Base shadow color */
-    
-    /* Add Dark Theme Palette (Example) - these will be overridden later by a .dark-theme class */
-    --md-sys-color-primary-dark: #9BCBFF; /* Adjusted blue for dark */
-    --md-sys-color-on-primary-dark: #003356;
-    --md-sys-color-primary-container-dark: #004A78;
-    --md-sys-color-on-primary-container-dark: #D0E4FF;
-
-    --md-sys-color-secondary-dark: #B7C9D9;
-    --md-sys-color-on-secondary-dark: #22323F;
-    --md-sys-color-secondary-container-dark: #384956;
-    --md-sys-color-on-secondary-container-dark: #D3E5F5;
-
-    --md-sys-color-tertiary-dark: #CDBBEE;
-    --md-sys-color-on-tertiary-dark: #362B4A;
-    --md-sys-color-tertiary-container-dark: #4D4162;
-    --md-sys-color-on-tertiary-container-dark: #EADDFF;
-
-    --md-sys-color-error-dark: #F2B8B5;
-    --md-sys-color-on-error-dark: #601410;
-    --md-sys-color-error-container-dark: #8C1D18;
-    --md-sys-color-on-error-container-dark: #F9DEDC;
-
-    --md-sys-color-background-dark: #1A1C1E; /* Dark gray */
-    --md-sys-color-on-background-dark: #E2E2E6; /* Light gray for text */
-
-    --md-sys-color-surface-dark: #1A1C1E; /* Same as background, differentiated by elevation */
-    --md-sys-color-on-surface-dark: #E2E2E6;
-    --md-sys-color-on-surface-variant-dark: #C2C7CE; /* For less prominent text/icons */
-    --md-sys-color-outline-dark: #8C9199; /* For borders */
-    --md-sys-color-shadow-dark: #000000; /* Base shadow color */
-
-    /* Default to light theme variables */
-    --md-sys-color-primary: var(--md-sys-color-primary-light);
-    --md-sys-color-on-primary: var(--md-sys-color-on-primary-light);
-    --md-sys-color-primary-container: var(--md-sys-color-primary-container-light);
-    --md-sys-color-on-primary-container: var(--md-sys-color-on-primary-container-light);
-    --md-sys-color-secondary: var(--md-sys-color-secondary-light);
-    --md-sys-color-on-secondary: var(--md-sys-color-on-secondary-light);
-    --md-sys-color-secondary-container: var(--md-sys-color-secondary-container-light);
-    --md-sys-color-on-secondary-container: var(--md-sys-color-on-secondary-container-light);
-    --md-sys-color-tertiary: var(--md-sys-color-tertiary-light);
-    --md-sys-color-on-tertiary: var(--md-sys-color-on-tertiary-light);
-    --md-sys-color-tertiary-container: var(--md-sys-color-tertiary-container-light);
-    --md-sys-color-on-tertiary-container: var(--md-sys-color-on-tertiary-container-light);
-    --md-sys-color-error: var(--md-sys-color-error-light);
-    --md-sys-color-on-error: var(--md-sys-color-on-error-light);
-    --md-sys-color-error-container: var(--md-sys-color-error-container-light);
-    --md-sys-color-on-error-container: var(--md-sys-color-on-error-container-light);
-    --md-sys-color-background: var(--md-sys-color-background-light);
-    --md-sys-color-on-background: var(--md-sys-color-on-background-light);
-    --md-sys-color-surface: var(--md-sys-color-surface-light);
-    --md-sys-color-on-surface: var(--md-sys-color-on-surface-light);
-    --md-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant-light);
-    --md-sys-color-outline: var(--md-sys-color-outline-light);
-    --md-sys-color-shadow: var(--md-sys-color-shadow-light);
+    --md-sys-color-surface: #FFFFFF; /* Pure white for cards/surfaces, creates contrast with light gray background */
+    --md-sys-color-on-surface: #1B1C1E;
+    --md-sys-color-on-surface-variant: #44474E; /* For less prominent text */
+    --md-sys-color-outline: #DCE1E9; /* Softer outline color */
+    --md-sys-color-shadow: #000000; 
 }
 
 body {
-    font-family: 'Roboto', sans-serif; /* Apply Roboto */
-    line-height: 1.6;
-    background-color: var(--md-sys-color-background); /* Use CSS variable */
-    color: var(--md-sys-color-on-background); /* Use CSS variable */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
-}
-
-body.dark-theme {
-    --md-sys-color-primary: var(--md-sys-color-primary-dark);
-    --md-sys-color-on-primary: var(--md-sys-color-on-primary-dark);
-    --md-sys-color-primary-container: var(--md-sys-color-primary-container-dark);
-    --md-sys-color-on-primary-container: var(--md-sys-color-on-primary-container-dark);
-    --md-sys-color-secondary: var(--md-sys-color-secondary-dark);
-    --md-sys-color-on-secondary: var(--md-sys-color-on-secondary-dark);
-    --md-sys-color-secondary-container: var(--md-sys-color-secondary-container-dark);
-    --md-sys-color-on-secondary-container: var(--md-sys-color-on-secondary-container-dark);
-    --md-sys-color-tertiary: var(--md-sys-color-tertiary-dark);
-    --md-sys-color-on-tertiary: var(--md-sys-color-on-tertiary-dark);
-    --md-sys-color-tertiary-container: var(--md-sys-color-tertiary-container-dark);
-    --md-sys-color-on-tertiary-container: var(--md-sys-color-on-tertiary-container-dark);
-    --md-sys-color-error: var(--md-sys-color-error-dark);
-    --md-sys-color-on-error: var(--md-sys-color-on-error-dark);
-    --md-sys-color-error-container: var(--md-sys-color-error-container-dark);
-    --md-sys-color-on-error-container: var(--md-sys-color-on-error-container-dark);
-    --md-sys-color-background: var(--md-sys-color-background-dark);
-    --md-sys-color-on-background: var(--md-sys-color-on-background-dark);
-    --md-sys-color-surface: var(--md-sys-color-surface-dark);
-    --md-sys-color-on-surface: var(--md-sys-color-on-surface-dark);
-    --md-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant-dark);
-    --md-sys-color-outline: var(--md-sys-color-outline-dark);
-    --md-sys-color-shadow: var(--md-sys-color-shadow-dark);
-}
-
-/* Also update the toggle slider background for dark theme */
-body.dark-theme .slider {
-    background-color: var(--md-sys-color-surface-variant-dark);
-}
-body.dark-theme #theme-toggle:checked + .slider {
-    background-color: var(--md-sys-color-primary);
-}
-body.dark-theme .theme-toggle-label {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.7; /* Slightly increased line-height for better readability */
+    background-color: var(--md-sys-color-background);
     color: var(--md-sys-color-on-background);
+    font-size: 16px; /* Base font size, adjust if necessary */
+    -webkit-font-smoothing: antialiased; /* Ensure smooth fonts */
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .container {
@@ -146,174 +56,181 @@ body.dark-theme .theme-toggle-label {
     padding: 0 20px;
 }
 
-/* Theme Switcher Styles */
-.theme-switcher {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end; /* Position it to the right in the header, adjust as needed */
-    margin-bottom: 10px;
-}
-.theme-toggle-label {
-    position: relative;
-    display: inline-flex; /* Changed to inline-flex for better alignment of text and switch */
-    align-items: center;
-    cursor: pointer;
-    color: var(--md-sys-color-on-background); /* Text color for "Dark Mode" */
-}
-.theme-toggle-label .toggle-text {
-    margin-left: 8px;
-    font-size: 0.9em;
-    user-select: none; /* Prevent text selection on click */
-}
-#theme-toggle {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-.slider {
-    position: relative; /* For positioning the circle */
-    display: inline-block; /* Make it inline with text */
-    width: 40px; /* Adjusted width */
-    height: 20px; /* Adjusted height */
-    background-color: var(--md-sys-color-surface-variant-light); /* A neutral background */
-    border-radius: 20px; /* Fully rounded */
-    transition: background-color 0.3s ease;
-}
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 16px; /* Circle size */
-    width: 16px;  /* Circle size */
-    left: 2px;   /* Initial position */
-    bottom: 2px; /* Initial position */
-    background-color: white;
+#profile-avatar {
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
-    transition: transform 0.3s ease;
+    display: block; /* To allow margin auto to work if needed, and for consistency */
+    margin: 0 auto 15px auto; /* Center avatar and add some space below */
 }
-#theme-toggle:checked + .slider {
-    background-color: var(--md-sys-color-primary); /* Use primary color when active */
-}
-#theme-toggle:checked + .slider:before {
-    transform: translateX(20px); /* Move circle to the right */
-}
-
 
 header {
-    background: var(--md-sys-color-surface); /* Use surface color */
-    color: var(--md-sys-color-on-surface);
-    padding: 20px 0;
-    border-bottom: 1px solid var(--md-sys-color-outline);
+    background: var(--md-sys-color-background); /* Match page background for a seamless look, or use surface if distinct */
+    color: var(--md-sys-color-on-background);
+    padding: 25px 0; /* Consistent padding */
+    border-bottom: 1px solid var(--md-sys-color-outline); /* Subtle separator */
     text-align: center;
     transition: background-color 0.3s ease, color 0.3s ease, border-bottom-color 0.3s ease;
 }
 
-header h1 {
-    color: var(--md-sys-color-primary); /* Make header title use primary color */
-    margin-bottom: 15px; /* Retain original margin */
+header h1 { /* This h1 is the main page title */
+    color: var(--md-sys-color-primary); 
+    font-weight: 700; /* Bolder for main title */
+    font-size: 2.5em; /* Example size */
+    margin-bottom: 16px; /* Consistent bottom margin */
 }
+
+/* General h1 (used for section titles, if any) is now covered by h1,h2,h3,h4,h5,h6 rule below */
 
 header p { /* Subtitle in header */
     color: var(--md-sys-color-on-surface-variant);
+    font-size: 1em; /* Adjust as needed */
+    margin-bottom: 16px; /* Consistent with other p tags */
 }
 
 footer {
     text-align: center;
-    padding: 20px 0;
-    margin-top: 30px;
+    padding: 25px 0;
+    margin-top: 40px; /* More space before footer */
     border-top: 1px solid var(--md-sys-color-outline);
     font-size: 0.9em;
     color: var(--md-sys-color-on-surface-variant);
+    background-color: var(--md-sys-color-background); /* Match page background */
     transition: background-color 0.3s ease, color 0.3s ease, border-top-color 0.3s ease;
 }
 
 main section {
     background-color: var(--md-sys-color-surface);
     color: var(--md-sys-color-on-surface);
-    margin: 20px 0; /* Keep existing margin or adjust */
-    padding: 24px; /* M3 suggests 24px padding for cards */
-    border-radius: 12px; /* M3 often uses 12px or more for cards */
-    /* M3 Elevation - Level 1 (subtle shadow) */
-    box-shadow: 0px 1px 2px rgba(var(--md-sys-color-shadow), 0.3), 
-                0px 1px 3px 1px rgba(var(--md-sys-color-shadow), 0.15);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease; /* Smooth theme transition, added transform */
+    margin: 25px 0; /* Slightly increased margin for more breathing room */
+    padding: 28px; /* Slightly increased padding */
+    border-radius: 16px; /* Potentially larger, softer border-radius */
+    /* Softer, more diffused shadow - inspired by modern UI trends */
+    box-shadow: 0px 4px 12px rgba(var(--md-sys-color-shadow), 0.08), /* Softer primary shadow */
+                0px 1px 3px rgba(var(--md-sys-color-shadow), 0.05);   /* Fainter ambient shadow */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    /* border: 1px solid var(--md-sys-color-outline); */ /* Optional: Add a very subtle border if it fits the aesthetic */
 }
 
 main section:hover {
-    /* M3 Elevation Level 2 or 3 for hover on cards */
-    box-shadow: 0px 2px 4px -1px rgba(var(--md-sys-color-shadow), 0.2), 
-                0px 4px 5px 0px rgba(var(--md-sys-color-shadow), 0.14), 
-                0px 1px 10px 0px rgba(var(--md-sys-color-shadow), 0.12);
-    transform: translateY(-2px); /* Slight lift */
+    /* Slightly more pronounced shadow on hover, but still soft */
+    box-shadow: 0px 6px 16px rgba(var(--md-sys-color-shadow), 0.09),
+                0px 2px 8px rgba(var(--md-sys-color-shadow), 0.06);
+    transform: translateY(-3px); /* Slightly more lift */
 }
 
-
-/* Remove generic h1-h6 styling or make it more specific if needed */
-h1, h3, h4, h5, h6 { /* Excluded h2 as it's styled within main section */
-    margin-bottom: 15px;
-    color: var(--md-sys-color-on-background); /* Default to on-background */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600; /* Slightly less bold than 700 for a cleaner look, adjust as preferred */
+    margin-bottom: 16px; /* Consistent bottom margin */
+    color: var(--md-sys-color-on-surface); /* Ensure headings on cards use card's on-surface color */
 }
 
+/* Specific heading adjustments */
+/* h1 is handled by header h1 for page title */
+main section h1 { /* If an h1 is used inside a section */
+    font-size: 2.2em; /* Slightly smaller than page title */
+}
+h2 { font-size: 1.8em; margin-bottom: 20px; } /* Example size for section titles - this margin overrides the general h1-h6 margin */
 
-/* Adjust headings within sections to use M3 'on-surface' color */
+/* Updated h3 styling for skills section and potentially others in main sections */
+main section h3 {
+    font-size: 1.4em; /* Existing size */
+    display: flex; /* Added for icon alignment */
+    align-items: center; /* Added for icon alignment */
+    /* color and margin-bottom are inherited from the general h1-h6 rule */
+}
+
+h4 { font-size: 1.1em; } /* Example size */
+
+/* This rule is now primarily for the bottom border on h2, h3, h4 within sections */
 main section h2, main section h3, main section h4 {
-    color: var(--md-sys-color-on-surface);
-    border-bottom-color: var(--md-sys-color-outline); /* Use outline color for divider */
-    /* Retain h2 specific styling from before if necessary, e.g., border and padding */
-    padding-bottom: 10px; /* From previous h2 style */
-    border-bottom: 1px solid var(--md-sys-color-outline); /* From previous h2 style, now using variable */
-    margin-bottom: 15px; /* Common heading margin */
-}
-/* Ensure h2 in header is not affected by main section h2 styling */
-header h2 {
-    border-bottom: none;
-    padding-bottom: 0;
+    border-bottom-color: var(--md-sys-color-outline); 
+    padding-bottom: 10px; 
+    border-bottom: 1px solid var(--md-sys-color-outline); 
+    /* Removed redundant color and margin-bottom, these are handled by general h1-h6 or specific h2, h3, h4 rules */
 }
 
-/* M3 Button Styling */
-.button { /* Add this class to <a> tags that should look like buttons */
-    display: inline-flex; /* For aligning icon and text if we add icons later */
+.skill-category-icon {
+    font-size: 1.2em; /* Adjust size as needed relative to h3 font size */
+    margin-right: 8px; /* Space between icon and title */
+    /* vertical-align: middle; -- Not needed with flex */
+    color: var(--md-sys-color-primary); /* Use primary color for these icons for emphasis */
+    /* Ensure icon itself is not overridden by more generic .material-symbols-outlined styles if they differ too much */
+    font-weight: normal; /* Override if h3 font-weight is too bold for icon */
+    line-height: 1; /* Ensure icon aligns well */
+}
+
+
+p {
+    margin-bottom: 16px;
+    color: var(--md-sys-color-on-surface-variant); /* Softer color for paragraph text */
+}
+/* Apply on-surface for paragraphs directly within sections if they are primary content */
+main section > p {
+   color: var(--md-sys-color-on-surface);
+}
+
+/* Ensure links inherit color properly or are styled distinctly */
+a {
+    color: var(--md-sys-color-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+a:hover, a:focus {
+    color: color-mix(in srgb, var(--md-sys-color-primary) 70%, black); /* Darken primary on hover */
+    text-decoration: underline; /* Optional: underline on hover for clarity */
+}
+
+/* Refined M3 Button Styling */
+.button {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 24px; /* M3 standard padding for buttons */
-    border-radius: 20px; /* M3 uses full rounded corners for some button types, or less for others e.g. 4px. Let's go with more rounded for a "Pill" shape often seen. */
-    font-weight: 500; /* Medium font weight */
+    padding: 12px 28px; /* Slightly more padding for a premium feel */
+    border-radius: 8px; /* Common modern border radius, less "pill" like */
+    font-weight: 500;
     text-decoration: none;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease;
     cursor: pointer;
-    border: 1px solid transparent; /* For outlined buttons */
+    border: 1px solid transparent;
+    font-size: 0.95em; /* Slightly larger button text */
 }
 
 .button-filled {
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
+    box-shadow: 0 2px 4px rgba(var(--md-sys-color-primary), 0.2); /* Subtle shadow matching primary color */
 }
-.button-filled:hover, .button-filled:focus { /* Added :focus state */
-    box-shadow: 0px 2px 4px -1px rgba(var(--md-sys-color-shadow), 0.2), 
-                0px 4px 5px 0px rgba(var(--md-sys-color-shadow), 0.14), 
-                0px 1px 10px 0px rgba(var(--md-sys-color-shadow), 0.12); /* M3 Elevation Level 2 for hover/focus */
-    background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, var(--md-sys-color-on-primary)); /* Slightly more pronounced hover color change */
-    outline: none; /* Remove default focus outline if custom styling is sufficient */
+.button-filled:hover, .button-filled:focus {
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 85%, black); /* Darken on hover */
+    box-shadow: 0 4px 8px rgba(var(--md-sys-color-primary), 0.25); /* More pronounced shadow on hover */
+    transform: translateY(-1px); /* Subtle lift */
+    outline: none;
+    color: var(--md-sys-color-on-primary); /* Ensure text color remains */
 }
 
+/* Outlined button might not be used now, but good to have refined if needed.
+   If not used, these styles can be removed.
 .button-outlined {
     border-color: var(--md-sys-color-outline);
     color: var(--md-sys-color-primary);
     background-color: transparent;
 }
-.button-outlined:hover, .button-outlined:focus { /* Added :focus state */
-    background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent); /* More visible hover background for outlined */
-    border-color: var(--md-sys-color-primary); /* Ensure border remains primary on hover/focus */
+.button-outlined:hover, .button-outlined:focus {
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
+    border-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-primary);
     outline: none;
 }
-
-/* Apply to contact links */
+*/
+/* Ensure contact section buttons are spaced nicely */
 #contact ul {
-   list-style: none; /* Remove default list style */
+   list-style: none;
    padding: 0;
-   display: flex; /* Align items in a row */
-   flex-wrap: wrap; /* Allow wrapping on small screens */
-   gap: 10px; /* Space between buttons */
+   display: flex;
+   flex-wrap: wrap;
+   gap: 12px; /* Slightly increased gap */
+   justify-content: center; /* Center buttons if they don't fill the row */
 }
 #contact li {
    margin-bottom: 10px; /* Spacing if they wrap */
@@ -330,25 +247,26 @@ header h2 {
 .skill-chip {
     display: inline-flex;
     align-items: center;
-    padding: 6px 12px;
-    border-radius: 8px; /* M3 chip border radius */
+    padding: 8px 16px; /* More padding */
+    border-radius: 20px; /* Pill-shaped for a modern look, or use 8px for consistency with buttons */
     background-color: var(--md-sys-color-secondary-container);
     color: var(--md-sys-color-on-secondary-container);
-    font-size: 0.9em;
+    font-size: 0.85em; /* Slightly smaller font for chips */
     font-weight: 500;
     transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 2px rgba(var(--md-sys-color-shadow), 0.1); /* Subtle shadow for chips */
 }
-
 .skill-chip:hover {
-    background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 85%, var(--md-sys-color-on-secondary-container)); /* Slightly darken the chip */
+    background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 90%, var(--md-sys-color-on-secondary-container));
     transform: translateY(-1px);
-    box-shadow: 0px 1px 2px rgba(var(--md-sys-color-shadow), 0.15);
+    box-shadow: 0 2px 4px rgba(var(--md-sys-color-shadow), 0.15);
 }
 
-/* If we add icons to chips later */
-.skill-chip .material-symbols-outlined { /* Assuming we use Material Symbols */
-    font-size: 1.2em; /* Adjust icon size */
-    margin-right: 6px;
+/* If using icons in chips */
+.skill-chip .material-symbols-outlined {
+    font-size: 1.1em; /* Adjust if needed */
+    margin-right: 8px; /* More space between icon and text */
+    color: var(--md-sys-color-on-secondary-container); /* Ensure icon color matches text */
 }
 
 .project-image-placeholder {
@@ -364,13 +282,33 @@ header h2 {
 }
 
 /* Keyframes for animations */
-@keyframes fadeInSlideUp {
+@keyframes refinedFadeInSlideUp { /* Renamed */
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px); /* Slightly increased initial offset */
     }
     to {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Explicit CSS for Material Symbols Outlined */
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal; /* Default, adjust if specific weights are needed */
+    font-style: normal;
+    font-size: 48px; /* Centralized font size */
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block; /* Important for proper rendering */
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga'; /* Standard property */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale; /* For Firefox */
+    color: var(--md-sys-color-secondary); /* Moved from inline style to here */
 }
