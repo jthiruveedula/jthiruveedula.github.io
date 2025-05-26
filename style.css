@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap'); /* Roboto Removed */
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&display=swap'); /* Source Code Pro Added */
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
 * {
@@ -48,11 +49,48 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
-    line-height: 1.7; /* Slightly increased line-height for better readability */
+    /* font-family: 'Roboto', sans-serif; /* Old font */
+    font-family: 'Source Code Pro', Menlo, Monaco, Consolas, 'Courier New', monospace; /* New monospaced stack */
+    line-height: 1.6; /* Initial line height, may need adjustment */
     background-color: var(--md-sys-color-background);
+
+/* Styles for Resume Download Button */
+.resume-download-container {
+    margin-top: 20px; /* Space above the button */
+    text-align: center; /* Center the button within this container */
+}
+
+.button-resume {
+    /* Inherits from .button, .button-filled (if we want it filled) or make it distinct */
+    /* Let's make it similar to .button-filled but potentially with a different accent or style */
+    background-color: var(--app-accent-color-1); /* Use one of our accents */
+    color: var(--app-accent-color-1-on-text); /* Ensure text is readable on this accent */
+    
+    /* Overriding or adding to .button styles if needed: */
+    padding: 10px 20px; /* Slightly adjusted padding */
+    border-radius: 8px; 
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex; /* To align icon and text */
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+    box-shadow: 0 2px 4px rgba(var(--app-accent-color-1), 0.25); /* Shadow using its own accent color */
+}
+
+.button-resume:hover, .button-resume:focus {
+    background-color: color-mix(in srgb, var(--app-accent-color-1) 85%, black); /* Darken on hover */
+    color: var(--app-accent-color-1-on-text); /* Ensure text color remains */
+    box-shadow: 0 4px 8px rgba(var(--app-accent-color-1), 0.3);
+    transform: translateY(-1px);
+    outline: none;
+}
+
+.button-resume .material-symbols-outlined {
+    font-size: 1.2em; /* Adjust icon size relative to button text */
+    /* vertical-align: middle; /* Not needed if using flex align-items */
+}
     color: var(--md-sys-color-on-background);
-    font-size: 16px; /* Base font size, adjust if necessary */
+    font-size: 15px; /* Monospaced fonts can appear larger, so adjust base size slightly down from 16px. Test for readability. */
     -webkit-font-smoothing: antialiased; /* Ensure smooth fonts */
     -moz-osx-font-smoothing: grayscale;
     position: relative; /* Needed for z-index stacking if body itself has layers, though not strictly for fixed children z-index */
@@ -118,8 +156,8 @@ header {
 
 header h1 { /* This h1 is the main page title */
     color: var(--md-sys-color-primary); 
-    font-weight: 700; /* Bolder for main title */
-    font-size: 2.5em; /* Example size */
+    font-weight: 700; /* Main page title can be bolder */
+    font-size: 2.2em; /* Example size */
     margin-bottom: 16px; /* Consistent bottom margin */
 }
 
@@ -127,7 +165,8 @@ header h1 { /* This h1 is the main page title */
 
 header p { /* Subtitle in header */
     color: var(--md-sys-color-on-surface-variant);
-    font-size: 1em; /* Adjust as needed */
+    font-size: 0.95em; /* Adjust for monospaced */
+    line-height: 1.5;
     margin-bottom: 16px; /* Consistent with other p tags */
 }
 
@@ -160,27 +199,28 @@ main section:hover {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-weight: 600; /* Slightly less bold than 700 for a cleaner look, adjust as preferred */
+    font-weight: 600; /* A slightly bolder weight for titles in monospaced */
     margin-bottom: 16px; /* Consistent bottom margin */
     color: var(--md-sys-color-on-surface); /* Ensure headings on cards use card's on-surface color */
+    /* line-height: 1.3; /* Monospaced headings might need tighter line height - commented out as per instruction */
 }
 
 /* Specific heading adjustments */
 /* h1 is handled by header h1 for page title */
 main section h1 { /* If an h1 is used inside a section */
-    font-size: 2.2em; /* Slightly smaller than page title */
+    font-size: 2.0em; /* If sections have h1s */
 }
-h2 { font-size: 1.8em; margin-bottom: 20px; } /* Example size for section titles - this margin overrides the general h1-h6 margin */
+h2 { font-size: 1.6em; margin-bottom: 20px; } /* Example size for section titles - this margin overrides the general h1-h6 margin */
 
 /* Updated h3 styling for skills section and potentially others in main sections */
 main section h3 {
-    font-size: 1.4em; /* Existing size */
+    font-size: 1.3em; /* Existing size */
     display: flex; /* Added for icon alignment */
     align-items: center; /* Added for icon alignment */
     color: var(--md-sys-color-on-surface); /* Explicitly set for dark theme clarity */
 }
 
-h4 { font-size: 1.1em; } /* Example size */
+h4 { font-size: 1.0em; } /* Example size */
 
 /* This rule is now primarily for the bottom border on h2, h3, h4 within sections */
 main section h2, main section h3, main section h4 {
@@ -203,10 +243,12 @@ main section h2, main section h3, main section h4 {
 p {
     margin-bottom: 16px;
     color: var(--md-sys-color-on-surface-variant); /* Softer color for paragraph text */
+    line-height: 1.65; /* May need more line height for blocks of mono text */
 }
 /* Apply on-surface for paragraphs directly within sections if they are primary content */
 main section > p {
    color: var(--md-sys-color-on-surface);
+   line-height: 1.7; /* Adjust for primary content readability */
 }
 
 /* Ensure links inherit color properly or are styled distinctly */
@@ -232,7 +274,8 @@ a:hover, a:focus {
     transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease;
     cursor: pointer;
     border: 1px solid transparent;
-    font-size: 0.95em; /* Slightly larger button text */
+    font-size: 0.9em; /* Adjust if needed, monospaced can look smaller here */
+    font-weight: 500; /* Ensure button text is clear */
 }
 
 .button-filled {
@@ -295,7 +338,7 @@ a:hover, a:focus {
     border-radius: 20px; /* Pill-shaped for a modern look, or use 8px for consistency with buttons */
     background-color: var(--md-sys-color-secondary-container); /* Keep existing bg */
     color: var(--md-sys-color-on-secondary-container);
-    font-size: 0.85em; /* Slightly smaller font for chips */
+    font-size: 0.8em; /* Adjust if needed */
     font-weight: 500;
     transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; /* Added border-color to transition */
     /* Replace box-shadow with a subtle border */
@@ -342,16 +385,18 @@ a:hover, a:focus {
     font-size: 48px; /* Ensure size is maintained if not inherited correctly */
 }
 
-.project-image-placeholder {
-    width: 100%;
-    height: 150px; /* Adjust as needed */
-    background-color: var(--md-sys-color-surface-variant); /* Use a subtle background */
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-    color: var(--md-sys-color-on-surface-variant);
+/* Removed .project-image-placeholder and .project-image-placeholder .material-symbols-outlined rules */
+
+.project-image {
+    display: block; /* Remove extra space below image */
+    width: 100%;    /* Make image responsive within its container */
+    max-width: 350px; /* Optional: Set a max-width if you don't want it to exceed placeholder size */
+    height: auto;   /* Maintain aspect ratio */
+    border-radius: 8px; /* Match card styling */
+    margin-bottom: 20px; /* Space below image */
+    object-fit: cover; /* Ensure image covers the area if aspect ratios differ */
+    margin-left: auto; /* Center the image if article is wider */
+    margin-right: auto; /* Center the image if article is wider */
 }
 
 /* Keyframes for animations */
