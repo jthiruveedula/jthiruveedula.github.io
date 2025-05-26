@@ -380,23 +380,23 @@ a:hover, a:focus {
     /* font-size: 48px; REMOVED - Handled by specific rules */
 }
 
-.project-image-placeholder .material-symbols-outlined {
-    color: var(--app-accent-color-2); /* Project icons use Accent 2 */
-    font-size: 48px; /* Ensure size is maintained if not inherited correctly */
+/* Removed .project-image rule */
+
+.project-image-placeholder {
+    width: 100%;
+    height: 100px; /* Adjusted height for icon display */
+    background-color: transparent; /* Cleaner look, no separate background for the placeholder div */
+    border-radius: 8px; /* Consistent with other card elements */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px; /* Space below icon placeholder */
 }
 
-/* Removed .project-image-placeholder and .project-image-placeholder .material-symbols-outlined rules */
-
-.project-image {
-    display: block; /* Remove extra space below image */
-    width: 100%;    /* Make image responsive within its container */
-    max-width: 350px; /* Optional: Set a max-width if you don't want it to exceed placeholder size */
-    height: auto;   /* Maintain aspect ratio */
-    border-radius: 8px; /* Match card styling */
-    margin-bottom: 20px; /* Space below image */
-    object-fit: cover; /* Ensure image covers the area if aspect ratios differ */
-    margin-left: auto; /* Center the image if article is wider */
-    margin-right: auto; /* Center the image if article is wider */
+.project-image-placeholder .material-symbols-outlined {
+    font-size: 56px; /* Larger icon size */
+    color: var(--app-accent-color-2); /* Using Accent Color 2 (Orange/Amber) */
+    /* Base styles like font-family, display: inline-block are inherited from the general .material-symbols-outlined rule */
 }
 
 /* Keyframes for animations */
