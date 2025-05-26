@@ -1,0 +1,53 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    line-height: 1.6;
+    background-color: #f4f4f4; /* Light gray background, similar to some Apple interfaces */
+    color: #333; /* Dark gray text for readability */
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden; /* Clear floats */
+    padding: 0 20px;
+}
+
+header {
+    background: #fff; /* White background for header */
+    padding: 20px 0;
+    border-bottom: 1px solid #ddd; /* Subtle border */
+    text-align: center;
+}
+
+footer {
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 30px;
+    border-top: 1px solid #ddd; /* Subtle border */
+    font-size: 0.9em;
+    color: #666;
+}
+
+main section {
+    background: #fff; /* White background for content sections */
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 8px; /* Rounded corners like Apple elements */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 15px;
+    color: #111; /* Near-black for headings */
+}
+
+h2 { /* For section titles */
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
