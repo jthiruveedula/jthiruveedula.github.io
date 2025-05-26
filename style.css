@@ -8,35 +8,43 @@
 }
 
 :root {
-    /* Wellapp.ai Inspired Light Theme Palette (Adjustments) */
-    --md-sys-color-primary: #0052D4; /* Slightly adjusted blue, potentially a bit deeper or a bit more modern */
-    --md-sys-color-on-primary: #FFFFFF;
-    --md-sys-color-primary-container: #EAF2FF; /* Lighter, less saturated container */
-    --md-sys-color-on-primary-container: #001849;
+    /* Dark Theme Palette (Wellapp.ai Inspired) */
+    --md-sys-color-primary: #4FACF7; /* Vibrant blue for dark theme, similar to a bright sky blue */
+    --md-sys-color-on-primary: #001F3A; /* Dark text on vibrant blue */
+    --md-sys-color-primary-container: #004A8D; /* Darker blue container */
+    --md-sys-color-on-primary-container: #D5E3FF;
 
-    --md-sys-color-secondary: #565E71; /* Neutral, professional secondary */
-    --md-sys-color-on-secondary: #FFFFFF;
-    --md-sys-color-secondary-container: #DAE2F9; /* Lighter secondary container */
-    --md-sys-color-on-secondary-container: #131C2B;
+    /* Define a couple of secondary/tertiary accents early for consistency if needed by base elements */
+    --md-sys-color-secondary: #B0C4DE; /* Light steel blue - placeholder, will be refined */
+    --md-sys-color-on-secondary: #1E2A3A;
+    --md-sys-color-secondary-container: #3A4D63;
+    --md-sys-color-on-secondary-container: #DCE8F9;
+    
+    --md-sys-color-tertiary: #7aa4cc; /* Soft tealish blue - placeholder */
+    --md-sys-color-on-tertiary: #002030;
+    --md-sys-color-tertiary-container: #004A70;
+    --md-sys-color-on-tertiary-container: #CDEFFF;
 
-    --md-sys-color-tertiary: #715573; /* Muted tertiary */
-    --md-sys-color-on-tertiary: #FFFFFF;
-    --md-sys-color-tertiary-container: #FAD7FE;
-    --md-sys-color-on-tertiary-container: #29132D;
+    --md-sys-color-error: #F2B8B5; /* Standard Material dark error */
+    --md-sys-color-on-error: #601410;
+    --md-sys-color-error-container: #8C1D18;
+    --md-sys-color-on-error-container: #F9DEDC;
 
-    --md-sys-color-error: #B00020; /* Standard error */
-    --md-sys-color-on-error: #FFFFFF;
-    --md-sys-color-error-container: #FCD8DF;
-    --md-sys-color-on-error-container: #3E000A;
+    --md-sys-color-background: #0D1117; /* Very dark, slightly bluish-gray (GitHub dark mode style) */
+    --md-sys-color-on-background: #C9D1D9; /* Light gray text (GitHub dark mode style) */
 
-    --md-sys-color-background: #F7F8FA; /* Very light gray, common for modern clean sites */
-    --md-sys-color-on-background: #1B1C1E; /* Dark gray for text */
+    --md-sys-color-surface: #161B22; /* Slightly lighter than background for cards (GitHub dark mode style) */
+    --md-sys-color-on-surface: #C9D1D9; /* Consistent text color on surfaces */
+    --md-sys-color-on-surface-variant: #8B949E; /* Muted text color (GitHub dark mode style) */
+    
+    --md-sys-color-outline: #30363D; /* Subtle outline color for dark theme (GitHub dark mode style) */
+    --md-sys-color-shadow: #010409; /* Very dark shadow base, nearly black (GitHub dark mode style) */
 
-    --md-sys-color-surface: #FFFFFF; /* Pure white for cards/surfaces, creates contrast with light gray background */
-    --md-sys-color-on-surface: #1B1C1E;
-    --md-sys-color-on-surface-variant: #44474E; /* For less prominent text */
-    --md-sys-color-outline: #DCE1E9; /* Softer outline color */
-    --md-sys-color-shadow: #000000; 
+    /* New Accent Colors */
+    --app-accent-color-1: #26B0A6; /* Vibrant Teal/Cyan */
+    --app-accent-color-1-on-text: #FFFFFF; /* Text on Accent 1 */
+    --app-accent-color-2: #FFB74D; /* Energetic Orange/Amber */
+    --app-accent-color-2-on-text: #000000; /* Text on Accent 2 */
 }
 
 body {
@@ -47,6 +55,49 @@ body {
     font-size: 16px; /* Base font size, adjust if necessary */
     -webkit-font-smoothing: antialiased; /* Ensure smooth fonts */
     -moz-osx-font-smoothing: grayscale;
+    position: relative; /* Needed for z-index stacking if body itself has layers, though not strictly for fixed children z-index */
+    overflow-x: hidden; /* Prevent horizontal scrollbars if shapes slightly exceed viewport during animation */
+}
+
+body::before,
+body::after {
+    content: "";
+    position: fixed; /* Fixed positioning so they don't scroll with content */
+    border-radius: 50%; /* Makes them circular/elliptical */
+    z-index: -1; /* Place them behind all other content */
+    opacity: 0.15; /* Start with low opacity, can be adjusted */
+    filter: blur(100px); /* Heavy blur for a very soft, diffuse look */
+    /* Disable pointer events so they don't interfere with content interaction */
+    pointer-events: none; 
+}
+
+body::before {
+    /* First shape - using primary and accent 1 */
+    width: 40vw; /* Responsive width */
+    height: 40vw; /* Responsive height */
+    background: radial-gradient(circle, 
+        color-mix(in srgb, var(--md-sys-color-primary) 50%, transparent) 0%, 
+        color-mix(in srgb, var(--app-accent-color-1) 30%, transparent) 70%, 
+        transparent 100%
+    );
+    top: 10vh; /* Position from top */
+    left: 5vw;  /* Position from left */
+    /* Optional: Add a slow animation for subtle movement */
+    animation: subtleMove1 30s infinite alternate ease-in-out;
+}
+
+body::after {
+    /* Second shape - using accent 2 and a hint of tertiary or another color */
+    width: 35vw;
+    height: 35vw;
+    background: radial-gradient(circle, 
+        color-mix(in srgb, var(--app-accent-color-2) 40%, transparent) 0%, 
+        color-mix(in srgb, var(--md-sys-color-tertiary) 20%, transparent) 60%, 
+        transparent 100%
+    );
+    bottom: 15vh; /* Position from bottom */
+    right: 10vw;   /* Position from right */
+    animation: subtleMove2 35s infinite alternate ease-in-out;
 }
 
 .container {
@@ -56,17 +107,9 @@ body {
     padding: 0 20px;
 }
 
-#profile-avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    display: block; /* To allow margin auto to work if needed, and for consistency */
-    margin: 0 auto 15px auto; /* Center avatar and add some space below */
-}
-
 header {
-    background: var(--md-sys-color-background); /* Match page background for a seamless look, or use surface if distinct */
-    color: var(--md-sys-color-on-background);
+    background: var(--md-sys-color-surface); /* Using surface for a slightly distinct header background */
+    color: var(--md-sys-color-on-surface);
     padding: 25px 0; /* Consistent padding */
     border-bottom: 1px solid var(--md-sys-color-outline); /* Subtle separator */
     text-align: center;
@@ -105,18 +148,15 @@ main section {
     margin: 25px 0; /* Slightly increased margin for more breathing room */
     padding: 28px; /* Slightly increased padding */
     border-radius: 16px; /* Potentially larger, softer border-radius */
-    /* Softer, more diffused shadow - inspired by modern UI trends */
-    box-shadow: 0px 4px 12px rgba(var(--md-sys-color-shadow), 0.08), /* Softer primary shadow */
-                0px 1px 3px rgba(var(--md-sys-color-shadow), 0.05);   /* Fainter ambient shadow */
+    box-shadow: 0px 0px 0px 1px var(--md-sys-color-outline), /* Thin border-like shadow */
+                0px 8px 24px rgba(var(--md-sys-color-shadow), 0.5); /* More diffuse, darker shadow */
     transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-    /* border: 1px solid var(--md-sys-color-outline); */ /* Optional: Add a very subtle border if it fits the aesthetic */
 }
 
 main section:hover {
-    /* Slightly more pronounced shadow on hover, but still soft */
-    box-shadow: 0px 6px 16px rgba(var(--md-sys-color-shadow), 0.09),
-                0px 2px 8px rgba(var(--md-sys-color-shadow), 0.06);
-    transform: translateY(-3px); /* Slightly more lift */
+    box-shadow: 0px 0px 0px 1px var(--md-sys-color-primary), /* Primary color glow/border on hover */
+                0px 10px 30px rgba(var(--md-sys-color-shadow), 0.6);
+    transform: translateY(-4px); /* Slightly more lift */
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -137,7 +177,7 @@ main section h3 {
     font-size: 1.4em; /* Existing size */
     display: flex; /* Added for icon alignment */
     align-items: center; /* Added for icon alignment */
-    /* color and margin-bottom are inherited from the general h1-h6 rule */
+    color: var(--md-sys-color-on-surface); /* Explicitly set for dark theme clarity */
 }
 
 h4 { font-size: 1.1em; } /* Example size */
@@ -153,11 +193,10 @@ main section h2, main section h3, main section h4 {
 .skill-category-icon {
     font-size: 1.2em; /* Adjust size as needed relative to h3 font size */
     margin-right: 8px; /* Space between icon and title */
-    /* vertical-align: middle; -- Not needed with flex */
-    color: var(--md-sys-color-primary); /* Use primary color for these icons for emphasis */
-    /* Ensure icon itself is not overridden by more generic .material-symbols-outlined styles if they differ too much */
+    color: var(--app-accent-color-1); /* Changed from primary to Accent 1 */
     font-weight: normal; /* Override if h3 font-weight is too bold for icon */
     line-height: 1; /* Ensure icon aligns well */
+    /* vertical-align: middle; -- Not needed with flex on parent h3 */
 }
 
 
@@ -177,7 +216,7 @@ a {
     transition: color 0.3s ease;
 }
 a:hover, a:focus {
-    color: color-mix(in srgb, var(--md-sys-color-primary) 70%, black); /* Darken primary on hover */
+    color: color-mix(in srgb, var(--md-sys-color-primary) 80%, white); /* Brighten primary on hover for dark theme */
     text-decoration: underline; /* Optional: underline on hover for clarity */
 }
 
@@ -199,14 +238,19 @@ a:hover, a:focus {
 .button-filled {
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
-    box-shadow: 0 2px 4px rgba(var(--md-sys-color-primary), 0.2); /* Subtle shadow matching primary color */
+    /* New shadow for dark theme: subtle primary color glow + very soft drop shadow */
+    box-shadow: 0 0 8px -2px color-mix(in srgb, var(--md-sys-color-primary) 50%, transparent), /* Glow */
+                0 2px 4px rgba(var(--md-sys-color-shadow), 0.3); /* Softer drop shadow */
+    /* transition properties should already include box-shadow */
 }
 .button-filled:hover, .button-filled:focus {
-    background-color: color-mix(in srgb, var(--md-sys-color-primary) 85%, black); /* Darken on hover */
-    box-shadow: 0 4px 8px rgba(var(--md-sys-color-primary), 0.25); /* More pronounced shadow on hover */
-    transform: translateY(-1px); /* Subtle lift */
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 85%, var(--md-sys-color-on-primary)); /* Existing: slight color shift */
+    /* Enhanced hover shadow for dark theme */
+    box-shadow: 0 0 12px -2px color-mix(in srgb, var(--md-sys-color-primary) 70%, transparent), /* Stronger Glow */
+                0 4px 8px rgba(var(--md-sys-color-shadow), 0.4); /* Slightly more pronounced drop shadow */
+    transform: translateY(-1px);
     outline: none;
-    color: var(--md-sys-color-on-primary); /* Ensure text color remains */
+    color: var(--md-sys-color-on-primary);
 }
 
 /* Outlined button might not be used now, but good to have refined if needed.
@@ -249,17 +293,21 @@ a:hover, a:focus {
     align-items: center;
     padding: 8px 16px; /* More padding */
     border-radius: 20px; /* Pill-shaped for a modern look, or use 8px for consistency with buttons */
-    background-color: var(--md-sys-color-secondary-container);
+    background-color: var(--md-sys-color-secondary-container); /* Keep existing bg */
     color: var(--md-sys-color-on-secondary-container);
     font-size: 0.85em; /* Slightly smaller font for chips */
     font-weight: 500;
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 1px 2px rgba(var(--md-sys-color-shadow), 0.1); /* Subtle shadow for chips */
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; /* Added border-color to transition */
+    /* Replace box-shadow with a subtle border */
+    border: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface) 20%, transparent); /* Subtle border using on-surface color */
+    box-shadow: none; /* Remove previous shadow if using border */
 }
 .skill-chip:hover {
     background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 90%, var(--md-sys-color-on-secondary-container));
     transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(var(--md-sys-color-shadow), 0.15);
+    /* If using border, maybe make border slightly more prominent on hover */
+    border-color: color-mix(in srgb, var(--md-sys-color-on-surface) 30%, transparent);
+    box-shadow: 0 2px 4px rgba(var(--md-sys-color-shadow), 0.15); /* Can be added back if not using border, or kept minimal with border */
 }
 
 /* If using icons in chips */
@@ -267,6 +315,31 @@ a:hover, a:focus {
     font-size: 1.1em; /* Adjust if needed */
     margin-right: 8px; /* More space between icon and text */
     color: var(--md-sys-color-on-secondary-container); /* Ensure icon color matches text */
+}
+
+.material-symbols-outlined { /* General rule for project icons */
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 48px; /* Centralized font size */
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* color: var(--md-sys-color-secondary); REMOVED - Handled by specific rules */
+    /* font-size: 48px; REMOVED - Handled by specific rules */
+}
+
+.project-image-placeholder .material-symbols-outlined {
+    color: var(--app-accent-color-2); /* Project icons use Accent 2 */
+    font-size: 48px; /* Ensure size is maintained if not inherited correctly */
 }
 
 .project-image-placeholder {
@@ -311,4 +384,23 @@ a:hover, a:focus {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale; /* For Firefox */
     color: var(--md-sys-color-secondary); /* Moved from inline style to here */
+}
+
+/* Keyframes for subtle movement animations */
+@keyframes subtleMove1 {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        transform: translate(20px, -30px) scale(1.1);
+    }
+}
+
+@keyframes subtleMove2 {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        transform: translate(-25px, 20px) scale(1.05);
+    }
 }
