@@ -1,14 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+:root {
+    /* Light Theme Palette (Example) */
+    --md-sys-color-primary-light: #0062A1; /* Adjusted blue */
+    --md-sys-color-on-primary-light: #FFFFFF;
+    --md-sys-color-primary-container-light: #D0E4FF;
+    --md-sys-color-on-primary-container-light: #001D35;
+
+    --md-sys-color-secondary-light: #50606E;
+    --md-sys-color-on-secondary-light: #FFFFFF;
+    --md-sys-color-secondary-container-light: #D3E5F5;
+    --md-sys-color-on-secondary-container-light: #0D1D29;
+
+    --md-sys-color-tertiary-light: #65587B;
+    --md-sys-color-on-tertiary-light: #FFFFFF;
+    --md-sys-color-tertiary-container-light: #EADDFF;
+    --md-sys-color-on-tertiary-container-light: #201634;
+
+    --md-sys-color-error-light: #B3261E;
+    --md-sys-color-on-error-light: #FFFFFF;
+    --md-sys-color-error-container-light: #F9DEDC;
+    --md-sys-color-on-error-container-light: #410E0B;
+
+    --md-sys-color-background-light: #FCFCFF; /* Near white */
+    --md-sys-color-on-background-light: #1A1C1E; /* Dark gray for text */
+
+    --md-sys-color-surface-light: #FCFCFF; /* Same as background, differentiated by elevation */
+    --md-sys-color-on-surface-light: #1A1C1E;
+    --md-sys-color-on-surface-variant-light: #42474E; /* For less prominent text/icons */
+    --md-sys-color-outline-light: #72777F; /* For borders */
+    --md-sys-color-shadow-light: #000000; /* Base shadow color */
+    
+    /* Add Dark Theme Palette (Example) - these will be overridden later by a .dark-theme class */
+    --md-sys-color-primary-dark: #9BCBFF; /* Adjusted blue for dark */
+    --md-sys-color-on-primary-dark: #003356;
+    --md-sys-color-primary-container-dark: #004A78;
+    --md-sys-color-on-primary-container-dark: #D0E4FF;
+
+    --md-sys-color-secondary-dark: #B7C9D9;
+    --md-sys-color-on-secondary-dark: #22323F;
+    --md-sys-color-secondary-container-dark: #384956;
+    --md-sys-color-on-secondary-container-dark: #D3E5F5;
+
+    --md-sys-color-tertiary-dark: #CDBBEE;
+    --md-sys-color-on-tertiary-dark: #362B4A;
+    --md-sys-color-tertiary-container-dark: #4D4162;
+    --md-sys-color-on-tertiary-container-dark: #EADDFF;
+
+    --md-sys-color-error-dark: #F2B8B5;
+    --md-sys-color-on-error-dark: #601410;
+    --md-sys-color-error-container-dark: #8C1D18;
+    --md-sys-color-on-error-container-dark: #F9DEDC;
+
+    --md-sys-color-background-dark: #1A1C1E; /* Dark gray */
+    --md-sys-color-on-background-dark: #E2E2E6; /* Light gray for text */
+
+    --md-sys-color-surface-dark: #1A1C1E; /* Same as background, differentiated by elevation */
+    --md-sys-color-on-surface-dark: #E2E2E6;
+    --md-sys-color-on-surface-variant-dark: #C2C7CE; /* For less prominent text/icons */
+    --md-sys-color-outline-dark: #8C9199; /* For borders */
+    --md-sys-color-shadow-dark: #000000; /* Base shadow color */
+
+    /* Default to light theme variables */
+    --md-sys-color-primary: var(--md-sys-color-primary-light);
+    --md-sys-color-on-primary: var(--md-sys-color-on-primary-light);
+    --md-sys-color-primary-container: var(--md-sys-color-primary-container-light);
+    --md-sys-color-on-primary-container: var(--md-sys-color-on-primary-container-light);
+    --md-sys-color-secondary: var(--md-sys-color-secondary-light);
+    --md-sys-color-on-secondary: var(--md-sys-color-on-secondary-light);
+    --md-sys-color-secondary-container: var(--md-sys-color-secondary-container-light);
+    --md-sys-color-on-secondary-container: var(--md-sys-color-on-secondary-container-light);
+    --md-sys-color-tertiary: var(--md-sys-color-tertiary-light);
+    --md-sys-color-on-tertiary: var(--md-sys-color-on-tertiary-light);
+    --md-sys-color-tertiary-container: var(--md-sys-color-tertiary-container-light);
+    --md-sys-color-on-tertiary-container: var(--md-sys-color-on-tertiary-container-light);
+    --md-sys-color-error: var(--md-sys-color-error-light);
+    --md-sys-color-on-error: var(--md-sys-color-on-error-light);
+    --md-sys-color-error-container: var(--md-sys-color-error-container-light);
+    --md-sys-color-on-error-container: var(--md-sys-color-on-error-container-light);
+    --md-sys-color-background: var(--md-sys-color-background-light);
+    --md-sys-color-on-background: var(--md-sys-color-on-background-light);
+    --md-sys-color-surface: var(--md-sys-color-surface-light);
+    --md-sys-color-on-surface: var(--md-sys-color-on-surface-light);
+    --md-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant-light);
+    --md-sys-color-outline: var(--md-sys-color-outline-light);
+    --md-sys-color-shadow: var(--md-sys-color-shadow-light);
+}
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: 'Roboto', sans-serif; /* Apply Roboto */
     line-height: 1.6;
-    background-color: #f4f4f4; /* Light gray background, similar to some Apple interfaces */
-    color: #333; /* Dark gray text for readability */
+    background-color: var(--md-sys-color-background); /* Use CSS variable */
+    color: var(--md-sys-color-on-background); /* Use CSS variable */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
+}
+
+body.dark-theme {
+    --md-sys-color-primary: var(--md-sys-color-primary-dark);
+    --md-sys-color-on-primary: var(--md-sys-color-on-primary-dark);
+    --md-sys-color-primary-container: var(--md-sys-color-primary-container-dark);
+    --md-sys-color-on-primary-container: var(--md-sys-color-on-primary-container-dark);
+    --md-sys-color-secondary: var(--md-sys-color-secondary-dark);
+    --md-sys-color-on-secondary: var(--md-sys-color-on-secondary-dark);
+    --md-sys-color-secondary-container: var(--md-sys-color-secondary-container-dark);
+    --md-sys-color-on-secondary-container: var(--md-sys-color-on-secondary-container-dark);
+    --md-sys-color-tertiary: var(--md-sys-color-tertiary-dark);
+    --md-sys-color-on-tertiary: var(--md-sys-color-on-tertiary-dark);
+    --md-sys-color-tertiary-container: var(--md-sys-color-tertiary-container-dark);
+    --md-sys-color-on-tertiary-container: var(--md-sys-color-on-tertiary-container-dark);
+    --md-sys-color-error: var(--md-sys-color-error-dark);
+    --md-sys-color-on-error: var(--md-sys-color-on-error-dark);
+    --md-sys-color-error-container: var(--md-sys-color-error-container-dark);
+    --md-sys-color-on-error-container: var(--md-sys-color-on-error-container-dark);
+    --md-sys-color-background: var(--md-sys-color-background-dark);
+    --md-sys-color-on-background: var(--md-sys-color-on-background-dark);
+    --md-sys-color-surface: var(--md-sys-color-surface-dark);
+    --md-sys-color-on-surface: var(--md-sys-color-on-surface-dark);
+    --md-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant-dark);
+    --md-sys-color-outline: var(--md-sys-color-outline-dark);
+    --md-sys-color-shadow: var(--md-sys-color-shadow-dark);
+}
+
+/* Also update the toggle slider background for dark theme */
+body.dark-theme .slider {
+    background-color: var(--md-sys-color-surface-variant-dark);
+}
+body.dark-theme #theme-toggle:checked + .slider {
+    background-color: var(--md-sys-color-primary);
+}
+body.dark-theme .theme-toggle-label {
+    color: var(--md-sys-color-on-background);
 }
 
 .container {
@@ -18,36 +146,231 @@ body {
     padding: 0 20px;
 }
 
+/* Theme Switcher Styles */
+.theme-switcher {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Position it to the right in the header, adjust as needed */
+    margin-bottom: 10px;
+}
+.theme-toggle-label {
+    position: relative;
+    display: inline-flex; /* Changed to inline-flex for better alignment of text and switch */
+    align-items: center;
+    cursor: pointer;
+    color: var(--md-sys-color-on-background); /* Text color for "Dark Mode" */
+}
+.theme-toggle-label .toggle-text {
+    margin-left: 8px;
+    font-size: 0.9em;
+    user-select: none; /* Prevent text selection on click */
+}
+#theme-toggle {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: relative; /* For positioning the circle */
+    display: inline-block; /* Make it inline with text */
+    width: 40px; /* Adjusted width */
+    height: 20px; /* Adjusted height */
+    background-color: var(--md-sys-color-surface-variant-light); /* A neutral background */
+    border-radius: 20px; /* Fully rounded */
+    transition: background-color 0.3s ease;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px; /* Circle size */
+    width: 16px;  /* Circle size */
+    left: 2px;   /* Initial position */
+    bottom: 2px; /* Initial position */
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+#theme-toggle:checked + .slider {
+    background-color: var(--md-sys-color-primary); /* Use primary color when active */
+}
+#theme-toggle:checked + .slider:before {
+    transform: translateX(20px); /* Move circle to the right */
+}
+
+
 header {
-    background: #fff; /* White background for header */
+    background: var(--md-sys-color-surface); /* Use surface color */
+    color: var(--md-sys-color-on-surface);
     padding: 20px 0;
-    border-bottom: 1px solid #ddd; /* Subtle border */
+    border-bottom: 1px solid var(--md-sys-color-outline);
     text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease, border-bottom-color 0.3s ease;
+}
+
+header h1 {
+    color: var(--md-sys-color-primary); /* Make header title use primary color */
+    margin-bottom: 15px; /* Retain original margin */
+}
+
+header p { /* Subtitle in header */
+    color: var(--md-sys-color-on-surface-variant);
 }
 
 footer {
     text-align: center;
     padding: 20px 0;
     margin-top: 30px;
-    border-top: 1px solid #ddd; /* Subtle border */
+    border-top: 1px solid var(--md-sys-color-outline);
     font-size: 0.9em;
-    color: #666;
+    color: var(--md-sys-color-on-surface-variant);
+    transition: background-color 0.3s ease, color 0.3s ease, border-top-color 0.3s ease;
 }
 
 main section {
-    background: #fff; /* White background for content sections */
-    margin: 20px 0;
-    padding: 20px;
-    border-radius: 8px; /* Rounded corners like Apple elements */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    margin: 20px 0; /* Keep existing margin or adjust */
+    padding: 24px; /* M3 suggests 24px padding for cards */
+    border-radius: 12px; /* M3 often uses 12px or more for cards */
+    /* M3 Elevation - Level 1 (subtle shadow) */
+    box-shadow: 0px 1px 2px rgba(var(--md-sys-color-shadow), 0.3), 
+                0px 1px 3px 1px rgba(var(--md-sys-color-shadow), 0.15);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease; /* Smooth theme transition, added transform */
 }
 
-h1, h2, h3, h4, h5, h6 {
+main section:hover {
+    /* M3 Elevation Level 2 or 3 for hover on cards */
+    box-shadow: 0px 2px 4px -1px rgba(var(--md-sys-color-shadow), 0.2), 
+                0px 4px 5px 0px rgba(var(--md-sys-color-shadow), 0.14), 
+                0px 1px 10px 0px rgba(var(--md-sys-color-shadow), 0.12);
+    transform: translateY(-2px); /* Slight lift */
+}
+
+
+/* Remove generic h1-h6 styling or make it more specific if needed */
+h1, h3, h4, h5, h6 { /* Excluded h2 as it's styled within main section */
     margin-bottom: 15px;
-    color: #111; /* Near-black for headings */
+    color: var(--md-sys-color-on-background); /* Default to on-background */
 }
 
-h2 { /* For section titles */
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
+
+/* Adjust headings within sections to use M3 'on-surface' color */
+main section h2, main section h3, main section h4 {
+    color: var(--md-sys-color-on-surface);
+    border-bottom-color: var(--md-sys-color-outline); /* Use outline color for divider */
+    /* Retain h2 specific styling from before if necessary, e.g., border and padding */
+    padding-bottom: 10px; /* From previous h2 style */
+    border-bottom: 1px solid var(--md-sys-color-outline); /* From previous h2 style, now using variable */
+    margin-bottom: 15px; /* Common heading margin */
+}
+/* Ensure h2 in header is not affected by main section h2 styling */
+header h2 {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* M3 Button Styling */
+.button { /* Add this class to <a> tags that should look like buttons */
+    display: inline-flex; /* For aligning icon and text if we add icons later */
+    align-items: center;
+    justify-content: center;
+    padding: 10px 24px; /* M3 standard padding for buttons */
+    border-radius: 20px; /* M3 uses full rounded corners for some button types, or less for others e.g. 4px. Let's go with more rounded for a "Pill" shape often seen. */
+    font-weight: 500; /* Medium font weight */
+    text-decoration: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+    border: 1px solid transparent; /* For outlined buttons */
+}
+
+.button-filled {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+}
+.button-filled:hover, .button-filled:focus { /* Added :focus state */
+    box-shadow: 0px 2px 4px -1px rgba(var(--md-sys-color-shadow), 0.2), 
+                0px 4px 5px 0px rgba(var(--md-sys-color-shadow), 0.14), 
+                0px 1px 10px 0px rgba(var(--md-sys-color-shadow), 0.12); /* M3 Elevation Level 2 for hover/focus */
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, var(--md-sys-color-on-primary)); /* Slightly more pronounced hover color change */
+    outline: none; /* Remove default focus outline if custom styling is sufficient */
+}
+
+.button-outlined {
+    border-color: var(--md-sys-color-outline);
+    color: var(--md-sys-color-primary);
+    background-color: transparent;
+}
+.button-outlined:hover, .button-outlined:focus { /* Added :focus state */
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent); /* More visible hover background for outlined */
+    border-color: var(--md-sys-color-primary); /* Ensure border remains primary on hover/focus */
+    color: var(--md-sys-color-primary);
+    outline: none;
+}
+
+/* Apply to contact links */
+#contact ul {
+   list-style: none; /* Remove default list style */
+   padding: 0;
+   display: flex; /* Align items in a row */
+   flex-wrap: wrap; /* Allow wrapping on small screens */
+   gap: 10px; /* Space between buttons */
+}
+#contact li {
+   margin-bottom: 10px; /* Spacing if they wrap */
+}
+
+/* M3 Chip Styling */
+.skills-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* Space between chips */
+}
+.skill-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 8px; /* M3 chip border radius */
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.skill-chip:hover {
+    background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 85%, var(--md-sys-color-on-secondary-container)); /* Slightly darken the chip */
+    transform: translateY(-1px);
+    box-shadow: 0px 1px 2px rgba(var(--md-sys-color-shadow), 0.15);
+}
+
+/* If we add icons to chips later */
+.skill-chip .material-symbols-outlined { /* Assuming we use Material Symbols */
+    font-size: 1.2em; /* Adjust icon size */
+    margin-right: 6px;
+}
+
+.project-image-placeholder {
+    width: 100%;
+    height: 150px; /* Adjust as needed */
+    background-color: var(--md-sys-color-surface-variant); /* Use a subtle background */
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Keyframes for animations */
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
