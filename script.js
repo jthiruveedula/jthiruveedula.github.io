@@ -1,6 +1,19 @@
 'use strict';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Name animation logic
+    const nameElement = document.querySelector('.animated-name');
+    if (nameElement) {
+        const chars = Array.from(nameElement.children); // Get direct children spans
+        chars.forEach((char, index) => {
+            // Initial state is set by CSS (.animated-name .char)
+            // Trigger animation by setting animation property
+            // (index * 50ms stagger) + (200ms initial delay for the whole animation to start)
+            char.style.animation = `fadeSlideUpLetter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards ${index * 0.05 + 0.2}s`;
+        });
+    }
+
+    // Existing IntersectionObserver setup for sections
     const sections = document.querySelectorAll('main section');
 
     sections.forEach(section => {

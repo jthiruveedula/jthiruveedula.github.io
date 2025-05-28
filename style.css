@@ -169,6 +169,35 @@ header h1 { /* This h1 is the main page title */
 
 /* General h1 (used for section titles, if any) is now covered by h1,h2,h3,h4,h5,h6 rule below */
 
+/* Name Animation Styling */
+.animated-name {
+    /* Ensure the h1 itself doesn't contribute to layout shifts if chars are display:block/inline-block */
+    line-height: 1; /* Or match its font-size if issues arise with char alignment */
+}
+.animated-name .char {
+    display: inline-block; /* Allows transforms and opacity */
+    opacity: 0; /* Initially hidden */
+    transform: translateY(20px); /* Initial slide position (slightly lower) */
+    /* Animation will be applied by JavaScript */
+}
+
+.animated-name .char.space {
+    width: 0.25em; /* Adjust space width if needed, or use padding/margin on adjacent chars */
+    /* No visual content, so opacity/transform don't apply in the same way */
+    /* Ensure it doesn't get animated if it's just for spacing */
+    opacity: 1; /* Keep space 'visible' in terms of layout */
+    transform: translateY(0); /* No transform for space */
+}
+
+@keyframes fadeSlideUpLetter {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* Removed .animate-letter-in class as JS will apply animation directly */
+
+
 /* Removed header p styling as it's replaced by tagline-container */
 
 /* Tagline Pills Styling */
@@ -203,17 +232,18 @@ header h1 { /* This h1 is the main page title */
 
 /* Styling for the more prominent 'Architect' role tag */
 .tagline-pill-architect {
-    background-color: var(--app-accent-color-1); /* Use a primary accent color */
-    color: var(--app-accent-color-1-on-text, #FFFFFF);
     font-weight: 600; /* Make it bolder */
-    /* border: 1px solid var(--app-accent-color-1); */ /* Optional */
+    /* background-color and color properties removed to inherit from .tagline-pill */
 }
 
-.tagline-pill-architect:hover {
-    background-color: color-mix(in srgb, var(--app-accent-color-1) 85%, black); /* Darken on hover */
-    /* transform is inherited from .tagline-pill:hover */
-    /* color is inherited from .tagline-pill-architect */
-}
+/* 
+   The .tagline-pill-architect:hover rule is no longer needed if its hover behavior 
+   should be identical to .tagline-pill:hover. 
+   The general .tagline-pill:hover will apply the accent color on hover.
+   If a *different* hover effect was desired for the architect pill, then a specific
+   .tagline-pill-architect:hover rule would be necessary.
+   For this task, we want it to behave like other pills on hover.
+*/
 
 footer {
     text-align: center;
@@ -612,4 +642,34 @@ a:focus-visible {
 
 .animate-scale-up {
     animation: scaleUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Chip animation slightly faster */
+}
+
+/* Content Card Styling (for Education & Certifications) */
+.content-card {
+    background-color: var(--md-sys-color-surface);
+    padding: 24px; 
+    border-radius: 16px; 
+    box-shadow: 0px 8px 24px rgba(var(--md-sys-color-shadow), 0.5); 
+    margin-bottom: 25px; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+}
+
+.content-card:hover {
+    transform: translateY(-4px); 
+    box-shadow: 0px 10px 30px rgba(var(--md-sys-color-shadow), 0.6); 
+}
+
+.content-card h4 {
+    border-bottom: none; /* Remove bottom border for h4 inside these cards */
+    padding-bottom: 0; /* Remove padding associated with the border */
+    margin-bottom: 12px; /* Add some space below the heading before content */
+}
+
+.certifications-list-card ul {
+    list-style-position: outside; /* Ensures bullets/numbers are outside the text flow */
+    padding-left: 20px; /* Indent list items */
+    margin-top: 8px; /* Space below the 'Certifications:' heading */
+}
+.certifications-list-card li {
+   margin-bottom: 8px; /* Space between list items */
 }
