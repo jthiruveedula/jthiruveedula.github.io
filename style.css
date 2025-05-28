@@ -307,14 +307,14 @@ main section h1 { /* If an h1 is used inside a section */
 }
 main section h2 { /* Section titles like "About Me" */
     font-size: 1.7em; /* Increased prominence */
-    font-weight: 600; /* Retained font weight */
+    /* font-weight: 600; /* Removed, inherited from h1-h6 rule */
     margin-bottom: 20px; /* Retained margin */
 }
 
 /* Updated h3 styling for skills section and potentially others in main sections */
 main section h3 {
     font-size: 1.3em; 
-    font-weight: 600; /* Ensured font weight */
+    /* font-weight: 600; /* Removed, inherited from h1-h6 rule */
     display: flex; 
     align-items: center; 
     color: var(--md-sys-color-on-surface); 
@@ -324,7 +324,7 @@ main section h3 {
 
 main section h4 { /* General h4, e.g. for experience titles in <article> */
     font-size: 1.1em; /* Standardized for experience titles */
-    font-weight: 600; /* Retained font weight */
+    /* font-weight: 600; /* Removed, inherited from h1-h6 rule */
 }
 /* Project card h4 remains 1.2em as per .project-card h4 rule */
 
@@ -660,7 +660,7 @@ a:focus-visible {
     margin-bottom: 12px; /* Space below title */
     border-bottom: none; /* Remove default border from h4 inside card if it exists */
     padding-bottom: 0; /* Remove padding from h4 inside card if it exists */
-    font-weight: 600; /* Ensure project titles are bold */
+    /* font-weight: 600; /* Removed, inherited from h1-h6 rule */
 }
 
 .project-card p {
