@@ -163,7 +163,7 @@ body::after {
 header {
     background: var(--md-sys-color-surface); /* Using surface for a slightly distinct header background */
     color: var(--md-sys-color-on-surface);
-    padding: 25px 0; /* Consistent padding */
+    padding: 25px 0 40px 0; /* Increased bottom padding */
     border-bottom: 1px solid var(--md-sys-color-outline); /* Subtle separator */
     text-align: center;
     transition: background-color 0.3s ease, color 0.3s ease, border-bottom-color 0.3s ease;
@@ -337,7 +337,7 @@ main section h2, main section h3 {
     border-bottom-color: var(--md-sys-color-outline); 
     padding-bottom: 10px; /* Space from text to border */
     border-bottom: 1px solid var(--md-sys-color-outline); 
-    margin-bottom: 16px; /* Overrides general h_ margin-bottom to ensure space is AFTER border+padding */
+    margin-bottom: 24px; /* Increased margin to prevent overlap with animated content below */
 }
 
 /* Styling for paragraphs directly following an h3 (like "Primary Expertise: GCP") */
