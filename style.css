@@ -169,11 +169,50 @@ header h1 { /* This h1 is the main page title */
 
 /* General h1 (used for section titles, if any) is now covered by h1,h2,h3,h4,h5,h6 rule below */
 
-header p { /* Subtitle in header */
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: 0.95em; /* Adjust for monospaced */
-    line-height: 1.5;
-    margin-bottom: 16px; /* Consistent with other p tags */
+/* Removed header p styling as it's replaced by tagline-container */
+
+/* Tagline Pills Styling */
+.tagline-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px; /* Defines space between tags */
+    margin-top: 15px; /* Space above the tagline container */
+    margin-bottom: 10px; /* Space below the tagline container, can be adjusted */
+    padding: 0 10px; /* Horizontal padding for smaller screens */
+}
+
+.tagline-pill {
+    background-color: var(--md-sys-color-surface-variant, var(--md-sys-color-secondary-container));
+    color: var(--md-sys-color-on-surface-variant, var(--md-sys-color-on-secondary-container));
+    padding: 6px 12px;
+    border-radius: 16px; /* Pill shape */
+    font-size: 0.8em;
+    font-weight: 500;
+    line-height: 1.4;
+    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    border: 1px solid transparent; /* Start with a transparent border */
+}
+
+.tagline-pill:hover {
+    transform: translateY(-2px);
+    background-color: var(--app-accent-color-1);
+    color: var(--app-accent-color-1-on-text, #FFFFFF);
+    /* border-color: var(--app-accent-color-1); */ /* Optional: border matches background or is slightly darker */
+}
+
+/* Styling for the more prominent 'Architect' role tag */
+.tagline-pill-architect {
+    background-color: var(--app-accent-color-1); /* Use a primary accent color */
+    color: var(--app-accent-color-1-on-text, #FFFFFF);
+    font-weight: 600; /* Make it bolder */
+    /* border: 1px solid var(--app-accent-color-1); */ /* Optional */
+}
+
+.tagline-pill-architect:hover {
+    background-color: color-mix(in srgb, var(--app-accent-color-1) 85%, black); /* Darken on hover */
+    /* transform is inherited from .tagline-pill:hover */
+    /* color is inherited from .tagline-pill-architect */
 }
 
 footer {
@@ -255,16 +294,13 @@ main section h3 + p {
 
 
 .skill-category-icon {
-    /* font-size: 1.2em; Removed - for font icons */
-    /* font-weight: normal; Removed - for font icons */
-    /* line-height: 1; Removed - for font icons */
-    /* color: var(--app-accent-color-1); Removed - SVGs are pre-colored or will be styled differently */
-    
-    width: 32px; /* New width for SVG images */
-    height: 32px; /* New height for SVG images */
-    margin-right: 12px; /* Adjusted margin */
-    object-fit: contain; /* Ensure aspect ratio is maintained */
-    vertical-align: middle; /* Helps align if parent isn't flex or has baseline issues */
+    font-size: 1.2em; /* Restored for font icons, relative to h3 font size */
+    margin-right: 10px; /* Restored margin */
+    color: var(--app-accent-color-1); /* Restored color */
+    font-weight: normal; /* Restored for font icons */
+    line-height: 1; /* Restored for font icons */
+    /* vertical-align: middle; -- Not strictly needed due to parent flex align-items:center, but harmless */
+    /* Removed img-specific properties: width, height, object-fit */
 }
 
 
