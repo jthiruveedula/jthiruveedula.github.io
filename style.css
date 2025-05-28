@@ -266,6 +266,7 @@ main section {
     box-shadow: 0px 0px 0px 1px var(--md-sys-color-outline), 
                 0px 8px 24px rgba(var(--md-sys-color-shadow), 0.5); 
     transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease; /* Harmonized duration */
+    scroll-margin-top: 80px; /* Added for scroll-to-highlight offset */
 }
 
 main section:hover {
@@ -378,6 +379,11 @@ a:focus-visible {
     font-size: 0.9em; 
     font-weight: 500; /* Ensure button text is clear */
 }
+.button:active {
+    transform: scale(0.97); /* Slight press down effect */
+    transition-duration: 0.05s; /* Very quick feedback */
+}
+
 
 .button-filled {
     background-color: var(--md-sys-color-primary);
@@ -561,13 +567,14 @@ a:focus-visible {
     padding: 24px;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(var(--md-sys-color-shadow), 0.4);
-    margin-bottom: 24px; /* Space between cards */
+    margin-bottom: 24px; /* Standardized card margin */
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; /* Harmonized duration */
     border: 1px solid var(--md-sys-color-outline); 
+    scroll-margin-top: 80px; /* Added for scroll-to-highlight offset */
 }
 
 .project-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px); /* Harmonized hover lift */
     box-shadow: 0 8px 20px rgba(var(--md-sys-color-shadow), 0.5);
     border-color: var(--md-sys-color-primary); 
 }
@@ -651,9 +658,10 @@ a:focus-visible {
     padding: 24px;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(var(--md-sys-color-shadow), 0.4); /* Aligned with project-card */
-    margin-bottom: 25px; /* Consistent with project-card's 24px, close enough */
+    margin-bottom: 24px; /* Standardized card margin */
     border: 1px solid var(--md-sys-color-outline); /* Added to match project-card */
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; /* Aligned with project-card */
+    scroll-margin-top: 80px; /* Added for scroll-to-highlight offset */
 }
 
 .content-card:hover {
