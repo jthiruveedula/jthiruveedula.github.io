@@ -58,8 +58,3 @@ The website is deployed on GitHub Pages and can be viewed at:
     cd jthiruveedula.github.io
     ```
 3.  Open the `index.html` file in your preferred web browser.
-
-## Future Enhancements (Potential)
-
-*   Integration of a blog or more detailed project pages.
-*   Implementation of a functional contact form.
