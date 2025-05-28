@@ -255,11 +255,16 @@ main section h3 + p {
 
 
 .skill-category-icon {
-    font-size: 1.2em; /* Adjust size as needed relative to h3 font size */
-    margin-right: 10px; /* Slightly increased space */
-    color: var(--app-accent-color-1); /* Changed from primary to Accent 1 */
-    font-weight: normal; 
-    line-height: 1; 
+    /* font-size: 1.2em; Removed - for font icons */
+    /* font-weight: normal; Removed - for font icons */
+    /* line-height: 1; Removed - for font icons */
+    /* color: var(--app-accent-color-1); Removed - SVGs are pre-colored or will be styled differently */
+    
+    width: 32px; /* New width for SVG images */
+    height: 32px; /* New height for SVG images */
+    margin-right: 12px; /* Adjusted margin */
+    object-fit: contain; /* Ensure aspect ratio is maintained */
+    vertical-align: middle; /* Helps align if parent isn't flex or has baseline issues */
 }
 
 
@@ -524,4 +529,51 @@ a:focus-visible {
 .project-card .project-image-placeholder .material-symbols-outlined {
     font-size: 48px; /* Slightly smaller icon if it looks too large in card context */
     color: var(--app-accent-color-1); /* Example: Use Accent Color 1 for project icons */
+}
+
+/* Keyframes for Directional Animations (Skills Section) */
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInFromRight { /* Added for potential future use */
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Animation Classes for Skills Section */
+.animate-slide-left {
+    animation: slideInFromLeft 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-slide-right {
+    animation: slideInFromRight 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-scale-up {
+    animation: scaleUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Chip animation slightly faster */
 }
