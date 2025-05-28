@@ -705,3 +705,41 @@ a:focus-visible {
 .connect-with-me-card ul {
     justify-content: center; /* Explicitly center for this card if #contact ul isn't specific enough */
 }
+
+/* Styling for lists within experience-item-card */
+.experience-item-card ul {
+    list-style-position: outside; 
+    padding-left: 20px; 
+    margin-top: 8px; /* Space below the h4 title */
+}
+
+.experience-item-card li {
+    margin-bottom: 8px; /* Space between list items */
+    line-height: 1.6; /* Ensure good readability for list items */
+    color: var(--md-sys-color-on-surface-variant); /* Softer text for list items, or use on-surface for more prominence */
+}
+
+/* Styling for h3 within skill-category-card (similar to .content-card h4) */
+.skill-category-card h3 {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 12px; /* Spacing before the first ul or p in the card */
+    /* Other h3 properties like font-size, color, display:flex should be inherited from general main section h3 */
+}
+
+/* Styling for p tags within skill-category-card */
+.skill-category-card p {
+    font-size: 0.9em; 
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: 16px; /* Increased space if it follows an h3 or another element */
+    margin-bottom: 8px; /* Space before a ul or another p */
+}
+
+.skill-category-card p strong {
+    color: var(--md-sys-color-on-surface); /* Make strong text more prominent */
+}
+
+/* Adjust margin for skills-list if it directly follows an h3 or p within the card */
+.skill-category-card .skills-list {
+    margin-top: 8px; /* If it follows a <p> or <h3> with margin-bottom: 12px */
+}
