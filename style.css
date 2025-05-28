@@ -205,45 +205,46 @@ header h1 { /* This h1 is the main page title */
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px; /* Defines space between tags */
-    margin-top: 15px; /* Space above the tagline container */
-    margin-bottom: 10px; /* Space below the tagline container, can be adjusted */
-    padding: 0 10px; /* Horizontal padding for smaller screens */
+    gap: 8px; 
+    margin-top: 15px; 
+    margin-bottom: 10px; 
+    padding: 0 10px; 
 }
 
+/* Base pill style (ensure it has a transition for properties changed in .tagline-pill-architect) */
 .tagline-pill {
     background-color: var(--md-sys-color-surface-variant, var(--md-sys-color-secondary-container));
     color: var(--md-sys-color-on-surface-variant, var(--md-sys-color-on-secondary-container));
     padding: 6px 12px;
-    border-radius: 16px; /* Pill shape */
+    border-radius: 16px;
     font-size: 0.8em;
-    font-weight: 500;
+    font-weight: 500; /* Default font weight */
     line-height: 1.4;
-    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
-    border: 1px solid transparent; /* Start with a transparent border */
+    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; /* Added border-color */
+    border: 1px solid transparent; /* Default transparent border */
 }
 
 .tagline-pill:hover {
     transform: translateY(-2px);
     background-color: var(--app-accent-color-1);
     color: var(--app-accent-color-1-on-text, #FFFFFF);
-    /* border-color: var(--app-accent-color-1); */ /* Optional: border matches background or is slightly darker */
+    border-color: var(--app-accent-color-1); /* Accent border on hover for normal pills */
 }
 
-/* Styling for the more prominent 'Architect' role tag */
+/* Architect pill - specific default and hover */
 .tagline-pill-architect {
-    font-weight: 600; /* Make it bolder */
-    /* background-color and color properties removed to inherit from .tagline-pill */
+    font-weight: 600;
+    background-color: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+    border-color: var(--md-sys-color-tertiary-container); /* Default border matches its specific background */
 }
 
-/* 
-   The .tagline-pill-architect:hover rule is no longer needed if its hover behavior 
-   should be identical to .tagline-pill:hover. 
-   The general .tagline-pill:hover will apply the accent color on hover.
-   If a *different* hover effect was desired for the architect pill, then a specific
-   .tagline-pill-architect:hover rule would be necessary.
-   For this task, we want it to behave like other pills on hover.
-*/
+.tagline-pill-architect:hover {
+    background-color: color-mix(in srgb, var(--md-sys-color-tertiary-container) 85%, var(--md-sys-color-on-tertiary-container) 5%); /* Slightly different hover mix */
+    color: var(--md-sys-color-on-tertiary-container);
+    border-color: color-mix(in srgb, var(--md-sys-color-tertiary-container) 70%, var(--md-sys-color-on-tertiary-container) 10%); /* Darker border on hover */
+    /* transform: translateY(-2px); is inherited from .tagline-pill:hover if not overridden, but it's fine to be explicit if needed or if other transforms are added */
+}
 
 footer {
     text-align: center;
@@ -678,12 +679,34 @@ a:focus-visible {
 
 /* Specific styling for paragraphs within content-cards if needed, e.g., education details */
 .education-details-card p,
-.about-me-card p { /* Apply similar styling to About Me card's paragraph */
+.about-me-card p { 
     font-size: 0.95em; 
     line-height: 1.6; 
     color: var(--md-sys-color-on-surface); 
-    margin-bottom: 0; 
+    /* margin-bottom: 0; /* Removed to be handled by :not(:last-child) */
 }
+.about-me-card p:not(:last-child) {
+    margin-bottom: 1em; /* Add margin to all paragraphs except the last one */
+}
+.about-me-card p:last-child {
+    margin-bottom: 0; /* Explicitly ensure the last paragraph has no bottom margin */
+}
+
+
+/* Styling for highlighted text in About Me section */
+.about-me-card .highlight-text {
+    color: var(--app-accent-color-1); /* Use a prominent accent color */
+    font-weight: 600; /* Bolder emphasis */
+    /* Consider if it should be display: block; for more separation */
+}
+
+/* Styling for strong text within About Me card (if needed beyond default) */
+/* The general strong styling might be sufficient, but if specific color is desired: */
+.about-me-card strong {
+    color: var(--md-sys-color-on-surface); /* Ensure strong text is highly readable, slightly more prominent than regular on-surface-variant if that was used */
+    font-weight: 600; /* Ensure it's at least this bold */
+}
+
 
 /* Styling for h2 within content-card */
 .content-card h2 {
@@ -742,4 +765,42 @@ a:focus-visible {
 /* Adjust margin for skills-list if it directly follows an h3 or p within the card */
 .skill-category-card .skills-list {
     margin-top: 8px; /* If it follows a <p> or <h3> with margin-bottom: 12px */
+}
+
+/* Scroll-to-Top Button */
+.scroll-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000; /* High z-index to be on top */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px); /* Start slightly lower for entry animation */
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    border-radius: 50%; /* Circular button */
+    padding: 10px;     /* Adjust padding to center icon */
+    width: 48px;       /* Explicit width for consistent size */
+    height: 48px;      /* Explicit height for consistent size */
+    /* background-color and color are inherited from .button by default, 
+       but can be overridden if a different look is desired. 
+       For now, let it use .button .button-filled styles if we add .button-filled class, 
+       or just .button for outlined by default. Let's make it filled. */
+    /* The .button class already provides most styling. Ensure it's applied. */
+    /* Ensure icon is centered if padding isn't perfect */
+    display: inline-flex; /* For centering icon */
+    align-items: center;
+    justify-content: center;
+}
+
+.scroll-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0); /* Slide into view */
+}
+
+/* .scroll-to-top:hover is inherited from .button:hover or .button-filled:hover */
+
+.scroll-to-top .material-symbols-outlined {
+    font-size: 24px; /* Size of the arrow icon */
+    /* Vertical alignment handled by flex on parent */
 }
