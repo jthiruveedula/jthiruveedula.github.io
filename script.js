@@ -153,6 +153,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const maxRotate = 5; // Max rotation in degrees
 
         headerElement.addEventListener('mousemove', (e) => {
+            // Check for prefers-reduced-motion
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                // If reduced motion is preferred, ensure characters are reset and do not animate with mouse
+                chars.forEach(char => {
+                    const charStyle = window.getComputedStyle(char);
+                    // Ensure opacity check is consistent with entry animation completion
+                    if (parseFloat(charStyle.opacity) > 0.95) { 
+                        char.style.transform = 'translateY(0px) rotate(0deg) rotateX(0deg) rotateY(0deg)';
+                    }
+                });
+                return; // Exit the mousemove handler early
+            }
+
             const rect = headerElement.getBoundingClientRect();
             const mouseX = e.clientX - rect.left; // Mouse X relative to header
             const mouseY = e.clientY - rect.top;  // Mouse Y relative to header
@@ -168,12 +181,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             chars.forEach(char => {
                 // Check if the entry animation is complete.
-                // A simple way is to check if opacity is 1 (or close to 1).
-                // The entry animation sets opacity to 1.
                 const charStyle = window.getComputedStyle(char);
                 if (parseFloat(charStyle.opacity) > 0.95) { // Ensure entry animation has made it visible
-                    // Preserve the original Y translation from the entry animation's 'to' state (which is 0)
-                    // and the original rotation (which is 0deg).
+                    // Preserve the original Y translation and rotation from the entry animation's 'to' state.
                     // Then, add the mouse-based rotation.
                     char.style.transform = `translateY(0px) rotate(0deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
                 }
