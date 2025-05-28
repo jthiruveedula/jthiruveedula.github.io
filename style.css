@@ -647,16 +647,18 @@ a:focus-visible {
 /* Content Card Styling (for Education & Certifications) */
 .content-card {
     background-color: var(--md-sys-color-surface);
-    padding: 24px; 
-    border-radius: 16px; 
-    box-shadow: 0px 8px 24px rgba(var(--md-sys-color-shadow), 0.5); 
-    margin-bottom: 25px; 
-    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(var(--md-sys-color-shadow), 0.4); /* Aligned with project-card */
+    margin-bottom: 25px; /* Consistent with project-card's 24px, close enough */
+    border: 1px solid var(--md-sys-color-outline); /* Added to match project-card */
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; /* Aligned with project-card */
 }
 
 .content-card:hover {
-    transform: translateY(-4px); 
-    box-shadow: 0px 10px 30px rgba(var(--md-sys-color-shadow), 0.6); 
+    transform: translateY(-4px); /* Slightly less lift than project-card, or make it -5px for full consistency */
+    box-shadow: 0 8px 20px rgba(var(--md-sys-color-shadow), 0.5); /* Aligned with project-card hover */
+    border-color: var(--md-sys-color-primary); /* Added to match project-card hover */
 }
 
 .content-card h4 {
@@ -666,10 +668,40 @@ a:focus-visible {
 }
 
 .certifications-list-card ul {
-    list-style-position: outside; /* Ensures bullets/numbers are outside the text flow */
-    padding-left: 20px; /* Indent list items */
-    margin-top: 8px; /* Space below the 'Certifications:' heading */
+    list-style-position: outside; 
+    padding-left: 20px; 
+    margin-top: 8px; 
 }
 .certifications-list-card li {
-   margin-bottom: 8px; /* Space between list items */
+   margin-bottom: 10px; /* Slightly increased space between certifications */
+}
+
+/* Specific styling for paragraphs within content-cards if needed, e.g., education details */
+.education-details-card p,
+.about-me-card p { /* Apply similar styling to About Me card's paragraph */
+    font-size: 0.95em; 
+    line-height: 1.6; 
+    color: var(--md-sys-color-on-surface); 
+    margin-bottom: 0; 
+}
+
+/* Styling for h2 within content-card */
+.content-card h2 {
+    border-bottom: none; /* Remove section-wide border */
+    padding-bottom: 0; /* Remove section-wide padding for border */
+    margin-bottom: 16px; /* Default heading margin, adjust if needed */
+    text-align: center; /* Center the heading within the card */
+}
+
+/* Adjustments for the "Connect with Me" card content */
+.connect-with-me-card p {
+    text-align: center; /* Center the introductory paragraph */
+    margin-bottom: 16px; /* Space before the buttons */
+    font-size: 0.95em;
+    color: var(--md-sys-color-on-surface);
+}
+
+/* Ensure the ul within connect-with-me-card is also centered if it wasn't already by #contact ul */
+.connect-with-me-card ul {
+    justify-content: center; /* Explicitly center for this card if #contact ul isn't specific enough */
 }
