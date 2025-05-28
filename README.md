@@ -63,5 +63,3 @@ The website is deployed on GitHub Pages and can be viewed at:
 
 *   Integration of a blog or more detailed project pages.
 *   Implementation of a functional contact form.
-
-*(License: This project does not currently have a formal open-source license. All rights reserved.)*
