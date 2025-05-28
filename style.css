@@ -61,29 +61,35 @@ body {
 }
 
 .button-resume {
-    /* Inherits from .button, .button-filled (if we want it filled) or make it distinct */
-    /* Let's make it similar to .button-filled but potentially with a different accent or style */
-    background-color: var(--app-accent-color-1); /* Use one of our accents */
-    color: var(--app-accent-color-1-on-text); /* Ensure text is readable on this accent */
-    
-    /* Overriding or adding to .button styles if needed: */
-    padding: 10px 20px; /* Slightly adjusted padding */
+    background-color: var(--app-accent-color-1); 
+    color: var(--app-accent-color-1-on-text); 
+    padding: 10px 20px; 
     border-radius: 8px; 
     text-decoration: none;
     font-weight: 500;
-    display: inline-flex; /* To align icon and text */
+    display: inline-flex; 
     align-items: center;
-    gap: 8px; /* Space between icon and text */
-    box-shadow: 0 2px 4px rgba(var(--app-accent-color-1), 0.25); /* Shadow using its own accent color */
+    gap: 8px; 
+    box-shadow: 0 2px 4px rgba(var(--app-accent-color-1), 0.25); 
+    /* Add transitions, mirroring .button but can be specific if needed */
+    transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
 .button-resume:hover, .button-resume:focus {
-    background-color: color-mix(in srgb, var(--app-accent-color-1) 85%, black); /* Darken on hover */
-    color: var(--app-accent-color-1-on-text); /* Ensure text color remains */
+    background-color: color-mix(in srgb, var(--app-accent-color-1) 85%, black); 
+    color: var(--app-accent-color-1-on-text); 
     box-shadow: 0 4px 8px rgba(var(--app-accent-color-1), 0.3);
     transform: translateY(-1px);
-    outline: none;
 }
+/* Explicit focus style for resume button for better accessibility */
+.button-resume:focus-visible {
+    outline: 2px solid var(--app-accent-color-1);
+    outline-offset: 2px;
+}
+.button-resume:hover { /* Keep hover distinct if focus-visible is different */
+    transform: translateY(-1px); /* Ensure hover still has its unique interaction if any */
+}
+
 
 .button-resume .material-symbols-outlined {
     font-size: 1.2em; /* Adjust icon size relative to button text */
@@ -184,18 +190,18 @@ footer {
 main section {
     background-color: var(--md-sys-color-surface);
     color: var(--md-sys-color-on-surface);
-    margin: 25px 0; /* Slightly increased margin for more breathing room */
-    padding: 28px; /* Slightly increased padding */
-    border-radius: 16px; /* Potentially larger, softer border-radius */
-    box-shadow: 0px 0px 0px 1px var(--md-sys-color-outline), /* Thin border-like shadow */
-                0px 8px 24px rgba(var(--md-sys-color-shadow), 0.5); /* More diffuse, darker shadow */
-    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    margin: 25px 0; 
+    padding: 28px; 
+    border-radius: 16px; 
+    box-shadow: 0px 0px 0px 1px var(--md-sys-color-outline), 
+                0px 8px 24px rgba(var(--md-sys-color-shadow), 0.5); 
+    transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease; /* Harmonized duration */
 }
 
 main section:hover {
-    box-shadow: 0px 0px 0px 1px var(--md-sys-color-primary), /* Primary color glow/border on hover */
+    box-shadow: 0px 0px 0px 1px var(--md-sys-color-primary), 
                 0px 10px 30px rgba(var(--md-sys-color-shadow), 0.6);
-    transform: translateY(-4px); /* Slightly more lift */
+    transform: translateY(-4px); 
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -214,10 +220,12 @@ h2 { font-size: 1.6em; margin-bottom: 20px; } /* Example size for section titles
 
 /* Updated h3 styling for skills section and potentially others in main sections */
 main section h3 {
-    font-size: 1.3em; /* Existing size */
-    display: flex; /* Added for icon alignment */
-    align-items: center; /* Added for icon alignment */
-    color: var(--md-sys-color-on-surface); /* Explicitly set for dark theme clarity */
+    font-size: 1.3em; 
+    display: flex; 
+    align-items: center; 
+    color: var(--md-sys-color-on-surface); 
+    /* The general h1-h6 rule provides margin-bottom: 16px */
+    /* The rule below provides padding-bottom: 10px and a border */
 }
 
 h4 { font-size: 1.0em; } /* Example size */
@@ -225,41 +233,62 @@ h4 { font-size: 1.0em; } /* Example size */
 /* This rule is now primarily for the bottom border on h2, h3, h4 within sections */
 main section h2, main section h3, main section h4 {
     border-bottom-color: var(--md-sys-color-outline); 
-    padding-bottom: 10px; 
+    padding-bottom: 10px; /* Space from text to border */
     border-bottom: 1px solid var(--md-sys-color-outline); 
-    /* Removed redundant color and margin-bottom, these are handled by general h1-h6 or specific h2, h3, h4 rules */
+    margin-bottom: 16px; /* Overrides general h_ margin-bottom to ensure space is AFTER border+padding */
 }
+
+/* Styling for paragraphs directly following an h3 (like "Primary Expertise: GCP") */
+main section h3 + p {
+    font-size: 0.9em;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: -8px; /* Reduce space if h3 has large bottom margin, to pull it closer to h3 */
+    margin-bottom: 12px; /* Space before the skills list starts */
+}
+/* Styling for paragraphs that are sub-descriptors within skills, but not general p tags */
+#skills .container > p { /* Targets p tags that are direct children of skills container, often used for sub-notes */
+    font-size: 0.9em;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: 8px; /* Space above these specific paragraphs */
+    margin-bottom: 12px; /* Space below these specific paragraphs */
+}
+
 
 .skill-category-icon {
     font-size: 1.2em; /* Adjust size as needed relative to h3 font size */
-    margin-right: 8px; /* Space between icon and title */
+    margin-right: 10px; /* Slightly increased space */
     color: var(--app-accent-color-1); /* Changed from primary to Accent 1 */
-    font-weight: normal; /* Override if h3 font-weight is too bold for icon */
-    line-height: 1; /* Ensure icon aligns well */
-    /* vertical-align: middle; -- Not needed with flex on parent h3 */
+    font-weight: normal; 
+    line-height: 1; 
 }
 
 
 p {
     margin-bottom: 16px;
-    color: var(--md-sys-color-on-surface-variant); /* Softer color for paragraph text */
-    line-height: 1.65; /* May need more line height for blocks of mono text */
+    color: var(--md-sys-color-on-surface-variant); 
+    line-height: 1.65; 
 }
 /* Apply on-surface for paragraphs directly within sections if they are primary content */
-main section > p {
+main section > p { /* This is a general rule, specific overrides like h3+p will take precedence if more specific */
    color: var(--md-sys-color-on-surface);
-   line-height: 1.7; /* Adjust for primary content readability */
+   line-height: 1.7; 
 }
 
 /* Ensure links inherit color properly or are styled distinctly */
 a {
     color: var(--md-sys-color-primary);
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color 0.25s ease; /* Harmonized duration */
 }
 a:hover, a:focus {
-    color: color-mix(in srgb, var(--md-sys-color-primary) 80%, white); /* Brighten primary on hover for dark theme */
-    text-decoration: underline; /* Optional: underline on hover for clarity */
+    color: color-mix(in srgb, var(--md-sys-color-primary) 80%, white); 
+    text-decoration: underline; 
+}
+/* Explicit focus style for links for better accessibility */
+a:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+    text-decoration: none; /* Avoid double indication with underline */
 }
 
 /* Refined M3 Button Styling */
@@ -267,14 +296,14 @@ a:hover, a:focus {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 28px; /* Slightly more padding for a premium feel */
-    border-radius: 8px; /* Common modern border radius, less "pill" like */
+    padding: 12px 28px; 
+    border-radius: 8px; 
     font-weight: 500;
     text-decoration: none;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease, color 0.25s ease; /* Harmonized duration */
     cursor: pointer;
     border: 1px solid transparent;
-    font-size: 0.9em; /* Adjust if needed, monospaced can look smaller here */
+    font-size: 0.9em; 
     font-weight: 500; /* Ensure button text is clear */
 }
 
@@ -287,13 +316,19 @@ a:hover, a:focus {
     /* transition properties should already include box-shadow */
 }
 .button-filled:hover, .button-filled:focus {
-    background-color: color-mix(in srgb, var(--md-sys-color-primary) 85%, var(--md-sys-color-on-primary)); /* Existing: slight color shift */
-    /* Enhanced hover shadow for dark theme */
-    box-shadow: 0 0 12px -2px color-mix(in srgb, var(--md-sys-color-primary) 70%, transparent), /* Stronger Glow */
-                0 4px 8px rgba(var(--md-sys-color-shadow), 0.4); /* Slightly more pronounced drop shadow */
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 85%, var(--md-sys-color-on-primary)); 
+    box-shadow: 0 0 12px -2px color-mix(in srgb, var(--md-sys-color-primary) 70%, transparent), 
+                0 4px 8px rgba(var(--md-sys-color-shadow), 0.4); 
     transform: translateY(-1px);
-    outline: none;
     color: var(--md-sys-color-on-primary);
+}
+/* Explicit focus style for filled buttons for better accessibility */
+.button-filled:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+}
+.button-filled:hover { /* Keep hover distinct if focus-visible is different */
+   transform: translateY(-1px); /* Ensure hover still has its unique interaction if any */
 }
 
 /* Outlined button might not be used now, but good to have refined if needed.
@@ -329,28 +364,26 @@ a:hover, a:focus {
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px; /* Space between chips */
+    gap: 10px; /* Increased gap for more breathing room */
 }
 .skill-chip {
     display: inline-flex;
     align-items: center;
-    padding: 8px 16px; /* More padding */
-    border-radius: 20px; /* Pill-shaped for a modern look, or use 8px for consistency with buttons */
-    background-color: var(--md-sys-color-secondary-container); /* Keep existing bg */
+    padding: 8px 18px; /* Slightly increased horizontal padding */
+    border-radius: 20px; /* Pill-shaped for a modern look */
+    background-color: var(--md-sys-color-secondary-container);
     color: var(--md-sys-color-on-secondary-container);
-    font-size: 0.8em; /* Adjust if needed */
+    font-size: 0.85em; /* Slightly increased font size for better readability */
     font-weight: 500;
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; /* Added border-color to transition */
-    /* Replace box-shadow with a subtle border */
-    border: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface) 20%, transparent); /* Subtle border using on-surface color */
-    box-shadow: none; /* Remove previous shadow if using border */
+    transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    border: 1px solid color-mix(in srgb, var(--md-sys-color-outline) 70%, transparent); /* Adjusted border for better visibility */
+    box-shadow: 0 1px 2px rgba(var(--md-sys-color-shadow), 0.1); /* Softer initial shadow */
 }
 .skill-chip:hover {
-    background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 90%, var(--md-sys-color-on-secondary-container));
-    transform: translateY(-1px);
-    /* If using border, maybe make border slightly more prominent on hover */
-    border-color: color-mix(in srgb, var(--md-sys-color-on-surface) 30%, transparent);
-    box-shadow: 0 2px 4px rgba(var(--md-sys-color-shadow), 0.15); /* Can be added back if not using border, or kept minimal with border */
+    background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 80%, var(--md-sys-color-on-secondary-container)); /* More noticeable background change */
+    transform: translateY(-2px); /* Slightly more lift */
+    border-color: var(--app-accent-color-1); /* Use accent color for border on hover */
+    box-shadow: 0 3px 6px rgba(var(--app-accent-color-1), 0.2); /* Shadow using accent color for a subtle glow */
 }
 
 /* If using icons in chips */
@@ -448,4 +481,47 @@ a:hover, a:focus {
     100% {
         transform: translate(-25px, 20px) scale(1.05);
     }
+}
+
+/* Project Card Styling */
+.project-card {
+    background-color: var(--md-sys-color-surface); /* Or a slightly different shade if desired */
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(var(--md-sys-color-shadow), 0.4);
+    margin-bottom: 24px; /* Space between cards */
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; /* Harmonized duration */
+    border: 1px solid var(--md-sys-color-outline); 
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(var(--md-sys-color-shadow), 0.5);
+    border-color: var(--md-sys-color-primary); 
+}
+
+.project-card h4 {
+    font-size: 1.2em; /* Prominent project title */
+    color: var(--md-sys-color-primary); /* Use primary color for title */
+    margin-bottom: 12px; /* Space below title */
+    border-bottom: none; /* Remove default border from h4 inside card if it exists */
+    padding-bottom: 0; /* Remove padding from h4 inside card if it exists */
+}
+
+.project-card p {
+    font-size: 0.9em;
+    color: var(--md-sys-color-on-surface-variant); /* Softer text color */
+    line-height: 1.6;
+    margin-bottom: 0; /* Remove default p margin if card handles all internal spacing */
+}
+
+/* Adjust project image placeholder within the card if needed */
+.project-card .project-image-placeholder {
+    margin-bottom: 16px; /* Adjust spacing if needed */
+    /* Icon size and color are already handled by existing rules, but can be overridden here if desired for cards specifically */
+}
+
+.project-card .project-image-placeholder .material-symbols-outlined {
+    font-size: 48px; /* Slightly smaller icon if it looks too large in card context */
+    color: var(--app-accent-color-1); /* Example: Use Accent Color 1 for project icons */
 }

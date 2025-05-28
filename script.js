@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sections.forEach(section => {
         section.style.opacity = '0'; // Initially hide sections
         // Check for specific elements within sections to stagger
-        const elementsToStagger = section.querySelectorAll('.skills-list > li, #experience article > ul > li, #projects > article'); 
+        const elementsToStagger = section.querySelectorAll('.skills-list > li, #experience article > ul > li, #projects .project-card'); 
         // Also hide these initially if they are to be staggered
         elementsToStagger.forEach(el => el.style.opacity = '0');
     });
@@ -19,7 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 section.style.animation = 'refinedFadeInSlideUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
                 
                 // Find elements within this section to stagger
-                const elementsToStagger = section.querySelectorAll('.skills-list > li, #experience article > ul > li, #projects > article');
+                // Corrected selector for project cards
+                const elementsToStagger = section.querySelectorAll('.skills-list > li, #experience article > ul > li, #projects .project-card');
                 
                 elementsToStagger.forEach((el, index) => {
                     el.style.animation = `refinedFadeInSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards ${index * 0.1 + 0.3}s`; // 0.3s base delay + 0.1s stagger
