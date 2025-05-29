@@ -532,11 +532,10 @@ a:focus-visible {
     }
 }
 
-/* MODIFIED: cardEntrance with reduced translateY */
 @keyframes cardEntrance {
     from {
         opacity: 0;
-        transform: scale(0.95) translateY(15px);
+        transform: scale(0.95) translateY(15px); 
     }
     to {
         opacity: 1;
@@ -544,11 +543,10 @@ a:focus-visible {
     }
 }
 
-/* MODIFIED: contentSectionAppear with translateY */
 @keyframes contentSectionAppear {
     from {
         opacity: 0;
-        transform: translateY(20px) scale(0.98);
+        transform: translateY(20px) scale(0.98); 
     }
     to {
         opacity: 1;
@@ -616,6 +614,8 @@ a:focus-visible {
     transition: transform 0.3s ease-out, color 0.3s ease-out; 
 }
 
+/* Commented out old .project-card p rule */
+/*
 .project-card p {
     font-size: 0.9em;
     color: var(--md-sys-color-on-surface-variant); 
@@ -623,6 +623,7 @@ a:focus-visible {
     margin-bottom: 0; 
     transition: color 0.3s ease-out; 
 }
+*/
 
 .project-card .project-image-placeholder {
     margin-bottom: 16px; 
@@ -639,7 +640,34 @@ a:focus-visible {
     color: color-mix(in srgb, var(--md-sys-color-primary) 90%, white);
 }
 
+/* Commented out old .project-card:hover p rule */
+/*
 .project-card:hover p {
+    color: var(--md-sys-color-on-surface);
+}
+*/
+
+/* NEW styles for project card ul and li */
+.project-card ul {
+    list-style-position: outside;
+    padding-left: 20px; /* Indent list items */
+    margin-top: 8px; /* Space between title (h4) and list */
+    margin-bottom: 0; /* Ensure no extra bottom margin for the ul itself */
+}
+
+.project-card ul li {
+    font-size: 0.9em;
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: 1.65;
+    margin-bottom: 6px; /* Space between list items */
+    transition: color 0.3s ease-out;
+}
+
+.project-card ul li:last-child {
+    margin-bottom: 0; /* No margin for the last item */
+}
+
+.project-card:hover ul li {
     color: var(--md-sys-color-on-surface);
 }
 
@@ -870,26 +898,24 @@ a:focus-visible {
         box-shadow: none !important;
     }
 
-    /* MODIFIED: Ensure all animated elements are correctly reset */
     main section,
-    #about .about-me-card p, /* For revealTextCascade */
-    #experience article.experience-item-card, /* For cardEntrance */
-    #projects .project-card, /* For cardEntrance */
-    #education .content-card, #contact .content-card, /* For cardEntrance */
-    .animate-slide-left, /* Explicitly target animation classes */
+    #about .about-me-card p, 
+    #experience article.experience-item-card, 
+    #projects .project-card, 
+    #education .content-card, #contact .content-card, 
+    .animate-slide-left, 
     .animate-scale-up,
-    .refinedFadeInSlideUp { /* Fallback animation */
+    .refinedFadeInSlideUp { 
         animation: none !important;
-        opacity: 1 !important; /* Ensure visibility */
+        opacity: 1 !important; 
     }
-    /* Specific transform resets based on 'from' state of keyframes or final state */
     #skills h3 { transform: translateX(0) !important; opacity: 1 !important; } 
     #skills .skills-list li.skill-chip { transform: scale(1) rotate(0deg) !important; opacity: 1 !important;}
     #about .about-me-card p { transform: translateY(0) !important; opacity: 1 !important;}
     #experience article.experience-item-card,
     #projects .project-card,
     #education .content-card, #contact .content-card { transform: scale(1) translateY(0) !important; opacity: 1 !important;}
-    main section { /* For contentSectionAppear if applied directly to section */
+    main section { 
          transform: translateY(0) scale(1) !important; opacity: 1 !important;
     }
     .refinedFadeInSlideUp { transform: translateY(0) !important; opacity: 1 !important;}
@@ -915,8 +941,13 @@ a:focus-visible {
      .project-card h4 {
         transition: color 0.3s ease-out; 
     }
-    .project-card p {
+    /* MODIFIED: .project-card p transition for reduced motion (commented out as p is no longer used here) */
+    /* .project-card p {
         transition: color 0.3s ease-out; 
+    } */
+    /* NEW: .project-card ul li transition for reduced motion */
+    .project-card ul li {
+        transition: color 0.3s ease-out;
     }
 
 
@@ -992,4 +1023,6 @@ a:focus-visible {
 }
 
 ```
-And now for `script.js`:
+Now, applying these changes to `style.css`:
+
+[end of style.css]
