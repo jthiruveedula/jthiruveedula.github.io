@@ -120,14 +120,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (section.id === 'experience') {
                      if (!prefersReducedMotion) {
                         section.style.animation = 'contentSectionAppear 0.8s ease-out forwards';
-                        const experienceItems = section.querySelectorAll('article.experience-item-card'); 
+                        // MODIFIED: Corrected selector for experienceItems
+                        const experienceItems = section.querySelectorAll('.experience-item-card'); 
                         experienceItems.forEach((item, index) => {
                             item.style.opacity = '0'; 
                             item.style.animation = `cardEntrance 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards ${index * 0.15 + 0.5}s`; 
                         });
                     } else {
                         section.style.opacity = '1';
-                        const experienceItems = section.querySelectorAll('article.experience-item-card');
+                        // MODIFIED: Corrected selector for experienceItems
+                        const experienceItems = section.querySelectorAll('.experience-item-card');
                         experienceItems.forEach(item => item.style.opacity = '1');
                     }
                     sectionAnimationApplied = true;
