@@ -408,28 +408,55 @@ document.addEventListener('DOMContentLoaded', () => {
         horizontalTimelineWrapper.addEventListener('scroll', debounce(updateNavButtonStates, 100));
 
         const attemptInitialUpdate = (retries = 5, delay = 250) => { 
-            updateNavButtonStates();
+            // console.log(`H_DEBUG: Attempting initial update. Retries left: ${retries}`);
+            updateNavButtonStates(); // Update based on current dimensions first
             
             const scrollWidth = horizontalTimelineWrapper.scrollWidth;
             const clientWidth = horizontalTimelineWrapper.clientWidth;
             const itemCount = horizontalTimelineWrapper.querySelectorAll('.horizontal-timeline-item').length;
-            const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container'); 
+            const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
             
-            if (itemCount > 1 && scrollWidth <= clientWidth && retries > 0 && horizontalContainer && window.getComputedStyle(horizontalContainer).display !== 'none') {
+            if (!horizontalContainer || window.getComputedStyle(horizontalContainer).display === 'none') {
+                // If hidden, no need to retry, current (disabled) state set by updateNavButtonStates is fine.
+                // console.log("H_DEBUG: Horizontal container hidden, initial update aborted.");
+                return;
+            }
+
+            // Estimate minimum expected scrollWidth. (Assumes items are at least ~300px wide on average)
+            // This helps ensure we wait if, e.g., 5 items are present but scrollWidth is only showing width for 2.
+            const estimatedMinItemRenderedWidth = 300; // A conservative estimate of an item's width
+            const minimumExpectedScrollWidth = itemCount * estimatedMinItemRenderedWidth;
+
+            // Condition for retrying:
+            // 1. There are multiple items (potential for scrolling).
+            // 2. The current scrollWidth is less than the estimated minimum for all items, OR
+            //    the scrollWidth indicates no overflow is currently possible (scrollWidth <= clientWidth).
+            // 3. We still have retries left.
+            if (itemCount > 1 &&
+                (scrollWidth < minimumExpectedScrollWidth || scrollWidth <= clientWidth) && 
+                retries > 0) {
+                // console.log(`H_DEBUG: Retrying initial update. scrollWidth=${scrollWidth}, clientWidth=${clientWidth}, minimumExpectedScrollWidth=${minimumExpectedScrollWidth}, itemCount=${itemCount}`);
                 setTimeout(() => attemptInitialUpdate(retries - 1, delay), delay);
             } else {
-                 if (retries < 5) updateNavButtonStates();
+                // console.log("H_DEBUG: Initial update deemed final or retries exhausted / conditions for retry not met.");
+                // Perform a final update in case dimensions changed slightly during the last timeout
+                // without triggering a retry but before this 'else' block.
+                if (retries < 5) { // Only call if at least one retry attempt happened or was considered
+                     updateNavButtonStates();
+                }
             }
         };
 
         const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
         if (horizontalContainer && window.getComputedStyle(horizontalContainer).display !== 'none') {
-             requestAnimationFrame(() => { 
+             requestAnimationFrame(() => { // Use requestAnimationFrame for initial call after layout
                 attemptInitialUpdate();
             });
         } else {
+            // If starting hidden (e.g. on mobile), still set initial button states correctly.
             updateNavButtonStates();
         }
+         // Fallback: A simple call for very initial state, might be overridden by attemptInitialUpdate
         setTimeout(updateNavButtonStates, 50);
     }
 
@@ -465,6 +492,54 @@ document.addEventListener('DOMContentLoaded', () => {
             itemObserver.observe(item);
         });
     }
+
+    // --- ARIA Management for Responsive Timelines ---
+    const verticalContainerForAria = document.querySelector('.experience-vertical-container');
+    const horizontalContainerForAria = document.querySelector('.experience-horizontal-container');
+
+    function manageTimelineAriaStates() {
+        if (!verticalContainerForAria || !horizontalContainerForAria) {
+            // console.warn("Timeline containers for ARIA management not found.");
+            return;
+        }
+        // Check the media query that also controls display in CSS
+        const isMobileView = window.matchMedia('(max-width: 992px)').matches;
+
+        if (isMobileView) {
+            verticalContainerForAria.removeAttribute('aria-hidden');
+            horizontalContainerForAria.setAttribute('aria-hidden', 'true');
+            // console.log("ARIA: Vertical active, Horizontal hidden");
+        } else {
+            horizontalContainerForAria.removeAttribute('aria-hidden');
+            verticalContainerForAria.setAttribute('aria-hidden', 'true');
+            // console.log("ARIA: Horizontal active, Vertical hidden");
+        }
+    }
+
+    // Initial call to set ARIA states on page load
+    manageTimelineAriaStates();
+
+    // Update ARIA states on window resize (debounced)
+    // Assumes 'debounce' function is defined earlier in script.js (it was with horizontal nav logic)
+    // Making sure debounce is available or providing a fallback.
+    let debounceFunc;
+    if (typeof debounce === 'function') { // Check if debounce from nav logic is available
+        debounceFunc = debounce;
+    } else { 
+        // Fallback basic debounce if 'debounce' from nav logic is somehow not in scope
+        // console.warn("Debounce function not found, using basic fallback for ARIA resize listener.");
+        debounceFunc = (func, delay) => {
+            let timeoutId;
+            return (...args) => {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        };
+    }
+    window.addEventListener('resize', debounceFunc(manageTimelineAriaStates, 200));
+    
 });
 
 const themeToggleButton = document.getElementById('theme-toggle');
