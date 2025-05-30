@@ -31,13 +31,15 @@ document.addEventListener('DOMContentLoaded', () => {
     sections.forEach(section => {
         const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (!prefersReducedMotion) {
-            if (section.id !== 'experience') { // Keep #experience section visible
+            if (section.id !== 'experience') {
                 section.style.opacity = '0';
             } else {
-                section.style.opacity = '1'; // Ensure #experience itself is visible
+                // Ensure the #experience section container itself is visible,
+                // as its children (timeline-item) will be animated individually.
+                section.style.opacity = '1';
             }
         } else {
-            section.style.opacity = '1';
+            section.style.opacity = '1'; // All sections visible if reduced motion
         }
     });
 
@@ -46,12 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (entry.isIntersecting) {
                 const section = entry.target;
                 const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                
-                // Ensure section is visible if not reduced motion (unless it's experience, which is already visible)
-                if (!prefersReducedMotion && section.id !== 'experience') {
+                if (!prefersReducedMotion) {
                     section.style.opacity = '1';
                 }
-
                 let sectionAnimationApplied = false;
 
                 if (section.id === 'skills') {
@@ -68,12 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     let headingAnimationDelay = 0;
                     skillCategoryHeadings.forEach((heading, index) => {
                         if (!prefersReducedMotion) {
-                           setTimeout(() => {
-                               heading.classList.add('animate-slide-left');
-                           }, headingAnimationDelay + (index * 150));
+                            setTimeout(() => {
+                                heading.classList.add('animate-slide-left');
+                            }, headingAnimationDelay + (index * 150));
                         }
                     });
-                    let chipAnimationBaseDelay = (skillCategoryHeadings.length > 0 && !prefersReducedMotion) ? (150 * (skillCategoryHeadings.length -1) + 350 ) : 0;
+                    let chipAnimationBaseDelay = (skillCategoryHeadings.length > 0 && !prefersReducedMotion) ? (150 * (skillCategoryHeadings.length - 1) + 350) : 0;
                     const skillLists = section.querySelectorAll('.skills-list');
                     skillLists.forEach((list) => {
                         const chips = list.querySelectorAll('li.skill-chip');
@@ -98,10 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             p.style.animation = `revealTextCascade 0.7s ease-out forwards ${index * 0.2 + 0.4}s`;
                         });
                     } else {
-                        // Opacity already set by initial loop for reduced motion
+                        section.style.opacity = '1';
+                        const paragraphs = section.querySelectorAll('.about-me-card p');
+                        paragraphs.forEach(p => p.style.opacity = '1');
                     }
                     sectionAnimationApplied = true;
-                } else if (section.id === 'projects') { 
+                } else if (section.id === 'projects') { // Experience section animation removed
                     if (!prefersReducedMotion) {
                         section.style.animation = 'contentSectionAppear 0.8s ease-out forwards';
                         const projectCards = section.querySelectorAll('.project-card');
@@ -110,7 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             card.style.animation = `cardEntrance 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards ${index * 0.15 + 0.5}s`;
                         });
                     } else {
-                        // Opacity already set
+                        section.style.opacity = '1';
+                        const projectCards = section.querySelectorAll('.project-card');
+                        projectCards.forEach(card => card.style.opacity = '1');
                     }
                     sectionAnimationApplied = true;
                 } else if (section.id === 'education' || section.id === 'contact') {
@@ -124,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             card.style.animation = `cardEntrance 0.7s ease-out forwards ${cardBaseAnimationDelay}s`;
                             let contentAnimDelay = cardBaseAnimationDelay + 0.3;
                             if (section.id === 'education') {
-                                const titleElement = card.querySelector('h3');
+                                const titleElement = card.querySelector('h3'); // Corrected from h4
                                 if (titleElement) {
                                     titleElement.style.opacity = '0';
                                     titleElement.style.animation = `revealTextCascade 0.5s ease-out forwards ${contentAnimDelay}s`;
@@ -144,7 +147,19 @@ document.addEventListener('DOMContentLoaded', () => {
                                     });
                                 }
                             } else if (section.id === 'contact' && card.classList.contains('connect-with-me-card')) {
+                                // const titleElement = card.querySelector('h2'); // h2 is outside card now
+                                const paragraphElement = card.querySelector('p'); // This p might not exist anymore
                                 const buttonListItems = card.querySelectorAll('ul li');
+                                // if (titleElement) {
+                                // titleElement.style.opacity = '0';
+                                // titleElement.style.animation = `revealTextCascade 0.5s ease-out forwards ${contentAnimDelay}s`;
+                                // contentAnimDelay += 0.15;
+                                // }
+                                if (paragraphElement) {
+                                    paragraphElement.style.opacity = '0';
+                                    paragraphElement.style.animation = `revealTextCascade 0.5s ease-out forwards ${contentAnimDelay}s`;
+                                    contentAnimDelay += 0.15;
+                                }
                                 buttonListItems.forEach((li, liIndex) => {
                                     li.style.opacity = '0';
                                     li.style.animation = `revealTextCascade 0.5s ease-out forwards ${contentAnimDelay + (liIndex * 0.1)}s`;
@@ -152,12 +167,23 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         });
                     } else {
-                        // Opacity already set
+                        section.style.opacity = '1';
+                        const innerCards = section.querySelectorAll('.content-card');
+                        innerCards.forEach(card => {
+                            card.style.opacity = '1';
+                            const titleElementH3 = card.querySelector('h3'); // Corrected from h4
+                            if (titleElementH3) titleElementH3.style.opacity = '1';
+                            const paragraphElement = card.querySelector('p');
+                            if (paragraphElement) paragraphElement.style.opacity = '1';
+                            // const titleElementH2 = card.querySelector('h2');
+                            // if (titleElementH2) titleElementH2.style.opacity = '1';
+                            card.querySelectorAll('ul li').forEach(li => li.style.opacity = '1');
+                        });
                     }
                     sectionAnimationApplied = true;
                 }
 
-                if (!sectionAnimationApplied && section.id !== 'experience' && section.style.animation === '' && !prefersReducedMotion) {
+                if (!sectionAnimationApplied && section.style.animation === '' && !prefersReducedMotion && section.id !== 'experience') { // Do not apply generic animation to experience section
                     section.style.animation = 'refinedFadeInSlideUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
                 } else if (prefersReducedMotion && section.style.animation !== '') {
                     section.style.animation = 'none';
@@ -168,42 +194,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.1 });
 
     sections.forEach(section => {
-        // #experience section's direct animation is not handled by sectionObserver anymore.
-        // Its children (.timeline-item) will be handled by timelineObserver.
-        if (section.id !== 'experience') { 
+        if (section.id !== 'experience') { // Exclude experience section from main observer if it will be handled by timelineObserver
             sectionObserver.observe(section);
         }
     });
-    
-    // Timeline items animation
-    const timelineItems = document.querySelectorAll('#experience .timeline-item');
-    if (timelineItems.length > 0) {
-        const prefersReducedMotionQuery = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
-        const isReducedMotion = prefersReducedMotionQuery.matches;
-
-        if (isReducedMotion) {
-            // CSS already handles making timeline items visible if reduced motion is preferred
-        } else { 
-            const timelineObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach((entry) => { 
-                    if (entry.isIntersecting) {
-                        const item = entry.target;
-                        const itemIndex = Array.from(timelineItems).indexOf(item); // Get index for stagger
-                        setTimeout(() => {
-                            item.classList.add('animate-in');
-                        }, itemIndex * 150); 
-                        observer.unobserve(item);
-                    }
-                });
-            }, {
-                threshold: 0.2, 
-            });
-
-            timelineItems.forEach(item => {
-                timelineObserver.observe(item);
-            });
-        }
-    }
 
     const scrollTopButton = document.querySelector('.scroll-to-top');
     if (scrollTopButton) {
@@ -259,6 +253,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+    }
+
+    // Timeline items animation
+    const timelineItems = document.querySelectorAll('#experience .timeline-item');
+    if (timelineItems.length > 0) {
+        const prefersReducedMotionQuery = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+        const isReducedMotion = prefersReducedMotionQuery.matches;
+
+        if (isReducedMotion) {
+            timelineItems.forEach(item => {
+                item.style.opacity = '1'; // Ensure visible if motion is reduced
+                item.classList.remove('animate-in'); // Redundant if CSS handles it but safe
+            });
+        } else { // Only set up observer if motion is not reduced
+            const timelineObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry, index) => { // index here is for entries array, not global timeline item index
+                    if (entry.isIntersecting) {
+                        const item = entry.target;
+                        // Stagger based on the actual DOM order of the item, not the 'entries' index
+                        const itemIndex = Array.from(timelineItems).indexOf(item);
+                        setTimeout(() => {
+                            item.classList.add('animate-in');
+                            // item.style.opacity = '1'; // CSS .animate-in should handle this
+                        }, itemIndex * 150); // Stagger delay
+                        observer.unobserve(item);
+                    }
+                });
+            }, {
+                threshold: 0.2, // Trigger when 20% of the item is visible
+            });
+
+            timelineItems.forEach(item => {
+                // CSS should set initial opacity to 0 for items to be animated via .timeline-item rule
+                timelineObserver.observe(item);
+            });
+        }
     }
 });
 
