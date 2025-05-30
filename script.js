@@ -315,34 +315,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextButton = document.querySelector('.timeline-nav-next');
 
     if (horizontalTimelineWrapper && prevButton && nextButton) {
-        const getItemWidth = () => {
+        const getItemScrollAmount = () => {
             const firstItem = horizontalTimelineWrapper.querySelector('.horizontal-timeline-item');
             if (firstItem) {
                 const style = window.getComputedStyle(firstItem);
                 const marginRight = parseFloat(style.marginRight) || 0;
-                return firstItem.offsetWidth + marginRight;
+                return firstItem.offsetWidth + marginRight; 
             }
-            return 340; // Fallback
+            return 340; // Fallback: assumes item width ~320px + margin ~20px
         };
 
         const updateNavButtonStates = () => {
-            if (!horizontalTimelineWrapper.offsetParent) return; 
+            const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
+            if (!horizontalContainer || window.getComputedStyle(horizontalContainer).display === 'none') {
+                prevButton.disabled = true;
+                nextButton.disabled = true;
+                return;
+            }
 
-            const scrollLeft = horizontalTimelineWrapper.scrollLeft;
-            const maxScrollLeft = horizontalTimelineWrapper.scrollWidth - horizontalTimelineWrapper.clientWidth;
+            const scrollLeft = Math.round(horizontalTimelineWrapper.scrollLeft);
+            const scrollWidth = horizontalTimelineWrapper.scrollWidth;
+            const clientWidth = horizontalTimelineWrapper.clientWidth;
+            const maxScrollLeft = scrollWidth - clientWidth;
 
-            prevButton.disabled = scrollLeft <= 0;
-            nextButton.disabled = scrollLeft >= (maxScrollLeft - 5); 
+            // console.log(`H_DEBUG: scrollLeft=${scrollLeft}, clientWidth=${clientWidth}, scrollWidth=${scrollWidth}, maxScrollLeft=${maxScrollLeft}`);
+
+            if (scrollWidth <= clientWidth) { 
+                prevButton.disabled = true;
+                nextButton.disabled = true;
+                // console.log("H_DEBUG: No overflow, both disabled.");
+            } else {
+                prevButton.disabled = scrollLeft <= 0;
+                nextButton.disabled = scrollLeft >= (maxScrollLeft - 2); // 2px tolerance
+                // console.log(`H_DEBUG: Overflow. prev.disabled=${prevButton.disabled}, next.disabled=${nextButton.disabled}`);
+            }
         };
 
         prevButton.addEventListener('click', () => {
-            horizontalTimelineWrapper.scrollLeft -= getItemWidth();
-            setTimeout(updateNavButtonStates, 500); 
+            horizontalTimelineWrapper.scrollLeft -= getItemScrollAmount();
+            setTimeout(updateNavButtonStates, 550); 
         });
 
         nextButton.addEventListener('click', () => {
-            horizontalTimelineWrapper.scrollLeft += getItemWidth();
-            setTimeout(updateNavButtonStates, 500);
+            horizontalTimelineWrapper.scrollLeft += getItemScrollAmount();
+            setTimeout(updateNavButtonStates, 550);
         });
 
         const debounce = (func, delay) => {
@@ -355,10 +371,46 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         };
 
-        horizontalTimelineWrapper.addEventListener('scroll', debounce(updateNavButtonStates, 150));
-        window.addEventListener('resize', debounce(updateNavButtonStates, 200));
+        if (window.ResizeObserver) {
+            const resizeObserver = new ResizeObserver(debounce(updateNavButtonStates, 150));
+            resizeObserver.observe(horizontalTimelineWrapper);
+        } else {
+            window.addEventListener('resize', debounce(updateNavButtonStates, 200));
+        }
         
-        setTimeout(updateNavButtonStates, 100); 
+        horizontalTimelineWrapper.addEventListener('scroll', debounce(updateNavButtonStates, 100));
+
+        const attemptInitialUpdate = (retries = 5, delay = 250) => { // Increased delay slightly
+            // console.log(`H_DEBUG: Attempting initial update. Retries left: ${retries}`);
+            updateNavButtonStates();
+            
+            const scrollWidth = horizontalTimelineWrapper.scrollWidth;
+            const clientWidth = horizontalTimelineWrapper.clientWidth;
+            const itemCount = horizontalTimelineWrapper.querySelectorAll('.horizontal-timeline-item').length;
+            const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container'); // Re-get for current check
+            
+            // Only retry if we expect scrolling but it's not showing as scrollable yet and container is visible
+            if (itemCount > 1 && scrollWidth <= clientWidth && retries > 0 && horizontalContainer && window.getComputedStyle(horizontalContainer).display !== 'none') {
+                // console.log(`H_DEBUG: Retrying initial update. scrollWidth=${scrollWidth}, clientWidth=${clientWidth}`);
+                setTimeout(() => attemptInitialUpdate(retries - 1, delay), delay);
+            } else {
+                // console.log("H_DEBUG: Initial update final or retries exhausted / no overflow expected / hidden.");
+                // Ensure a final call if conditions for retry aren't met but it wasn't the first call.
+                 if (retries < 5) updateNavButtonStates();
+            }
+        };
+
+        const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
+        if (horizontalContainer && window.getComputedStyle(horizontalContainer).display !== 'none') {
+             requestAnimationFrame(() => { // Use requestAnimationFrame for initial call after layout
+                attemptInitialUpdate();
+            });
+        } else {
+            // If starting hidden (e.g. on mobile), still set initial button states correctly.
+            updateNavButtonStates();
+        }
+         // Fallback: A simple call for very initial state, might be overridden by attemptInitialUpdate
+        setTimeout(updateNavButtonStates, 50);
     }
 
     // --- Horizontal Timeline Item Entrance Animation ---
