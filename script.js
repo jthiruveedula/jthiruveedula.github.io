@@ -336,19 +336,39 @@ document.addEventListener('DOMContentLoaded', () => {
             const scrollLeft = Math.round(horizontalTimelineWrapper.scrollLeft);
             const scrollWidth = horizontalTimelineWrapper.scrollWidth;
             const clientWidth = horizontalTimelineWrapper.clientWidth;
-            const maxScrollLeft = scrollWidth - clientWidth;
-
-            // console.log(`H_DEBUG: scrollLeft=${scrollLeft}, clientWidth=${clientWidth}, scrollWidth=${scrollWidth}, maxScrollLeft=${maxScrollLeft}`);
-
-            if (scrollWidth <= clientWidth) { 
+            
+            // If scrollWidth is not significantly larger than clientWidth, no scrolling is possible.
+            // Add a small tolerance (e.g., 1px) for this check.
+            if (scrollWidth <= clientWidth + 1) { 
                 prevButton.disabled = true;
                 nextButton.disabled = true;
-                // console.log("H_DEBUG: No overflow, both disabled.");
-            } else {
-                prevButton.disabled = scrollLeft <= 0;
-                nextButton.disabled = scrollLeft >= (maxScrollLeft - 2); // 2px tolerance
-                // console.log(`H_DEBUG: Overflow. prev.disabled=${prevButton.disabled}, next.disabled=${nextButton.disabled}`);
+                // console.log("H_DEBUG: No significant overflow, both disabled (Final).");
+                return;
             }
+
+            const maxScrollLeft = scrollWidth - clientWidth;
+            
+            // Standard boundary checks: disable if at or beyond the very start/end
+            prevButton.disabled = scrollLeft <= 0;
+            nextButton.disabled = scrollLeft >= maxScrollLeft;
+
+            // Refinement: Further disable 'Next' button if it's currently enabled by the above check,
+            // but the remaining scrollable distance is less than a meaningful portion of an item.
+            // This prevents the button from being active for a tiny scroll that doesn't reveal new content.
+            const meaningfulScrollPortion = getItemScrollAmount() / 4; // e.g., 1/4 of what a click scrolls by
+
+            if (!nextButton.disabled && (maxScrollLeft - scrollLeft) < meaningfulScrollPortion) {
+                // console.log(`H_DEBUG: Next button would be active (scrollLeft=${scrollLeft}, maxScrollLeft=${maxScrollLeft}), but remaining scroll (${maxScrollLeft - scrollLeft}px) is less than meaningful portion (${meaningfulScrollPortion}px). Disabling Next.`);
+                nextButton.disabled = true;
+            }
+
+            // Optional: Similar refinement for 'Prev' button if active but remaining scroll left is tiny.
+            // Generally, if prevButton is active (not scrollLeft <= 0), any scroll back is usually fine.
+            // if (!prevButton.disabled && scrollLeft < meaningfulScrollPortion) {
+            //    // console.log(`H_DEBUG: Prev button would be active (scrollLeft=${scrollLeft}), but scroll back amount (${scrollLeft}px) is less than meaningful portion (${meaningfulScrollPortion}px). Disabling Prev.`);
+            //    prevButton.disabled = true;
+            // }
+            // console.log(`H_DEBUG: Final states: prev.disabled=${prevButton.disabled}, next.disabled=${nextButton.disabled}`);
         };
 
         prevButton.addEventListener('click', () => {
