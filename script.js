@@ -31,9 +31,15 @@ document.addEventListener('DOMContentLoaded', () => {
     sections.forEach(section => {
         const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (!prefersReducedMotion) {
-            section.style.opacity = '0';
+            if (section.id !== 'experience') {
+                section.style.opacity = '0';
+            } else {
+                // Ensure the #experience section container itself is visible,
+                // as its children (timeline-item) will be animated individually.
+                section.style.opacity = '1';
+            }
         } else {
-            section.style.opacity = '1';
+            section.style.opacity = '1'; // All sections visible if reduced motion
         }
     });
 
