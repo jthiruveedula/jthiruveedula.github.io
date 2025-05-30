@@ -255,40 +255,143 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Timeline items animation
-    const timelineItems = document.querySelectorAll('#experience .timeline-item');
+    // Timeline items animation (Vertical)
+    const timelineItems = document.querySelectorAll('#experience .experience-vertical-container .timeline-item');
     if (timelineItems.length > 0) {
         const prefersReducedMotionQuery = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
         const isReducedMotion = prefersReducedMotionQuery.matches;
 
         if (isReducedMotion) {
             timelineItems.forEach(item => {
-                item.style.opacity = '1'; // Ensure visible if motion is reduced
-                item.classList.remove('animate-in'); // Redundant if CSS handles it but safe
+                item.style.opacity = '1'; 
+                item.classList.remove('animate-in'); 
             });
-        } else { // Only set up observer if motion is not reduced
+        } else { 
             const timelineObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach((entry, index) => { // index here is for entries array, not global timeline item index
+                entries.forEach((entry) => { 
                     if (entry.isIntersecting) {
                         const item = entry.target;
-                        // Stagger based on the actual DOM order of the item, not the 'entries' index
                         const itemIndex = Array.from(timelineItems).indexOf(item);
                         setTimeout(() => {
                             item.classList.add('animate-in');
-                            // item.style.opacity = '1'; // CSS .animate-in should handle this
-                        }, itemIndex * 150); // Stagger delay
+                        }, itemIndex * 150); 
                         observer.unobserve(item);
                     }
                 });
             }, {
-                threshold: 0.2, // Trigger when 20% of the item is visible
+                threshold: 0.2, 
             });
 
             timelineItems.forEach(item => {
-                // CSS should set initial opacity to 0 for items to be animated via .timeline-item rule
                 timelineObserver.observe(item);
             });
         }
+    }
+
+    // Timeline axis animation (Vertical)
+    const timelineElement = document.querySelector('#experience .experience-vertical-container .timeline');
+    if (timelineElement) {
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (prefersReducedMotion) {
+            timelineElement.classList.add('timeline-draw');
+        } else {
+            const timelineDrawObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        timelineElement.classList.add('timeline-draw');
+                        observer.unobserve(timelineElement); 
+                    }
+                });
+            }, { threshold: 0.1 }); 
+
+            timelineDrawObserver.observe(timelineElement);
+        }
+    }
+
+    // --- Horizontal Timeline Navigation ---
+    const horizontalTimelineWrapper = document.querySelector('.timeline-items-wrapper');
+    const prevButton = document.querySelector('.timeline-nav-prev');
+    const nextButton = document.querySelector('.timeline-nav-next');
+
+    if (horizontalTimelineWrapper && prevButton && nextButton) {
+        const getItemWidth = () => {
+            const firstItem = horizontalTimelineWrapper.querySelector('.horizontal-timeline-item');
+            if (firstItem) {
+                const style = window.getComputedStyle(firstItem);
+                const marginRight = parseFloat(style.marginRight) || 0;
+                return firstItem.offsetWidth + marginRight;
+            }
+            return 340; // Fallback
+        };
+
+        const updateNavButtonStates = () => {
+            if (!horizontalTimelineWrapper.offsetParent) return; 
+
+            const scrollLeft = horizontalTimelineWrapper.scrollLeft;
+            const maxScrollLeft = horizontalTimelineWrapper.scrollWidth - horizontalTimelineWrapper.clientWidth;
+
+            prevButton.disabled = scrollLeft <= 0;
+            nextButton.disabled = scrollLeft >= (maxScrollLeft - 5); 
+        };
+
+        prevButton.addEventListener('click', () => {
+            horizontalTimelineWrapper.scrollLeft -= getItemWidth();
+            setTimeout(updateNavButtonStates, 500); 
+        });
+
+        nextButton.addEventListener('click', () => {
+            horizontalTimelineWrapper.scrollLeft += getItemWidth();
+            setTimeout(updateNavButtonStates, 500);
+        });
+
+        const debounce = (func, delay) => {
+            let timeoutId;
+            return (...args) => {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        };
+
+        horizontalTimelineWrapper.addEventListener('scroll', debounce(updateNavButtonStates, 150));
+        window.addEventListener('resize', debounce(updateNavButtonStates, 200));
+        
+        setTimeout(updateNavButtonStates, 100); 
+    }
+
+    // --- Horizontal Timeline Item Entrance Animation ---
+    const horizontalItems = document.querySelectorAll('.horizontal-timeline-item');
+    const scrollWrapperForObserver = document.querySelector('.timeline-items-wrapper');
+
+    if (horizontalItems.length > 0 && scrollWrapperForObserver) {
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        const itemObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const item = entry.target;
+                    if (prefersReducedMotion) {
+                        item.classList.add('is-visible-no-anim');
+                    } else {
+                        const itemGlobalIndex = Array.from(horizontalItems).indexOf(item);
+                        const delay = Math.max(0, itemGlobalIndex) * 100; 
+                        item.style.transitionDelay = `${delay}ms`;
+                        item.classList.add('is-visible');
+                    }
+                    observer.unobserve(item); 
+                }
+            });
+        }, {
+            root: scrollWrapperForObserver, 
+            rootMargin: "0px 0px 0px 0px", 
+            threshold: 0.1 
+        });
+
+        horizontalItems.forEach(item => {
+            itemObserver.observe(item);
+        });
     }
 });
 
