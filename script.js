@@ -371,11 +371,19 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         prevButton.addEventListener('click', () => {
+            const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
+            if (!horizontalContainer || window.getComputedStyle(horizontalContainer).display === 'none') {
+                return; // Do nothing if hidden
+            }
             horizontalTimelineWrapper.scrollLeft -= getItemScrollAmount();
             setTimeout(updateNavButtonStates, 550); 
         });
 
         nextButton.addEventListener('click', () => {
+            const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
+            if (!horizontalContainer || window.getComputedStyle(horizontalContainer).display === 'none') {
+                return; // Do nothing if hidden
+            }
             horizontalTimelineWrapper.scrollLeft += getItemScrollAmount();
             setTimeout(updateNavButtonStates, 550);
         });
