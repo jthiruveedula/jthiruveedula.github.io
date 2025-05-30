@@ -338,45 +338,52 @@ document.addEventListener('DOMContentLoaded', () => {
             const clientWidth = horizontalTimelineWrapper.clientWidth;
             
             // If scrollWidth is not significantly larger than clientWidth, no scrolling is possible.
-            // Add a small tolerance (e.g., 1px) for this check.
             if (scrollWidth <= clientWidth + 1) { 
                 prevButton.disabled = true;
                 nextButton.disabled = true;
-                // console.log("H_DEBUG: No significant overflow, both disabled (Final).");
+                // console.log("H_DEBUG: No significant overflow, disabling both buttons.");
                 return;
             }
 
             const maxScrollLeft = scrollWidth - clientWidth;
-            
-            // Standard boundary checks: disable if at or beyond the very start/end
-            prevButton.disabled = scrollLeft <= 0;
-            nextButton.disabled = scrollLeft >= maxScrollLeft;
+            // Calculate meaningfulScrollPortion inside, as getItemScrollAmount might depend on elements being visible/ready
+            const meaningfulScrollPortion = getItemScrollAmount() / 4; 
 
-            // Refinement: Further disable 'Next' button if it's currently enabled by the above check,
-            // but the remaining scrollable distance is less than a meaningful portion of an item.
-            // This prevents the button from being active for a tiny scroll that doesn't reveal new content.
-            const meaningfulScrollPortion = getItemScrollAmount() / 4; // e.g., 1/4 of what a click scrolls by
+            // Default states based on absolute boundaries
+            let isPrevDisabled = scrollLeft <= 0;
+            let isNextDisabled = scrollLeft >= maxScrollLeft;
 
-            if (!nextButton.disabled && (maxScrollLeft - scrollLeft) < meaningfulScrollPortion) {
+            // Refinement: Disable 'Next' if remaining scroll is less than a meaningful portion.
+            if (!isNextDisabled && (maxScrollLeft - scrollLeft) < meaningfulScrollPortion) {
                 // console.log(`H_DEBUG: Next button would be active (scrollLeft=${scrollLeft}, maxScrollLeft=${maxScrollLeft}), but remaining scroll (${maxScrollLeft - scrollLeft}px) is less than meaningful portion (${meaningfulScrollPortion}px). Disabling Next.`);
-                nextButton.disabled = true;
+                isNextDisabled = true;
             }
 
-            // Optional: Similar refinement for 'Prev' button if active but remaining scroll left is tiny.
-            // Generally, if prevButton is active (not scrollLeft <= 0), any scroll back is usually fine.
-            // if (!prevButton.disabled && scrollLeft < meaningfulScrollPortion) {
-            //    // console.log(`H_DEBUG: Prev button would be active (scrollLeft=${scrollLeft}), but scroll back amount (${scrollLeft}px) is less than meaningful portion (${meaningfulScrollPortion}px). Disabling Prev.`);
-            //    prevButton.disabled = true;
-            // }
-            // console.log(`H_DEBUG: Final states: prev.disabled=${prevButton.disabled}, next.disabled=${nextButton.disabled}`);
+            // Refinement: Disable 'Prev' if scroll distance from start is less than a meaningful portion.
+            if (!isPrevDisabled && scrollLeft < meaningfulScrollPortion) {
+                // console.log(`H_DEBUG: Prev button would be active (scrollLeft=${scrollLeft}), but scroll amount (${scrollLeft}px) is less than meaningful portion (${meaningfulScrollPortion}px). Disabling Prev.`);
+                isPrevDisabled = true;
+            }
+            
+            prevButton.disabled = isPrevDisabled;
+            nextButton.disabled = isNextDisabled;
+            // console.log(`H_DEBUG: Final states: prev.disabled=${prevButton.disabled}, next.disabled=${nextButton.disabled}, scrollLeft=${scrollLeft}, maxScrollLeft=${maxScrollLeft}, meaningfulScrollPortion=${meaningfulScrollPortion}`);
         };
 
         prevButton.addEventListener('click', () => {
+            const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
+            if (!horizontalContainer || window.getComputedStyle(horizontalContainer).display === 'none') {
+                return; // Do nothing if hidden
+            }
             horizontalTimelineWrapper.scrollLeft -= getItemScrollAmount();
             setTimeout(updateNavButtonStates, 550); 
         });
 
         nextButton.addEventListener('click', () => {
+            const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
+            if (!horizontalContainer || window.getComputedStyle(horizontalContainer).display === 'none') {
+                return; // Do nothing if hidden
+            }
             horizontalTimelineWrapper.scrollLeft += getItemScrollAmount();
             setTimeout(updateNavButtonStates, 550);
         });
@@ -400,36 +407,29 @@ document.addEventListener('DOMContentLoaded', () => {
         
         horizontalTimelineWrapper.addEventListener('scroll', debounce(updateNavButtonStates, 100));
 
-        const attemptInitialUpdate = (retries = 5, delay = 250) => { // Increased delay slightly
-            // console.log(`H_DEBUG: Attempting initial update. Retries left: ${retries}`);
+        const attemptInitialUpdate = (retries = 5, delay = 250) => { 
             updateNavButtonStates();
             
             const scrollWidth = horizontalTimelineWrapper.scrollWidth;
             const clientWidth = horizontalTimelineWrapper.clientWidth;
             const itemCount = horizontalTimelineWrapper.querySelectorAll('.horizontal-timeline-item').length;
-            const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container'); // Re-get for current check
+            const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container'); 
             
-            // Only retry if we expect scrolling but it's not showing as scrollable yet and container is visible
             if (itemCount > 1 && scrollWidth <= clientWidth && retries > 0 && horizontalContainer && window.getComputedStyle(horizontalContainer).display !== 'none') {
-                // console.log(`H_DEBUG: Retrying initial update. scrollWidth=${scrollWidth}, clientWidth=${clientWidth}`);
                 setTimeout(() => attemptInitialUpdate(retries - 1, delay), delay);
             } else {
-                // console.log("H_DEBUG: Initial update final or retries exhausted / no overflow expected / hidden.");
-                // Ensure a final call if conditions for retry aren't met but it wasn't the first call.
                  if (retries < 5) updateNavButtonStates();
             }
         };
 
         const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
         if (horizontalContainer && window.getComputedStyle(horizontalContainer).display !== 'none') {
-             requestAnimationFrame(() => { // Use requestAnimationFrame for initial call after layout
+             requestAnimationFrame(() => { 
                 attemptInitialUpdate();
             });
         } else {
-            // If starting hidden (e.g. on mobile), still set initial button states correctly.
             updateNavButtonStates();
         }
-         // Fallback: A simple call for very initial state, might be overridden by attemptInitialUpdate
         setTimeout(updateNavButtonStates, 50);
     }
 
