@@ -255,40 +255,215 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Timeline items animation
-    const timelineItems = document.querySelectorAll('#experience .timeline-item');
+    // Timeline items animation (Vertical)
+    const timelineItems = document.querySelectorAll('#experience .experience-vertical-container .timeline-item');
     if (timelineItems.length > 0) {
         const prefersReducedMotionQuery = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
         const isReducedMotion = prefersReducedMotionQuery.matches;
 
         if (isReducedMotion) {
             timelineItems.forEach(item => {
-                item.style.opacity = '1'; // Ensure visible if motion is reduced
-                item.classList.remove('animate-in'); // Redundant if CSS handles it but safe
+                item.style.opacity = '1'; 
+                item.classList.remove('animate-in'); 
             });
-        } else { // Only set up observer if motion is not reduced
+        } else { 
             const timelineObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach((entry, index) => { // index here is for entries array, not global timeline item index
+                entries.forEach((entry) => { 
                     if (entry.isIntersecting) {
                         const item = entry.target;
-                        // Stagger based on the actual DOM order of the item, not the 'entries' index
                         const itemIndex = Array.from(timelineItems).indexOf(item);
                         setTimeout(() => {
                             item.classList.add('animate-in');
-                            // item.style.opacity = '1'; // CSS .animate-in should handle this
-                        }, itemIndex * 150); // Stagger delay
+                        }, itemIndex * 150); 
                         observer.unobserve(item);
                     }
                 });
             }, {
-                threshold: 0.2, // Trigger when 20% of the item is visible
+                threshold: 0.2, 
             });
 
             timelineItems.forEach(item => {
-                // CSS should set initial opacity to 0 for items to be animated via .timeline-item rule
                 timelineObserver.observe(item);
             });
         }
+    }
+
+    // Timeline axis animation (Vertical)
+    const timelineElement = document.querySelector('#experience .experience-vertical-container .timeline');
+    if (timelineElement) {
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (prefersReducedMotion) {
+            timelineElement.classList.add('timeline-draw');
+        } else {
+            const timelineDrawObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        timelineElement.classList.add('timeline-draw');
+                        observer.unobserve(timelineElement); 
+                    }
+                });
+            }, { threshold: 0.1 }); 
+
+            timelineDrawObserver.observe(timelineElement);
+        }
+    }
+
+    // --- Horizontal Timeline Navigation ---
+    const horizontalTimelineWrapper = document.querySelector('.timeline-items-wrapper');
+    const prevButton = document.querySelector('.timeline-nav-prev');
+    const nextButton = document.querySelector('.timeline-nav-next');
+
+    if (horizontalTimelineWrapper && prevButton && nextButton) {
+        const getItemScrollAmount = () => {
+            const firstItem = horizontalTimelineWrapper.querySelector('.horizontal-timeline-item');
+            if (firstItem) {
+                const style = window.getComputedStyle(firstItem);
+                const marginRight = parseFloat(style.marginRight) || 0;
+                return firstItem.offsetWidth + marginRight; 
+            }
+            return 340; // Fallback: assumes item width ~320px + margin ~20px
+        };
+
+        const updateNavButtonStates = () => {
+            const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
+            if (!horizontalContainer || window.getComputedStyle(horizontalContainer).display === 'none') {
+                prevButton.disabled = true;
+                nextButton.disabled = true;
+                return;
+            }
+
+            const scrollLeft = Math.round(horizontalTimelineWrapper.scrollLeft);
+            const scrollWidth = horizontalTimelineWrapper.scrollWidth;
+            const clientWidth = horizontalTimelineWrapper.clientWidth;
+            
+            // If scrollWidth is not significantly larger than clientWidth, no scrolling is possible.
+            // Add a small tolerance (e.g., 1px) for this check.
+            if (scrollWidth <= clientWidth + 1) { 
+                prevButton.disabled = true;
+                nextButton.disabled = true;
+                // console.log("H_DEBUG: No significant overflow, both disabled (Final).");
+                return;
+            }
+
+            const maxScrollLeft = scrollWidth - clientWidth;
+            
+            // Standard boundary checks: disable if at or beyond the very start/end
+            prevButton.disabled = scrollLeft <= 0;
+            nextButton.disabled = scrollLeft >= maxScrollLeft;
+
+            // Refinement: Further disable 'Next' button if it's currently enabled by the above check,
+            // but the remaining scrollable distance is less than a meaningful portion of an item.
+            // This prevents the button from being active for a tiny scroll that doesn't reveal new content.
+            const meaningfulScrollPortion = getItemScrollAmount() / 4; // e.g., 1/4 of what a click scrolls by
+
+            if (!nextButton.disabled && (maxScrollLeft - scrollLeft) < meaningfulScrollPortion) {
+                // console.log(`H_DEBUG: Next button would be active (scrollLeft=${scrollLeft}, maxScrollLeft=${maxScrollLeft}), but remaining scroll (${maxScrollLeft - scrollLeft}px) is less than meaningful portion (${meaningfulScrollPortion}px). Disabling Next.`);
+                nextButton.disabled = true;
+            }
+
+            // Optional: Similar refinement for 'Prev' button if active but remaining scroll left is tiny.
+            // Generally, if prevButton is active (not scrollLeft <= 0), any scroll back is usually fine.
+            // if (!prevButton.disabled && scrollLeft < meaningfulScrollPortion) {
+            //    // console.log(`H_DEBUG: Prev button would be active (scrollLeft=${scrollLeft}), but scroll back amount (${scrollLeft}px) is less than meaningful portion (${meaningfulScrollPortion}px). Disabling Prev.`);
+            //    prevButton.disabled = true;
+            // }
+            // console.log(`H_DEBUG: Final states: prev.disabled=${prevButton.disabled}, next.disabled=${nextButton.disabled}`);
+        };
+
+        prevButton.addEventListener('click', () => {
+            horizontalTimelineWrapper.scrollLeft -= getItemScrollAmount();
+            setTimeout(updateNavButtonStates, 550); 
+        });
+
+        nextButton.addEventListener('click', () => {
+            horizontalTimelineWrapper.scrollLeft += getItemScrollAmount();
+            setTimeout(updateNavButtonStates, 550);
+        });
+
+        const debounce = (func, delay) => {
+            let timeoutId;
+            return (...args) => {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        };
+
+        if (window.ResizeObserver) {
+            const resizeObserver = new ResizeObserver(debounce(updateNavButtonStates, 150));
+            resizeObserver.observe(horizontalTimelineWrapper);
+        } else {
+            window.addEventListener('resize', debounce(updateNavButtonStates, 200));
+        }
+        
+        horizontalTimelineWrapper.addEventListener('scroll', debounce(updateNavButtonStates, 100));
+
+        const attemptInitialUpdate = (retries = 5, delay = 250) => { // Increased delay slightly
+            // console.log(`H_DEBUG: Attempting initial update. Retries left: ${retries}`);
+            updateNavButtonStates();
+            
+            const scrollWidth = horizontalTimelineWrapper.scrollWidth;
+            const clientWidth = horizontalTimelineWrapper.clientWidth;
+            const itemCount = horizontalTimelineWrapper.querySelectorAll('.horizontal-timeline-item').length;
+            const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container'); // Re-get for current check
+            
+            // Only retry if we expect scrolling but it's not showing as scrollable yet and container is visible
+            if (itemCount > 1 && scrollWidth <= clientWidth && retries > 0 && horizontalContainer && window.getComputedStyle(horizontalContainer).display !== 'none') {
+                // console.log(`H_DEBUG: Retrying initial update. scrollWidth=${scrollWidth}, clientWidth=${clientWidth}`);
+                setTimeout(() => attemptInitialUpdate(retries - 1, delay), delay);
+            } else {
+                // console.log("H_DEBUG: Initial update final or retries exhausted / no overflow expected / hidden.");
+                // Ensure a final call if conditions for retry aren't met but it wasn't the first call.
+                 if (retries < 5) updateNavButtonStates();
+            }
+        };
+
+        const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
+        if (horizontalContainer && window.getComputedStyle(horizontalContainer).display !== 'none') {
+             requestAnimationFrame(() => { // Use requestAnimationFrame for initial call after layout
+                attemptInitialUpdate();
+            });
+        } else {
+            // If starting hidden (e.g. on mobile), still set initial button states correctly.
+            updateNavButtonStates();
+        }
+         // Fallback: A simple call for very initial state, might be overridden by attemptInitialUpdate
+        setTimeout(updateNavButtonStates, 50);
+    }
+
+    // --- Horizontal Timeline Item Entrance Animation ---
+    const horizontalItems = document.querySelectorAll('.horizontal-timeline-item');
+    const scrollWrapperForObserver = document.querySelector('.timeline-items-wrapper');
+
+    if (horizontalItems.length > 0 && scrollWrapperForObserver) {
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        const itemObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const item = entry.target;
+                    if (prefersReducedMotion) {
+                        item.classList.add('is-visible-no-anim');
+                    } else {
+                        const itemGlobalIndex = Array.from(horizontalItems).indexOf(item);
+                        const delay = Math.max(0, itemGlobalIndex) * 100; 
+                        item.style.transitionDelay = `${delay}ms`;
+                        item.classList.add('is-visible');
+                    }
+                    observer.unobserve(item); 
+                }
+            });
+        }, {
+            root: scrollWrapperForObserver, 
+            rootMargin: "0px 0px 0px 0px", 
+            threshold: 0.1 
+        });
+
+        horizontalItems.forEach(item => {
+            itemObserver.observe(item);
+        });
     }
 });
 
