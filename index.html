@@ -50,8 +50,8 @@
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
-    <header id="site-header" role="banner">
-        <div class="hero-content-container">
+    <header role="banner">
+        <div class="container">
             <h1 class="animated-name" aria-label="Jagadeesh Thiruveedula">
                 <span class="char">J</span><span class="char">a</span><span class="char">g</span><span class="char">a</span><span class="char">d</span><span class="char">e</span><span class="char">e</span><span class="char">s</span><span class="char">h</span><span class="char space"> </span><span class="char">T</span><span class="char">h</span><span class="char">i</span><span class="char">r</span><span class="char">u</span><span class="char">v</span><span class="char">e</span><span class="char">e</span><span class="char">d</span><span class="char">u</span><span class="char">l</span><span class="char">a</span>
             </h1>
@@ -63,18 +63,16 @@
                 <span class="tagline-pill">Distributed Computing</span>
                 <span class="tagline-pill">Big Data Engineering</span>
             </div>
-            <div class="main-nav-container">
-                <nav aria-label="Main navigation">
-                    <ul>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#skills">Skills</a></li>
-                        <li><a href="#experience">Experience</a></li>
-                        <li><a href="#projects">Projects</a></li>
-                        <li><a href="#education">Education</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </nav>
-            </div>
+            <nav aria-label="Main navigation">
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#experience">Experience</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#education">Education</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
             <button id="theme-toggle" class="button button-outline" aria-label="Toggle dark/light theme">
                 <span class="material-symbols-outlined light-mode-icon">light_mode</span>
                 <span class="material-symbols-outlined dark-mode-icon">dark_mode</span>
@@ -88,321 +86,348 @@
         </div>
     </header>
     <main id="main-content" role="main">
-        <section id="about" class="content-block">
+        <section id="about">
             <h2>About Me</h2>
-            <p>As a Data Engineering Architect, I specialize in the <strong>migration and modernization of legacy data stacks</strong> to cutting-edge, cloud-native solutions. My expertise lies in transforming complex data landscapes into agile, scalable, and high-performance environments.</p>
-            <p><span class="highlight-text">I excel at designing and implementing advanced data solutions that not only address intricate technical challenges but also derive actionable business insights, driving innovation and strategic decision-making.</span></p>
-            <p>My focus is on delivering robust and secure data-intensive solutions, <strong>primarily leveraging the Google Cloud Platform (GCP)</strong>, while also drawing on practical experience with AWS and Azure to operate effectively in multi-cloud scenarios. I am committed to utilizing the latest technologies, including Google Cloud's premier data services (such as BigQuery, Dataflow, Dataproc, and Pub/Sub), to deliver high-impact results. This professional profile is crafted to be seamlessly integrated with GitHub Pages, ensuring a fluid and user-friendly website experience.</p>
+            <div class="container">
+                <div class="card-base content-card about-me-card">
+                    <p>As a Data Engineering Architect, I specialize in the <strong>migration and modernization of legacy data stacks</strong> to cutting-edge, cloud-native solutions. My expertise lies in transforming complex data landscapes into agile, scalable, and high-performance environments.</p>
+                    <p><span class="highlight-text">I excel at designing and implementing advanced data solutions that not only address intricate technical challenges but also derive actionable business insights, driving innovation and strategic decision-making.</span></p>
+                    <p>My focus is on delivering robust and secure data-intensive solutions, <strong>primarily leveraging the Google Cloud Platform (GCP)</strong>, while also drawing on practical experience with AWS and Azure to operate effectively in multi-cloud scenarios. I am committed to utilizing the latest technologies, including Google Cloud's premier data services (such as BigQuery, Dataflow, Dataproc, and Pub/Sub), to deliver high-impact results. This professional profile is crafted to be seamlessly integrated with GitHub Pages, ensuring a fluid and user-friendly website experience.</p>
+                </div>
+            </div>
         </section>
-        <section id="skills" class="content-block">
+        <section id="skills">
             <h2>Skills</h2>
-            <div class="skill-category">
-                <h3>
-                    <span class="material-symbols-outlined skill-category-icon">database</span>
-                    Data Engineering & Big Data:
-                </h3>
-                <ul class="skills-list">
-                    <li class="skill-chip">Apache Spark</li>
-                    <li class="skill-chip">Hadoop</li>
-                    <li class="skill-chip">Apache Kafka</li>
-                    <li class="skill-chip">Apache Hive</li>
-                    <li class="skill-chip">Apache Sqoop</li>
-                    <li class="skill-chip">SQL</li>
-                    <li class="skill-chip">Python</li>
-                    <li class="skill-chip">Scala</li>
-                    <li class="skill-chip">Data Modeling</li>
-                    <li class="skill-chip">ETL/ELT Design</li>
-                    <li class="skill-chip">Data Warehousing</li>
-                    <li class="skill-chip">Performance Optimization</li>
-                    <li class="skill-chip">Data Architecture</li>
-                    <li class="skill-chip">Legacy System Modernization</li>
-                    <li class="skill-chip">Cloud Migration Strategies</li>
-                    <li class="skill-chip">Solution Design & Prototyping</li>
-                </ul>
-            </div>
-            <div class="skill-category">
-                <h3>
-                    <span class="material-symbols-outlined skill-category-icon">cloud_circle</span>
-                    Cloud Platforms & DevOps:
-                </h3>
-                <p><strong>Primary Expertise:</strong> Google Cloud Platform (GCP)</p>
-                <ul class="skills-list">
-                    <li class="skill-chip">Google BigQuery</li>
-                    <li class="skill-chip">Google Dataflow</li>
-                    <li class="skill-chip">Google Dataproc</li>
-                    <li class="skill-chip">Google Pub/Sub</li>
-                    <li class="skill-chip">Google Cloud Storage</li>
-                    <li class="skill-chip">Google Cloud Composer</li>
-                </ul>
-                <p><strong>Working Experience with Other Cloud Platforms:</strong></p>
-                <ul class="skills-list">
-                    <li class="skill-chip">AWS</li>
-                    <li class="skill-chip">Microsoft Azure</li>
-                </ul>
-                <p><strong>DevOps, CI/CD & Automation:</strong></p>
-                <ul class="skills-list">
-                    <li class="skill-chip">GitHub Actions</li>
-                    <li class="skill-chip">Terraform</li>
-                    <li class="skill-chip">Docker</li>
-                    <li class="skill-chip">Kubernetes</li>
-                    <li class="skill-chip">Azure DevOps</li>
-                    <li class="skill-chip">CI/CD Principles & Tools</li>
-                    <li class="skill-chip">Infrastructure-as-Code (IaC)</li>
-                </ul>
-            </div>
-            <div class="skill-category">
-                <h3>
-                    <span class="material-symbols-outlined skill-category-icon">monitoring</span>
-                    AI Ops & Monitoring:
-                </h3>
-                <ul class="skills-list">
-                    <li class="skill-chip">Prometheus (Familiar)</li>
-                    <li class="skill-chip">Grafana (Familiar)</li>
-                    <li class="skill-chip">Cloud Monitoring Tools</li>
-                    <li class="skill-chip">Native Cloud Logging/Monitoring</li>
-                    <li class="skill-chip">Proactive Anomaly Detection</li>
-                    <li class="skill-chip">Automated Alerting</li>
-                    <li class="skill-chip">Recovery Strategies</li>
-                </ul>
-            </div>
-            <div class="skill-category">
-                <h3>
-                    <span class="material-symbols-outlined skill-category-icon">hub</span>
-                    Blockchain Technology:
-                </h3>
-                <ul class="skills-list">
-                    <li class="skill-chip">Core Blockchain Principles</li>
-                    <li class="skill-chip">Blockchain Solution Analysis</li>
-                    <li class="skill-chip">Conceptualizing Blockchain Solutions</li>
-                </ul>
-            </div>
-            <div class="skill-category">
-                <h3>
-                    <span class="material-symbols-outlined skill-category-icon">storage</span>
-                    Databases:
-                </h3>
-                <ul class="skills-list">
-                    <li class="skill-chip">NoSQL</li>
-                    <li class="skill-chip">MongoDB</li>
-                    <li class="skill-chip">Cassandra</li>
-                    <li class="skill-chip">Relational Databases</li>
-                    <li class="skill-chip">PostgreSQL</li>
-                    <li class="skill-chip">MySQL</li>
-                    <li class="skill-chip">Oracle</li>
-                    <li class="skill-chip">SQL Server</li>
-                </ul>
-            </div>
-            <div class="skill-category">
-                <h3>
-                    <span class="material-symbols-outlined skill-category-icon">query_stats</span>
-                    Other:
-                </h3>
-                <ul class="skills-list">
-                    <li class="skill-chip">Power BI</li>
-                    <li class="skill-chip">Data Visualization & Reporting</li>
-                    <li class="skill-chip">Agile Methodologies</li>
-                    <li class="skill-chip">Scrum Methodologies</li>
-                </ul>
-            </div>
-        </section>
-        <section id="experience" class="content-block">
-            <h2>Experience</h2>
-            <div class="experience-horizontal-container">
-                <button class="timeline-nav timeline-nav-prev" aria-label="Previous experience item" disabled>
-                    <span class="material-symbols-outlined">arrow_back_ios</span>
-                </button>
-                <div class="horizontal-timeline" id="horizontalTimeline">
-                    <div class="timeline-track">
-                        <div class="year-marker" data-year="2025">2025</div>
-                        <div class="year-marker" data-year="2023">2023</div>
-                        <div class="year-marker" data-year="2022">2022</div>
-                        <div class="year-marker" data-year="2019">2019</div>
-                        <div class="year-marker" data-year="2018">2018</div>
-                        <div class="year-marker" data-year="2015">2015</div>
-                    </div>
-                    <div class="timeline-items-wrapper" role="region" aria-label="Experience Timeline" tabindex="0">
-                        <div class="horizontal-timeline-item">
-                            <article class="experience-item">
-                                <div class="timeline-date">Jan 2025 – Present</div>
-                                <h4><span class="job-title">Associate Data Architect</span> | <span class="company-name">NRG Energy</span></h4>
-                                <ul>
-                                    <li>Led AWS to GCP Databricks migration, optimizing storage costs by 20%.</li>
-                                    <li>Automated data validation using Python & Shell, reducing manual work by 80%.</li>
-                                    <li>Designed secure cross-cloud networking with VPC Peering & Private Google Access.</li>
-                                </ul>
-                            </article>
-                        </div>
-                        <div class="horizontal-timeline-item">
-                            <article class="experience-item">
-                                <div class="timeline-date">Sep 2022 – Jan 2025</div>
-                                <h4><span class="job-title">Lead Data Engineer</span> | <span class="company-name">HCA Healthcare</span></h4>
-                                <ul>
-                                    <li>Migrated 100+ TB from Cloudera & Teradata to GCP.</li>
-                                    <li>Built real-time streaming with Kafka & Pub/Sub, improving accessibility.</li>
-                                    <li>Optimized ETL performance by 30% using PySpark & cloud efficiencies.</li>
-                                </ul>
-                            </article>
-                        </div>
-                        <div class="horizontal-timeline-item">
-                            <article class="experience-item">
-                                <div class="timeline-date">Apr 2019 – Aug 2022</div>
-                                <h4><span class="job-title">Senior Data Engineer</span> | <span class="company-name">Charles Schwab</span></h4>
-                                <ul>
-                                    <li>Migrated legacy Hadoop & Teradata to GCP , improving speeds by 25%.</li>
-                                    <li>Automated PySpark pipelines, supporting 30M+ daily transactions.</li>
-                                </ul>
-                            </article>
-                        </div>
-                        <div class="horizontal-timeline-item">
-                            <article class="experience-item">
-                                <div class="timeline-date">Aug 2018 – Mar 2019</div>
-                                <h4><span class="job-title">Data Engineer</span> | <span class="company-name">DSO MCS Group</span></h4>
-                                <ul>
-                                    <li>Developed cloud-native data solutions with Talend ingestion pipelines.</li>
-                                </ul>
-                            </article>
-                        </div>
-                        <div class="horizontal-timeline-item">
-                            <article class="experience-item">
-                                <div class="timeline-date">Jun 2015 – Jul 2018</div>
-                                <h4><span class="job-title">ETL Developer</span> | <span class="company-name">InnoMinds</span></h4>
-                                <ul>
-                                    <li>Designed ETL workflows, improving data accuracy and reporting.</li>
-                                </ul>
-                            </article>
-                        </div>
-                    </div>
+            <div class="container">
+                <div class="card-base content-card skill-category-card">
+                    <h3>
+                        <span class="material-symbols-outlined skill-category-icon">database</span>
+                        Data Engineering & Big Data:
+                    </h3>
+                    <ul class="skills-list">
+                        <li class="skill-chip">Apache Spark</li>
+                        <li class="skill-chip">Hadoop</li>
+                        <li class="skill-chip">Apache Kafka</li>
+                        <li class="skill-chip">Apache Hive</li>
+                        <li class="skill-chip">Apache Sqoop</li>
+                        <li class="skill-chip">SQL</li>
+                        <li class="skill-chip">Python</li>
+                        <li class="skill-chip">Scala</li>
+                        <li class="skill-chip">Data Modeling</li>
+                        <li class="skill-chip">ETL/ELT Design</li>
+                        <li class="skill-chip">Data Warehousing</li>
+                        <li class="skill-chip">Performance Optimization</li>
+                        <li class="skill-chip">Data Architecture</li>
+                        <li class="skill-chip">Legacy System Modernization</li>
+                        <li class="skill-chip">Cloud Migration Strategies</li>
+                        <li class="skill-chip">Solution Design & Prototyping</li>
+                    </ul>
                 </div>
-                <button class="timeline-nav timeline-nav-next" aria-label="Next experience item">
-                    <span class="material-symbols-outlined">arrow_forward_ios</span>
-                </button>
-            </div>
-            <div class="experience-vertical-container">
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-point"></div>
-                        <div class="timeline-content">
-                            <article class="experience-item">
-                                <div class="timeline-date">Sep 2023 – Present</div>
-                                <h4><span class="job-title">Associate Data Architect</span> | <span class="company-name">NRG Energy</span></h4>
-                                <ul>
-                                    <li>Led AWS to GCP Databricks migration, optimizing storage costs by 20%.</li>
-                                    <li>Automated data validation using Python & Shell, reducing manual work by 80%.</li>
-                                    <li>Designed secure cross-cloud networking with VPC Peering & Private Google Access.</li>
-                                </ul>
-                            </article>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-point"></div>
-                        <div class="timeline-content">
-                            <article class="experience-item">
-                                <div class="timeline-date">Sep 2022 – Jan 2025</div>
-                                <h4><span class="job-title">Lead Data Engineer</span> | <span class="company-name">HCA Healthcare</span></h4>
-                                <ul>
-                                    <li>Migrated 100+ TB from Cloudera & Teradata to GCP.</li>
-                                    <li>Built real-time streaming with Kafka & Pub/Sub, improving accessibility.</li>
-                                    <li>Optimized ETL performance by 30% using PySpark & cloud efficiencies.</li>
-                                </ul>
-                            </article>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-point"></div>
-                        <div class="timeline-content">
-                            <article class="experience-item">
-                                <div class="timeline-date">Apr 2019 – Aug 2022</div>
-                                <h4><span class="job-title">Senior Data Engineer</span> | <span class="company-name">Charles Schwab</span></h4>
-                                <ul>
-                                    <li>Migrated legacy Hadoop & Teradata to GCP , improving speeds by 25%.</li>
-                                    <li>Automated PySpark pipelines, supporting 30M+ daily transactions.</li>
-                                </ul>
-                            </article>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-point"></div>
-                        <div class="timeline-content">
-                            <article class="experience-item">
-                                <div class="timeline-date">Aug 2018 – Mar 2019</div>
-                                <h4><span class="job-title">Data Engineer</span> | <span class="company-name">DSO MCS Group</span></h4>
-                                <ul>
-                                    <li>Developed cloud-native data solutions with Talend ingestion pipelines.</li>
-                                </ul>
-                            </article>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-point"></div>
-                        <div class="timeline-content">
-                            <article class="experience-item">
-                                <div class="timeline-date">Jun 2015 – Jul 2018</div>
-                                <h4><span class="job-title">ETL Developer</span> | <span class="company-name">InnoMinds</span></h4>
-                                <ul>
-                                    <li>Designed ETL workflows, improving data accuracy and reporting.</li>
-                                </ul>
-                            </article>
-                        </div>
-                    </div>
+
+                <div class="card-base content-card skill-category-card">
+                    <h3>
+                        <span class="material-symbols-outlined skill-category-icon">cloud_circle</span>
+                        Cloud Platforms & DevOps:
+                    </h3>
+                    <p><strong>Primary Expertise:</strong> Google Cloud Platform (GCP)</p>
+                    <ul class="skills-list">
+                        <li class="skill-chip">Google BigQuery</li>
+                        <li class="skill-chip">Google Dataflow</li>
+                        <li class="skill-chip">Google Dataproc</li>
+                        <li class="skill-chip">Google Pub/Sub</li>
+                        <li class="skill-chip">Google Cloud Storage</li>
+                        <li class="skill-chip">Google Cloud Composer</li>
+                    </ul>
+                    <p><strong>Working Experience with Other Cloud Platforms:</strong></p>
+                    <ul class="skills-list">
+                        <li class="skill-chip">AWS</li>
+                        <li class="skill-chip">Microsoft Azure</li>
+                    </ul>
+                    <p><strong>DevOps, CI/CD & Automation:</strong></p>
+                    <ul class="skills-list">
+                        <li class="skill-chip">GitHub Actions</li>
+                        <li class="skill-chip">Terraform</li>
+                        <li class="skill-chip">Docker</li>
+                        <li class="skill-chip">Kubernetes</li>
+                        <li class="skill-chip">Azure DevOps</li>
+                        <li class="skill-chip">CI/CD Principles & Tools</li>
+                        <li class="skill-chip">Infrastructure-as-Code (IaC)</li>
+                    </ul>
+                </div>
+
+                <div class="card-base content-card skill-category-card">
+                    <h3>
+                        <span class="material-symbols-outlined skill-category-icon">monitoring</span>
+                        AI Ops & Monitoring:
+                    </h3>
+                    <ul class="skills-list">
+                        <li class="skill-chip">Prometheus (Familiar)</li>
+                        <li class="skill-chip">Grafana (Familiar)</li>
+                        <li class="skill-chip">Cloud Monitoring Tools</li>
+                        <li class="skill-chip">Native Cloud Logging/Monitoring</li>
+                        <li class="skill-chip">Proactive Anomaly Detection</li>
+                        <li class="skill-chip">Automated Alerting</li>
+                        <li class="skill-chip">Recovery Strategies</li>
+                    </ul>
+                </div>
+
+                <div class="card-base content-card skill-category-card">
+                    <h3>
+                        <span class="material-symbols-outlined skill-category-icon">hub</span>
+                        Blockchain Technology:
+                    </h3>
+                    <ul class="skills-list">
+                        <li class="skill-chip">Core Blockchain Principles</li>
+                        <li class="skill-chip">Blockchain Solution Analysis</li>
+                        <li class="skill-chip">Conceptualizing Blockchain Solutions</li>
+                    </ul>
+                </div>
+
+                <div class="card-base content-card skill-category-card">
+                    <h3>
+                        <span class="material-symbols-outlined skill-category-icon">storage</span>
+                        Databases:
+                    </h3>
+                    <ul class="skills-list">
+                        <li class="skill-chip">NoSQL</li>
+                        <li class="skill-chip">MongoDB</li>
+                        <li class="skill-chip">Cassandra</li>
+                        <li class="skill-chip">Relational Databases</li>
+                        <li class="skill-chip">PostgreSQL</li>
+                        <li class="skill-chip">MySQL</li>
+                        <li class="skill-chip">Oracle</li>
+                        <li class="skill-chip">SQL Server</li>
+                    </ul>
+                </div>
+
+                <div class="card-base content-card skill-category-card">
+                    <h3>
+                        <span class="material-symbols-outlined skill-category-icon">query_stats</span>
+                        Other:
+                    </h3>
+                    <ul class="skills-list">
+                        <li class="skill-chip">Power BI</li>
+                        <li class="skill-chip">Data Visualization & Reporting</li>
+                        <li class="skill-chip">Agile Methodologies</li>
+                        <li class="skill-chip">Scrum Methodologies</li>
+                    </ul>
                 </div>
             </div>
         </section>
-        <section id="projects" class="content-block">
+        <section id="experience">
+            <div class="container">
+                <h2>Experience</h2>
+                <div class="experience-horizontal-container">
+                    <button class="timeline-nav timeline-nav-prev" aria-label="Previous experience item" disabled>
+                        <span class="material-symbols-outlined">arrow_back_ios</span>
+                    </button>
+                    <div class="horizontal-timeline" id="horizontalTimeline">
+                        <div class="timeline-track">
+                            <div class="year-marker" data-year="2025">2025</div>
+                            <div class="year-marker" data-year="2023">2023</div>
+                            <div class="year-marker" data-year="2022">2022</div>
+                            <div class="year-marker" data-year="2019">2019</div>
+                            <div class="year-marker" data-year="2018">2018</div>
+                            <div class="year-marker" data-year="2015">2015</div>
+                        </div>
+                        <div class="timeline-items-wrapper" role="region" aria-label="Experience Timeline" tabindex="0">
+                            <div class="horizontal-timeline-item card-base content-card experience-item-card">
+                                <article>
+                                    <div class="timeline-date">Jan 2025 – Present</div>
+                                    <h4><span class="job-title">Associate Data Architect</span> | <span class="company-name">NRG Energy</span></h4>
+                                    <ul>
+                                        <li>Led AWS to GCP Databricks migration, optimizing storage costs by 20%.</li>
+                                        <li>Automated data validation using Python & Shell, reducing manual work by 80%.</li>
+                                        <li>Designed secure cross-cloud networking with VPC Peering & Private Google Access.</li>
+                                    </ul>
+                                </article>
+                            </div>
+                            <div class="horizontal-timeline-item card-base content-card experience-item-card">
+                                <article>
+                                    <div class="timeline-date">Sep 2022 – Jan 2025</div>
+                                    <h4><span class="job-title">Lead Data Engineer</span> | <span class="company-name">HCA Healthcare</span></h4>
+                                    <ul>
+                                        <li>Migrated 100+ TB from Cloudera & Teradata to GCP.</li>
+                                        <li>Built real-time streaming with Kafka & Pub/Sub, improving accessibility.</li>
+                                        <li>Optimized ETL performance by 30% using PySpark & cloud efficiencies.</li>
+                                    </ul>
+                                </article>
+                            </div>
+                            <div class="horizontal-timeline-item card-base content-card experience-item-card">
+                                <article>
+                                    <div class="timeline-date">Apr 2019 – Aug 2022</div>
+                                    <h4><span class="job-title">Senior Data Engineer</span> | <span class="company-name">Charles Schwab</span></h4>
+                                    <ul>
+                                        <li>Migrated legacy Hadoop & Teradata to GCP , improving speeds by 25%.</li>
+                                        <li>Automated PySpark pipelines, supporting 30M+ daily transactions.</li>
+                                    </ul>
+                                </article>
+                            </div>
+                            <div class="horizontal-timeline-item card-base content-card experience-item-card">
+                                <article>
+                                    <div class="timeline-date">Aug 2018 – Mar 2019</div>
+                                    <h4><span class="job-title">Data Engineer</span> | <span class="company-name">DSO MCS Group</span></h4>
+                                    <ul>
+                                        <li>Developed cloud-native data solutions with Talend ingestion pipelines.</li>
+                                    </ul>
+                                </article>
+                            </div>
+                            <div class="horizontal-timeline-item card-base content-card experience-item-card">
+                                <article>
+                                    <div class="timeline-date">Jun 2015 – Jul 2018</div>
+                                    <h4><span class="job-title">ETL Developer</span> | <span class="company-name">InnoMinds</span></h4>
+                                    <ul>
+                                        <li>Designed ETL workflows, improving data accuracy and reporting.</li>
+                                    </ul>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="timeline-nav timeline-nav-next" aria-label="Next experience item">
+                        <span class="material-symbols-outlined">arrow_forward_ios</span>
+                    </button>
+                </div>
+                <div class="experience-vertical-container">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-point"></div>
+                            <div class="timeline-content card-base content-card experience-item-card">
+                                <article>
+                                    <div class="timeline-date">Sep 2023 – Present</div>
+                                    <h4><span class="job-title">Associate Data Architect</span> | <span class="company-name">NRG Energy</span></h4>
+                                    <ul>
+                                        <li>Led AWS to GCP Databricks migration, optimizing storage costs by 20%.</li>
+                                        <li>Automated data validation using Python & Shell, reducing manual work by 80%.</li>
+                                        <li>Designed secure cross-cloud networking with VPC Peering & Private Google Access.</li>
+                                    </ul>
+                                </article>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-point"></div>
+                            <div class="timeline-content card-base content-card experience-item-card">
+                                <article>
+                                    <div class="timeline-date">Sep 2022 – Jan 2025</div>
+                                    <h4><span class="job-title">Lead Data Engineer</span> | <span class="company-name">HCA Healthcare</span></h4>
+                                    <ul>
+                                        <li>Migrated 100+ TB from Cloudera & Teradata to GCP.</li>
+                                        <li>Built real-time streaming with Kafka & Pub/Sub, improving accessibility.</li>
+                                        <li>Optimized ETL performance by 30% using PySpark & cloud efficiencies.</li>
+                                    </ul>
+                                </article>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-point"></div>
+                            <div class="timeline-content card-base content-card experience-item-card">
+                                <article>
+                                    <div class="timeline-date">Apr 2019 – Aug 2022</div>
+                                    <h4><span class="job-title">Senior Data Engineer</span> | <span class="company-name">Charles Schwab</span></h4>
+                                    <ul>
+                                        <li>Migrated legacy Hadoop & Teradata to GCP , improving speeds by 25%.</li>
+                                        <li>Automated PySpark pipelines, supporting 30M+ daily transactions.</li>
+                                    </ul>
+                                </article>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-point"></div>
+                            <div class="timeline-content card-base content-card experience-item-card">
+                                <article>
+                                    <div class="timeline-date">Aug 2018 – Mar 2019</div>
+                                    <h4><span class="job-title">Data Engineer</span> | <span class="company-name">DSO MCS Group</span></h4>
+                                    <ul>
+                                        <li>Developed cloud-native data solutions with Talend ingestion pipelines.</li>
+                                    </ul>
+                                </article>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-point"></div>
+                            <div class="timeline-content card-base content-card experience-item-card">
+                                <article>
+                                    <div class="timeline-date">Jun 2015 – Jul 2018</div>
+                                    <h4><span class="job-title">ETL Developer</span> | <span class="company-name">InnoMinds</span></h4>
+                                    <ul>
+                                        <li>Designed ETL workflows, improving data accuracy and reporting.</li>
+                                    </ul>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="projects">
             <h2>Key Projects</h2>
-            <article class="project-item">
-                <div class="project-image-placeholder">
-                    <span class="material-symbols-outlined">cloud_sync</span>
+            <div class="container">
+                <div class="card-base project-card">
+                    <article>
+                        <div class="project-image-placeholder">
+                            <span class="material-symbols-outlined">cloud_sync</span>
+                        </div>
+                        <h4>AWS to GCP Migration | NRG Energy</h4>
+                        <ul>
+                            <li>Migrated petabyte-scale data from S3 to GCS with automated validation.</li>
+                        </ul>
+                    </article>
                 </div>
-                <h4>AWS to GCP Migration | NRG Energy</h4>
-                <ul>
-                    <li>Migrated petabyte-scale data from S3 to GCS with automated validation.</li>
-                </ul>
-            </article>
-            <article class="project-item">
-                <div class="project-image-placeholder">
-                    <span class="material-symbols-outlined">insights</span>
+                <div class="card-base project-card">
+                    <article>
+                        <div class="project-image-placeholder">
+                            <span class="material-symbols-outlined">insights</span>
+                        </div>
+                        <h4>Enterprise Data Modernization | HCA Healthcare</h4>
+                        <ul>
+                            <li>Migrated 50+ data sources to BigQuery, reducing costs by 30%.</li>
+                            <li>Built serverless ETL pipelines, reducing processing time by 40%.</li>
+                        </ul>
+                    </article>
                 </div>
-                <h4>Enterprise Data Modernization | HCA Healthcare</h4>
-                <ul>
-                    <li>Migrated 50+ data sources to BigQuery, reducing costs by 30%.</li>
-                    <li>Built serverless ETL pipelines, reducing processing time by 40%.</li>
-                </ul>
-            </article>
-            <article class="project-item">
-                <div class="project-image-placeholder">
-                    <span class="material-symbols-outlined">cloud_upload</span>
+                <div class="card-base project-card">
+                    <article>
+                        <div class="project-image-placeholder">
+                            <span class="material-symbols-outlined">cloud_upload</span>
+                        </div>
+                        <h4>On-Prem to Cloud Migration | Charles Schwab</h4>
+                        <ul>
+                            <li>Optimized ETL workflows with PySpark & Talend, cutting times by 40%.</li>
+                        </ul>
+                    </article>
                 </div>
-                <h4>On-Prem to Cloud Migration | Charles Schwab</h4>
-                <ul>
-                    <li>Optimized ETL workflows with PySpark & Talend, cutting times by 40%.</li>
-                </ul>
-            </article>
+            </div>
         </section>
-        <section id="education" class="content-block">
+        <section id="education">
             <h2>Education & Certifications</h2>
-            <div class="education-entry">
-                <h3>Education:</h3>
-                <p>B.Tech – Jawaharlal Nehru Technological University (2015)</p>
-            </div>
-            <div class="certifications-entry">
-                <h3>Certifications:</h3>
-                <ul>
-                    <li>Google Cloud Certified - Professional Data Engineer</li>
-                    <li>Talend Data Explorer Certification</li>
-                    <li>CCA Spark and Hadoop Developer</li>
-                    <li>Advanced Certification in Block-chain and Distributed Ledger Technologies - IIIT Hyderabad</li>
-                    <li><a href="https://credential.globeeawards.com/49c6600c-935e-49a8-9231-7fc51b02b07b" target="_blank" rel="noopener noreferrer">Globee Awards Judge</a></li>
-                </ul>
+            <div class="container">
+                <div class="card-base content-card education-details-card">
+                    <h3>Education:</h3>
+                    <p>B.Tech – Jawaharlal Nehru Technological University (2015)</p>
+                </div>
+                <div class="card-base content-card certifications-list-card">
+                    <h3>Certifications:</h3>
+                    <ul>
+                        <li>Google Cloud Certified - Professional Data Engineer</li>
+                        <li>Talend Data Explorer Certification</li>
+                        <li>CCA Spark and Hadoop Developer</li>
+                        <li>Advanced Certification in Block-chain and Distributed Ledger Technologies - IIIT Hyderabad</li>
+                        <li><a href="https://credential.globeeawards.com/49c6600c-935e-49a8-9231-7fc51b02b07b" target="_blank" rel="noopener noreferrer">Globee Awards Judge</a></li>
+                    </ul>
+                </div>
             </div>
         </section>
-        <section id="contact" class="content-block">
+        <section id="contact">
             <h2>Connect with Me</h2>
-            <ul>
-                <li><a href="https://www.linkedin.com/in/jagadeesh-thiruveedula" target="_blank" rel="noopener noreferrer" class="button button-filled">LinkedIn</a></li>
-                <li><a href="https://github.com/jthiruveedula" target="_blank" rel="noopener noreferrer" class="button button-filled">GitHub</a></li>
-                <li><a href="https://medium.com/@tjagadeesh77" target="_blank" rel="noopener noreferrer" class="button button-filled">Medium</a></li>
-                <li><a href="https://docs.microsoft.com/en-us/users/jagadeeshthiruveedula77/" target="_blank" rel="noopener noreferrer" class="button button-filled">MS Learn Profile</a></li>
-            </ul>
+            <div class="container">
+                <div class="card-base content-card connect-with-me-card">
+                    <ul>
+                        <li><a href="https://www.linkedin.com/in/jagadeesh-thiruveedula" target="_blank" rel="noopener noreferrer" class="button button-filled">LinkedIn</a></li>
+                        <li><a href="https://github.com/jthiruveedula" target="_blank" rel="noopener noreferrer" class="button button-filled">GitHub</a></li>
+                        <li><a href="https://medium.com/@tjagadeesh77" target="_blank" rel="noopener noreferrer" class="button button-filled">Medium</a></li>
+                        <li><a href="https://docs.microsoft.com/en-us/users/jagadeeshthiruveedula77/" target="_blank" rel="noopener noreferrer" class="button button-filled">MS Learn Profile</a></li>
+                    </ul>
+                </div>
+            </div>
         </section>
     </main>
     <footer role="contentinfo">
