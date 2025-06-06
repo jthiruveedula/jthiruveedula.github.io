@@ -317,74 +317,92 @@ document.addEventListener('DOMContentLoaded', () => {
     if (horizontalTimelineWrapper && prevButton && nextButton) {
         const getItemScrollAmount = () => {
             const firstItem = horizontalTimelineWrapper.querySelector('.horizontal-timeline-item');
+            let scrollAmount = 340; // Fallback
             if (firstItem) {
                 const style = window.getComputedStyle(firstItem);
                 const marginRight = parseFloat(style.marginRight) || 0;
-                return firstItem.offsetWidth + marginRight; 
+                scrollAmount = firstItem.offsetWidth + marginRight;
             }
-            return 340; // Fallback: assumes item width ~320px + margin ~20px
+            console.log('[getItemScrollAmount] Calculated scroll amount:', scrollAmount);
+            return scrollAmount;
         };
 
         const updateNavButtonStates = () => {
+            console.log('[updateNavButtonStates] Called');
             const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
             if (!horizontalContainer || window.getComputedStyle(horizontalContainer).display === 'none') {
                 prevButton.disabled = true;
                 nextButton.disabled = true;
+                console.log('[updateNavButtonStates] Horizontal container hidden, buttons disabled.');
                 return;
             }
 
             const scrollLeft = Math.round(horizontalTimelineWrapper.scrollLeft);
             const scrollWidth = horizontalTimelineWrapper.scrollWidth;
             const clientWidth = horizontalTimelineWrapper.clientWidth;
+            const maxScrollLeft = scrollWidth - clientWidth;
+
+            console.log(`[updateNavButtonStates] scrollLeft: ${scrollLeft}, scrollWidth: ${scrollWidth}, clientWidth: ${clientWidth}, maxScrollLeft: ${maxScrollLeft}`);
             
             // If scrollWidth is not significantly larger than clientWidth, no scrolling is possible.
             if (scrollWidth <= clientWidth + 1) { 
                 prevButton.disabled = true;
                 nextButton.disabled = true;
-                // console.log("H_DEBUG: No significant overflow, disabling both buttons.");
+                console.log("[updateNavButtonStates] No significant overflow, disabling both buttons.");
                 return;
             }
 
-            const maxScrollLeft = scrollWidth - clientWidth;
             // Calculate meaningfulScrollPortion inside, as getItemScrollAmount might depend on elements being visible/ready
-            const meaningfulScrollPortion = getItemScrollAmount() / 4; 
+            const itemScrollAmount = getItemScrollAmount(); // Call it once
+            // const meaningfulScrollPortion = itemScrollAmount / 4; // Original
+            // console.log(`[updateNavButtonStates] meaningfulScrollPortion: ${meaningfulScrollPortion} (based on itemScrollAmount: ${itemScrollAmount})`);
 
-            // Default states based on absolute boundaries
-            let isPrevDisabled = scrollLeft <= 0;
-            let isNextDisabled = scrollLeft >= maxScrollLeft;
+            // With mandatory scroll snapping, scrollLeft should be very close to 0 or maxScrollLeft at the ends.
+            // A small threshold accounts for subpixel rendering or minor deviations.
+            const atStartThreshold = 5; // pixels
+            const atEndThreshold = 5;   // pixels
 
-            // Refinement: Disable 'Next' if remaining scroll is less than a meaningful portion.
-            if (!isNextDisabled && (maxScrollLeft - scrollLeft) < meaningfulScrollPortion) {
-                // console.log(`H_DEBUG: Next button would be active (scrollLeft=${scrollLeft}, maxScrollLeft=${maxScrollLeft}), but remaining scroll (${maxScrollLeft - scrollLeft}px) is less than meaningful portion (${meaningfulScrollPortion}px). Disabling Next.`);
-                isNextDisabled = true;
-            }
+            let isPrevDisabled = scrollLeft < atStartThreshold;
+            let isNextDisabled = (scrollWidth - scrollLeft - clientWidth) < atEndThreshold;
 
-            // Refinement: Disable 'Prev' if scroll distance from start is less than a meaningful portion.
-            if (!isPrevDisabled && scrollLeft < meaningfulScrollPortion) {
-                // console.log(`H_DEBUG: Prev button would be active (scrollLeft=${scrollLeft}), but scroll amount (${scrollLeft}px) is less than meaningful portion (${meaningfulScrollPortion}px). Disabling Prev.`);
-                isPrevDisabled = true;
-            }
+            console.log(`[updateNavButtonStates] Raw check: isPrevDisabled: ${isPrevDisabled} (scrollLeft < ${atStartThreshold}), isNextDisabled: ${isNextDisabled} ((scrollWidth - scrollLeft - clientWidth) < ${atEndThreshold})`);
+
+            // Additional check for nextButton: if clientWidth itself is larger than or equal to scrollWidth, it means no scroll is possible or only one item fits.
+            // This is already handled by the (scrollWidth <= clientWidth + 1) check earlier, but good to be mindful.
+
+            // Check if there's at least one full item to scroll to for 'next'
+            // This can be relevant if the remaining space is technically > atEndThreshold but not enough for a full item view due to padding etc.
+            // However, with scroll-snap-align: start, this should be less of an issue.
+            // The primary condition (scrollWidth - scrollLeft - clientWidth) < atEndThreshold should be quite robust.
+
+            // Similarly for 'prev', scrollLeft < atStartThreshold is robust.
             
             prevButton.disabled = isPrevDisabled;
             nextButton.disabled = isNextDisabled;
-            // console.log(`H_DEBUG: Final states: prev.disabled=${prevButton.disabled}, next.disabled=${nextButton.disabled}, scrollLeft=${scrollLeft}, maxScrollLeft=${maxScrollLeft}, meaningfulScrollPortion=${meaningfulScrollPortion}`);
+            console.log(`[updateNavButtonStates] Final states: prev.disabled=${prevButton.disabled}, next.disabled=${nextButton.disabled}`);
         };
 
         prevButton.addEventListener('click', () => {
+            const scrollAmount = getItemScrollAmount();
+            console.log('[prevButton EventListener] Clicked. Scrolling left by:', scrollAmount);
             const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
             if (!horizontalContainer || window.getComputedStyle(horizontalContainer).display === 'none') {
-                return; // Do nothing if hidden
+                console.log('[prevButton EventListener] Container hidden, no scroll.');
+                return;
             }
-            horizontalTimelineWrapper.scrollLeft -= getItemScrollAmount();
+            horizontalTimelineWrapper.scrollLeft -= scrollAmount;
             setTimeout(updateNavButtonStates, 550); 
         });
 
         nextButton.addEventListener('click', () => {
+            const scrollAmount = getItemScrollAmount();
+            console.log('[nextButton EventListener] Clicked. Scrolling right by:', scrollAmount);
             const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
             if (!horizontalContainer || window.getComputedStyle(horizontalContainer).display === 'none') {
-                return; // Do nothing if hidden
+                console.log('[nextButton EventListener] Container hidden, no scroll.');
+                return;
             }
-            horizontalTimelineWrapper.scrollLeft += getItemScrollAmount();
+            horizontalTimelineWrapper.scrollLeft += scrollAmount;
             setTimeout(updateNavButtonStates, 550);
         });
 
@@ -408,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
         horizontalTimelineWrapper.addEventListener('scroll', debounce(updateNavButtonStates, 100));
 
         const attemptInitialUpdate = (retries = 5, delay = 250) => { 
-            // console.log(`H_DEBUG: Attempting initial update. Retries left: ${retries}`);
+            console.log(`[attemptInitialUpdate] Called. Retries left: ${retries}, Delay: ${delay}`);
             updateNavButtonStates(); // Update based on current dimensions first
             
             const scrollWidth = horizontalTimelineWrapper.scrollWidth;
@@ -417,8 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
             
             if (!horizontalContainer || window.getComputedStyle(horizontalContainer).display === 'none') {
-                // If hidden, no need to retry, current (disabled) state set by updateNavButtonStates is fine.
-                // console.log("H_DEBUG: Horizontal container hidden, initial update aborted.");
+                console.log("[attemptInitialUpdate] Horizontal container hidden, initial update aborted as current (disabled) state is fine.");
                 return;
             }
 
@@ -426,6 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // This helps ensure we wait if, e.g., 5 items are present but scrollWidth is only showing width for 2.
             const estimatedMinItemRenderedWidth = 300; // A conservative estimate of an item's width
             const minimumExpectedScrollWidth = itemCount * estimatedMinItemRenderedWidth;
+            console.log(`[attemptInitialUpdate] scrollWidth: ${scrollWidth}, clientWidth: ${clientWidth}, itemCount: ${itemCount}, minimumExpectedScrollWidth: ${minimumExpectedScrollWidth}`);
 
             // Condition for retrying:
             // 1. There are multiple items (potential for scrolling).
@@ -435,13 +453,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (itemCount > 1 &&
                 (scrollWidth < minimumExpectedScrollWidth || scrollWidth <= clientWidth) && 
                 retries > 0) {
-                // console.log(`H_DEBUG: Retrying initial update. scrollWidth=${scrollWidth}, clientWidth=${clientWidth}, minimumExpectedScrollWidth=${minimumExpectedScrollWidth}, itemCount=${itemCount}`);
+                console.log(`[attemptInitialUpdate] Conditions met for retry. Retrying...`);
                 setTimeout(() => attemptInitialUpdate(retries - 1, delay), delay);
             } else {
-                // console.log("H_DEBUG: Initial update deemed final or retries exhausted / conditions for retry not met.");
+                console.log("[attemptInitialUpdate] Initial update deemed final or retries exhausted / conditions for retry not met.");
                 // Perform a final update in case dimensions changed slightly during the last timeout
                 // without triggering a retry but before this 'else' block.
                 if (retries < 5) { // Only call if at least one retry attempt happened or was considered
+                     console.log("[attemptInitialUpdate] Performing a final updateNavButtonStates call.");
                      updateNavButtonStates();
                 }
             }
@@ -449,14 +468,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const horizontalContainer = horizontalTimelineWrapper.closest('.experience-horizontal-container');
         if (horizontalContainer && window.getComputedStyle(horizontalContainer).display !== 'none') {
+             console.log("[attemptInitialUpdate] Horizontal container visible, scheduling initial attempt via requestAnimationFrame.");
              requestAnimationFrame(() => { // Use requestAnimationFrame for initial call after layout
                 attemptInitialUpdate();
             });
         } else {
+            console.log("[attemptInitialUpdate] Horizontal container hidden on load, calling updateNavButtonStates directly for initial state.");
             // If starting hidden (e.g. on mobile), still set initial button states correctly.
             updateNavButtonStates();
         }
          // Fallback: A simple call for very initial state, might be overridden by attemptInitialUpdate
+        console.log("[attemptInitialUpdate] Scheduling a fallback updateNavButtonStates call in 50ms.");
         setTimeout(updateNavButtonStates, 50);
     }
 
