@@ -66,7 +66,11 @@
                 <span class="tagline-pill">Big Data Engineering</span>
             </div>
             <nav aria-label="Main navigation">
-                <ul>
+                <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-menu">
+                    <span class="material-symbols-outlined open-icon">menu</span>
+                    <span class="material-symbols-outlined close-icon">close</span>
+                </button>
+                <ul id="nav-menu">
                     <li><a href="#about">About</a></li>
                     <li><a href="#skills">Skills</a></li>
                     <li><a href="#experience">Experience</a></li>
@@ -103,7 +107,7 @@
             <div class="container">
                 <div class="card-base content-card skill-category-card">
                     <h3>
-                        <span class="material-symbols-outlined skill-category-icon">database</span>
+                        <span class="material-symbols-outlined skill-category-icon" aria-hidden="true">database</span>
                         Data Engineering & Big Data:
                     </h3>
                     <ul class="skills-list">
@@ -128,7 +132,7 @@
 
                 <div class="card-base content-card skill-category-card">
                     <h3>
-                        <span class="material-symbols-outlined skill-category-icon">cloud_circle</span>
+                        <span class="material-symbols-outlined skill-category-icon" aria-hidden="true">cloud_circle</span>
                         Cloud Platforms & DevOps:
                     </h3>
                     <p><strong>Primary Expertise:</strong> Google Cloud Platform (GCP)</p>
@@ -159,7 +163,7 @@
 
                 <div class="card-base content-card skill-category-card">
                     <h3>
-                        <span class="material-symbols-outlined skill-category-icon">monitoring</span>
+                        <span class="material-symbols-outlined skill-category-icon" aria-hidden="true">monitoring</span>
                         AI Ops & Monitoring:
                     </h3>
                     <ul class="skills-list">
@@ -175,7 +179,7 @@
 
                 <div class="card-base content-card skill-category-card">
                     <h3>
-                        <span class="material-symbols-outlined skill-category-icon">hub</span>
+                        <span class="material-symbols-outlined skill-category-icon" aria-hidden="true">hub</span>
                         Blockchain Technology:
                     </h3>
                     <ul class="skills-list">
@@ -187,7 +191,7 @@
 
                 <div class="card-base content-card skill-category-card">
                     <h3>
-                        <span class="material-symbols-outlined skill-category-icon">storage</span>
+                        <span class="material-symbols-outlined skill-category-icon" aria-hidden="true">storage</span>
                         Databases:
                     </h3>
                     <ul class="skills-list">
@@ -204,7 +208,7 @@
 
                 <div class="card-base content-card skill-category-card">
                     <h3>
-                        <span class="material-symbols-outlined skill-category-icon">query_stats</span>
+                        <span class="material-symbols-outlined skill-category-icon" aria-hidden="true">query_stats</span>
                         Other:
                     </h3>
                     <ul class="skills-list">
@@ -235,7 +239,7 @@
                         <div class="timeline-items-wrapper" role="region" aria-label="Experience Timeline" tabindex="0">
                             <div class="horizontal-timeline-item card-base content-card experience-item-card">
                                 <article>
-                                    <div class="timeline-date">Jan 2025 – Present</div>
+                                    <time class="timeline-date">Jan 2025 – Present</time>
                                     <h4><span class="job-title">Associate Data Architect</span> | <span class="company-name">NRG Energy</span></h4>
                                     <ul>
                                         <li>Led AWS to GCP Databricks migration, optimizing storage costs by 20%.</li>
@@ -246,7 +250,7 @@
                             </div>
                             <div class="horizontal-timeline-item card-base content-card experience-item-card">
                                 <article>
-                                    <div class="timeline-date">Sep 2022 – Jan 2025</div>
+                                    <time class="timeline-date">Sep 2022 – Jan 2025</time>
                                     <h4><span class="job-title">Lead Data Engineer</span> | <span class="company-name">HCA Healthcare</span></h4>
                                     <ul>
                                         <li>Migrated 100+ TB from Cloudera & Teradata to GCP.</li>
@@ -257,7 +261,7 @@
                             </div>
                             <div class="horizontal-timeline-item card-base content-card experience-item-card">
                                 <article>
-                                    <div class="timeline-date">Apr 2019 – Aug 2022</div>
+                                    <time class="timeline-date">Apr 2019 – Aug 2022</time>
                                     <h4><span class="job-title">Senior Data Engineer</span> | <span class="company-name">Charles Schwab</span></h4>
                                     <ul>
                                         <li>Migrated legacy Hadoop & Teradata to GCP , improving speeds by 25%.</li>
@@ -267,7 +271,7 @@
                             </div>
                             <div class="horizontal-timeline-item card-base content-card experience-item-card">
                                 <article>
-                                    <div class="timeline-date">Aug 2018 – Mar 2019</div>
+                                    <time class="timeline-date">Aug 2018 – Mar 2019</time>
                                     <h4><span class="job-title">Data Engineer</span> | <span class="company-name">DSO MCS Group</span></h4>
                                     <ul>
                                         <li>Developed cloud-native data solutions with Talend ingestion pipelines.</li>
@@ -276,7 +280,7 @@
                             </div>
                             <div class="horizontal-timeline-item card-base content-card experience-item-card">
                                 <article>
-                                    <div class="timeline-date">Jun 2015 – Jul 2018</div>
+                                    <time class="timeline-date">Jun 2015 – Jul 2018</time>
                                     <h4><span class="job-title">ETL Developer</span> | <span class="company-name">InnoMinds</span></h4>
                                     <ul>
                                         <li>Designed ETL workflows, improving data accuracy and reporting.</li>
@@ -295,7 +299,7 @@
                             <div class="timeline-point"></div>
                             <div class="timeline-content card-base content-card experience-item-card">
                                 <article>
-                                    <div class="timeline-date">Sep 2023 – Present</div>
+                                    <time class="timeline-date">Jan 2025 – Present</time>
                                     <h4><span class="job-title">Associate Data Architect</span> | <span class="company-name">NRG Energy</span></h4>
                                     <ul>
                                         <li>Led AWS to GCP Databricks migration, optimizing storage costs by 20%.</li>
@@ -309,7 +313,7 @@
                             <div class="timeline-point"></div>
                             <div class="timeline-content card-base content-card experience-item-card">
                                 <article>
-                                    <div class="timeline-date">Sep 2022 – Jan 2025</div>
+                                    <time class="timeline-date">Sep 2022 – Jan 2025</time>
                                     <h4><span class="job-title">Lead Data Engineer</span> | <span class="company-name">HCA Healthcare</span></h4>
                                     <ul>
                                         <li>Migrated 100+ TB from Cloudera & Teradata to GCP.</li>
@@ -323,7 +327,7 @@
                             <div class="timeline-point"></div>
                             <div class="timeline-content card-base content-card experience-item-card">
                                 <article>
-                                    <div class="timeline-date">Apr 2019 – Aug 2022</div>
+                                    <time class="timeline-date">Apr 2019 – Aug 2022</time>
                                     <h4><span class="job-title">Senior Data Engineer</span> | <span class="company-name">Charles Schwab</span></h4>
                                     <ul>
                                         <li>Migrated legacy Hadoop & Teradata to GCP , improving speeds by 25%.</li>
@@ -336,7 +340,7 @@
                             <div class="timeline-point"></div>
                             <div class="timeline-content card-base content-card experience-item-card">
                                 <article>
-                                    <div class="timeline-date">Aug 2018 – Mar 2019</div>
+                                    <time class="timeline-date">Aug 2018 – Mar 2019</time>
                                     <h4><span class="job-title">Data Engineer</span> | <span class="company-name">DSO MCS Group</span></h4>
                                     <ul>
                                         <li>Developed cloud-native data solutions with Talend ingestion pipelines.</li>
@@ -348,7 +352,7 @@
                             <div class="timeline-point"></div>
                             <div class="timeline-content card-base content-card experience-item-card">
                                 <article>
-                                    <div class="timeline-date">Jun 2015 – Jul 2018</div>
+                                    <time class="timeline-date">Jun 2015 – Jul 2018</time>
                                     <h4><span class="job-title">ETL Developer</span> | <span class="company-name">InnoMinds</span></h4>
                                     <ul>
                                         <li>Designed ETL workflows, improving data accuracy and reporting.</li>
@@ -455,7 +459,7 @@
     </main>
     <footer>
         <div class="container">
-            <p>&copy; 2025 JThiruveedula</p>
+            <p>&copy; 2025 Jagadeesh Thiruveedula</p>
         </div>
     </footer>
     <a href="#" class="scroll-to-top button button-filled" aria-label="Scroll to top">

@@ -218,10 +218,14 @@ export function initTimelineAriaManagement() {
 
         if (isMobileView) {
             verticalContainerForAria.removeAttribute('aria-hidden');
+            verticalContainerForAria.style.display = 'block'; // JS ensures visibility
             horizontalContainerForAria.setAttribute('aria-hidden', 'true');
+            horizontalContainerForAria.style.display = 'none'; // JS ensures hidden
         } else {
             horizontalContainerForAria.removeAttribute('aria-hidden');
+            horizontalContainerForAria.style.display = 'flex'; // JS ensures visibility
             verticalContainerForAria.setAttribute('aria-hidden', 'true');
+            verticalContainerForAria.style.display = 'none'; // JS ensures hidden
         }
     }
 

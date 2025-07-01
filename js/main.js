@@ -1,6 +1,6 @@
 'use strict';
 
-import { initThemeToggle, initScrollToTop, initContactForm } from './ui.js';
+import { initThemeToggle, initScrollToTop, initContactForm, initNavigation } from './ui.js';
 import {
     initNameAnimation,
     initTaglineAnimation,
@@ -15,6 +15,7 @@ import {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize UI components
+    initNavigation();
     initThemeToggle();
     initScrollToTop();
     initContactForm();
