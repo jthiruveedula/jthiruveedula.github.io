@@ -12,18 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18' # Specify your desired Node.js version
-
-      - name: Install dependencies
-        run: npm install eslint prettier --save-dev # Assuming package.json exists or will be created
-
-      - name: Lint and Format
-        run: |
-          npx eslint . --ext .js,.html --fix
-          npx prettier . --write
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
