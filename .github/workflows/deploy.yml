@@ -1,0 +1,36 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Or your default branch
+      - portfolio-enhancements
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Specify your desired Node.js version
+
+      - name: Install dependencies
+        run: npm install eslint prettier --save-dev # Assuming package.json exists or will be created
+
+      - name: Lint and Format
+        run: |
+          npx eslint . --ext .js,.html --fix
+          npx prettier . --write
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./ # Assuming your site is in the root directory
+          # If your site is in a subfolder (e.g., 'dist' or 'public'), change publish_dir accordingly.
+          # publish_branch: gh-pages # Default is gh-pages, ensure your repo settings reflect this.
+          # cname: your-custom-domain.com # If you have a custom domain
