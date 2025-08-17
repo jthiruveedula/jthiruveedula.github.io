@@ -2,186 +2,71 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="About - Jagadeesh Thiruveedula | Senior Data Architect">
-  <main class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
-    <!-- Hero Section -->
-    <section class="py-20 px-6">
-      <div class="max-w-6xl mx-auto">
-        <div class="grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">
-              Senior Data Architect
-            </h1>
-            <p class="text-xl text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
-              Leading enterprise data transformation with 9+ years of expertise in GCP, GenAI, and Vector Databases. 
-              Specializing in scalable data architectures that unlock business value through intelligent automation and AI-driven insights.
-            </p>
-            <div class="flex flex-wrap gap-4">
-              <a href="https://linkedin.com/in/jthiruveedula" 
-                 class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                LinkedIn Profile
-              </a>
-              <a href="mailto:jagadeesh.thiruveedula@outlook.com" 
-                 class="px-6 py-3 border border-slate-300 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                Contact
-              </a>
-            </div>
-          </div>
-          <div class="relative">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8">
-              <div class="space-y-6">
-                <div class="flex items-center justify-between">
-                  <span class="text-sm font-medium text-slate-500 dark:text-slate-400">Current Role</span>
-                  <span class="text-lg font-semibold text-slate-900 dark:text-white">Senior Data Architect</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-sm font-medium text-slate-500 dark:text-slate-400">Location</span>
-                  <span class="text-lg font-semibold text-slate-900 dark:text-white">Dallas, TX</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-sm font-medium text-slate-500 dark:text-slate-400">Experience</span>
-                  <span class="text-lg font-semibold text-slate-900 dark:text-white">9+ Years</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-sm font-medium text-slate-500 dark:text-slate-400">Specialization</span>
-                  <span class="text-lg font-semibold text-slate-900 dark:text-white">GCP & GenAI</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Core Expertise -->
-    <section class="py-16 px-6 bg-white/50 dark:bg-slate-800/50">
-      <div class="max-w-6xl mx-auto">
-        <h2 class="text-3xl font-bold text-center text-slate-900 dark:text-white mb-12">
-          Core Expertise
-        </h2>
-        <div class="grid md:grid-cols-3 gap-8">
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-8">
-            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-6">
-              <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-              Google Cloud Platform
-            </h3>
-            <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-              Expert in BigQuery, Dataflow, Cloud Functions, and GCP AI/ML services. 
-              Certified in designing enterprise-scale data architectures on GCP.
-            </p>
-          </div>
-
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-8">
-            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-6">
-              <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-              Generative AI & LLMs
-            </h3>
-            <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-              Building production GenAI applications with Vertex AI, implementing RAG architectures, 
-              and developing AI-powered analytics solutions for enterprise use cases.
-            </p>
-          </div>
-
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-8">
-            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-6">
-              <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-              Vector Databases & Search
-            </h3>
-            <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-              Implementing semantic search and similarity matching using Pinecone, Weaviate, and 
-              Google Cloud Vertex AI Vector Search for advanced AI applications.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Impact Statistics -->
-    <section class="py-16 px-6">
-      <div class="max-w-6xl mx-auto">
-        <h2 class="text-3xl font-bold text-center text-slate-900 dark:text-white mb-12">
-          Impact & Achievements
-        </h2>
-        <div class="grid md:grid-cols-4 gap-8">
-          <div class="text-center">
-            <div class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">$25M+</div>
-            <div class="text-slate-600 dark:text-slate-300">Cost Optimization Delivered</div>
-          </div>
-          <div class="text-center">
-            <div class="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">100TB+</div>
-            <div class="text-slate-600 dark:text-slate-300">Data Processed Daily</div>
-          </div>
-          <div class="text-center">
-            <div class="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">15+</div>
-            <div class="text-slate-600 dark:text-slate-300">Enterprise Projects</div>
-          </div>
-          <div class="text-center">
-            <div class="text-4xl font-bold text-orange-600 dark:text-orange-400 mb-2">99.8%</div>
-            <div class="text-slate-600 dark:text-slate-300">System Uptime</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Professional Summary -->
-    <section class="py-16 px-6 bg-slate-100 dark:bg-slate-800">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold text-center text-slate-900 dark:text-white mb-12">
-          Professional Summary
-        </h2>
-        <div class="prose prose-lg max-w-none dark:prose-invert">
-          <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
-            As a Senior Data Architect with 9+ years of experience, I specialize in designing and implementing 
-            enterprise-scale data solutions on Google Cloud Platform. My expertise encompasses the full spectrum 
-            of modern data engineering, from traditional data warehousing to cutting-edge generative AI applications.
-          </p>
-          <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
-            I have successfully led data transformation initiatives for Fortune 500 companies, delivering solutions 
-            that process hundreds of terabytes of data daily while reducing operational costs by millions. My approach 
-            combines deep technical expertise in GCP services with strategic business acumen to ensure data architectures 
-            drive measurable business value.
-          </p>
-          <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
-            Currently focused on the intersection of traditional data engineering and artificial intelligence, I'm building 
-            next-generation platforms that leverage vector databases, large language models, and real-time analytics to 
-            unlock unprecedented possibilities for enterprise intelligence and automation.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="py-16 px-6 bg-white dark:bg-slate-900">
-      <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-8">
-          Let's Connect
-        </h2>
-        <p class="text-lg text-slate-600 dark:text-slate-300 mb-8">
-          Interested in discussing data architecture, AI implementations, or potential collaborations? 
-          I'd love to connect and explore opportunities.
+<Layout title="About — Jagadeesh Thiruveedula">
+  <!-- Hero / Summary Card -->
+  <main class="w-full min-h-[80vh] py-24 px-4 flex flex-col items-center">
+    <section class="card max-w-3xl w-full flex flex-col md:flex-row gap-8 p-10 shadow-2xl bg-white/90 backdrop-blur-md items-center">
+      <img src="https://avatars.githubusercontent.com/u/65748885?v=4"
+           class="rounded-full h-32 w-32 md:h-44 md:w-44 border-4 border-blue-300 shadow-lg mb-2"
+           alt="Jagadeesh Thiruveedula" />
+      <div class="flex-1">
+        <h1 class="section-title mb-1">About Me</h1>
+        <h2 class="text-xl md:text-2xl font-bold text-blue-700 mb-3">Senior Data Architect & GenAI Strategist</h2>
+        <p class="text-lg mb-2 text-blue-900 dark:text-blue-100">
+          10+ years enabling enterprise modernization, cloud adoption, and GenAI at scale.
         </p>
-        <div class="flex justify-center gap-6">
-          <a href="https://linkedin.com/in/jthiruveedula" 
-             class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold">
-            LinkedIn
-          </a>
-          <a href="mailto:jagadeesh.thiruveedula@outlook.com" 
-             class="px-8 py-3 border-2 border-slate-300 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-semibold">
-            Email
-          </a>
+        <p class="text-slate-700 dark:text-slate-200 text-base">
+          I design, lead, and scale cloud data platforms and AI-driven pipelines for Fortune 500 and high-growth innovation companies. I thrive at the intersection of data engineering, business impact, and the next wave of AI transformation—building for security, agility, and measurable results.
+        </p>
+        <div class="flex flex-wrap gap-5 mt-5 text-sm">
+          <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">Dallas, TX</span>
+          <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">10+ Years Exp</span>
+          <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">GCP, GenAI, Data Modernization</span>
         </div>
+      </div>
+    </section>
+    <!-- Expertise Highlights -->
+    <section class="grid grid-cols-1 md:grid-cols-3 w-full max-w-4xl gap-8 mt-14 mb-10">
+      <div class="card flex flex-col items-center p-7 gap-2 text-center">
+        <svg class="w-10 h-10 mb-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-width="2" d="M12 20l9-7l-9-7l-9 7l9 7z"/><path stroke-width="2" d="M12 4v16" />
+        </svg>
+        <span class="font-semibold text-blue-600 dark:text-blue-200">Cloud Data Architectures</span>
+        <span class="text-xs text-slate-600 dark:text-slate-400 mt-1">
+          Expert in GCP, BigQuery, Dataflow & multi-cloud datalake platforms. Leading $MM data transformations.
+        </span>
+      </div>
+      <div class="card flex flex-col items-center p-7 gap-2 text-center">
+        <svg class="w-10 h-10 mb-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke-width="2"/>
+          <path stroke-width="2" d="M8 12h8m-4-4v8" />
+        </svg>
+        <span class="font-semibold text-green-600 dark:text-green-200">Enterprise GenAI & Vector Search</span>
+        <span class="text-xs text-slate-600 dark:text-slate-400 mt-1">
+          Building GenAI at scale: Vertex AI, secure LLMs, RAG, Pinecone, Weaviate—driving new business value.
+        </span>
+      </div>
+      <div class="card flex flex-col items-center p-7 gap-2 text-center">
+        <svg class="w-10 h-10 mb-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-width="2" d="M3 10h18M4 6h16M6 18h12" />
+        </svg>
+        <span class="font-semibold text-indigo-600 dark:text-indigo-200">Impact & Leadership</span>
+        <span class="text-xs text-slate-600 dark:text-slate-400 mt-1">
+          Trusted for cloud adoption, cost reduction, and high-SLA delivery at Quantiphi, Charles Schwab, and more.
+        </span>
+      </div>
+    </section>
+    <!-- CTA -->
+    <section class="max-w-2xl mt-5 flex flex-col items-center">
+      <hr class="w-2/3 border-t-2 border-blue-100 dark:border-blue-800 my-8 rounded-full opacity-75 mx-auto" />
+      <h2 class="text-xl font-bold text-blue-700 mb-2 text-center">Let’s connect to advance your data strategy.</h2>
+      <div class="flex gap-4 mt-3">
+        <a href="mailto:jagadeesh.thiruveedula78@gmail.com" class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-6 py-3 rounded-md shadow-lg transition">
+          Email
+        </a>
+        <a href="https://www.linkedin.com/in/jagadeesh-thiruveedula/" target="_blank" rel="noopener" class="bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-900 dark:text-white font-semibold px-6 py-3 rounded-md shadow transition">
+          LinkedIn
+        </a>
       </div>
     </section>
   </main>
