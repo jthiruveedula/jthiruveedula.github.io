@@ -1,0 +1,180 @@
+---
+// Skills component for portfolio
+const skills = {
+  frontend: [
+    { name: 'React', level: 95 },
+    { name: 'TypeScript', level: 90 },
+    { name: 'HTML/CSS', level: 95 },
+    { name: 'JavaScript', level: 92 },
+    { name: 'Tailwind CSS', level: 88 },
+    { name: 'Vue.js', level: 85 }
+  ],
+  backend: [
+    { name: 'Node.js', level: 90 },
+    { name: 'Python', level: 88 },
+    { name: 'Express.js', level: 85 },
+    { name: 'Django', level: 82 },
+    { name: 'FastAPI', level: 80 },
+    { name: 'GraphQL', level: 75 }
+  ],
+  database: [
+    { name: 'PostgreSQL', level: 85 },
+    { name: 'MongoDB', level: 82 },
+    { name: 'Redis', level: 78 },
+    { name: 'MySQL', level: 80 }
+  ],
+  tools: [
+    { name: 'Git', level: 92 },
+    { name: 'Docker', level: 85 },
+    { name: 'AWS', level: 80 },
+    { name: 'Kubernetes', level: 75 },
+    { name: 'CI/CD', level: 82 },
+    { name: 'Linux', level: 88 }
+  ]
+};
+---
+
+<section id="skills" class="py-20 bg-white dark:bg-gray-900">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        Technical Skills
+      </h2>
+      <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+        A comprehensive overview of my technical expertise and proficiency levels
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <!-- Frontend Skills -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 text-center">
+          Frontend
+        </h3>
+        <div class="space-y-4">
+          {skills.frontend.map((skill) => (
+            <div class="skill-item">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {skill.name}
+                </span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">
+                  {skill.level}%
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                  style={`width: ${skill.level}%`}
+                ></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Backend Skills -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 text-center">
+          Backend
+        </h3>
+        <div class="space-y-4">
+          {skills.backend.map((skill) => (
+            <div class="skill-item">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {skill.name}
+                </span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">
+                  {skill.level}%
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div 
+                  class="bg-green-600 h-2 rounded-full transition-all duration-500 ease-out"
+                  style={`width: ${skill.level}%`}
+                ></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Database Skills -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 text-center">
+          Database
+        </h3>
+        <div class="space-y-4">
+          {skills.database.map((skill) => (
+            <div class="skill-item">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {skill.name}
+                </span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">
+                  {skill.level}%
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div 
+                  class="bg-purple-600 h-2 rounded-full transition-all duration-500 ease-out"
+                  style={`width: ${skill.level}%`}
+                ></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Tools & DevOps Skills -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 text-center">
+          Tools & DevOps
+        </h3>
+        <div class="space-y-4">
+          {skills.tools.map((skill) => (
+            <div class="skill-item">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {skill.name}
+                </span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">
+                  {skill.level}%
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div 
+                  class="bg-orange-600 h-2 rounded-full transition-all duration-500 ease-out"
+                  style={`width: ${skill.level}%`}
+                ></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .skill-item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .skill-item:nth-child(1) { animation-delay: 0.1s; }
+  .skill-item:nth-child(2) { animation-delay: 0.2s; }
+  .skill-item:nth-child(3) { animation-delay: 0.3s; }
+  .skill-item:nth-child(4) { animation-delay: 0.4s; }
+  .skill-item:nth-child(5) { animation-delay: 0.5s; }
+  .skill-item:nth-child(6) { animation-delay: 0.6s; }
+</style>
