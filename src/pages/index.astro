@@ -2,44 +2,109 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Jagadeesh Thiruveedula — Data Architect & GenAI Leader">
-  <main class="flex flex-col items-center justify-center min-h-screen px-4 py-16 bg-gradient-to-br from-indigo-900 via-slate-900 to-blue-900 text-white">
-    <section class="max-w-3xl mx-auto mb-10 p-6 rounded-xl bg-black bg-opacity-50 shadow-xl">
-      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-blue-300">
-        Jagadeesh Thiruveedula
-      </h1>
-      <h2 class="text-2xl md:text-3xl font-semibold mb-4">
-        Data Architect | GenAI, GCP, Vector DBs, Data Modernization
-      </h2>
-      <p class="mb-5 text-lg text-blue-100">
-        10+ years leading cloud-native data platforms, GCP migrations, and GenAI innovation. Delivering
-        business acceleration by reducing infra cost, improving performance, and enabling AI-driven
-        analytics at enterprise scale.
-      </p>
-      <ul class="flex flex-wrap gap-4 mb-6 font-mono text-sm">
-        <li class="bg-blue-700 px-4 py-2 rounded-lg">25%+ Cost Optimization</li>
-        <li class="bg-slate-800 px-4 py-2 rounded-lg">100TB+ Data Processed Daily</li>
-        <li class="bg-green-700 px-4 py-2 rounded-lg">99.8% Uptime</li>
-        <li class="bg-indigo-800 px-4 py-2 rounded-lg">15+ Enterprise Projects</li>
-      </ul>
-      <nav class="flex flex-wrap gap-4 my-4">
-        <a href="/about" class="underline hover:text-blue-400">About</a>
-        <a href="/experience" class="underline hover:text-blue-400">Experience</a>
-        <a href="/skills" class="underline hover:text-blue-400">Skills</a>
-        <a href="/contact" class="underline hover:text-blue-400">Contact</a>
-        <a href="https://www.linkedin.com/in/jagadeesh-thiruveedula/" target="_blank" rel="noopener" class="underline hover:text-blue-400">LinkedIn</a>
-      </nav>
-      <div class="mt-6 flex gap-4">
-        <a href="/about" class="bg-blue-600 px-6 py-3 rounded-lg text-white font-semibold shadow hover:bg-blue-700 transition-colors">
-          My Story
-        </a>
-        <a href="/experience" class="bg-transparent border border-blue-600 px-6 py-3 rounded-lg text-blue-300 font-semibold hover:bg-blue-600 hover:text-white transition-colors">
-          My Impact
-        </a>
+<Layout title="Jagadeesh Thiruveedula — Data Architect, GenAI & GCP Leader">
+  <div class="min-h-screen flex bg-gradient-to-tr from-slate-50 via-slate-100 to-blue-50 dark:from-slate-800 dark:via-slate-900 dark:to-blue-950 text-slate-900 dark:text-slate-100">
+    <!-- Sidebar Navigation -->
+    <aside class="flex flex-col gap-8 py-12 px-8 bg-slate-800 dark:bg-slate-950 min-h-screen w-72 shadow-xl justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-blue-400 mb-4 tracking-tight">
+          JT Data Architect
+        </h1>
+        <nav class="flex flex-col gap-3 font-semibold">
+          <a href="/" class="hover:text-blue-400 transition">Home</a>
+          <a href="/about" class="hover:text-blue-400 transition">About Me</a>
+          <a href="/experience" class="hover:text-blue-400 transition">Experience</a>
+          <a href="/skills" class="hover:text-blue-400 transition">Skills</a>
+          <a href="/contact" class="hover:text-blue-400 transition">Contact</a>
+          <a href="https://www.linkedin.com/in/jagadeesh-thiruveedula/" target="_blank" rel="noopener" class="hover:text-blue-400 transition">LinkedIn</a>
+        </nav>
       </div>
-    </section>
-    <footer class="mt-10 text-slate-400 text-xs text-center opacity-80">
-      &copy; {new Date().getFullYear()} Jagadeesh Thiruveedula — Data Architect. All rights reserved.
-    </footer>
-  </main>
+      <div class="text-xs text-slate-400 dark:text-slate-600">
+        &copy; {new Date().getFullYear()} Jagadeesh Thiruveedula
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col py-16 px-12">
+      <!-- Hero Section -->
+      <section class="mb-10">
+        <div class="flex flex-col md:flex-row items-center md:justify-between gap-6">
+          <div>
+            <h2 class="text-4xl font-bold text-slate-900 dark:text-blue-200 mb-2 tracking-tight">
+              Jagadeesh Thiruveedula
+            </h2>
+            <h3 class="text-xl mb-3 text-blue-700 dark:text-blue-300 font-semibold">
+              Data Architect | GenAI, GCP, Vector Databases | Cloud Transformation
+            </h3>
+            <p class="mb-2 text-lg text-slate-700 dark:text-slate-200 font-medium max-w-2xl">
+              10+ years building flagship cloud-native data/AI platforms and leading enterprise modernization initiatives.
+              <span class="block mt-1 text-blue-900 dark:text-blue-200">
+                Specializing in end-to-end GCP data solutions, GenAI (RAG, vector DBs), and real-time analytics at scale.
+              </span>
+            </p>
+            <div class="flex gap-4 mt-4">
+              <a href="/about" class="bg-blue-700 hover:bg-blue-800 text-white px-5 py-3 rounded-lg shadow font-semibold transition">View Profile</a>
+              <a href="/experience" class="bg-blue-100 hover:bg-blue-200 dark:bg-slate-900 border border-blue-700 dark:border-blue-300 text-blue-900 dark:text-blue-100 px-5 py-3 rounded-lg shadow font-semibold transition">See Experience</a>
+            </div>
+          </div>
+          <img src="https://avatars.githubusercontent.com/u/65748885?v=4" alt="Jagadeesh Thiruveedula" class="rounded-full h-36 w-36 border-4 border-blue-400 shadow-lg" />
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-14">
+        <div class="rounded-xl bg-white dark:bg-slate-900 shadow-md py-8 px-7 flex flex-col items-center border-t-4 border-blue-500">
+          <div class="text-3xl font-bold text-blue-800 dark:text-blue-400">25%+</div>
+          <div class="text-xs mt-2 uppercase tracking-wide text-slate-500 dark:text-slate-300">Cost Optimization</div>
+        </div>
+        <div class="rounded-xl bg-white dark:bg-slate-900 shadow-md py-8 px-7 flex flex-col items-center border-t-4 border-indigo-500">
+          <div class="text-3xl font-bold text-indigo-800 dark:text-indigo-300">100TB+</div>
+          <div class="text-xs mt-2 uppercase tracking-wide text-slate-500 dark:text-slate-300">Data Processed Daily</div>
+        </div>
+        <div class="rounded-xl bg-white dark:bg-slate-900 shadow-md py-8 px-7 flex flex-col items-center border-t-4 border-green-600">
+          <div class="text-3xl font-bold text-green-700 dark:text-green-300">99.8%</div>
+          <div class="text-xs mt-2 uppercase tracking-wide text-slate-500 dark:text-slate-300">System Uptime</div>
+        </div>
+        <div class="rounded-xl bg-white dark:bg-slate-900 shadow-md py-8 px-7 flex flex-col items-center border-t-4 border-teal-500">
+          <div class="text-3xl font-bold text-teal-700 dark:text-teal-300">15+</div>
+          <div class="text-xs mt-2 uppercase tracking-wide text-slate-500 dark:text-slate-300">Enterprise Projects</div>
+        </div>
+      </section>
+
+      <!-- Core Areas Section -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-12">
+        <div class="rounded-lg p-6 bg-blue-50 dark:bg-slate-900 shadow flex flex-col gap-2">
+          <div class="font-bold text-blue-700 dark:text-blue-300">Google Cloud & Data Engineering</div>
+          <ul class="text-slate-700 dark:text-slate-300 text-sm pl-3 list-disc">
+            <li>BigQuery, Dataflow, Dataproc, Composer</li>
+            <li>DataOps, ETL, ELT, real-time streaming</li>
+            <li>Infrastructure as Code, multi-cloud</li>
+          </ul>
+        </div>
+        <div class="rounded-lg p-6 bg-blue-50 dark:bg-slate-900 shadow flex flex-col gap-2">
+          <div class="font-bold text-blue-700 dark:text-blue-300">Generative AI & Vector Search</div>
+          <ul class="text-slate-700 dark:text-slate-300 text-sm pl-3 list-disc">
+            <li>VertexAI, RAG, LLM evaluation, agentic workflows</li>
+            <li>Pinecone, Weaviate, vector databases</li>
+            <li>Secure enterprise LLM integration</li>
+          </ul>
+        </div>
+        <div class="rounded-lg p-6 bg-blue-50 dark:bg-slate-900 shadow flex flex-col gap-2">
+          <div class="font-bold text-blue-700 dark:text-blue-300">Leadership & Impact</div>
+          <ul class="text-slate-700 dark:text-slate-300 text-sm pl-3 list-disc">
+            <li>Leading teams & projects at Quantiphi, Charles Schwab</li>
+            <li>Cloud migration, cost optimization, SLA reliability</li>
+            <li>Featured in press for innovation and scale</li>
+          </ul>
+        </div>
+      </section>
+
+      <div class="w-full border-t border-blue-200 dark:border-slate-700 mb-8" />
+
+      <section class="mt-10 flex flex-col items-center gap-6">
+        <h4 class="text-xl font-semibold text-blue-800 dark:text-blue-200">Ready to Build the Future of Enterprise Data?</h4>
+        <a href="/contact" class="bg-blue-700 hover:bg-blue-800 text-white px-8 py-3 rounded-lg font-semibold shadow-lg transition">Let’s Connect</a>
+      </section>
+    </main>
+  </div>
 </Layout>
