@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-
-# Sitemap (optional, but good practice if you have one)
-# Remove or update if you don't have a sitemap.xml
-# Sitemap: https://jthiruveedula.github.io/sitemap.xml
