@@ -1,50 +1,98 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
-import Header from '../components/Header.astro';
+import Navigation from '../components/Navigation.astro';
 import Hero from '../components/Hero.astro';
-import Footer from '../components/Footer.astro';
+import About from '../components/About.astro';
+import Skills from '../components/Skills.astro';
+import Projects from '../components/Projects.astro';
+import Experience from '../components/Experience.astro';
+import Education from '../components/Education.astro';
+import Contact from '../components/Contact.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import ScrollToTop from '../components/ScrollToTop.astro';
+
+// GitHub API integration for dynamic projects
+const GITHUB_USERNAME = 'jthiruveedula';
+const GITHUB_API_URL = `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=6`;
+
+let repositories = [];
+try {
+	const response = await fetch(GITHUB_API_URL);
+	if (response.ok) {
+		repositories = await response.json();
+	}
+} catch (error) {
+	console.error('Failed to fetch GitHub repositories:', error);
+}
 ---
 
-<Layout title="jthiruveedula - Portfolio">
-	<main class="w-full max-w-4xl mx-auto p-8">
-		<Header />
-		<Hero />
-		
-		<section class="my-16" id="projects">
-			<h2 class="text-4xl font-bold mb-8">Projects</h2>
-			<ul class="grid grid-cols-1 md:grid-cols-2 gap-8">
-				<li>
-					<Card 
-						href="#"
-						title="Project 1"
-						body="This is a description of project 1."
-					/>
-				</li>
-				<li>
-					<Card 
-						href="#"
-						title="Project 2"
-						body="This is a description of project 2."
-					/>
-				</li>
-				<li>
-					<Card 
-						href="#"
-						title="Project 3"
-						body="This is a description of project 3."
-					/>
-				</li>
-				<li>
-					<Card 
-						href="#"
-						title="Project 4"
-						body="This is a description of project 4."
-					/>
-				</li>
-			</ul>
-		</section>
-		
-		<Footer />
-	</main>
+<Layout 
+	title="Jagadeesh Thiruveedula - Full Stack Developer & AI Engineer"
+	description="Experienced Full Stack Developer specializing in modern web technologies, AI/ML solutions, and cloud architecture. Passionate about building scalable applications and innovative solutions."
+	keywords="Full Stack Developer, AI Engineer, React, Node.js, Python, Machine Learning, Cloud Computing, Software Engineer"
+	author="Jagadeesh Thiruveedula"
+	og:title="Jagadeesh Thiruveedula - Portfolio"
+	og:description="Full Stack Developer & AI Engineer passionate about innovative technology solutions"
+	og:url="https://jthiruveedula.github.io"
+	og:type="website"
+>
+	<!-- Navigation -->
+	<Navigation />
+	
+	<!-- Hero Section -->
+	<Hero />
+	
+	<!-- About Section -->
+	<About />
+	
+	<!-- Skills Section -->
+	<Skills />
+	
+	<!-- Projects Section -->
+	<Projects repositories={repositories} />
+	
+	<!-- Experience Section -->
+	<Experience />
+	
+	<!-- Education Section -->
+	<Education />
+	
+	<!-- Contact Section -->
+	<Contact />
+	
+	<!-- Theme Toggle Button -->
+	<ThemeToggle />
+	
+	<!-- Scroll to Top Button -->
+	<ScrollToTop />
 </Layout>
+
+<style>
+	/* Smooth scrolling for anchor links */
+	html {
+		scroll-behavior: smooth;
+	}
+	
+	/* Dark theme animations and transitions */
+	:global(.dark-transition) {
+		transition: background-color 0.3s ease, color 0.3s ease;
+	}
+	
+	/* Custom scrollbar */
+	:global(::-webkit-scrollbar) {
+		width: 8px;
+	}
+	
+	:global(::-webkit-scrollbar-track) {
+		background: rgba(0, 0, 0, 0.1);
+	}
+	
+	:global(::-webkit-scrollbar-thumb) {
+		background: #4f46e5;
+		border-radius: 4px;
+	}
+	
+	:global(::-webkit-scrollbar-thumb:hover) {
+		background: #4338ca;
+	}
+</style>
