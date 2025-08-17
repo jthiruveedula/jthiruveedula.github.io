@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Skills from '../components/Skills.astro';
+import Experience from '../components/Experience.astro';
+import Projects from '../components/Projects.astro';
+import Contact from '../components/Contact.astro';
+
+export const title = "Jagadeesh Thiruveedula - Full Stack Developer";
+export const description = "Professional portfolio of Jagadeesh Thiruveedula, showcasing expertise in modern web development, cloud technologies, and software engineering.";
+---
+
+<Layout title={title} description={description}>
+  <main class="min-h-screen">
+    <Hero />
+    <About />
+    <Skills />
+    <Experience />
+    <Projects />
+    <Contact />
+  </main>
+</Layout>
+
+<style>
+  /* Custom animations and effects */
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+  
+  :global(body) {
+    overflow-x: hidden;
+  }
+  
+  main {
+    animation: fadeIn 0.8s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
