@@ -1,0 +1,137 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Experience — Jagadeesh Thiruveedula">
+  <main class="min-h-screen px-3 py-12 md:px-20 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-950">
+    <h1 class="text-4xl font-extrabold mb-12 text-blue-800 dark:text-blue-200 tracking-tight">Experience Timeline</h1>
+
+    <!-- Work Experience -->
+    <section>
+      <h2 class="text-2xl font-bold mb-6 text-blue-700 dark:text-blue-300 flex items-center gap-2">
+        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7V3a1 1 0 00-1-1H9a1 1 0 00-1 1v4M5 9a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V9z" /></svg>
+        Work Experience
+      </h2>
+      <div class="relative pl-8 ml-3 border-l-4 border-blue-300">
+        <!-- Quantiphi -->
+        <div class="mb-10 group flex items-start">
+          <span class="absolute -left-4 mt-2 flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 border-4 border-white dark:border-slate-900 shadow-lg animate-pulse">
+            <img src="https://quantiphi.com/favicon.ico" alt="Quantiphi" class="w-5 h-5 rounded-full" />
+          </span>
+          <div class="flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-lg p-6 transition-all border border-blue-100 dark:border-blue-800 group-hover:scale-[1.02] group-hover:shadow-xl">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="text-lg font-bold text-blue-700 dark:text-blue-200">Data Architect</span>
+              <span class="ml-3 text-slate-500 dark:text-slate-400">Quantiphi</span>
+              <span class="ml-auto text-xs font-mono rounded-full bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-white px-2 py-0.5">Sep 2022 – Present</span>
+            </div>
+            <ul class="list-disc pl-6 mt-1 leading-relaxed text-[1rem]">
+              <li>GCP modernization: <b>-28% infra cost</b>, +35% perf, multi-cloud best practices</li>
+              <li>Brought RAG/GenAI pipelines to prod; LLM eval, vector DBs, IAM governance</li>
+              <li>Standardized CDC/streaming (Dataflow); <b>cut pipeline time 40%</b>, audit pass 99%</li>
+              <li>3x GenAI adoption across teams</li>
+            </ul>
+            <div class="flex flex-wrap gap-3 text-xs mt-3">
+              <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold">GCP</span>
+              <span class="bg-slate-100 text-blue-900 px-3 py-1 rounded-full font-bold">GenAI</span>
+              <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">Vector DBs</span>
+            </div>
+          </div>
+        </div>
+        <!-- Charles Schwab -->
+        <div class="mb-10 group flex items-start">
+          <span class="absolute -left-4 mt-2 flex items-center justify-center w-7 h-7 rounded-full bg-indigo-600 border-4 border-white dark:border-slate-900 shadow-lg animate-pulse">
+            <img src="https://content.schwab.com/web/favicon.ico" alt="Charles Schwab" class="w-5 h-5 rounded-full" />
+          </span>
+          <div class="flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-lg p-6 transition-all border border-indigo-100 dark:border-indigo-900 group-hover:scale-[1.02] group-hover:shadow-xl">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="text-lg font-bold text-indigo-700 dark:text-indigo-200">Sr. Data Engineer</span>
+              <span class="ml-3 text-slate-500 dark:text-slate-400">Charles Schwab</span>
+              <span class="ml-auto text-xs font-mono rounded-full bg-indigo-50 text-indigo-900 dark:bg-indigo-950 dark:text-white px-2 py-0.5">Nov 2021 – Sep 2022</span>
+            </div>
+            <ul class="list-disc pl-6 mt-1 leading-relaxed text-[1rem]">
+              <li>Migrated Hadoop/Teradata warehouse to GCP; <b>+25% perf, cost down</b></li>
+              <li>Automated ETL on BigQuery, PySpark, Talend; SLA + reliability</li>
+              <li>DevOps: Terraform-based CI/CD, rollback, full IaC adoption</li>
+              <li>Press-featured early cloud-migration leader</li>
+            </ul>
+            <div class="flex flex-wrap gap-3 text-xs mt-3">
+              <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-bold">PySpark</span>
+              <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-bold">BigQuery</span>
+              <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold">DevOps</span>
+            </div>
+          </div>
+        </div>
+        <!-- DSOgroup TEOTYS -->
+        <div class="mb-10 group flex items-start">
+          <span class="absolute -left-4 mt-2 flex items-center justify-center w-7 h-7 rounded-full bg-green-600 border-4 border-white dark:border-slate-900 shadow-lg">
+            <img src="https://www.dso.co.za/sites/all/themes/dso/favicon.ico" alt="DSOgroup TEOTYS" class="w-5 h-5 rounded-full" />
+          </span>
+          <div class="flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-lg p-6 transition-all border border-green-100 dark:border-green-900 group-hover:scale-[1.02] group-hover:shadow-xl">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="text-lg font-bold text-green-700 dark:text-green-200">Software Engineer</span>
+              <span class="ml-3 text-slate-500 dark:text-slate-400">DSOgroup TEOTYS</span>
+              <span class="ml-auto text-xs font-mono rounded-full bg-green-50 text-green-900 dark:bg-green-950 dark:text-white px-2 py-0.5">Aug 2018 – Mar 2019</span>
+            </div>
+            <ul class="list-disc pl-6 mt-1 leading-relaxed text-[1rem]">
+              <li>Talend big data streaming jobs; reusable CDC/ETL, mainframe, DR frameworks</li>
+            </ul>
+            <div class="flex flex-wrap gap-3 text-xs mt-3">
+              <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold">Talend</span>
+              <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">ETL</span>
+            </div>
+          </div>
+        </div>
+        <!-- Innominds -->
+        <div class="mb-10 group flex items-start">
+          <span class="absolute -left-4 mt-2 flex items-center justify-center w-7 h-7 rounded-full bg-yellow-500 border-4 border-white dark:border-slate-900 shadow-lg">
+            <img src="https://www.innominds.com/hubfs/favicon.ico" alt="Innominds" class="w-5 h-5 rounded-full" />
+          </span>
+          <div class="flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-lg p-6 transition-all border border-yellow-100 dark:border-yellow-900 group-hover:scale-[1.02] group-hover:shadow-xl">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="text-lg font-bold text-yellow-700 dark:text-yellow-100">Software Engineer</span>
+              <span class="ml-3 text-slate-500 dark:text-slate-400">Innominds</span>
+              <span class="ml-auto text-xs font-mono rounded-full bg-yellow-50 text-yellow-900 dark:bg-yellow-950 dark:text-white px-2 py-0.5">Jun 2015 – Jul 2018</span>
+            </div>
+            <ul class="list-disc pl-6 mt-1 leading-relaxed text-[1rem]">
+              <li>Warehouse/ETL pipeline design: Talend + business logic; error handling</li>
+            </ul>
+            <div class="flex flex-wrap gap-3 text-xs mt-3">
+              <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold">ETL</span>
+              <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full font-bold">Talend</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Internships -->
+    <section class="mt-14">
+      <h2 class="text-2xl font-bold mb-6 text-orange-700 dark:text-orange-300 flex items-center gap-2">
+        <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h4m0 0h4m-4 0v4m0-4V8" /></svg>
+        Internships
+      </h2>
+      <div class="relative pl-8 ml-3 border-l-4 border-orange-300">
+        <!-- Vizag Steel Plant -->
+        <div class="mb-10 group flex items-start">
+          <span class="absolute -left-4 mt-2 flex items-center justify-center w-7 h-7 rounded-full bg-orange-500 border-4 border-white dark:border-slate-900 shadow-lg">
+            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M8 12h8" stroke="white" stroke-width="2" stroke-linecap="round" /></svg>
+          </span>
+          <div class="flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-lg p-6 transition-all border border-orange-100 dark:border-orange-900 group-hover:scale-[1.02] group-hover:shadow-xl">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="text-lg font-bold text-orange-700 dark:text-orange-200">Intern</span>
+              <span class="ml-3 text-slate-500 dark:text-slate-400">Vizag Steel Plant</span>
+              <span class="ml-auto text-xs font-mono rounded-full bg-orange-50 text-orange-900 dark:bg-orange-950 dark:text-white px-2 py-0.5">Jan 2015 – Mar 2015</span>
+            </div>
+            <ul class="list-disc pl-6 mt-1 leading-relaxed text-[1rem]">
+              <li>SCADA/IoT systems for patient monitoring, troubleshooting automation</li>
+            </ul>
+            <div class="flex flex-wrap gap-3 text-xs mt-3">
+              <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full font-bold">IoT</span>
+              <span class="bg-slate-100 text-blue-900 px-3 py-1 rounded-full">Automation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
