@@ -1,0 +1,20 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Astro
+.astro/
+dist/
+*.log
+
+# Misc
+.DS_Store
+*.pem
+
+# Environment
+.env
+.env*.local
