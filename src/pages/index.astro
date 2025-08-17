@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="jthiruveedula - Portfolio">
+	<main class="w-full max-w-4xl mx-auto p-8">
+		<Header />
+		<Hero />
+
+		<section id="projects" class="my-16">
+			<h2 class="text-4xl font-bold mb-8">Projects</h2>
+			<ul class="grid grid-cols-1 md:grid-cols-2 gap-8">
+				<Card
+					href="#"
+					title="Project 1"
+					body="This is a description of project 1."
+				/>
+				<Card
+					href="#"
+					title="Project 2"
+					body="This is a description of project 2."
+				/>
+				<Card
+					href="#"
+					title="Project 3"
+					body="This is a description of project 3."
+				/>
+				<Card
+					href="#"
+					title="Project 4"
+					body="This is a description of project 4."
+				/>
+			</ul>
+		</section>
+		<Footer />
+	</main>
+</Layout>

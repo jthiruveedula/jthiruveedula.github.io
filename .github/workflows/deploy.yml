@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main # Or your default branch
+      - main
       - portfolio-enhancements
 
 jobs:
@@ -16,21 +16,16 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18' # Specify your desired Node.js version
+          node-version: '18'
 
       - name: Install dependencies
-        run: npm install eslint prettier --save-dev # Assuming package.json exists or will be created
+        run: npm install
 
-      - name: Lint and Format
-        run: |
-          npx eslint . --ext .js,.html --fix
-          npx prettier . --write
+      - name: Build
+        run: npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./ # Assuming your site is in the root directory
-          # If your site is in a subfolder (e.g., 'dist' or 'public'), change publish_dir accordingly.
-          # publish_branch: gh-pages # Default is gh-pages, ensure your repo settings reflect this.
-          # cname: your-custom-domain.com # If you have a custom domain
+          publish_dir: ./dist
