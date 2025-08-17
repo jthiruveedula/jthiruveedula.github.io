@@ -1,0 +1,113 @@
+---
+// About component with professional content
+export interface Props {}
+---
+
+<section id="about" class="py-20 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">About Me</h2>
+      <div class="w-24 h-1 bg-indigo-600 mx-auto mb-8"></div>
+      <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+        Passionate Full Stack Developer & AI Engineer with expertise in modern web technologies and machine learning solutions.
+      </p>
+    </div>
+    
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <!-- Profile Image -->
+      <div class="relative">
+        <div class="aspect-square rounded-2xl overflow-hidden shadow-2xl">
+          <img 
+            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=500&fit=crop&crop=face" 
+            alt="Jagadeesh Thiruveedula" 
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
+          <svg class="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+        </div>
+      </div>
+      
+      <!-- Content -->
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Hi, I'm Jagadeesh Thiruveedula</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-6">
+            I'm a passionate Full Stack Developer and AI Engineer with over 5 years of experience building scalable web applications 
+            and intelligent systems. I specialize in modern JavaScript frameworks, cloud architecture, and machine learning technologies.
+          </p>
+          <p class="text-gray-600 dark:text-gray-300 mb-6">
+            My journey in technology started with a curiosity about how things work, which led me to pursue Computer Science and 
+            develop expertise in both front-end and back-end technologies. I love solving complex problems and creating innovative 
+            solutions that make a real impact.
+          </p>
+        </div>
+        
+        <!-- Key Stats -->
+        <div class="grid grid-cols-3 gap-4">
+          <div class="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+            <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">50+</div>
+            <div class="text-sm text-gray-600 dark:text-gray-300">Projects</div>
+          </div>
+          <div class="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+            <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">5+</div>
+            <div class="text-sm text-gray-600 dark:text-gray-300">Years Exp</div>
+          </div>
+          <div class="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+            <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">15+</div>
+            <div class="text-sm text-gray-600 dark:text-gray-300">Technologies</div>
+          </div>
+        </div>
+        
+        <!-- Call to Action -->
+        <div class="flex flex-wrap gap-4">
+          <a 
+            href="#contact" 
+            class="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-200"
+          >
+            Let's Talk
+            <svg class="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+          <a 
+            href="/resume.pdf" 
+            target="_blank"
+            class="inline-flex items-center px-6 py-3 border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-medium rounded-lg transition-colors duration-200"
+          >
+            Download Resume
+            <svg class="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* About section animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  #about {
+    animation: fadeInUp 0.6s ease-out;
+  }
+  
+  /* Hover effects */
+  .hover-scale:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+  }
+</style>
