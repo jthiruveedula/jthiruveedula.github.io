@@ -63,8 +63,7 @@
     "@testing-library/dom": "^10.4.0",
     "@playwright/test": "^1.47.2",
     "@types/jest": "^29.5.12",
-    "ts-jest": "^29.2.5",
-    "@astrojs/test-utils": "^0.0.1"
+    "ts-jest": "^29.2.5"
   },
   "keywords": [
     "portfolio",
