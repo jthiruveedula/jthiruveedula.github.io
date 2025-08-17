@@ -1,0 +1,50 @@
+{
+  "name": "jthiruveedula-portfolio",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Professional portfolio website built with Astro.js",
+  "homepage": "https://jthiruveedula.github.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jthiruveedula/jthiruveedula.github.io.git"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^5.1.1",
+    "@astrojs/mdx": "^3.1.7",
+    "@astrojs/sitemap": "^3.2.0",
+    "astro": "^4.15.12",
+    "tailwindcss": "^3.4.13",
+    "@tailwindcss/typography": "^0.5.15",
+    "@fontsource/inter": "^5.1.0",
+    "lucide-astro": "^0.446.0",
+    "framer-motion": "^11.11.7",
+    "motion": "^10.18.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.6.2",
+    "prettier": "^3.3.3",
+    "prettier-plugin-astro": "^0.14.1",
+    "@typescript-eslint/parser": "^8.8.0",
+    "@typescript-eslint/eslint-plugin": "^8.8.0",
+    "eslint": "^9.12.0",
+    "eslint-plugin-astro": "^1.2.4"
+  },
+  "keywords": [
+    "portfolio",
+    "astro",
+    "personal-website",
+    "github-pages",
+    "tailwindcss",
+    "typescript"
+  ],
+  "author": "Jagadeesh Thiruveedula",
+  "license": "MIT"
+}
