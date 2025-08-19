@@ -3,106 +3,165 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Jagadeesh Thiruveedula — Data Architect, GenAI & GCP Leader">
-  <!-- Animated Hero Background Shape -->
-  <div style="position: absolute; top: 0; left: 0; width: 100vw; z-index: 0;">
-    <svg aria-hidden="true" class="w-full" fill="none" viewBox="0 0 1440 380" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0,96L80,128C160,160,320,224,480,229.3C640,235,800,181,960,154.7C1120,128,1280,128,1360,128L1440,128L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z" fill="#dbeafe" fill-opacity="1"></path>
-    </svg>
-  </div>
-
-  <main class="relative z-10 py-28 px-4 flex flex-col items-center min-h-[80vh]">
-    <!-- Profile Avatar Section -->
-    <section class="mb-8" aria-labelledby="profile-heading">
-      <h2 id="profile-heading" class="sr-only">Profile</h2>
-      <div class="flex justify-center">
-        <img 
-          src="/placeholder-avatar.jpg" 
-          class="rounded-full h-32 w-32 md:h-44 md:w-44 border-4 border-blue-300 shadow-lg animate-hero-avatar" 
-          alt="Jagadeesh Thiruveedula - Senior Data Architect and GenAI Leader portrait" 
-        />
-      </div>
-    </section>
-
-    <!-- Visual Divider -->
-    <hr class="w-full max-w-4xl border-t-2 border-blue-200 mb-8" aria-hidden="true" />
-
-    <!-- Main Hero Card Section -->
-    <section 
-      class="card max-w-3xl w-full flex flex-col items-center gap-6 p-10 shadow-2xl bg-white/90 backdrop-blur-md animate-hero-card"
-      id="hero-card"
-      aria-labelledby="hero-heading"
-    >
-      <div class="text-center">
-        <h1 id="hero-heading" class="section-title mb-1 animate-hero-title">Jagadeesh Thiruveedula</h1>
-        <h2 class="text-lg md:text-2xl font-bold text-blue-700 mb-2 animate-hero-subtitle">Senior Data Architect | GenAI, Google Cloud, Vector DBs</h2>
-        <div class="mb-4 text-blue-900 dark:text-blue-100 leading-relaxed text-base md:text-lg animate-hero-description">
-          Empowering enterprise transformation with modern data platforms, generative AI, and cloud-native strategy. 10+ years' impact at scale:
+  <!-- Hero Section with Full-Width Gradient Background -->
+  <section class="relative min-h-screen w-full bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 overflow-hidden">
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
+    
+    <!-- Hero Content Container -->
+    <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+      <div class="flex flex-col items-center justify-center min-h-[80vh] text-center">
+        
+        <!-- Profile Avatar with Bold Border -->
+        <div class="mb-8">
+          <img 
+            src="/placeholder-avatar.jpg" 
+            class="rounded-full h-32 w-32 md:h-44 md:w-44 lg:h-52 lg:w-52 border-8 border-white shadow-2xl transform hover:scale-105 transition-transform duration-300" 
+            alt="Jagadeesh Thiruveedula - Senior Data Architect and GenAI Leader portrait" 
+          />
         </div>
-        <div class="flex gap-4 mb-3 justify-center animate-hero-buttons">
-          <a class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-5 py-2 rounded-md shadow transition hover:scale-105 transform" href="/about">About Me</a>
-          <a class="bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-900 dark:text-white font-semibold px-5 py-2 rounded-md shadow transition hover:scale-105 transform" href="/experience">Experience</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Visual Divider -->
-    <hr class="w-full max-w-4xl border-t-2 border-blue-200 my-12" aria-hidden="true" />
-
-    <!-- Metrics Section -->
-    <section class="w-full max-w-4xl" aria-labelledby="metrics-heading">
-      <h2 id="metrics-heading" class="text-2xl font-bold text-center text-blue-800 mb-8">Key Achievements</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-stats-grid">
-        <div class="metric-card card flex flex-col items-center py-7 px-4 border-t-4 border-blue-400 bg-gradient-to-b from-sky-100 to-white hover:shadow-lg hover:scale-105 transform transition-all duration-300 animate-stat-card-1" role="region" aria-labelledby="metric-1">
-          <span class="text-3xl font-bold text-blue-600 mb-1" id="metric-1">25%+</span>
-          <span class="text-xs uppercase tracking-wide font-semibold text-blue-900 text-center">Infra Cost Optimization</span>
-        </div>
-        <div class="metric-card card flex flex-col items-center py-7 px-4 border-t-4 border-indigo-400 bg-gradient-to-b from-indigo-50 to-white hover:shadow-lg hover:scale-105 transform transition-all duration-300 animate-stat-card-2" role="region" aria-labelledby="metric-2">
-          <span class="text-3xl font-bold text-indigo-700 mb-1" id="metric-2">100TB+</span>
-          <span class="text-xs uppercase tracking-wide font-semibold text-indigo-900 text-center">Data Processed Daily</span>
-        </div>
-        <div class="metric-card card flex flex-col items-center py-7 px-4 border-t-4 border-green-500 bg-gradient-to-b from-green-50 to-white hover:shadow-lg hover:scale-105 transform transition-all duration-300 animate-stat-card-3" role="region" aria-labelledby="metric-3">
-          <span class="text-3xl font-bold text-green-700 mb-1" id="metric-3">99.8%</span>
-          <span class="text-xs uppercase tracking-wide font-semibold text-green-900 text-center">Uptime Delivered</span>
-        </div>
-        <div class="metric-card card flex flex-col items-center py-7 px-4 border-t-4 border-pink-400 bg-gradient-to-b from-pink-50 to-white hover:shadow-lg hover:scale-105 transform transition-all duration-300 animate-stat-card-4" role="region" aria-labelledby="metric-4">
-          <span class="text-3xl font-bold text-pink-700 mb-1" id="metric-4">15+</span>
-          <span class="text-xs uppercase tracking-wide font-semibold text-pink-900 text-center">Enterprise Projects</span>
+        
+        <!-- Modern H1 Title -->
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-4 tracking-tight">
+          Jagadeesh Thiruveedula
+        </h1>
+        
+        <!-- Subtitle -->
+        <h2 class="text-xl md:text-2xl lg:text-3xl font-medium text-blue-100 mb-8 max-w-3xl leading-relaxed">
+          Senior Data Architect | GenAI, Google Cloud, Vector DBs
+        </h2>
+        
+        <p class="text-lg md:text-xl text-blue-50 mb-12 max-w-4xl leading-relaxed">
+          Empowering enterprise transformation with modern data platforms, generative AI, and cloud-native strategy. 10+ years' impact at scale.
+        </p>
+        
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 mb-16">
+          <a href="/about" class="bg-white text-blue-900 font-semibold px-8 py-4 rounded-lg shadow-lg hover:bg-blue-50 transition-all duration-300 transform hover:scale-105">
+            About Me
+          </a>
+          <a href="/experience" class="bg-transparent border-2 border-white text-white font-semibold px-8 py-4 rounded-lg hover:bg-white hover:text-blue-900 transition-all duration-300 transform hover:scale-105">
+            Experience
+          </a>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Visual Divider -->
-    <hr class="w-full max-w-4xl border-t-2 border-blue-200 my-12" aria-hidden="true" />
-
-    <!-- Tech Pillars Section -->
-    <section class="max-w-4xl w-full" aria-labelledby="tech-heading">
-      <h2 id="tech-heading" class="text-2xl font-bold text-center text-blue-800 mb-8">Technical Expertise</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 animate-tech-pillars">
-        <div class="card flex flex-col gap-2 p-6 hover:shadow-lg transform transition-all duration-300 hover:scale-105 animate-tech-card-1" role="region" aria-labelledby="tech-1">
-          <h3 id="tech-1" class="font-semibold text-blue-700 text-sm mb-1">Google Cloud & Data Engineering</h3>
-          <ul class="text-slate-800 text-xs pl-4 list-disc leading-relaxed">
-            <li>BigQuery, Dataflow, Dataproc, Composer</li>
-            <li>Vertex AI, Cloud Functions, Pub/Sub</li>
-            <li>Data Pipeline Architecture & Optimization</li>
-          </ul>
+  <!-- Impact Metrics Grid Section -->
+  <section class="py-16 bg-gray-50" aria-labelledby="metrics-heading">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 id="metrics-heading" class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
+        Impact Metrics
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <!-- Cost Optimization Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-xl transition-shadow duration-300">
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold text-green-600 mb-2">25%+</div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">Cost Reduction</h3>
+            <p class="text-sm text-gray-600">Infrastructure optimization across enterprise platforms</p>
+          </div>
         </div>
-        <div class="card flex flex-col gap-2 p-6 hover:shadow-lg transform transition-all duration-300 hover:scale-105 animate-tech-card-2" role="region" aria-labelledby="tech-2">
-          <h3 id="tech-2" class="font-semibold text-purple-700 text-sm mb-1">Generative AI & Machine Learning</h3>
-          <ul class="text-slate-800 text-xs pl-4 list-disc leading-relaxed">
-            <li>LLMs, RAG, Vector Databases</li>
-            <li>MLOps, Model Deployment & Monitoring</li>
-            <li>AI Strategy & Implementation</li>
-          </ul>
+        
+        <!-- Data Processed Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-shadow duration-300">
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold text-blue-600 mb-2">100TB+</div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">Data Processed</h3>
+            <p class="text-sm text-gray-600">Daily data pipeline processing volume</p>
+          </div>
         </div>
-        <div class="card flex flex-col gap-2 p-6 hover:shadow-lg transform transition-all duration-300 hover:scale-105 animate-tech-card-3" role="region" aria-labelledby="tech-3">
-          <h3 id="tech-3" class="font-semibold text-green-700 text-sm mb-1">Architecture & Leadership</h3>
-          <ul class="text-slate-800 text-xs pl-4 list-disc leading-relaxed">
-            <li>Enterprise Data Architecture</li>
-            <li>Team Leadership & Mentoring</li>
-            <li>Cloud Migration & Modernization</li>
-          </ul>
+        
+        <!-- Uptime Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-xl transition-shadow duration-300">
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold text-purple-600 mb-2">99.9%</div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">Uptime</h3>
+            <p class="text-sm text-gray-600">Mission-critical system availability</p>
+          </div>
+        </div>
+        
+        <!-- Projects Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 hover:shadow-xl transition-shadow duration-300">
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold text-orange-600 mb-2">50+</div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">Projects</h3>
+            <p class="text-sm text-gray-600">Successful enterprise implementations</p>
+          </div>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
+
+  <!-- Case Study Showcase Section -->
+  <section class="py-16 bg-white" aria-labelledby="case-study-heading">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 id="case-study-heading" class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
+        Featured Case Study
+      </h2>
+      
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-8 md:p-12">
+          <div class="text-center mb-8">
+            <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+              Enterprise Data Platform Modernization
+            </h3>
+            <p class="text-lg text-gray-700">Fortune 500 Financial Services Company</p>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Problem -->
+            <div class="text-center">
+              <div class="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+              </div>
+              <h4 class="text-xl font-bold text-gray-900 mb-3">Problem</h4>
+              <p class="text-gray-700">
+                Legacy data infrastructure with 200+ ETL jobs, 72-hour batch processing delays, and $2M+ annual infrastructure costs limiting business agility.
+              </p>
+            </div>
+            
+            <!-- Solution -->
+            <div class="text-center">
+              <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+              </div>
+              <h4 class="text-xl font-bold text-gray-900 mb-3">Solution</h4>
+              <p class="text-gray-700">
+                Architected cloud-native data platform on GCP with real-time streaming, AI/ML pipelines, and automated governance using BigQuery, Dataflow, and Vertex AI.
+              </p>
+            </div>
+            
+            <!-- Result -->
+            <div class="text-center">
+              <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h4 class="text-xl font-bold text-gray-900 mb-3">Result</h4>
+              <p class="text-gray-700">
+                Achieved 90% faster data processing, 40% cost reduction, and enabled real-time analytics driving $5M+ in new revenue opportunities.
+              </p>
+            </div>
+          </div>
+          
+          <div class="text-center mt-8">
+            <a href="/case-studies" class="bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 inline-flex items-center">
+              View Full Case Study
+              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </Layout>
