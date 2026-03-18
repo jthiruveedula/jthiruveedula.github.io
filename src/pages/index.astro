@@ -2,165 +2,127 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Jagadeesh Thiruveedula — Data Architect, GenAI & GCP Leader">
-  <!-- Hero Section with Full-Width Gradient Background -->
-  <section class="relative min-h-screen w-full bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 overflow-hidden">
-    <!-- Gradient Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
+<Layout title="Jagadeesh Thiruveedula — Data Architect & GenAI Leader">
+  <!-- Hero Section -->
+  <section class="relative min-h-screen w-full bg-gradient-to-br from-blue-950 via-indigo-950 to-slate-900 overflow-hidden">
+    <div class="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
     
-    <!-- Hero Content Container -->
-    <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-      <div class="flex flex-col items-center justify-center min-h-[80vh] text-center">
-        
-        <!-- Profile Avatar with Bold Border -->
-        <div class="mb-8">
-          <img 
-            src="/placeholder-avatar.jpg" 
-            class="rounded-full h-32 w-32 md:h-44 md:w-44 lg:h-52 lg:w-52 border-8 border-white shadow-2xl transform hover:scale-105 transition-transform duration-300" 
-            alt="Jagadeesh Thiruveedula - Senior Data Architect and GenAI Leader portrait" 
-          />
+    <div class="relative z-10 container mx-auto px-4 pt-32 pb-20 flex flex-col items-center text-center">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-8 animate-fade-in">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+        </span>
+        Available for GenAI Architectural Advisory
+      </div>
+
+      <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-slate-400">
+        Jagadeesh Thiruveedula
+      </h1>
+      
+      <h2 class="text-2xl md:text-3xl font-bold text-blue-400 mb-8 max-w-2xl mx-auto">
+        Architecting the Future with GenAI & Cloud Data Platforms
+      </h2>
+      
+      <p class="text-lg md:text-xl text-slate-400 mb-12 max-w-3xl leading-relaxed">
+        10+ years of driving enterprise impact. Specialist in GCP modernization, RAG pipelines, and LLM orchestration at scale.
+      </p>
+      
+      <div class="flex flex-col sm:flex-row gap-6">
+        <a href="/experience" class="px-10 py-4 bg-blue-600 text-white font-bold rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:bg-blue-500 transition-all transform hover:scale-105">
+          View Experience
+        </a>
+        <a href="#genai-showcase" class="px-10 py-4 bg-slate-800 text-white font-bold rounded-full border border-slate-700 hover:bg-slate-700 transition-all transform hover:scale-105">
+          GenAI Projects
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Impact Metrics -->
+  <section class="py-24 bg-white dark:bg-slate-950 border-y border-slate-200 dark:border-slate-800">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-12">
+        <div class="flex flex-col items-center">
+          <div class="text-5xl font-black text-blue-600 mb-2">25%+</div>
+          <div class="text-slate-500 font-medium uppercase tracking-widest text-xs">Cost Reduction</div>
         </div>
-        
-        <!-- Modern H1 Title -->
-        <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-4 tracking-tight">
-          Jagadeesh Thiruveedula
-        </h1>
-        
-        <!-- Subtitle -->
-        <h2 class="text-xl md:text-2xl lg:text-3xl font-medium text-blue-100 mb-8 max-w-3xl leading-relaxed">
-          Senior Data Architect | GenAI, Google Cloud, Vector DBs
-        </h2>
-        
-        <p class="text-lg md:text-xl text-blue-50 mb-12 max-w-4xl leading-relaxed">
-          Empowering enterprise transformation with modern data platforms, generative AI, and cloud-native strategy. 10+ years' impact at scale.
-        </p>
-        
-        <!-- CTA Buttons -->
-        <div class="flex flex-col sm:flex-row gap-4 mb-16">
-          <a href="/about" class="bg-white text-blue-900 font-semibold px-8 py-4 rounded-lg shadow-lg hover:bg-blue-50 transition-all duration-300 transform hover:scale-105">
-            About Me
-          </a>
-          <a href="/experience" class="bg-transparent border-2 border-white text-white font-semibold px-8 py-4 rounded-lg hover:bg-white hover:text-blue-900 transition-all duration-300 transform hover:scale-105">
-            Experience
-          </a>
+        <div class="flex flex-col items-center">
+          <div class="text-5xl font-black text-indigo-600 mb-2">100TB+</div>
+          <div class="text-slate-500 font-medium uppercase tracking-widest text-xs">Data Daily</div>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="text-5xl font-black text-purple-600 mb-2">99.9%</div>
+          <div class="text-slate-500 font-medium uppercase tracking-widest text-xs">System Uptime</div>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="text-5xl font-black text-blue-500 mb-2">50+</div>
+          <div class="text-slate-500 font-medium uppercase tracking-widest text-xs">F500 Projects</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Impact Metrics Grid Section -->
-  <section class="py-16 bg-gray-50" aria-labelledby="metrics-heading">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 id="metrics-heading" class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
-        Impact Metrics
-      </h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <!-- Cost Optimization Card -->
-        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-xl transition-shadow duration-300">
-          <div class="text-center">
-            <div class="text-3xl md:text-4xl font-bold text-green-600 mb-2">25%+</div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-1">Cost Reduction</h3>
-            <p class="text-sm text-gray-600">Infrastructure optimization across enterprise platforms</p>
+  <!-- GenAI Portfolio Section -->
+  <section id="genai-showcase" class="py-24 bg-slate-50 dark:bg-slate-900/30">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mb-16">
+        <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-4">GenAI & LLM Portfolio</h2>
+        <p class="text-lg text-slate-600 dark:text-slate-400">Production-grade implementations of Retrieval Augmented Generation and autonomous agents.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Project 1 -->
+        <div class="group bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 hover:shadow-2xl transition-all">
+          <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mb-6 text-purple-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="text-xl font-bold mb-3 dark:text-white group-hover:text-blue-500 transition-colors">Pipeline Assistant</h3>
+          <p class="text-slate-600 dark:text-slate-400 mb-6 text-sm">Automated dbt & Airflow code generation using Vertex AI Gemini models.</p>
+          <div class="flex gap-2">
+            <span class="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-[10px] font-bold rounded uppercase">LangChain</span>
+            <span class="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-[10px] font-bold rounded uppercase">GCP</span>
           </div>
         </div>
-        
-        <!-- Data Processed Card -->
-        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-shadow duration-300">
-          <div class="text-center">
-            <div class="text-3xl md:text-4xl font-bold text-blue-600 mb-2">100TB+</div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-1">Data Processed</h3>
-            <p class="text-sm text-gray-600">Daily data pipeline processing volume</p>
+
+        <!-- Project 2 -->
+        <div class="group bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 hover:shadow-2xl transition-all">
+          <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-6 text-blue-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+          </div>
+          <h3 class="text-xl font-bold mb-3 dark:text-white group-hover:text-blue-500 transition-colors">RAG BQ Chatbot</h3>
+          <p class="text-slate-600 dark:text-slate-400 mb-6 text-sm">Natural language interface for querying multi-terabyte BigQuery datasets with RAG.</p>
+          <div class="flex gap-2">
+            <span class="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-[10px] font-bold rounded uppercase">LlamaIndex</span>
+            <span class="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-[10px] font-bold rounded uppercase">Vertex AI</span>
           </div>
         </div>
-        
-        <!-- Uptime Card -->
-        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-xl transition-shadow duration-300">
-          <div class="text-center">
-            <div class="text-3xl md:text-4xl font-bold text-purple-600 mb-2">99.9%</div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-1">Uptime</h3>
-            <p class="text-sm text-gray-600">Mission-critical system availability</p>
+
+        <!-- Project 3 -->
+        <div class="group bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 hover:shadow-2xl transition-all">
+          <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-6 text-green-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
           </div>
-        </div>
-        
-        <!-- Projects Card -->
-        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 hover:shadow-xl transition-shadow duration-300">
-          <div class="text-center">
-            <div class="text-3xl md:text-4xl font-bold text-orange-600 mb-2">50+</div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-1">Projects</h3>
-            <p class="text-sm text-gray-600">Successful enterprise implementations</p>
+          <h3 class="text-xl font-bold mb-3 dark:text-white group-hover:text-blue-500 transition-colors">LLM SQL Agent</h3>
+          <p class="text-slate-600 dark:text-slate-400 mb-6 text-sm">Autonomous agent for SQL dialect migration and real-time lineage validation.</p>
+          <div class="flex gap-2">
+            <span class="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-[10px] font-bold rounded uppercase">OpenAI</span>
+            <span class="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-[10px] font-bold rounded uppercase">SQLGlot</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Case Study Showcase Section -->
-  <section class="py-16 bg-white" aria-labelledby="case-study-heading">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 id="case-study-heading" class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
-        Featured Case Study
-      </h2>
-      
-      <div class="max-w-4xl mx-auto">
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-8 md:p-12">
-          <div class="text-center mb-8">
-            <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Enterprise Data Platform Modernization
-            </h3>
-            <p class="text-lg text-gray-700">Fortune 500 Financial Services Company</p>
-          </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Problem -->
-            <div class="text-center">
-              <div class="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                </svg>
-              </div>
-              <h4 class="text-xl font-bold text-gray-900 mb-3">Problem</h4>
-              <p class="text-gray-700">
-                Legacy data infrastructure with 200+ ETL jobs, 72-hour batch processing delays, and $2M+ annual infrastructure costs limiting business agility.
-              </p>
-            </div>
-            
-            <!-- Solution -->
-            <div class="text-center">
-              <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                </svg>
-              </div>
-              <h4 class="text-xl font-bold text-gray-900 mb-3">Solution</h4>
-              <p class="text-gray-700">
-                Architected cloud-native data platform on GCP with real-time streaming, AI/ML pipelines, and automated governance using BigQuery, Dataflow, and Vertex AI.
-              </p>
-            </div>
-            
-            <!-- Result -->
-            <div class="text-center">
-              <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <h4 class="text-xl font-bold text-gray-900 mb-3">Result</h4>
-              <p class="text-gray-700">
-                Achieved 90% faster data processing, 40% cost reduction, and enabled real-time analytics driving $5M+ in new revenue opportunities.
-              </p>
-            </div>
-          </div>
-          
-          <div class="text-center mt-8">
-            <a href="/case-studies" class="bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 inline-flex items-center">
-              View Full Case Study
-              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-              </svg>
-            </a>
-          </div>
-        </div>
+  <!-- CTA Section -->
+  <section class="py-24 bg-blue-600 overflow-hidden relative">
+    <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+    <div class="container mx-auto px-4 relative z-10 text-center">
+      <h2 class="text-4xl md:text-5xl font-black text-white mb-8">Ready to revolutionize your data stack?</h2>
+      <div class="flex justify-center">
+        <a href="mailto:jagadeesh.thiruveedula@example.com" class="px-12 py-5 bg-white text-blue-600 font-bold rounded-full text-xl shadow-2xl hover:bg-slate-100 transition-all transform hover:scale-105">
+          Let's Build Something Great
+        </a>
       </div>
     </div>
   </section>
