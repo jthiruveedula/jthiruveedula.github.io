@@ -1,7 +1,6 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://jthiruveedula.github.io',
@@ -16,7 +15,6 @@ export default defineConfig({
       applyBaseStyles: true,
     }),
     mdx(),
-    sitemap(),
   ],
   vite: {
     css: {
