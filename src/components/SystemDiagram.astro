@@ -1,0 +1,97 @@
+---
+// SystemDiagram.astro
+// Animated SVG spine for a private LLM / RAG / agentic system on GCP.
+// Stages: Ingest -> Embed -> Retrieve -> Orchestrate -> Govern -> Serve
+// Motion: stroke-dashoffset reveal on enter, gated by IntersectionObserver.
+// Respects prefers-reduced-motion.
+---
+
+<section class="system-diagram" aria-label="GenAI system architecture diagram">
+  <div class="sd-inner">
+    <p class="sd-eyebrow">SYSTEM SPINE</p>
+    <h2 class="sd-title">From governed data to served intelligence</h2>
+    <p class="sd-sub">Every GenAI product is a data product first. The diagram below shows the spine I build against.</p>
+
+    <svg class="sd-svg" viewBox="0 0 1200 260" role="img" aria-labelledby="sd-desc" xmlns="http://www.w3.org/2000/svg">
+      <title id="sd-desc">Ingest, Embed, Retrieve, Orchestrate, Govern, Serve</title>
+
+      <defs>
+        <linearGradient id="sd-stroke" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#6366f1" />
+          <stop offset="50%" stop-color="#22d3ee" />
+          <stop offset="100%" stop-color="#34d399" />
+        </linearGradient>
+        <pattern id="sd-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2937" stroke-width="0.5" />
+        </pattern>
+      </defs>
+
+      <rect width="1200" height="260" fill="url(#sd-grid)" opacity="0.4" />
+
+      <path class="sd-spine" d="M 60 130 L 1140 130" fill="none" stroke="url(#sd-stroke)" stroke-width="2" stroke-linecap="round" />
+
+      <g class="sd-node" data-i="0">
+        <circle cx="100" cy="130" r="22" fill="#0f172a" stroke="#6366f1" stroke-width="2" />
+        <text x="100" y="175" text-anchor="middle" class="sd-label">Ingest</text>
+        <text x="100" y="195" text-anchor="middle" class="sd-sublabel">BQ - GCS - Composer</text>
+      </g>
+      <g class="sd-node" data-i="1">
+        <circle cx="280" cy="130" r="22" fill="#0f172a" stroke="#818cf8" stroke-width="2" />
+        <text x="280" y="175" text-anchor="middle" class="sd-label">Embed</text>
+        <text x="280" y="195" text-anchor="middle" class="sd-sublabel">Vertex AI - Gemini</text>
+      </g>
+      <g class="sd-node" data-i="2">
+        <circle cx="480" cy="130" r="22" fill="#0f172a" stroke="#22d3ee" stroke-width="2" />
+        <text x="480" y="175" text-anchor="middle" class="sd-label">Retrieve</text>
+        <text x="480" y="195" text-anchor="middle" class="sd-sublabel">Hybrid + Re-rank</text>
+      </g>
+      <g class="sd-node" data-i="3">
+        <circle cx="680" cy="130" r="22" fill="#0f172a" stroke="#22d3ee" stroke-width="2" />
+        <text x="680" y="175" text-anchor="middle" class="sd-label">Orchestrate</text>
+        <text x="680" y="195" text-anchor="middle" class="sd-sublabel">Agents + Tools</text>
+      </g>
+      <g class="sd-node" data-i="4">
+        <circle cx="880" cy="130" r="22" fill="#0f172a" stroke="#34d399" stroke-width="2" />
+        <text x="880" y="175" text-anchor="middle" class="sd-label">Govern</text>
+        <text x="880" y="195" text-anchor="middle" class="sd-sublabel">Lineage - Eval - Rollback</text>
+      </g>
+      <g class="sd-node" data-i="5">
+        <circle cx="1100" cy="130" r="22" fill="#0f172a" stroke="#34d399" stroke-width="2" />
+        <text x="1100" y="175" text-anchor="middle" class="sd-label">Serve</text>
+        <text x="1100" y="195" text-anchor="middle" class="sd-sublabel">Cloud Run - Edge</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<style>
+  .system-diagram { background: #0b1020; color: #e5e7eb; padding: 96px 24px; border-top: 1px solid #1f2937; border-bottom: 1px solid #1f2937; }
+  .sd-inner { max-width: 1200px; margin: 0 auto; }
+  .sd-eyebrow { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.18em; color: #818cf8; margin: 0 0 12px 0; }
+  .sd-title { font-size: clamp(28px, 4vw, 44px); font-weight: 700; letter-spacing: -0.02em; margin: 0 0 12px 0; color: #f8fafc; }
+  .sd-sub { color: #94a3b8; max-width: 720px; margin: 0 0 48px 0; line-height: 1.6; }
+  .sd-svg { width: 100%; height: auto; display: block; }
+  .sd-label { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; fill: #f8fafc; letter-spacing: 0.08em; }
+  .sd-sublabel { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; fill: #64748b; }
+  .sd-spine { stroke-dasharray: 1200; stroke-dashoffset: 1200; transition: stroke-dashoffset 1600ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .sd-node { opacity: 0; transform: translateY(8px); transition: opacity 600ms ease, transform 600ms ease; }
+  .system-diagram.is-visible .sd-spine { stroke-dashoffset: 0; }
+  .system-diagram.is-visible .sd-node { opacity: 1; transform: translateY(0); }
+  .system-diagram.is-visible .sd-node[data-i='0'] { transition-delay: 200ms; }
+  .system-diagram.is-visible .sd-node[data-i='1'] { transition-delay: 400ms; }
+  .system-diagram.is-visible .sd-node[data-i='2'] { transition-delay: 600ms; }
+  .system-diagram.is-visible .sd-node[data-i='3'] { transition-delay: 800ms; }
+  .system-diagram.is-visible .sd-node[data-i='4'] { transition-delay: 1000ms; }
+  .system-diagram.is-visible .sd-node[data-i='5'] { transition-delay: 1200ms; }
+  @media (prefers-reduced-motion: reduce) { .sd-spine { transition: none; stroke-dashoffset: 0; } .sd-node { transition: none; opacity: 1; transform: none; } }
+</style>
+
+<script>
+  const root = document.querySelector('.system-diagram');
+  if (root) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { root.classList.add('is-visible'); io.disconnect(); } });
+    }, { threshold: 0.25 });
+    io.observe(root);
+  }
+</script>
