@@ -1,0 +1,67 @@
+---
+import Layout from '../layouts/Layout.astro';
+import HeroNodeGraph from '../components/HeroNodeGraph.astro';
+import SystemDiagram from '../components/SystemDiagram.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+
+const projects = [
+  { slug: 'dual-agent-platform', title: 'Dual-Agent Platform', kicker: 'Agentic Orchestration', summary: 'Planner + executor agents with shared memory, tool routing, and guardrails for enterprise SOP automation.', stack: ['Vertex AI','Gemini','Cloud Run','Firestore'], metric: '63% fewer tokens vs single-agent baseline' },
+  { slug: 'rag-pipeline-gcp-vertexai', title: 'RAG Pipeline on GCP / Vertex AI', kicker: 'Enterprise RAG', summary: 'Ingestion, chunking, hybrid retrieval, and evaluation harness on private Vertex embeddings governed by IAM and VPC-SC.', stack: ['Vertex AI','BigQuery','Cloud Storage','Matching Engine'], metric: 'p95 retrieval < 380ms over 12M chunks' },
+  { slug: 'policy-sop-assistant', title: 'Policy and SOP Assistant', kicker: 'Private LLM App', summary: 'Citation-first assistant grounded on policy corpora with refusal logic and reviewer-in-the-loop feedback.', stack: ['Gemma','LangGraph','Cloud Run','Postgres'], metric: '92% citation precision on golden set' },
+  { slug: 'gdrive-rag-assistant', title: 'Drive-Grounded RAG Assistant', kicker: 'Knowledge Surfaces', summary: 'Incremental Drive sync with ACL-aware retrieval and per-user grounding that respects permission boundaries.', stack: ['Drive API','Vertex AI','Cloud Functions'], metric: 'Zero ACL violations across 4 audits' },
+  { slug: 'intraday-ops-intelligence', title: 'Intraday Ops Intelligence', kicker: 'Streaming + LLM', summary: 'Streaming features into a reasoning layer that narrates anomalies with grounded evidence and recommended actions.', stack: ['Pub/Sub','Dataflow','BigQuery','Gemini'], metric: 'MTTD reduced from 14m to 95s' },
+  { slug: 'openclaw-gemma-pro', title: 'OpenClaw / Gemma Pro', kicker: 'Open-Source GenAI', summary: 'Self-hosted Gemma stack with fine-tuned adapters, evaluation harness, and a thin API for internal teams.', stack: ['Gemma','vLLM','GKE','PEFT'], metric: '4.2x throughput vs vanilla HF serve' }
+];
+---
+
+<Layout title="Jagadeesh Thiruveedula - GenAI-Driven Data Architect" description="Private LLM apps, enterprise RAG, agentic workflows, and token-efficient AI on GCP.">
+  <main class="bg-slate-950 text-slate-100 antialiased">
+    <section class="relative min-h-screen grid lg:grid-cols-12 gap-8 px-6 lg:px-16 py-24 overflow-hidden">
+      <div class="lg:col-span-7 flex flex-col justify-center relative z-10">
+        <p class="text-xs tracking-widest uppercase text-blue-300/80 mb-6">GenAI-Driven Data Architect</p>
+        <h1 class="text-5xl md:text-7xl font-semibold tracking-tight leading-tight">Private LLM systems,<br/><span class="text-blue-300">engineered like infrastructure.</span></h1>
+        <p class="mt-8 text-lg text-slate-300 max-w-2xl leading-relaxed">I design and ship enterprise RAG, agentic workflows, and token-efficient AI on cloud-native data platforms with the controls, evaluation, and observability that production demands.</p>
+        <div class="mt-10 flex flex-wrap gap-3">
+          <a href="#systems" class="px-5 py-3 rounded-md bg-blue-500 text-slate-950 font-medium hover:bg-blue-400 transition">See the systems</a>
+          <a href="/contact" class="px-5 py-3 rounded-md border border-slate-700 text-slate-200 hover:border-slate-500 transition">Architectural advisory</a>
+        </div>
+      </div>
+      <div class="lg:col-span-5 relative"><HeroNodeGraph /></div>
+    </section>
+
+    <section id="systems" class="px-6 lg:px-16 py-24 border-t border-slate-800">
+      <div class="grid lg:grid-cols-12 gap-12">
+        <div class="lg:col-span-4">
+          <p class="text-xs tracking-widest uppercase text-blue-300/80 mb-4">Systems View</p>
+          <h2 class="text-4xl font-semibold tracking-tight">How I think about GenAI in production.</h2>
+        </div>
+        <div class="lg:col-span-8 space-y-6 text-slate-300 leading-relaxed">
+          <p>Most GenAI failures are not model failures - they are <span class="text-slate-100">systems failures</span>: weak retrieval, unbounded context, no evaluation, no guardrails.</p>
+          <p>I architect private LLM stacks the way I architect data platforms: explicit contracts, observable boundaries, token budgets, graded rollouts.</p>
+          <SystemDiagram />
+        </div>
+      </div>
+    </section>
+
+    <section class="px-6 lg:px-16 py-24 border-t border-slate-800">
+      <div class="flex items-end justify-between mb-12">
+        <div>
+          <p class="text-xs tracking-widest uppercase text-blue-300/80 mb-4">Case Studies</p>
+          <h2 class="text-4xl font-semibold tracking-tight">Selected work.</h2>
+        </div>
+        <a href="/experience" class="hidden md:inline text-sm text-slate-400 hover:text-slate-200">Full experience -></a>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+        {projects.map((p) => <ProjectCard project={p} />)}
+      </div>
+    </section>
+
+    <section class="px-6 lg:px-16 py-24 border-t border-slate-800">
+      <div class="max-w-3xl">
+        <h2 class="text-4xl font-semibold tracking-tight">Available for GenAI architectural advisory.</h2>
+        <p class="mt-6 text-slate-300 leading-relaxed">Private LLM apps, enterprise RAG, agentic orchestration, and GCP-native data platforms - from blueprint to production.</p>
+        <a href="/contact" class="inline-block mt-8 px-6 py-3 rounded-md bg-blue-500 text-slate-950 font-medium hover:bg-blue-400 transition">Start a conversation</a>
+      </div>
+    </section>
+  </main>
+</Layout>
