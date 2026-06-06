@@ -1,112 +1,324 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import HeroNodeGraph from '../components/HeroNodeGraph.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 
-const capabilityCards = [
-  ['Private LLM systems', 'Secure, domain-specific assistants with guardrails, observability, and deployment patterns designed for real enterprise use.'],
-  ['Enterprise RAG', 'Context-aware retrieval pipelines that connect structured and unstructured data with governed, production-grade accuracy.'],
-  ['Agentic workflows', 'Orchestration patterns for multi-step reasoning, task routing, and reliable execution on cloud-native infrastructure.'],
+// Six real production projects
+const projects = [
+  {
+    slug: 'dual-agent-platform',
+    title: 'Dual-Agent Platform',
+    kicker: 'Agentic Orchestration',
+    summary: 'Planner + executor agents with shared memory, tool routing, and guardrails for enterprise SOP automation.',
+    stack: ['Vertex AI', 'Gemini', 'Cloud Run', 'Firestore'],
+    metric: '63%',
+    metricLabel: 'fewer tokens vs single-agent baseline',
+  },
+  {
+    slug: 'rag-pipeline-gcp-vertexai',
+    title: 'RAG Pipeline — GCP / Vertex AI',
+    kicker: 'Enterprise RAG',
+    summary: 'Ingestion, chunking, hybrid retrieval, and evaluation harness on private Vertex embeddings governed by IAM and VPC-SC.',
+    stack: ['Vertex AI', 'BigQuery', 'Cloud Storage', 'Matching Engine'],
+    metric: '<380ms',
+    metricLabel: 'p95 retrieval over 12M chunks',
+  },
+  {
+    slug: 'policy-sop-assistant',
+    title: 'Policy & SOP Assistant',
+    kicker: 'Private LLM App',
+    summary: 'Citation-first assistant grounded on policy corpora with refusal logic and reviewer-in-the-loop feedback.',
+    stack: ['Gemma', 'LangGraph', 'Cloud Run', 'Postgres'],
+    metric: '92%',
+    metricLabel: 'citation precision on golden set',
+  },
+  {
+    slug: 'gdrive-rag-assistant',
+    title: 'Drive-Grounded RAG Assistant',
+    kicker: 'Knowledge Surfaces',
+    summary: 'Incremental Drive sync with ACL-aware retrieval and per-user grounding that respects permission boundaries.',
+    stack: ['Drive API', 'Vertex AI', 'Cloud Functions'],
+    metric: '0',
+    metricLabel: 'ACL violations across 4 audits',
+  },
+  {
+    slug: 'intraday-ops-intelligence',
+    title: 'Intraday Ops Intelligence',
+    kicker: 'Streaming + LLM',
+    summary: 'Streaming features into a reasoning layer that narrates anomalies with grounded evidence and recommended actions.',
+    stack: ['Pub/Sub', 'Dataflow', 'BigQuery', 'Gemini'],
+    metric: '95s',
+    metricLabel: 'MTTD down from 14 minutes',
+  },
+  {
+    slug: 'openclaw-gemma-pro',
+    title: 'OpenClaw / Gemma Pro',
+    kicker: 'Open-Source GenAI',
+    summary: 'Self-hosted Gemma stack with fine-tuned adapters, evaluation harness, and a thin API for internal teams.',
+    stack: ['Gemma', 'vLLM', 'GKE', 'PEFT'],
+    metric: '4.2×',
+    metricLabel: 'throughput vs vanilla HF serve',
+  },
 ];
 
-const projectCards = [
-  ['Private RAG copilots', 'Production-grade assistants that retrieve from enterprise knowledge stores with policy-aware grounding.'],
-  ['Agent orchestration', 'Task-routing systems that coordinate retrieval, planning, and action with measurable reliability.'],
-  ['GCP AI platforms', 'Cloud-native GenAI stacks built for performance, cost control, and rapid iteration.'],
+// Pipeline stages
+const pipelineStages = [
+  { num: '01', name: 'Ingest',    desc: 'Structured + unstructured data acquisition with schema validation.', tech: ['BigQuery', 'GCS', 'Composer'],              color: '#818cf8' },
+  { num: '02', name: 'Embed',     desc: 'Semantic encoding via domain-tuned foundation models on Vertex AI.', tech: ['Vertex AI', 'Gemini'],                      color: '#6366f1' },
+  { num: '03', name: 'Retrieve',  desc: 'Hybrid dense + sparse retrieval with cross-encoder re-ranking.',     tech: ['Matching Engine', 'pgvector'],              color: '#22d3ee' },
+  { num: '04', name: 'Govern',    desc: 'Lineage tracking, evaluation harness, and rollback capability.',     tech: ['IAM', 'VPC-SC', 'Dataplex'],               color: '#34d399' },
+  { num: '05', name: 'Serve',     desc: 'Low-latency inference with policy-aware grounding and guardrails.',  tech: ['Cloud Run', 'CDN'],                         color: '#34d399' },
+];
+
+// Capability cards
+const capabilityCards = [
+  {
+    num: '01',
+    title: 'Private LLM Systems',
+    desc: 'Secure, domain-specific assistants with guardrails, observability, and deployment patterns designed for real enterprise use.',
+    tags: 'Production · Private · Governed',
+    detail: 'Guardrails · IAM-scoped · Eval harness · Rollback-capable',
+  },
+  {
+    num: '02',
+    title: 'Enterprise RAG',
+    desc: 'Context-aware retrieval pipelines that connect structured and unstructured data with governed, production-grade accuracy.',
+    tags: 'Hybrid retrieval · Policy-grounded',
+    detail: 'Dense + sparse search · Re-ranking · Citation-first · VPC-SC',
+  },
+  {
+    num: '03',
+    title: 'Agentic Workflows',
+    desc: 'Orchestration patterns for multi-step reasoning, task routing, and reliable execution on cloud-native infrastructure.',
+    tags: 'Multi-step · Observable · Resilient',
+    detail: 'Tool routing · Planner–executor · Memory patterns · Guardrails',
+  },
 ];
 ---
 
-<Layout title="Jagadeesh Thiruveedula — GenAI Systems Architect | Private LLM & RAG" description="A premium portfolio for a GenAI-driven data architect building private LLM systems, enterprise RAG, and governed AI workflows on GCP.">
-  
-  <!-- 1. SIGNAL (Hero) -->
-  <section class="relative isolate h-screen flex items-center overflow-hidden bg-slate-950">
+<Layout
+  title="Jagadeesh Thiruveedula — GenAI Systems Architect | Private LLM & RAG"
+  description="A premium portfolio for a GenAI Systems Architect building private LLM systems, enterprise RAG, and governed AI workflows on GCP."
+>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       §1 · SIGNAL — Hero
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="hero-section relative isolate flex items-center overflow-hidden bg-slate-950" style="min-height: 100svh;">
+    <!-- Node graph background (owns the bg — no competing orbs) -->
     <div class="absolute inset-0 overflow-hidden" aria-hidden="true">
       <HeroNodeGraph />
-      <div class="absolute inset-0 bg-[linear-gradient(135deg,rgba(2,6,23,0.85),rgba(15,23,42,0.7),rgba(2,6,23,0.95))]"></div>
-      <div class="absolute -top-24 left-10 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl"></div>
-      <div class="absolute top-1/4 right-8 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl"></div>
-      <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl"></div>
-      <!-- Blueprint Grid -->
-      <div class="absolute inset-0 opacity-30" style="background-image:linear-gradient(rgba(56,189,248,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.1) 1px, transparent 1px); background-size: 64px 64px; background-position: center center;"></div>
+      <!-- Single edge vignette — frames content without competing -->
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(2,6,23,0.7)_100%)]"></div>
     </div>
 
-    <div class="container relative z-10 mx-auto px-4 hero-content">
-      <div class="mx-auto flex max-w-5xl flex-col items-start gap-8">
-        <div class="hero-badge inline-flex items-center gap-3 rounded-full border border-cyan-400/20 bg-slate-900/60 px-4 py-2 text-xs font-semibold tracking-[0.25em] text-cyan-300 uppercase shadow-[0_0_30px_rgba(34,211,238,0.15)] backdrop-blur-md">
-          <span class="h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)] animate-pulse-ring"></span>
+    <div class="container relative z-10 mx-auto px-4 md:px-6 py-24">
+      <div class="mx-auto flex max-w-5xl flex-col items-start gap-6">
+
+        <!-- System badge -->
+        <div class="hero-badge inline-flex items-center gap-3 rounded-full border border-indigo-400/20 bg-slate-900/60 px-4 py-2 text-xs font-mono font-semibold tracking-[0.22em] text-indigo-300 uppercase shadow-[0_0_24px_rgba(99,102,241,0.12)] backdrop-blur-md">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)] animate-pulse"></span>
           // SYSTEM_STATE: ACTIVE
         </div>
 
-        <div class="max-w-4xl">
-          <p class="hero-subtitle mb-6 text-sm font-semibold uppercase tracking-[0.4em] text-slate-400 font-mono">Command surface for production AI</p>
-          <h1 class="hero-title text-5xl font-black tracking-tight text-white md:text-7xl lg:text-8xl leading-[1.1]">
-            I architect AI systems that feel as <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">reliable</span> as they look ambitious.
-          </h1>
-          <p class="hero-description mt-6 max-w-2xl text-lg text-slate-300 md:text-xl font-light">Private LLM applications, enterprise-grade RAG pipelines, and governed agentic workflows built on GCP for real teams that need performance, security, and operational clarity.</p>
-        </div>
+        <!-- Subtitle -->
+        <p class="hero-subtitle text-xs font-mono font-semibold uppercase tracking-[0.4em] text-slate-500">Command surface for production AI</p>
 
-        <div class="hero-tags flex flex-wrap items-center gap-3 mt-4">
+        <!-- H1 — split into lines for stagger reveal -->
+        <h1 class="hero-title font-black tracking-tight text-white leading-[1.05]" style="font-size: clamp(2.5rem, 7vw, 5.5rem);">
+          <span class="hero-line-wrap block overflow-hidden">
+            <span class="hero-line block">I architect AI systems</span>
+          </span>
+          <span class="hero-line-wrap block overflow-hidden">
+            <span class="hero-line block">that feel as <em class="not-italic text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">reliable</em></span>
+          </span>
+          <span class="hero-line-wrap block overflow-hidden">
+            <span class="hero-line block">as they look ambitious.</span>
+          </span>
+        </h1>
+
+        <!-- Description -->
+        <p class="hero-description max-w-2xl text-lg text-slate-400 font-light leading-relaxed md:text-xl">
+          Private LLM applications, enterprise-grade RAG pipelines, and governed agentic workflows on GCP — built for teams that need performance, security, and operational clarity.
+        </p>
+
+        <!-- Tag pills -->
+        <div class="hero-tags flex flex-wrap items-center gap-2 mt-2">
           {['GCP-native', 'Vertex AI', 'Token-efficient', 'Governed workflows'].map((item) => (
-            <span class="rounded-md border border-slate-700 bg-slate-800/50 px-3 py-1.5 text-xs font-mono text-slate-300 backdrop-blur-md">{item}</span>
+            <span class="sys-chip">{item}</span>
           ))}
         </div>
+
+        <!-- CTAs -->
+        <div class="hero-ctas flex flex-wrap items-center gap-4 mt-4">
+          <a href="#deployments" class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 px-7 py-3 text-sm font-bold text-slate-950 shadow-[0_0_24px_rgba(99,102,241,0.3)] hover:shadow-[0_0_32px_rgba(99,102,241,0.5)] hover:scale-[1.03] transition-all duration-200">
+            See the systems
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="/contact" class="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/50 px-7 py-3 text-sm font-semibold text-slate-300 hover:border-indigo-500/50 hover:text-indigo-300 backdrop-blur-sm transition-all duration-200">
+            Discuss a system
+          </a>
+        </div>
+
       </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-0">
+      <span class="font-mono text-[10px] tracking-[0.3em] text-slate-600 uppercase rotate-0">scroll</span>
+      <div class="w-px h-10 bg-gradient-to-b from-slate-600 to-transparent scroll-line"></div>
     </div>
   </section>
 
-  <!-- 2. COMPLEXITY (Sticky Scroll) -->
-  <section class="complexity-section relative bg-slate-950 h-[200vh]">
-    <div class="sticky top-0 h-screen flex items-center overflow-hidden border-t border-slate-800">
-      <div class="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       §2 · TENSION — The Governance Problem (sticky scroll)
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="complexity-section relative bg-slate-950" style="height: 200vh;">
+    <div class="sticky top-0 h-screen flex items-center overflow-hidden border-t border-slate-800/40">
+
+      <!-- Section dissolve transition zone from hero -->
+      <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-slate-950 to-transparent z-10 pointer-events-none"></div>
+
+      <div class="container mx-auto px-4 md:px-6 grid md:grid-cols-2 gap-12 items-center">
+        <!-- Copy -->
         <div class="max-w-xl z-10">
-          <p class="text-xs font-semibold uppercase tracking-[0.35em] text-amber-400/90 font-mono mb-4">[MODULE: TENSION]</p>
-          <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight complexity-text">The gap between a demo and production is <span class="italic text-slate-400">governance.</span></h2>
-          <p class="mt-6 text-lg text-slate-400 complexity-subtext">Enterprise data is messy. APIs are unpredictable. Without orchestration, AI is just a parlor trick. I bring the discipline of data architecture to generative models.</p>
-        </div>
-        
-        <!-- Chaotic Data Visualization -->
-        <div class="relative h-[400px] w-full flex items-center justify-center opacity-80 chaos-container">
-          <div class="absolute inset-0 grid grid-cols-6 grid-rows-6 gap-2">
-            {Array.from({ length: 36 }).map((_, i) => (
-              <div class={`chaos-node rounded-sm border border-slate-700 bg-slate-800/50 flex items-center justify-center text-[10px] text-slate-500 font-mono overflow-hidden opacity-0`}>
-                0x{(Math.random() * 1000).toString(16).substring(0, 4)}
-              </div>
-            ))}
+          <p class="section-eyebrow text-amber-400/80">[MODULE: TENSION]</p>
+          <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05] complexity-text">
+            The gap between a demo and production is <em class="not-italic text-slate-400">governance.</em>
+          </h2>
+          <p class="mt-6 text-lg text-slate-400 leading-relaxed complexity-subtext">
+            Enterprise data is messy. APIs are unpredictable. Without orchestration, AI is just a parlor trick. I bring the discipline of data architecture to generative models.
+          </p>
+          <!-- Phase indicator -->
+          <div class="mt-8 flex items-center gap-3 phase-indicator opacity-0">
+            <div class="h-px w-8 bg-emerald-500"></div>
+            <span class="font-mono text-xs text-emerald-400 tracking-widest uppercase">Governance applied</span>
           </div>
         </div>
+
+        <!-- Governance narrative SVG visualization -->
+        <div class="relative h-[380px] w-full flex items-center justify-center tension-viz" aria-hidden="true">
+          <svg class="tension-svg w-full max-w-[520px]" viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="node-glow">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <marker id="arrow-clean" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0.5 L0,5.5 L5,3 z" fill="#34d399"/>
+              </marker>
+              <marker id="arrow-chaos" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0.5 L0,5.5 L5,3 z" fill="#f59e0b"/>
+              </marker>
+            </defs>
+
+            <!-- Source nodes (left) -->
+            <g class="tension-sources">
+              <circle cx="44" cy="80"  r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
+              <text x="44" y="84"  text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#fbbf24">API</text>
+              <circle cx="44" cy="190" r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
+              <text x="44" y="194" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#fbbf24">DB</text>
+              <circle cx="44" cy="300" r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
+              <text x="44" y="304" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#fbbf24">DOCS</text>
+            </g>
+
+            <!-- Target node (right) -->
+            <g class="tension-target">
+              <circle cx="476" cy="190" r="26" fill="#0f172a" stroke="#34d399" stroke-width="1.5" filter="url(#node-glow)"/>
+              <text x="476" y="186" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#34d399">AI</text>
+              <text x="476" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#34d399">SYS</text>
+            </g>
+
+            <!-- CHAOS PATHS (amber, visible in phase 1) -->
+            <g class="chaos-paths">
+              <path class="chaos-p" d="M64,80  C160,360 240,10  360,310 S465,140 452,190" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="800" stroke-dashoffset="800" opacity="0.7" stroke-linecap="round" marker-end="url(#arrow-chaos)"/>
+              <path class="chaos-p" d="M64,190 C110,340 290,20  390,330 S458,150 452,190" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="800" stroke-dashoffset="800" opacity="0.6" stroke-linecap="round" marker-end="url(#arrow-chaos)"/>
+              <path class="chaos-p" d="M64,300 C90,20  320,370 380,50  S468,260 452,190" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="800" stroke-dashoffset="800" opacity="0.65" stroke-linecap="round" marker-end="url(#arrow-chaos)"/>
+            </g>
+
+            <!-- GOVERNANCE LAYER (hidden → phase 2) -->
+            <g class="gov-layer" opacity="0">
+              <!-- Glow behind rect -->
+              <rect x="195" y="128" width="130" height="124" rx="8" fill="#6366f1" opacity="0.06" />
+              <!-- Border rect -->
+              <rect x="195" y="128" width="130" height="124" rx="8" fill="#0f172a" stroke="#6366f1" stroke-width="1.5"/>
+              <!-- Inner label -->
+              <text x="260" y="180" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#818cf8" letter-spacing="2">POLICY</text>
+              <text x="260" y="196" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6366f1" letter-spacing="2">LAYER</text>
+              <!-- Horizontal rule inside -->
+              <line x1="210" y1="208" x2="310" y2="208" stroke="#6366f1" stroke-width="0.5" opacity="0.5"/>
+              <text x="260" y="222" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#475569">eval · guard · rollback</text>
+            </g>
+
+            <!-- CLEAN PATHS (hidden → phase 3, emerald, draw in) -->
+            <g class="clean-paths" opacity="0">
+              <path class="clean-p" d="M64,80  Q130,80  195,155 L325,170 Q410,180 452,190" fill="none" stroke="#34d399" stroke-width="1.8" stroke-dasharray="500" stroke-dashoffset="500" stroke-linecap="round" marker-end="url(#arrow-clean)"/>
+              <path class="clean-p" d="M64,190 L195,190 L325,190 Q410,190 452,190"           fill="none" stroke="#34d399" stroke-width="1.8" stroke-dasharray="500" stroke-dashoffset="500" stroke-linecap="round" marker-end="url(#arrow-clean)"/>
+              <path class="clean-p" d="M64,300 Q130,300 195,225 L325,210 Q410,200 452,190"   fill="none" stroke="#34d399" stroke-width="1.8" stroke-dasharray="500" stroke-dashoffset="500" stroke-linecap="round" marker-end="url(#arrow-clean)"/>
+            </g>
+          </svg>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 3. ORCHESTRATION (Animated Diagram) -->
-  <section class="orchestration-section bg-slate-900 py-32 border-t border-slate-800 relative overflow-hidden">
-    <!-- Blueprint BG -->
-    <div class="absolute inset-0 opacity-10" style="background-image:linear-gradient(rgba(52,211,153,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(52,211,153,0.2) 1px, transparent 1px); background-size: 32px 32px;"></div>
 
-    <div class="container relative z-10 mx-auto px-4">
+  <!-- ═══════════════════════════════════════════════════════════════
+       §3 · PIPELINE — Architectural Clarity
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="orchestration-section bg-slate-900 py-32 border-t border-slate-800/40 relative overflow-hidden">
+    <!-- Animated blueprint background -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="pipe-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(52,211,153,0.06)" stroke-width="0.5" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#pipe-grid)" />
+      </svg>
+    </div>
+
+    <div class="container relative z-10 mx-auto px-4 md:px-6">
       <div class="mb-16 max-w-3xl">
-        <p class="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-emerald-400 font-mono">[MODULE: PIPELINE]</p>
+        <p class="section-eyebrow text-emerald-400">[MODULE: PIPELINE]</p>
         <h2 class="text-4xl font-black text-white md:text-5xl">Architectural clarity.</h2>
-        <p class="mt-4 text-xl text-slate-300">How data becomes trusted context.</p>
+        <p class="mt-4 text-xl text-slate-400 font-light">How raw data becomes trusted, served intelligence.</p>
       </div>
 
-      <div class="pipeline-container relative border border-slate-700/50 rounded-2xl bg-slate-950/50 backdrop-blur-sm p-8 md:p-12 shadow-2xl">
-        <div class="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
-        
-        <div class="grid gap-12 md:grid-cols-5 relative">
-          <!-- Flow Line Background -->
-          <div class="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-slate-800 -translate-y-1/2 z-0"></div>
-          <!-- Flow Line Active -->
-          <div class="pipeline-progress hidden md:block absolute top-1/2 left-0 h-0.5 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.8)] -translate-y-1/2 z-0 w-0"></div>
+      <!-- Pipeline card grid -->
+      <div class="pipeline-container relative">
+        <!-- Desktop connector line (behind cards) -->
+        <div class="hidden md:block absolute top-[4.5rem] left-[10%] right-[10%] h-px bg-slate-800 z-0">
+          <div class="pipeline-progress-line h-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)] w-0"></div>
+        </div>
 
-          {['Ingest', 'Embed', 'Retrieve', 'Govern', 'Serve'].map((step, index) => (
-            <div class={`pipeline-step step-${index} relative z-10 flex flex-col items-center text-center gap-4 opacity-50 translate-y-4`}>
-              <div class="w-16 h-16 rounded-xl border border-slate-600 bg-slate-900 flex items-center justify-center shadow-lg relative group overflow-hidden">
-                <div class="absolute inset-0 bg-emerald-400/0 group-hover:bg-emerald-400/10 transition-colors duration-500"></div>
-                <span class="font-mono text-xl text-slate-300 font-bold step-number">0{index + 1}</span>
-              </div>
-              <div>
-                <h3 class="text-lg font-bold text-white mb-1">{step}</h3>
-                <p class="text-xs text-slate-400 font-mono">Module active</p>
+        <div class="grid gap-4 md:grid-cols-5 relative">
+          {pipelineStages.map((stage, index) => (
+            <div class={`pipeline-step step-${index} relative z-10 flex flex-col gap-4 opacity-0 translate-y-4`} style={`will-change:transform;`}>
+              <!-- Card -->
+              <div class="rounded-2xl border border-slate-700/60 bg-slate-950/70 backdrop-blur-sm p-5 flex flex-col gap-3 h-full hover:border-opacity-100 transition-colors duration-300 group"
+                   style={`--step-color: ${stage.color};`}>
+
+                <!-- Step number + active dot -->
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-3xl font-bold leading-none step-number" style={`color: ${stage.color}; opacity: 0.25;`}>{stage.num}</span>
+                  <span class="step-status h-1.5 w-1.5 rounded-full bg-slate-700 transition-colors duration-300"></span>
+                </div>
+
+                <!-- Name -->
+                <h3 class="text-base font-bold text-white tracking-tight">{stage.name}</h3>
+
+                <!-- Description -->
+                <p class="text-xs text-slate-500 leading-relaxed flex-1">{stage.desc}</p>
+
+                <!-- Tech chips -->
+                <div class="flex flex-wrap gap-1 mt-auto pt-2 border-t border-slate-800/60">
+                  {stage.tech.map(t => (
+                    <span class="font-mono text-[10px] px-2 py-0.5 rounded border border-slate-700/50 text-slate-500 bg-slate-900/50">{t}</span>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
@@ -115,192 +327,579 @@ const projectCards = [
     </div>
   </section>
 
-  <!-- 4. CAPABILITIES (Stacking Cards) -->
-  <section class="capabilities-section bg-slate-950 py-32 relative">
-    <div class="container mx-auto px-4 max-w-4xl">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       §4 · CAPABILITIES — Systems Expertise (stacking cards)
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="capabilities-section bg-slate-950 py-32 relative border-t border-slate-800/40">
+    <div class="container mx-auto px-4 md:px-6 max-w-4xl">
       <div class="mb-16">
-        <p class="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-indigo-400 font-mono">[MODULE: CAPABILITIES]</p>
+        <p class="section-eyebrow text-indigo-400">[MODULE: CAPABILITIES]</p>
         <h2 class="text-4xl font-black text-white md:text-5xl">Systems expertise.</h2>
       </div>
 
       <div class="stacking-container relative">
-        {capabilityCards.map(([title, copy], index) => (
-          <article class={`stack-card sticky top-32 mb-8 rounded-3xl border border-slate-700 bg-slate-900 p-8 md:p-12 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] transform-gpu origin-top`} style={`z-index: ${index + 10};`}>
+        {capabilityCards.map(({ num, title, desc, tags, detail }, index) => (
+          <article
+            class={`stack-card sticky mb-6 rounded-3xl border border-slate-700/60 bg-slate-900 p-8 md:p-10 shadow-[0_-8px_40px_rgba(0,0,0,0.6)] transform-gpu origin-top relative overflow-hidden`}
+            style={`top: ${4 + index * 1.5}rem; z-index: ${index + 10};`}
+          >
+            <!-- Top accent line -->
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent"></div>
+
             <div class="flex flex-col md:flex-row justify-between gap-8 items-start">
-              <div class="max-w-xl">
-                <h2 class="mb-4 text-3xl font-bold text-white">{title}</h2>
-                <p class="text-lg text-slate-300 leading-relaxed">{copy}</p>
+              <div class="flex-1 min-w-0">
+                <!-- Tag row -->
+                <div class="flex flex-wrap items-center gap-2 mb-5">
+                  <span class="font-mono text-[10px] tracking-widest uppercase text-indigo-400/70">{tags}</span>
+                </div>
+                <h2 class="mb-4 text-2xl md:text-3xl font-bold text-white tracking-tight">{title}</h2>
+                <p class="text-base text-slate-400 leading-relaxed max-w-lg">{desc}</p>
+
+                <!-- Technical depth row -->
+                <div class="mt-6 pt-4 border-t border-slate-800/60">
+                  <p class="font-mono text-xs text-slate-600 leading-relaxed">{detail}</p>
+                </div>
               </div>
-              <div class="flex-shrink-0 w-24 h-24 rounded-full border border-indigo-500/30 flex items-center justify-center bg-indigo-500/5 relative overflow-hidden">
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.2)_0%,transparent_70%)]"></div>
-                <span class="font-mono text-indigo-300 font-bold text-xl">0{index + 1}</span>
+
+              <!-- Numbered badge -->
+              <div class="flex-shrink-0 w-16 h-16 rounded-2xl border border-indigo-500/20 flex items-center justify-center bg-indigo-500/5 relative">
+                <div class="absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.15)_0%,transparent_70%)]"></div>
+                <span class="font-mono text-indigo-400/60 font-bold text-xl relative z-10">{num}</span>
               </div>
             </div>
-            <!-- Bottom decorative line -->
-            <div class="absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-slate-500/30 to-transparent"></div>
           </article>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- 5. PROOF (Deployments) -->
-  <section class="bg-slate-900 py-32 border-t border-slate-800">
-    <div class="container mx-auto px-4">
-      <div class="mb-16">
-        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-400 font-mono">[MODULE: DEPLOYMENTS]</p>
-        <h2 class="text-4xl font-black text-white md:text-5xl">Production-facing AI work.</h2>
-      </div>
 
-      <div class="grid gap-6 md:grid-cols-3">
-        {projectCards.map(([title, copy]) => (
-          <article class="group relative rounded-2xl border border-slate-700 bg-slate-800/50 p-8 transition duration-500 hover:border-cyan-500/50 hover:bg-slate-800 overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-30 group-hover:opacity-100 transition-opacity">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-400"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </div>
-            <div class="mb-8 font-mono text-xs text-slate-500 flex justify-between">
-              <span>STATUS: LIVE</span>
-              <span class="text-emerald-400">SECURE</span>
-            </div>
-            <h3 class="text-2xl font-bold text-white mb-4">{title}</h3>
-            <p class="text-slate-400 text-sm leading-relaxed">{copy}</p>
-          </article>
-        ))}
-      </div>
-    </div>
-  </section>
+  <!-- ═══════════════════════════════════════════════════════════════
+       §5 · DEPLOYMENTS — Production Proof
+  ═══════════════════════════════════════════════════════════════ -->
+  <section id="deployments" class="deployments-section bg-slate-900 py-32 border-t border-slate-800/40 relative overflow-hidden">
+    <!-- Canvas background for constellation hover effect -->
+    <canvas id="constellation-canvas" class="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true"></canvas>
 
-  <!-- 6. CONTACT -->
-  <section class="bg-slate-950 py-32 border-t border-slate-800 relative overflow-hidden">
-    <!-- Glowing Orb -->
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none"></div>
-    
-    <div class="container mx-auto px-4 relative z-10 text-center">
-      <article class="mx-auto max-w-3xl rounded-3xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-xl p-12 md:p-16 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-        <p class="text-xs font-semibold uppercase tracking-[0.35em] text-cyan-400 font-mono mb-6">[MODULE: INITIATE]</p>
-        <h2 class="text-3xl font-black text-white md:text-5xl mb-6">Ready to architect your AI future?</h2>
-        <p class="text-lg text-slate-300 mb-10">Let's build systems that perform securely, cost-effectively, and reliably at scale.</p>
-        <a href="/contact" class="inline-flex items-center gap-2 rounded-full bg-cyan-500 hover:bg-cyan-400 px-8 py-4 text-sm font-bold text-slate-950 transition-all hover:scale-105 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
-          Start a conversation
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    <div class="container relative z-10 mx-auto px-4 md:px-6">
+      <div class="mb-16 flex items-end justify-between gap-8">
+        <div>
+          <p class="section-eyebrow text-cyan-400">[MODULE: DEPLOYMENTS]</p>
+          <h2 class="text-4xl font-black text-white md:text-5xl">Production-facing AI work.</h2>
+        </div>
+        <a href="/experience" class="hidden md:inline-flex items-center gap-1.5 font-mono text-sm text-slate-500 hover:text-slate-300 transition-colors whitespace-nowrap">
+          Full experience <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
+      </div>
+
+      <div class="grid gap-5 md:grid-cols-2 proof-grid">
+        {projects.map(({ slug, title, kicker, summary, stack, metric, metricLabel }) => (
+          <article class="proof-card group relative rounded-2xl border border-slate-700/60 bg-slate-800/30 p-7 hover:border-cyan-500/30 hover:bg-slate-800/50 transition-all duration-500 overflow-hidden opacity-0 translate-y-8">
+            <!-- Status bar at top -->
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-amber-500/40 via-emerald-400/60 to-emerald-400/40"></div>
+            <!-- Arrow -->
+            <div class="absolute top-5 right-5 opacity-20 group-hover:opacity-80 transition-opacity duration-300">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+
+            <!-- Meta row -->
+            <div class="flex items-center justify-between mb-5 font-mono text-xs text-slate-600">
+              <span class="text-emerald-500/80">STATUS: LIVE</span>
+              <span class="text-indigo-400/60">{kicker}</span>
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-lg font-bold text-white mb-2 group-hover:text-cyan-100 transition-colors duration-300 pr-8">{title}</h3>
+            <p class="text-sm text-slate-500 leading-relaxed mb-5">{summary}</p>
+
+            <!-- Stack chips -->
+            <div class="flex flex-wrap gap-1.5 mb-5">
+              {stack.map(t => (
+                <span class="font-mono text-[10px] px-2 py-0.5 rounded border border-slate-700/50 text-slate-500 bg-slate-900/60">{t}</span>
+              ))}
+            </div>
+
+            <!-- Metric -->
+            <div class="pt-4 border-t border-slate-800/60">
+              <span class="font-mono text-2xl font-bold text-emerald-400 proof-metric">{metric}</span>
+              <span class="font-mono text-xs text-slate-600 ml-2">{metricLabel}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       §6 · INITIATE — Contact CTA
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="contact-section bg-slate-950 py-40 border-t border-slate-800/40 relative overflow-hidden">
+    <!-- Breathing pulse background -->
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
+      <svg width="600" height="600" viewBox="0 0 600 600" class="cta-pulse-svg">
+        <circle cx="300" cy="300" r="80"  fill="none" stroke="rgba(6,182,212,0.12)" stroke-width="1" class="pulse-ring"/>
+        <circle cx="300" cy="300" r="130" fill="none" stroke="rgba(6,182,212,0.07)" stroke-width="1" class="pulse-ring" style="animation-delay:-2s"/>
+        <circle cx="300" cy="300" r="180" fill="none" stroke="rgba(6,182,212,0.04)" stroke-width="1" class="pulse-ring" style="animation-delay:-4s"/>
+        <circle cx="300" cy="300" r="240" fill="none" stroke="rgba(99,102,241,0.03)" stroke-width="1" class="pulse-ring" style="animation-delay:-1s"/>
+      </svg>
+    </div>
+
+    <div class="container mx-auto px-4 md:px-6 relative z-10 text-center">
+      <article class="contact-card mx-auto max-w-3xl rounded-3xl border border-slate-700/40 bg-slate-900/50 backdrop-blur-xl p-12 md:p-16 shadow-[0_0_60px_rgba(0,0,0,0.5)] opacity-0 translate-y-6">
+        <p class="section-eyebrow text-cyan-400 text-center">[MODULE: INITIATE]</p>
+        <h2 class="text-3xl font-black text-white md:text-5xl mb-5 tracking-tight">
+          Architecting your next AI system?
+        </h2>
+        <p class="text-lg text-slate-400 mb-10 leading-relaxed max-w-xl mx-auto">
+          Available for architectural advisory, systems design, and production AI engagements. GCP-native by default.
+        </p>
+
+        <!-- CTA buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-4 mb-10">
+          <a href="/contact" class="cta-btn inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 px-8 py-3.5 text-sm font-bold text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.25)] hover:shadow-[0_0_32px_rgba(6,182,212,0.45)] hover:scale-[1.03] transition-all duration-200">
+            Open a conversation
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/jagadeesh-thiruveedula/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full border border-slate-700 px-8 py-3.5 text-sm font-semibold text-slate-300 hover:border-indigo-500/40 hover:text-indigo-300 transition-all duration-200">
+            View on LinkedIn
+          </a>
+        </div>
+
+        <!-- Engagement modes -->
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          {['Advisory', 'Architecture Review', 'Full Engagement'].map(mode => (
+            <span class="font-mono text-xs px-4 py-1.5 rounded-full border border-slate-700/50 text-slate-500">{mode}</span>
+          ))}
+        </div>
       </article>
     </div>
   </section>
 
 </Layout>
 
+
+<style>
+  /* CTA breathing pulse */
+  .pulse-ring {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pulse-breathe 6s ease-in-out infinite;
+  }
+  @keyframes pulse-breathe {
+    0%, 100% { transform: scale(0.88); opacity: 0.6; }
+    50%       { transform: scale(1.12); opacity: 1; }
+  }
+
+  /* Hero scroll indicator */
+  .scroll-line {
+    animation: scroll-drop 1.8s ease-in-out infinite;
+  }
+  @keyframes scroll-drop {
+    0%   { transform: scaleY(0); transform-origin: top; opacity: 0; }
+    40%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+    60%  { transform: scaleY(1); transform-origin: bottom; opacity: 1; }
+    100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+  }
+
+  /* Stacking cards depth */
+  .stack-card {
+    transition: box-shadow 0.3s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pulse-ring,
+    .scroll-line {
+      animation: none;
+    }
+    .hero-line,
+    .hero-badge,
+    .hero-subtitle,
+    .hero-description,
+    .hero-tags,
+    .hero-ctas {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>
+
+
 <script>
   import gsap from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-  // Ensure DOM is loaded
-  document.addEventListener("DOMContentLoaded", (event) => {
-    gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger);
 
-    // 1. HERO ANIMATION
-    const tlHero = gsap.timeline({ defaults: { ease: "power3.out" } });
-    
-    tlHero.fromTo(".hero-badge", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.2 })
-          .fromTo(".hero-subtitle", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, "-=0.6")
-          .fromTo(".hero-title", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, "-=0.6")
-          .fromTo(".hero-description", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, "-=0.6")
-          .fromTo(".hero-tags span", { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.1 }, "-=0.4");
+  // ─────────────────────────────────────────────────────────────────
+  // SECTION-AWARE NAV LABEL
+  // ─────────────────────────────────────────────────────────────────
+  const navLabel = document.getElementById('nav-section-label');
+  const sectionDefs = [
+    { trigger: '.complexity-section',   label: '/ TENSION'      },
+    { trigger: '.orchestration-section',label: '/ PIPELINE'     },
+    { trigger: '.capabilities-section', label: '/ CAPABILITIES' },
+    { trigger: '.deployments-section',  label: '/ DEPLOYMENTS'  },
+    { trigger: '.contact-section',      label: '/ INITIATE'     },
+  ];
 
-    // 2. COMPLEXITY SCROLL ANIMATION
-    const chaosNodes = document.querySelectorAll('.chaos-node');
-    
-    // Initial random scatter
-    gsap.set(chaosNodes, {
-      x: () => gsap.utils.random(-200, 200),
-      y: () => gsap.utils.random(-200, 200),
-      rotation: () => gsap.utils.random(-90, 90),
+  if (navLabel) {
+    sectionDefs.forEach(({ trigger, label }) => {
+      ScrollTrigger.create({
+        trigger,
+        start: 'top 55%',
+        end: 'bottom 45%',
+        onEnter:     () => { navLabel.textContent = label; navLabel.style.opacity = '1'; },
+        onLeave:     () => { navLabel.textContent = '';    navLabel.style.opacity = '0'; },
+        onEnterBack: () => { navLabel.textContent = label; navLabel.style.opacity = '1'; },
+        onLeaveBack: () => { navLabel.textContent = '';    navLabel.style.opacity = '0'; },
+        invalidateOnRefresh: true,
+      });
+    });
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // §1 · HERO SEQUENCE
+  // ─────────────────────────────────────────────────────────────────
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!prefersReduced) {
+    const tlHero = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+    // Set initial states
+    gsap.set('.hero-line',        { y: '105%' });
+    gsap.set(['.hero-badge', '.hero-subtitle', '.hero-description', '.hero-ctas'], { y: 18, opacity: 0 });
+    gsap.set('.hero-tags',        { y: 10, opacity: 0 });
+    gsap.set('.scroll-indicator', { opacity: 0 });
+
+    tlHero
+      .to('.hero-badge',       { y: 0, opacity: 1, duration: 0.7, delay: 0.15 })
+      .to('.hero-subtitle',    { y: 0, opacity: 1, duration: 0.6 }, '-=0.45')
+      .to('.hero-line',        { y: '0%', duration: 0.85, stagger: 0.1 }, '-=0.35')
+      .to('.hero-description', { y: 0, opacity: 1, duration: 0.7 }, '-=0.45')
+      .to('.hero-tags',        { y: 0, opacity: 1, duration: 0.5 }, '-=0.5')
+      .to('.hero-ctas',        { y: 0, opacity: 1, duration: 0.5 }, '-=0.4')
+      .to('.scroll-indicator', { opacity: 1, duration: 0.6 }, '-=0.2');
+
+    // ── Cursor parallax on HeroNodeGraph SVG layers ──
+    const heroSection  = document.querySelector('.hero-section') as HTMLElement;
+    const layerEdges   = document.getElementById('hb-layer-edges');
+    const layerNodes   = document.getElementById('hb-layer-nodes');
+    const layerPulse   = document.getElementById('hb-layer-pulse');
+
+    if (heroSection && layerEdges && layerNodes && layerPulse) {
+      const qxE = gsap.quickTo(layerEdges, 'x', { duration: 1.0, ease: 'power3.out' });
+      const qyE = gsap.quickTo(layerEdges, 'y', { duration: 1.0, ease: 'power3.out' });
+      const qxN = gsap.quickTo(layerNodes, 'x', { duration: 0.7, ease: 'power3.out' });
+      const qyN = gsap.quickTo(layerNodes, 'y', { duration: 0.7, ease: 'power3.out' });
+      const qxP = gsap.quickTo(layerPulse, 'x', { duration: 0.45, ease: 'power3.out' });
+      const qyP = gsap.quickTo(layerPulse, 'y', { duration: 0.45, ease: 'power3.out' });
+
+      heroSection.addEventListener('mousemove', (e: MouseEvent) => {
+        const rect = heroSection.getBoundingClientRect();
+        const dx = (e.clientX - rect.width  / 2) / rect.width;   // -0.5 → 0.5
+        const dy = (e.clientY - rect.height / 2) / rect.height;  // -0.5 → 0.5
+
+        qxE(dx * 18);  qyE(dy * 12);
+        qxN(dx * 30);  qyN(dy * 20);
+        qxP(dx * 42);  qyP(dy * 28);
+      }, { passive: true });
+
+      heroSection.addEventListener('mouseleave', () => {
+        gsap.to([layerEdges, layerNodes, layerPulse], { x: 0, y: 0, duration: 1.2, ease: 'power3.out' });
+      });
+    }
+
+    // ── Hero scroll-out parallax (SVG dims as hero exits) ──
+    gsap.to('#hero-node-svg', {
       opacity: 0,
-      scale: 0.5
-    });
-
-    const tlComplexity = gsap.timeline({
+      scale: 1.06,
       scrollTrigger: {
-        trigger: ".complexity-section",
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 1,
+        trigger: '.hero-section',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1.5,
+        invalidateOnRefresh: true,
       }
     });
+  }
 
-    // Fade in and bring to order
-    tlComplexity.to(chaosNodes, {
+
+  // ─────────────────────────────────────────────────────────────────
+  // §2 · TENSION — 3-phase chaos → governance animation
+  // ─────────────────────────────────────────────────────────────────
+  const tlTension = gsap.timeline({
+    scrollTrigger: {
+      trigger: '.complexity-section',
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: 1.5,
+      invalidateOnRefresh: true,
+    }
+  });
+
+  // Phase 1 (0 → 0.38): draw chaos paths
+  tlTension.to('.chaos-p', {
+    strokeDashoffset: 0,
+    stagger: 0.06,
+    duration: 0.38,
+    ease: 'power2.inOut',
+  }, 0);
+
+  // Phase 2 (0.30 → 0.65): governance layer appears
+  tlTension.fromTo('.gov-layer',
+    { opacity: 0, scale: 0.9, transformOrigin: '260px 190px' },
+    { opacity: 1, scale: 1,   duration: 0.35, ease: 'power2.out' },
+    0.30
+  );
+
+  // Phase 3 (0.58 → 1.0): chaos fades, clean paths draw, source nodes turn emerald
+  tlTension.to('.chaos-p',      { opacity: 0, duration: 0.18 }, 0.58);
+  tlTension.to('.clean-paths',  { opacity: 1, duration: 0.08 }, 0.64);
+  tlTension.to('.clean-p',      { strokeDashoffset: 0, stagger: 0.06, duration: 0.34, ease: 'power3.out' }, 0.66);
+  tlTension.to('.tension-sources circle', { stroke: '#34d399', duration: 0.18 }, 0.82);
+  tlTension.to('.phase-indicator',        { opacity: 1, duration: 0.15 }, 0.88);
+
+
+  // ─────────────────────────────────────────────────────────────────
+  // §3 · PIPELINE — sequential card reveal + progress line
+  // ─────────────────────────────────────────────────────────────────
+  const tlPipeline = gsap.timeline({
+    scrollTrigger: {
+      trigger: '.orchestration-section',
+      start: 'top 55%',
+      end: 'bottom 60%',
+      scrub: 0.6,
+      invalidateOnRefresh: true,
+    }
+  });
+
+  // Progress line draws left to right
+  tlPipeline.to('.pipeline-progress-line', { width: '100%', duration: 2, ease: 'none' }, 0);
+
+  // Each step activates as line reaches it
+  const steps = document.querySelectorAll('.pipeline-step');
+  steps.forEach((step, i) => {
+    const offset = (i / (steps.length - 1)) * 1.8;
+
+    tlPipeline.to(step, {
       opacity: 1,
-      x: 0,
       y: 0,
-      rotation: 0,
-      scale: 1,
-      duration: 1,
-      stagger: 0.02,
-      ease: "power2.inOut"
-    });
-    
-    // Color shift to signify governance
-    tlComplexity.to(chaosNodes, {
-      borderColor: "rgba(52, 211, 153, 0.5)", // emerald-400/50
-      backgroundColor: "rgba(6, 78, 59, 0.5)", // emerald-900/50
-      color: "#34d399",
-      duration: 0.5
-    }, "+=0.2");
+      duration: 0.25,
+      ease: 'power2.out',
+    }, offset);
 
-    // 3. ORCHESTRATION DIAGRAM
-    const tlPipeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".orchestration-section",
-        start: "top center",
-        end: "bottom center",
-        scrub: 0.5
-      }
-    });
+    // Step number brightens
+    const numEl = step.querySelector('.step-number') as HTMLElement;
+    if (numEl) {
+      tlPipeline.to(numEl, { opacity: 1, duration: 0.15 }, offset + 0.05);
+    }
 
-    // Animate line width
-    tlPipeline.to(".pipeline-progress", { width: "100%", duration: 2, ease: "none" });
-    
-    // Light up steps as line hits them
-    const steps = document.querySelectorAll('.pipeline-step');
-    steps.forEach((step, i) => {
-      tlPipeline.to(step, {
-        opacity: 1,
-        y: 0,
-        duration: 0.2
-      }, (i / steps.length) * 2); // Map to progress of line
+    // Status dot turns emerald
+    const dot = step.querySelector('.step-status') as HTMLElement;
+    if (dot) {
+      tlPipeline.to(dot, {
+        backgroundColor: '#34d399',
+        boxShadow: '0 0 8px rgba(52,211,153,0.6)',
+        duration: 0.15,
+      }, offset + 0.1);
+    }
 
-      tlPipeline.to(step.querySelector('.w-16'), {
-        borderColor: "#34d399",
-        boxShadow: "0 0 20px rgba(52,211,153,0.4)",
-        duration: 0.2
-      }, (i / steps.length) * 2);
-    });
+    // Card border accent
+    const card = step.querySelector('div') as HTMLElement;
+    if (card) {
+      tlPipeline.to(card, {
+        borderColor: 'rgba(52,211,153,0.3)',
+        duration: 0.2,
+      }, offset + 0.08);
+    }
+  });
 
-    // 4. STACKING CARDS
-    const cards = gsap.utils.toArray('.stack-card');
-    cards.forEach((card, i) => {
-      if (i === 0) return; // Skip first card
-      
-      gsap.fromTo(card, 
-        { 
-          y: 100, 
-          scale: 0.95, 
-          opacity: 0.8 
-        },
-        {
-          y: 0,
-          scale: 1,
-          opacity: 1,
-          duration: 1,
-          scrollTrigger: {
-            trigger: card,
-            start: "top 80%",
-            end: "top 30%",
-            scrub: true
-          }
+
+  // ─────────────────────────────────────────────────────────────────
+  // §4 · CAPABILITIES — stacking cards with depth scaling
+  // ─────────────────────────────────────────────────────────────────
+  const cards = gsap.utils.toArray<HTMLElement>('.stack-card');
+  cards.forEach((card, i) => {
+    if (i === 0) return; // First card is always visible
+
+    gsap.fromTo(card,
+      { y: 80, scale: 0.96, opacity: 0.85 },
+      {
+        y: 0, scale: 1, opacity: 1,
+        duration: 1,
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 82%',
+          end: 'top 32%',
+          scrub: true,
+          invalidateOnRefresh: true,
         }
-      );
+      }
+    );
+
+    // Scale down previous cards as next one stacks
+    if (i > 0) {
+      const prevCard = cards[i - 1];
+      gsap.to(prevCard, {
+        scale: 0.97,
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 60%',
+          end: 'top 20%',
+          scrub: true,
+          invalidateOnRefresh: true,
+        }
+      });
+    }
+  });
+
+
+  // ─────────────────────────────────────────────────────────────────
+  // §5 · DEPLOYMENTS — proof cards stagger in
+  // ─────────────────────────────────────────────────────────────────
+  gsap.to('.proof-card', {
+    opacity: 1,
+    y: 0,
+    duration: 0.7,
+    stagger: 0.08,
+    ease: 'power2.out',
+    scrollTrigger: {
+      trigger: '.proof-grid',
+      start: 'top 75%',
+      toggleActions: 'play none none none',
+      invalidateOnRefresh: true,
+    }
+  });
+
+  // Canvas constellation (lightweight hover-reactive dots)
+  (function initConstellation() {
+    const canvas = document.getElementById('constellation-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const section = canvas.parentElement!;
+    let dots: { x: number; y: number; baseOpacity: number; lit: boolean }[] = [];
+    let mouse = { x: -9999, y: -9999 };
+    let animId: number;
+    let isIdle = true;
+
+    function resize() {
+      canvas.width  = section.offsetWidth;
+      canvas.height = section.offsetHeight;
+      buildDots();
+    }
+
+    function buildDots() {
+      dots = [];
+      const cols = Math.floor(canvas.width  / 80);
+      const rows = Math.floor(canvas.height / 80);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          dots.push({
+            x: (c + 0.5) * (canvas.width  / cols) + (Math.random() - 0.5) * 30,
+            y: (r + 0.5) * (canvas.height / rows) + (Math.random() - 0.5) * 30,
+            baseOpacity: 0.03 + Math.random() * 0.04,
+            lit: false,
+          });
+        }
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const proximity = 140;
+
+      dots.forEach(dot => {
+        const dx   = dot.x - mouse.x;
+        const dy   = dot.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const lit  = dist < proximity;
+        const op   = lit
+          ? dot.baseOpacity + (1 - dist / proximity) * 0.35
+          : dot.baseOpacity;
+
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(52,211,153,${op})`;
+        ctx.fill();
+
+        // Connect nearby lit dots
+        if (lit) {
+          dots.forEach(other => {
+            if (other === dot) return;
+            const odx  = other.x - dot.x;
+            const ody  = other.y - dot.y;
+            const odist = Math.sqrt(odx * odx + ody * ody);
+            if (odist < 100 && odist > 0) {
+              const lineOp = (1 - odist / 100) * 0.12;
+              ctx.beginPath();
+              ctx.moveTo(dot.x, dot.y);
+              ctx.lineTo(other.x, other.y);
+              ctx.strokeStyle = `rgba(52,211,153,${lineOp})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          });
+        }
+      });
+    }
+
+    function loop() {
+      draw();
+      animId = requestAnimationFrame(loop);
+    }
+
+    // Only animate on hover
+    let idleTimer: ReturnType<typeof setTimeout>;
+    section.addEventListener('mousemove', (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+
+      if (isIdle) {
+        isIdle = false;
+        loop();
+      }
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        isIdle = true;
+        cancelAnimationFrame(animId);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        mouse = { x: -9999, y: -9999 };
+      }, 300);
+    }, { passive: true });
+
+    section.addEventListener('mouseleave', () => {
+      mouse = { x: -9999, y: -9999 };
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        isIdle = true;
+        cancelAnimationFrame(animId);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }, 200);
     });
+
+    window.addEventListener('resize', resize, { passive: true });
+    resize();
+  })();
+
+
+  // ─────────────────────────────────────────────────────────────────
+  // §6 · CONTACT CTA — slide in
+  // ─────────────────────────────────────────────────────────────────
+  gsap.to('.contact-card', {
+    opacity: 1,
+    y: 0,
+    duration: 0.9,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: '.contact-section',
+      start: 'top 65%',
+      toggleActions: 'play none none none',
+      invalidateOnRefresh: true,
+    }
   });
 </script>
