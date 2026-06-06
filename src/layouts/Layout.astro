@@ -168,6 +168,35 @@ function isActive(href: string) {
       });
     </script>
 
+    <script>
+      import Lenis from 'lenis'
+      import gsap from 'gsap'
+      import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+      // Initialize Lenis
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/brs54l4xou
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 1,
+        smoothTouch: false,
+        touchMultiplier: 2,
+        infinite: false,
+      })
+
+      gsap.registerPlugin(ScrollTrigger)
+
+      lenis.on('scroll', ScrollTrigger.update)
+
+      gsap.ticker.add((time) => {
+        lenis.raf(time * 1000)
+      })
+
+      gsap.ticker.lagSmoothing(0)
+    </script>
+
     <style is:global>
       .nav-link {
         @apply px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 rounded-lg transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400;

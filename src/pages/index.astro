@@ -6,9 +6,6 @@ const capabilityCards = [
   ['Private LLM systems', 'Secure, domain-specific assistants with guardrails, observability, and deployment patterns designed for real enterprise use.'],
   ['Enterprise RAG', 'Context-aware retrieval pipelines that connect structured and unstructured data with governed, production-grade accuracy.'],
   ['Agentic workflows', 'Orchestration patterns for multi-step reasoning, task routing, and reliable execution on cloud-native infrastructure.'],
-  ['GCP-native architecture', 'BigQuery, Vertex AI, Cloud Run, and Dataflow aligned into scalable, cost-aware AI systems.'],
-  ['Token-efficient inference', 'Prompt design, routing, and model selection tuned for latency, cost, and operational discipline.'],
-  ['Governed AI operations', 'Controls, lineage, auditability, and deployment hygiene from prototype to production.'],
 ];
 
 const projectCards = [
@@ -19,137 +16,291 @@ const projectCards = [
 ---
 
 <Layout title="Jagadeesh Thiruveedula — GenAI Systems Architect | Private LLM & RAG" description="A premium portfolio for a GenAI-driven data architect building private LLM systems, enterprise RAG, and governed AI workflows on GCP.">
-  <section class="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.12),transparent_18%),linear-gradient(135deg,#020617_0%,#111827_45%,#0f172a_100%)] py-16 md:py-20">
+  
+  <!-- 1. SIGNAL (Hero) -->
+  <section class="relative isolate h-screen flex items-center overflow-hidden bg-slate-950">
     <div class="absolute inset-0 overflow-hidden" aria-hidden="true">
       <HeroNodeGraph />
-      <div class="absolute inset-0 bg-[linear-gradient(135deg,rgba(2,6,23,0.78),rgba(15,23,42,0.55),rgba(2,6,23,0.92))]"></div>
-      <div class="absolute -top-24 left-10 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl"></div>
-      <div class="absolute top-16 right-8 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl"></div>
-      <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-emerald-400/8 blur-3xl"></div>
-      <div class="absolute inset-0 opacity-20" style="background-image:linear-gradient(rgba(148,163,184,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.08) 1px, transparent 1px); background-size: 72px 72px;"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(135deg,rgba(2,6,23,0.85),rgba(15,23,42,0.7),rgba(2,6,23,0.95))]"></div>
+      <div class="absolute -top-24 left-10 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl"></div>
+      <div class="absolute top-1/4 right-8 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl"></div>
+      <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl"></div>
+      <!-- Blueprint Grid -->
+      <div class="absolute inset-0 opacity-30" style="background-image:linear-gradient(rgba(56,189,248,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.1) 1px, transparent 1px); background-size: 64px 64px; background-position: center center;"></div>
     </div>
 
-    <div class="container relative z-10 mx-auto px-4 text-center md:text-left">
-      <div class="mx-auto flex max-w-6xl flex-col items-center gap-6 md:items-start">
-        <div class="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/6 px-3 py-1.5 text-xs font-semibold tracking-[0.2em] text-cyan-100 uppercase shadow-[0_18px_50px_rgba(8,47,73,0.35)] backdrop-blur-xl">
-          <span class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_6px_rgba(52,211,153,0.16)]"></span>
-          GenAI systems architect · private LLM · enterprise RAG
+    <div class="container relative z-10 mx-auto px-4 hero-content">
+      <div class="mx-auto flex max-w-5xl flex-col items-start gap-8">
+        <div class="hero-badge inline-flex items-center gap-3 rounded-full border border-cyan-400/20 bg-slate-900/60 px-4 py-2 text-xs font-semibold tracking-[0.25em] text-cyan-300 uppercase shadow-[0_0_30px_rgba(34,211,238,0.15)] backdrop-blur-md">
+          <span class="h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)] animate-pulse-ring"></span>
+          // SYSTEM_STATE: ACTIVE
         </div>
 
-        <div class="max-w-4xl text-center md:text-left">
-          <p class="mb-4 text-sm font-semibold uppercase tracking-[0.35em] text-cyan-200/90">Command surface for production AI</p>
-          <h1 class="text-4xl font-black tracking-tight text-white md:text-6xl lg:text-7xl">I architect AI systems that feel as reliable as they look ambitious.</h1>
-          <p class="mt-4 max-w-3xl text-base text-slate-200 md:text-lg">Private LLM applications, enterprise-grade RAG pipelines, and governed agentic workflows built on GCP for real teams that need performance, security, and operational clarity.</p>
+        <div class="max-w-4xl">
+          <p class="hero-subtitle mb-6 text-sm font-semibold uppercase tracking-[0.4em] text-slate-400 font-mono">Command surface for production AI</p>
+          <h1 class="hero-title text-5xl font-black tracking-tight text-white md:text-7xl lg:text-8xl leading-[1.1]">
+            I architect AI systems that feel as <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">reliable</span> as they look ambitious.
+          </h1>
+          <p class="hero-description mt-6 max-w-2xl text-lg text-slate-300 md:text-xl font-light">Private LLM applications, enterprise-grade RAG pipelines, and governed agentic workflows built on GCP for real teams that need performance, security, and operational clarity.</p>
         </div>
 
-        <div class="flex flex-wrap items-center justify-center gap-2 md:justify-start">
-          {['GCP-native', 'BigQuery + Vertex AI', 'Token-efficient', 'Governed workflows'].map((item) => (
-            <span class="rounded-full border border-white/10 bg-white/6 px-3 py-1.5 text-xs font-medium text-slate-100 shadow-[0_10px_30px_rgba(15,23,42,0.35)] backdrop-blur-xl">{item}</span>
+        <div class="hero-tags flex flex-wrap items-center gap-3 mt-4">
+          {['GCP-native', 'Vertex AI', 'Token-efficient', 'Governed workflows'].map((item) => (
+            <span class="rounded-md border border-slate-700 bg-slate-800/50 px-3 py-1.5 text-xs font-mono text-slate-300 backdrop-blur-md">{item}</span>
           ))}
         </div>
+      </div>
+    </div>
+  </section>
 
-        <div class="flex flex-col gap-4 sm:flex-row">
-          <a href="#systems" class="rounded-full bg-cyan-400 px-6 py-2.5 text-sm font-semibold text-slate-950 shadow-[0_18px_45px_rgba(34,211,238,0.25)] transition hover:-translate-y-0.5 hover:bg-cyan-300">Explore the systems</a>
-          <a href="/contact" class="rounded-full border border-white/10 bg-white/8 px-6 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/12">Start a conversation</a>
+  <!-- 2. COMPLEXITY (Sticky Scroll) -->
+  <section class="complexity-section relative bg-slate-950 h-[200vh]">
+    <div class="sticky top-0 h-screen flex items-center overflow-hidden border-t border-slate-800">
+      <div class="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+        <div class="max-w-xl z-10">
+          <p class="text-xs font-semibold uppercase tracking-[0.35em] text-amber-400/90 font-mono mb-4">[MODULE: TENSION]</p>
+          <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight complexity-text">The gap between a demo and production is <span class="italic text-slate-400">governance.</span></h2>
+          <p class="mt-6 text-lg text-slate-400 complexity-subtext">Enterprise data is messy. APIs are unpredictable. Without orchestration, AI is just a parlor trick. I bring the discipline of data architecture to generative models.</p>
         </div>
-
-        <aside class="mt-2 hidden w-full max-w-xl rounded-3xl border border-white/10 bg-white/8 p-5 text-left shadow-[0_18px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl lg:block">
-          <p class="text-[11px] uppercase tracking-[0.35em] text-cyan-100/90">Story in motion</p>
-          <div class="mt-4 grid gap-3 text-sm text-slate-100">
-            <div class="flex items-center gap-3 rounded-2xl border border-cyan-400/20 bg-slate-950/60 p-3">
-              <span class="h-2.5 w-2.5 rounded-full bg-cyan-300 shadow-[0_0_0_6px_rgba(34,211,238,0.15)]"></span>
-              <span>Data is shaped into trusted context before any model is asked to answer.</span>
-            </div>
-            <div class="flex items-center gap-3 rounded-2xl border border-emerald-400/20 bg-slate-950/60 p-3">
-              <span class="h-2.5 w-2.5 rounded-full bg-emerald-300 shadow-[0_0_0_6px_rgba(52,211,153,0.15)]"></span>
-              <span>Retrieval, orchestration, and governance work together to make every answer reliable.</span>
-            </div>
-            <div class="flex items-center gap-3 rounded-2xl border border-indigo-400/20 bg-slate-950/60 p-3">
-              <span class="h-2.5 w-2.5 rounded-full bg-indigo-300 shadow-[0_0_0_6px_rgba(129,140,248,0.15)]"></span>
-              <span>What lands on the screen is the result of a systems design discipline, not a demo trick.</span>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </div>
-  </section>
-
-  <section class="bg-slate-950 py-18 md:py-24">
-    <div class="container mx-auto px-4">
-      <div class="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-        {capabilityCards.map(([title, copy]) => (
-          <article class="rounded-3xl border border-white/8 bg-white/6 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-cyan-400/40 hover:bg-white/10">
-            <p class="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-200/90">Capability</p>
-            <h2 class="mb-3 text-2xl font-semibold text-white">{title}</h2>
-            <p class="text-slate-300">{copy}</p>
-          </article>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section id="systems" class="bg-slate-900 py-18 md:py-24">
-    <div class="container mx-auto px-4">
-      <div class="mb-10 max-w-3xl">
-        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-200/90">Architecture thinking</p>
-        <h2 class="text-3xl font-black text-white md:text-5xl">A premium systems surface, not a generic portfolio grid.</h2>
-        <p class="mt-4 text-slate-300">The design language is deliberately restrained: deep contrast, calm motion, precise hierarchy, and technical proof points that reinforce the work instead of distracting from it.</p>
-      </div>
-
-      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-        <article class="rounded-3xl border border-white/8 bg-white/6 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl">
-          <p class="text-sm uppercase tracking-[0.35em] text-emerald-200/90">System flow</p>
-          <div class="mt-6 grid gap-4 text-slate-100">
-            {['Ingest', 'Embed', 'Retrieve', 'Orchestrate', 'Govern', 'Serve'].map((step, index) => (
-              <div class="flex items-center gap-4 rounded-2xl border border-white/8 bg-slate-900/70 p-4">
-                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-400/12 text-sm font-semibold text-cyan-100">0{index + 1}</span>
-                <span class="text-base font-medium">{step}</span>
+        
+        <!-- Chaotic Data Visualization -->
+        <div class="relative h-[400px] w-full flex items-center justify-center opacity-80 chaos-container">
+          <div class="absolute inset-0 grid grid-cols-6 grid-rows-6 gap-2">
+            {Array.from({ length: 36 }).map((_, i) => (
+              <div class={`chaos-node rounded-sm border border-slate-700 bg-slate-800/50 flex items-center justify-center text-[10px] text-slate-500 font-mono overflow-hidden opacity-0`}>
+                0x{(Math.random() * 1000).toString(16).substring(0, 4)}
               </div>
             ))}
           </div>
-        </article>
-
-        <article class="rounded-3xl border border-white/8 bg-gradient-to-br from-cyan-400/10 via-white/6 to-emerald-400/8 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl">
-          <p class="text-sm uppercase tracking-[0.35em] text-cyan-100">Proof bar</p>
-          <div class="mt-6 grid gap-4">
-            {['6 production GenAI systems', 'GCP-native architecture', 'Vertex AI + Gemini + BigQuery', 'Token-cost aware design'].map((item) => (
-              <div class="rounded-2xl border border-white/10 bg-slate-950/60 p-4 text-slate-100">{item}</div>
-            ))}
-          </div>
-        </article>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="bg-slate-950 py-18 md:py-24">
-    <div class="container mx-auto px-4">
-      <div class="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div class="max-w-2xl">
-          <p class="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-200/90">Featured systems</p>
-          <h2 class="text-3xl font-black text-white md:text-5xl">Thoughtful, production-facing AI work.</h2>
-        </div>
+  <!-- 3. ORCHESTRATION (Animated Diagram) -->
+  <section class="orchestration-section bg-slate-900 py-32 border-t border-slate-800 relative overflow-hidden">
+    <!-- Blueprint BG -->
+    <div class="absolute inset-0 opacity-10" style="background-image:linear-gradient(rgba(52,211,153,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(52,211,153,0.2) 1px, transparent 1px); background-size: 32px 32px;"></div>
+
+    <div class="container relative z-10 mx-auto px-4">
+      <div class="mb-16 max-w-3xl">
+        <p class="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-emerald-400 font-mono">[MODULE: PIPELINE]</p>
+        <h2 class="text-4xl font-black text-white md:text-5xl">Architectural clarity.</h2>
+        <p class="mt-4 text-xl text-slate-300">How data becomes trusted context.</p>
       </div>
 
-      <div class="grid gap-8 md:grid-cols-3">
-        {projectCards.map(([title, copy]) => (
-          <article class="group rounded-3xl border border-white/8 bg-white/6 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-cyan-400/40 hover:bg-white/10">
-            <div class="mb-6 h-12 w-12 rounded-2xl bg-cyan-400/12"></div>
-            <h3 class="text-2xl font-semibold text-white">{title}</h3>
-            <p class="mt-4 text-slate-300">{copy}</p>
+      <div class="pipeline-container relative border border-slate-700/50 rounded-2xl bg-slate-950/50 backdrop-blur-sm p-8 md:p-12 shadow-2xl">
+        <div class="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+        
+        <div class="grid gap-12 md:grid-cols-5 relative">
+          <!-- Flow Line Background -->
+          <div class="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-slate-800 -translate-y-1/2 z-0"></div>
+          <!-- Flow Line Active -->
+          <div class="pipeline-progress hidden md:block absolute top-1/2 left-0 h-0.5 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.8)] -translate-y-1/2 z-0 w-0"></div>
+
+          {['Ingest', 'Embed', 'Retrieve', 'Govern', 'Serve'].map((step, index) => (
+            <div class={`pipeline-step step-${index} relative z-10 flex flex-col items-center text-center gap-4 opacity-50 translate-y-4`}>
+              <div class="w-16 h-16 rounded-xl border border-slate-600 bg-slate-900 flex items-center justify-center shadow-lg relative group overflow-hidden">
+                <div class="absolute inset-0 bg-emerald-400/0 group-hover:bg-emerald-400/10 transition-colors duration-500"></div>
+                <span class="font-mono text-xl text-slate-300 font-bold step-number">0{index + 1}</span>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white mb-1">{step}</h3>
+                <p class="text-xs text-slate-400 font-mono">Module active</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. CAPABILITIES (Stacking Cards) -->
+  <section class="capabilities-section bg-slate-950 py-32 relative">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="mb-16">
+        <p class="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-indigo-400 font-mono">[MODULE: CAPABILITIES]</p>
+        <h2 class="text-4xl font-black text-white md:text-5xl">Systems expertise.</h2>
+      </div>
+
+      <div class="stacking-container relative">
+        {capabilityCards.map(([title, copy], index) => (
+          <article class={`stack-card sticky top-32 mb-8 rounded-3xl border border-slate-700 bg-slate-900 p-8 md:p-12 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] transform-gpu origin-top`} style={`z-index: ${index + 10};`}>
+            <div class="flex flex-col md:flex-row justify-between gap-8 items-start">
+              <div class="max-w-xl">
+                <h2 class="mb-4 text-3xl font-bold text-white">{title}</h2>
+                <p class="text-lg text-slate-300 leading-relaxed">{copy}</p>
+              </div>
+              <div class="flex-shrink-0 w-24 h-24 rounded-full border border-indigo-500/30 flex items-center justify-center bg-indigo-500/5 relative overflow-hidden">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.2)_0%,transparent_70%)]"></div>
+                <span class="font-mono text-indigo-300 font-bold text-xl">0{index + 1}</span>
+              </div>
+            </div>
+            <!-- Bottom decorative line -->
+            <div class="absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-slate-500/30 to-transparent"></div>
           </article>
         ))}
       </div>
     </div>
   </section>
 
-  <section class="bg-slate-900 py-18 md:py-24">
+  <!-- 5. PROOF (Deployments) -->
+  <section class="bg-slate-900 py-32 border-t border-slate-800">
     <div class="container mx-auto px-4">
-      <article class="rounded-3xl border border-cyan-400/20 bg-[linear-gradient(135deg,rgba(14,165,233,0.12),rgba(8,47,73,0.35))] p-8 shadow-[0_18px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl md:p-10">
-        <p class="text-xs font-semibold uppercase tracking-[0.35em] text-cyan-100">Next step</p>
-        <h2 class="mt-3 max-w-3xl text-3xl font-black text-white md:text-5xl">The site now reads like an AI systems command surface rather than a generic developer card stack.</h2>
-        <p class="mt-4 max-w-3xl text-slate-200">This is the foundation for the full premium refactor: structured content, stronger hierarchy, cinematic visuals, and a motion system that supports the narrative instead of overwhelming it.</p>
-        <a href="/contact" class="mt-8 inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-100">Contact</a>
+      <div class="mb-16">
+        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-400 font-mono">[MODULE: DEPLOYMENTS]</p>
+        <h2 class="text-4xl font-black text-white md:text-5xl">Production-facing AI work.</h2>
+      </div>
+
+      <div class="grid gap-6 md:grid-cols-3">
+        {projectCards.map(([title, copy]) => (
+          <article class="group relative rounded-2xl border border-slate-700 bg-slate-800/50 p-8 transition duration-500 hover:border-cyan-500/50 hover:bg-slate-800 overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-30 group-hover:opacity-100 transition-opacity">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-400"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+            <div class="mb-8 font-mono text-xs text-slate-500 flex justify-between">
+              <span>STATUS: LIVE</span>
+              <span class="text-emerald-400">SECURE</span>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-4">{title}</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">{copy}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. CONTACT -->
+  <section class="bg-slate-950 py-32 border-t border-slate-800 relative overflow-hidden">
+    <!-- Glowing Orb -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+    
+    <div class="container mx-auto px-4 relative z-10 text-center">
+      <article class="mx-auto max-w-3xl rounded-3xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-xl p-12 md:p-16 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.35em] text-cyan-400 font-mono mb-6">[MODULE: INITIATE]</p>
+        <h2 class="text-3xl font-black text-white md:text-5xl mb-6">Ready to architect your AI future?</h2>
+        <p class="text-lg text-slate-300 mb-10">Let's build systems that perform securely, cost-effectively, and reliably at scale.</p>
+        <a href="/contact" class="inline-flex items-center gap-2 rounded-full bg-cyan-500 hover:bg-cyan-400 px-8 py-4 text-sm font-bold text-slate-950 transition-all hover:scale-105 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+          Start a conversation
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
       </article>
     </div>
   </section>
+
 </Layout>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  // Ensure DOM is loaded
+  document.addEventListener("DOMContentLoaded", (event) => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // 1. HERO ANIMATION
+    const tlHero = gsap.timeline({ defaults: { ease: "power3.out" } });
+    
+    tlHero.fromTo(".hero-badge", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.2 })
+          .fromTo(".hero-subtitle", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, "-=0.6")
+          .fromTo(".hero-title", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, "-=0.6")
+          .fromTo(".hero-description", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, "-=0.6")
+          .fromTo(".hero-tags span", { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.1 }, "-=0.4");
+
+    // 2. COMPLEXITY SCROLL ANIMATION
+    const chaosNodes = document.querySelectorAll('.chaos-node');
+    
+    // Initial random scatter
+    gsap.set(chaosNodes, {
+      x: () => gsap.utils.random(-200, 200),
+      y: () => gsap.utils.random(-200, 200),
+      rotation: () => gsap.utils.random(-90, 90),
+      opacity: 0,
+      scale: 0.5
+    });
+
+    const tlComplexity = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".complexity-section",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1,
+      }
+    });
+
+    // Fade in and bring to order
+    tlComplexity.to(chaosNodes, {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      rotation: 0,
+      scale: 1,
+      duration: 1,
+      stagger: 0.02,
+      ease: "power2.inOut"
+    });
+    
+    // Color shift to signify governance
+    tlComplexity.to(chaosNodes, {
+      borderColor: "rgba(52, 211, 153, 0.5)", // emerald-400/50
+      backgroundColor: "rgba(6, 78, 59, 0.5)", // emerald-900/50
+      color: "#34d399",
+      duration: 0.5
+    }, "+=0.2");
+
+    // 3. ORCHESTRATION DIAGRAM
+    const tlPipeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".orchestration-section",
+        start: "top center",
+        end: "bottom center",
+        scrub: 0.5
+      }
+    });
+
+    // Animate line width
+    tlPipeline.to(".pipeline-progress", { width: "100%", duration: 2, ease: "none" });
+    
+    // Light up steps as line hits them
+    const steps = document.querySelectorAll('.pipeline-step');
+    steps.forEach((step, i) => {
+      tlPipeline.to(step, {
+        opacity: 1,
+        y: 0,
+        duration: 0.2
+      }, (i / steps.length) * 2); // Map to progress of line
+
+      tlPipeline.to(step.querySelector('.w-16'), {
+        borderColor: "#34d399",
+        boxShadow: "0 0 20px rgba(52,211,153,0.4)",
+        duration: 0.2
+      }, (i / steps.length) * 2);
+    });
+
+    // 4. STACKING CARDS
+    const cards = gsap.utils.toArray('.stack-card');
+    cards.forEach((card, i) => {
+      if (i === 0) return; // Skip first card
+      
+      gsap.fromTo(card, 
+        { 
+          y: 100, 
+          scale: 0.95, 
+          opacity: 0.8 
+        },
+        {
+          y: 0,
+          scale: 1,
+          opacity: 1,
+          duration: 1,
+          scrollTrigger: {
+            trigger: card,
+            start: "top 80%",
+            end: "top 30%",
+            scrub: true
+          }
+        }
+      );
+    });
+  });
+</script>
