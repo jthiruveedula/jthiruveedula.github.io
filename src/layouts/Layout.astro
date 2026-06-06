@@ -21,9 +21,9 @@ function isActive(href: string) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Senior Data Architect specializing in GCP, BigQuery, GenAI, and enterprise data platforms." />
+    <meta name="description" content="A premium portfolio for a GenAI-driven data architect building private LLM systems, enterprise RAG, and governed AI workflows on GCP." />
     <title>{title}</title>
-    <meta name="theme-color" content="#2563eb" />
+    <meta name="theme-color" content="#020617" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -72,7 +72,7 @@ function isActive(href: string) {
     </div>
 
     <!-- Top Navbar -->
-    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 transition-all duration-300">
+    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-40 border-b border-slate-200/80 bg-white/75 backdrop-blur-2xl dark:border-slate-800 dark:bg-slate-950/80 transition-all duration-300">
       <div class="container mx-auto px-4 md:px-6">
         <div class="flex items-center justify-between h-16">
           <a href="/" class="text-xl md:text-2xl font-black tracking-tight text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
@@ -108,7 +108,7 @@ function isActive(href: string) {
     </main>
 
     <!-- Footer -->
-    <footer class="bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-12">
+    <footer class="border-t border-slate-200/80 bg-slate-100/90 dark:border-slate-800 dark:bg-slate-950/90 py-12">
       <div class="container mx-auto px-4 text-center">
         <p class="text-sm text-slate-600 dark:text-slate-400">
           &copy; {new Date().getFullYear()} Jagadeesh Thiruveedula. Built with Astro + Tailwind CSS. All rights reserved.
@@ -181,6 +181,13 @@ function isActive(href: string) {
       .card:hover {
         @apply shadow-2xl -translate-y-1;
       }
+      :root {
+        color-scheme: dark;
+        --surface: rgba(15, 23, 42, 0.72);
+        --stroke: rgba(148, 163, 184, 0.18);
+      }
+      html { background-color: #020617; }
+      body { background-image: radial-gradient(circle at top, rgba(56, 189, 248, 0.04), transparent 18%), linear-gradient(180deg, #020617 0%, #111827 100%); }
     </style>
   </body>
 </html>

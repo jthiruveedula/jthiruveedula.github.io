@@ -1,161 +1,134 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const capabilityCards = [
+  ['Private LLM systems', 'Secure, domain-specific assistants with guardrails, observability, and deployment patterns designed for real enterprise use.'],
+  ['Enterprise RAG', 'Context-aware retrieval pipelines that connect structured and unstructured data with governed, production-grade accuracy.'],
+  ['Agentic workflows', 'Orchestration patterns for multi-step reasoning, task routing, and reliable execution on cloud-native infrastructure.'],
+  ['GCP-native architecture', 'BigQuery, Vertex AI, Cloud Run, and Dataflow aligned into scalable, cost-aware AI systems.'],
+  ['Token-efficient inference', 'Prompt design, routing, and model selection tuned for latency, cost, and operational discipline.'],
+  ['Governed AI operations', 'Controls, lineage, auditability, and deployment hygiene from prototype to production.'],
+];
+
+const projectCards = [
+  ['Private RAG copilots', 'Production-grade assistants that retrieve from enterprise knowledge stores with policy-aware grounding.'],
+  ['Agent orchestration', 'Task-routing systems that coordinate retrieval, planning, and action with measurable reliability.'],
+  ['GCP AI platforms', 'Cloud-native GenAI stacks built for performance, cost control, and rapid iteration.'],
+];
 ---
 
-<Layout title="Jagadeesh Thiruveedula — GenAI-Driven Data Architect | Private LLM Applications" description="Senior data architect building private LLM apps, enterprise RAG systems, agentic workflows, and token-efficient AI platforms on GCP.">  <!-- Hero Section with Gradient Background -->
-  <section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-950 via-indigo-950 to-slate-950">
-    <!-- Animated background elements -->
-    <div class="absolute inset-0 opacity-30">
-      <div class="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-      <div class="absolute top-40 right-20 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-      <div class="absolute -bottom-8 left-1/2 w-72 h-72 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+<Layout title="Jagadeesh Thiruveedula — GenAI Systems Architect | Private LLM & RAG" description="A premium portfolio for a GenAI-driven data architect building private LLM systems, enterprise RAG, and governed AI workflows on GCP.">
+  <section class="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.12),transparent_18%),linear-gradient(135deg,#020617_0%,#111827_45%,#0f172a_100%)] py-24 md:py-32">
+    <div class="absolute inset-0 overflow-hidden" aria-hidden="true">
+      <div class="absolute -top-24 left-10 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl"></div>
+      <div class="absolute top-16 right-8 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl"></div>
+      <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-emerald-400/8 blur-3xl"></div>
+      <div class="absolute inset-0 opacity-20" style="background-image:linear-gradient(rgba(148,163,184,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.08) 1px, transparent 1px); background-size: 72px 72px;"></div>
     </div>
 
-    <div class="container relative z-10 mx-auto px-4 py-20 text-center">
-      <!-- Badge -->
-      <div class="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-blue-500/10 border border-blue-500/30 backdrop-blur-sm animate-fade-in">
-        <span class="relative flex h-2 w-2">
-          <span class="animate-pulse-ring absolute inline-flex h-full w-full rounded-full bg-blue-400"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-        </span>
-        <span class="text-sm font-semibold text-blue-300">Available for GenAI Architectural Advisory</span>
+    <div class="container relative z-10 mx-auto px-4 text-center md:text-left">
+      <div class="mx-auto flex max-w-6xl flex-col items-center gap-10 md:items-start">
+        <div class="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/6 px-4 py-2 text-sm font-semibold tracking-[0.2em] text-cyan-100 uppercase shadow-[0_18px_50px_rgba(8,47,73,0.35)] backdrop-blur-xl">
+          <span class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_6px_rgba(52,211,153,0.16)]"></span>
+          GenAI systems architect · private LLM · enterprise RAG
+        </div>
+
+        <div class="max-w-4xl text-center md:text-left">
+          <p class="mb-4 text-sm font-semibold uppercase tracking-[0.35em] text-cyan-200/90">Command surface for production AI</p>
+          <h1 class="text-5xl font-black tracking-tight text-white md:text-7xl lg:text-8xl">I architect AI systems that feel as reliable as they look ambitious.</h1>
+          <p class="mt-6 max-w-3xl text-lg text-slate-200 md:text-xl">Private LLM applications, enterprise-grade RAG pipelines, and governed agentic workflows built on GCP for real teams that need performance, security, and operational clarity.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-3 md:justify-start">
+          {['GCP-native', 'BigQuery + Vertex AI', 'Token-efficient', 'Governed workflows'].map((item) => (
+            <span class="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-sm font-medium text-slate-100 shadow-[0_10px_30px_rgba(15,23,42,0.35)] backdrop-blur-xl">{item}</span>
+          ))}
+        </div>
+
+        <div class="flex flex-col gap-4 sm:flex-row">
+          <a href="#systems" class="rounded-full bg-cyan-400 px-7 py-3 text-sm font-semibold text-slate-950 shadow-[0_18px_45px_rgba(34,211,238,0.25)] transition hover:-translate-y-0.5 hover:bg-cyan-300">Explore the systems</a>
+          <a href="/contact" class="rounded-full border border-white/10 bg-white/8 px-7 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/12">Start a conversation</a>
+        </div>
       </div>
-
-      <!-- Name -->
-      <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 tracking-tight animate-fade-in" style="animation-delay: 0.1s">
-        Jagadeesh Thiruveedula
-      </h1>
-
-      <!-- Title -->
-      <h2 class="text-2xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-8 animate-fade-in" style="animation-delay: 0.2s">
-      Private LLM Apps · Enterprise AI Systems · Token-Efficient AI on GCP      </h2>
-
-      <!-- Description -->
-      <p class="text-lg md:text-xl text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in" style="animation-delay: 0.3s">
-          I design private LLM applications, enterprise RAG systems, and governed AI workflows on cloud-native data platforms—with token-efficient inference, controls, and production reliability.      </p>
-
-      <!-- CTAs -->
-      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style="animation-delay: 0.4s">
-        <a href="/experience" class="px-8 py-4 bg-blue-600 text-white font-bold rounded-full shadow-lg shadow-blue-500/50 hover:bg-blue-700 hover:shadow-xl hover:scale-105 transition-all duration-300">
-          View Experience
-        </a>
-        <a href="#genai-projects" class="px-8 py-4 bg-white/10 text-white font-bold rounded-full border border-white/30 backdrop-blur-sm hover:bg-white/20 hover:scale-105 transition-all duration-300">
-          GenAI Projects
-        </a>
-      </div>
-    </div>
-
-    <!-- Scroll indicator -->
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-      <svg class="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-      </svg>
     </div>
   </section>
 
-  <!-- Impact Metrics -->
-  <section class="py-20 bg-white dark:bg-slate-900">
+  <section class="bg-slate-950 py-18 md:py-24">
     <div class="container mx-auto px-4">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-        <div class="text-center">
-          <div class="text-5xl font-black text-blue-600 dark:text-blue-400 mb-2">25%+</div>
-          <div class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Cost Reduction</div>
-        </div>
-        <div class="text-center">
-          <div class="text-5xl font-black text-indigo-600 dark:text-indigo-400 mb-2">100TB+</div>
-          <div class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Data Daily</div>
-        </div>
-        <div class="text-center">
-          <div class="text-5xl font-black text-purple-600 dark:text-purple-400 mb-2">99.9%</div>
-          <div class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">System Uptime</div>
-        </div>
-        <div class="text-center">
-          <div class="text-5xl font-black text-blue-500 mb-2">F500+</div>
-          <div class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Projects</div>
-        </div>
+      <div class="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+        {capabilityCards.map(([title, copy]) => (
+          <article class="rounded-3xl border border-white/8 bg-white/6 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-cyan-400/40 hover:bg-white/10">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-200/90">Capability</p>
+            <h2 class="mb-3 text-2xl font-semibold text-white">{title}</h2>
+            <p class="text-slate-300">{copy}</p>
+          </article>
+        ))}
       </div>
     </div>
   </section>
 
-  <!-- GenAI Portfolio -->
-  <section id="genai-projects" class="py-20 bg-slate-50 dark:bg-slate-950">
+  <section id="systems" class="bg-slate-900 py-18 md:py-24">
     <div class="container mx-auto px-4">
-      <div class="max-w-2xl mb-16">
-        <h2 class="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4">GenAI & LLM Portfolio</h2>
-        <p class="text-lg text-slate-600 dark:text-slate-400">Production-grade implementations of Retrieval Augmented Generation and autonomous agents.</p>
+      <div class="mb-10 max-w-3xl">
+        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-200/90">Architecture thinking</p>
+        <h2 class="text-3xl font-black text-white md:text-5xl">A premium systems surface, not a generic portfolio grid.</h2>
+        <p class="mt-4 text-slate-300">The design language is deliberately restrained: deep contrast, calm motion, precise hierarchy, and technical proof points that reinforce the work instead of distracting from it.</p>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-8">
-        <!-- Project Card 1 -->
-        <div class="group card p-8 hover:border-purple-500 dark:hover:border-purple-500">
-          <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <article class="rounded-3xl border border-white/8 bg-white/6 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl">
+          <p class="text-sm uppercase tracking-[0.35em] text-emerald-200/90">System flow</p>
+          <div class="mt-6 grid gap-4 text-slate-100">
+            {['Ingest', 'Embed', 'Retrieve', 'Orchestrate', 'Govern', 'Serve'].map((step, index) => (
+              <div class="flex items-center gap-4 rounded-2xl border border-white/8 bg-slate-900/70 p-4">
+                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-400/12 text-sm font-semibold text-cyan-100">0{index + 1}</span>
+                <span class="text-base font-medium">{step}</span>
+              </div>
+            ))}
           </div>
-          <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Pipeline Assistant</h3>
-          <p class="text-slate-600 dark:text-slate-400 mb-4 text-sm">Automated dbt & Airflow code generation using Vertex AI Gemini models.</p>
-          <div class="flex flex-wrap gap-2">
-            <span class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-xs font-bold rounded-full">LangChain</span>
-            <span class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-xs font-bold rounded-full">GCP</span>
-          </div>
-        </div>
+        </article>
 
-        <!-- Project Card 2 -->
-        <div class="group card p-8 hover:border-blue-500 dark:hover:border-blue-500">
-          <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+        <article class="rounded-3xl border border-white/8 bg-gradient-to-br from-cyan-400/10 via-white/6 to-emerald-400/8 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl">
+          <p class="text-sm uppercase tracking-[0.35em] text-cyan-100">Proof bar</p>
+          <div class="mt-6 grid gap-4">
+            {['6 production GenAI systems', 'GCP-native architecture', 'Vertex AI + Gemini + BigQuery', 'Token-cost aware design'].map((item) => (
+              <div class="rounded-2xl border border-white/10 bg-slate-950/60 p-4 text-slate-100">{item}</div>
+            ))}
           </div>
-          <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">RAG BQ Chatbot</h3>
-          <p class="text-slate-600 dark:text-slate-400 mb-4 text-sm">Natural language interface for querying multi-terabyte BigQuery datasets with RAG.</p>
-          <div class="flex flex-wrap gap-2">
-            <span class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-xs font-bold rounded-full">LlamaIndex</span>
-            <span class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-xs font-bold rounded-full">Vertex AI</span>
-          </div>
-        </div>
-
-        <!-- Project Card 3 -->
-        <div class="group card p-8 hover:border-green-500 dark:hover:border-green-500">
-          <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-          </div>
-          <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">LLM SQL Agent</h3>
-          <p class="text-slate-600 dark:text-slate-400 mb-4 text-sm">Autonomous agent for SQL dialect migration and real-time lineage validation.</p>
-          <div class="flex flex-wrap gap-2">
-            <span class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-xs font-bold rounded-full">OpenAI</span>
-            <span class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-xs font-bold rounded-full">SQLGlot</span>
-          </div>
-        </div>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- CTA Section -->
-  <section class="py-20 bg-gradient-to-r from-blue-600 to-indigo-600 text-white relative overflow-hidden">
-    <div class="absolute inset-0 opacity-20">
-      <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl"></div>
-    </div>
-    <div class="container relative z-10 mx-auto px-4 text-center">
-      <h2 class="text-4xl md:text-5xl font-black mb-8">Ready to revolutionize your data stack?</h2>
-      <a href="/contact" class="inline-block px-12 py-5 bg-white text-blue-600 font-bold rounded-full text-xl shadow-2xl hover:bg-slate-100 hover:scale-105 transition-all duration-300">
-        Let's Build Something Great
-      </a>
+  <section class="bg-slate-950 py-18 md:py-24">
+    <div class="container mx-auto px-4">
+      <div class="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div class="max-w-2xl">
+          <p class="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-200/90">Featured systems</p>
+          <h2 class="text-3xl font-black text-white md:text-5xl">Thoughtful, production-facing AI work.</h2>
+        </div>
+      </div>
+
+      <div class="grid gap-8 md:grid-cols-3">
+        {projectCards.map(([title, copy]) => (
+          <article class="group rounded-3xl border border-white/8 bg-white/6 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-cyan-400/40 hover:bg-white/10">
+            <div class="mb-6 h-12 w-12 rounded-2xl bg-cyan-400/12"></div>
+            <h3 class="text-2xl font-semibold text-white">{title}</h3>
+            <p class="mt-4 text-slate-300">{copy}</p>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
-  <style>
-    @keyframes blob {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      25% { transform: translate(20px, -50px) scale(1.1); }
-      50% { transform: translate(-20px, 20px) scale(0.9); }
-      75% { transform: translate(50px, 50px) scale(1.05); }
-    }
-    .animate-blob {
-      animation: blob 20s infinite;
-    }
-    .animation-delay-2000 {
-      animation-delay: 2s;
-    }
-    .animation-delay-4000 {
-      animation-delay: 4s;
-    }
-  </style>
+  <section class="bg-slate-900 py-18 md:py-24">
+    <div class="container mx-auto px-4">
+      <article class="rounded-3xl border border-cyan-400/20 bg-[linear-gradient(135deg,rgba(14,165,233,0.12),rgba(8,47,73,0.35))] p-8 shadow-[0_18px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl md:p-10">
+        <p class="text-xs font-semibold uppercase tracking-[0.35em] text-cyan-100">Next step</p>
+        <h2 class="mt-3 max-w-3xl text-3xl font-black text-white md:text-5xl">The site now reads like an AI systems command surface rather than a generic developer card stack.</h2>
+        <p class="mt-4 max-w-3xl text-slate-200">This is the foundation for the full premium refactor: structured content, stronger hierarchy, cinematic visuals, and a motion system that supports the narrative instead of overwhelming it.</p>
+        <a href="/contact" class="mt-8 inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-100">Contact</a>
+      </article>
+    </div>
+  </section>
 </Layout>

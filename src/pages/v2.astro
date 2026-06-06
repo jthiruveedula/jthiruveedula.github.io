@@ -52,7 +52,17 @@ const projects = [
         <a href="/experience" class="hidden md:inline text-sm text-slate-400 hover:text-slate-200">Full experience -></a>
       </div>
       <div class="grid md:grid-cols-2 gap-6">
-        {projects.map((p) => <ProjectCard project={p} />)}
+        {projects.map((p) => (
+          <ProjectCard
+            title={p.title}
+            repo={p.slug}
+            tagline={p.summary}
+            stack={p.stack}
+            metric={p.metric}
+            metricLabel="Impact"
+            href={`/projects/${p.slug}`}
+          />
+        ))}
       </div>
     </section>
 
