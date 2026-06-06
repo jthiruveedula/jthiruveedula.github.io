@@ -1,26 +1,28 @@
 ---
 // HeroNodeGraph.astro
 // Subtle animated node-graph background for the hero section.
-// Pure SVG + small canvas-free JS. No external deps. Respects prefers-reduced-motion.
+// Pure SVG + CSS. No external deps. Respects prefers-reduced-motion.
+// SVG groups have IDs for GSAP cursor-parallax (hb-layer-edges, hb-layer-nodes, hb-layer-pulse).
 ---
 
 <div class="hero-bg" aria-hidden="true">
-  <svg class="hero-bg-svg" viewBox="0 0 1440 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <svg id="hero-node-svg" class="hero-bg-svg" viewBox="0 0 1440 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <radialGradient id="hb-glow" cx="50%" cy="40%" r="60%">
-        <stop offset="0%" stop-color="#312e81" stop-opacity="0.55" />
-        <stop offset="60%" stop-color="#0b1020" stop-opacity="0" />
+        <stop offset="0%" stop-color="#312e81" stop-opacity="0.45" />
+        <stop offset="70%" stop-color="#0b1020" stop-opacity="0" />
       </radialGradient>
       <pattern id="hb-grid" width="60" height="60" patternUnits="userSpaceOnUse">
-        <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#1e293b" stroke-width="0.6" />
+        <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#1e293b" stroke-width="0.5" />
       </pattern>
     </defs>
 
-    <rect width="1440" height="800" fill="#0b1020" />
-    <rect width="1440" height="800" fill="url(#hb-grid)" opacity="0.35" />
+    <rect width="1440" height="800" fill="#020617" />
+    <rect width="1440" height="800" fill="url(#hb-grid)" opacity="0.3" />
     <rect width="1440" height="800" fill="url(#hb-glow)" />
 
-    <g class="hb-edges" stroke="#334155" stroke-width="0.8" fill="none" opacity="0.55">
+    <!-- Layer 1: Edges — moves slowest with cursor (parallax depth 0.3) -->
+    <g id="hb-layer-edges" class="hb-edges" stroke="#334155" stroke-width="0.8" fill="none" opacity="0.5">
       <line x1="180" y1="160" x2="420" y2="260" />
       <line x1="420" y1="260" x2="680" y2="180" />
       <line x1="680" y1="180" x2="960" y2="300" />
@@ -32,28 +34,37 @@
       <line x1="420" y1="260" x2="500" y2="460" />
       <line x1="680" y1="180" x2="760" y2="560" />
       <line x1="960" y1="300" x2="1040" y2="480" />
+      <!-- Secondary network -->
+      <line x1="100" y1="400" x2="260" y2="540" />
+      <line x1="1300" y1="600" x2="1400" y2="500" />
+      <line x1="1240" y1="220" x2="1300" y2="600" opacity="0.3" />
+      <line x1="180" y1="160" x2="260" y2="540" opacity="0.25" />
     </g>
 
-    <g class="hb-nodes">
+    <!-- Layer 2: Nodes — moves at medium speed (parallax depth 0.5) -->
+    <g id="hb-layer-nodes" class="hb-nodes">
       <circle cx="180" cy="160" r="3" fill="#818cf8" />
-      <circle cx="420" cy="260" r="3" fill="#a5b4fc" />
+      <circle cx="420" cy="260" r="3.5" fill="#a5b4fc" />
       <circle cx="680" cy="180" r="3" fill="#22d3ee" />
-      <circle cx="960" cy="300" r="3" fill="#34d399" />
+      <circle cx="960" cy="300" r="3.5" fill="#34d399" />
       <circle cx="1240" cy="220" r="3" fill="#a7f3d0" />
       <circle cx="260" cy="540" r="3" fill="#818cf8" />
-      <circle cx="500" cy="460" r="3" fill="#a5b4fc" />
+      <circle cx="500" cy="460" r="3.5" fill="#a5b4fc" />
       <circle cx="760" cy="560" r="3" fill="#22d3ee" />
-      <circle cx="1040" cy="480" r="3" fill="#34d399" />
+      <circle cx="1040" cy="480" r="3.5" fill="#34d399" />
       <circle cx="1300" cy="600" r="3" fill="#a7f3d0" />
+      <circle cx="100" cy="400" r="2.5" fill="#6366f1" opacity="0.6" />
+      <circle cx="1400" cy="500" r="2.5" fill="#6366f1" opacity="0.6" />
     </g>
 
-    <g class="hb-pulse">
-      <circle cx="420" cy="260" r="6" fill="none" stroke="#818cf8" stroke-width="1" />
-      <circle cx="680" cy="180" r="6" fill="none" stroke="#22d3ee" stroke-width="1" />
-      <circle cx="960" cy="300" r="6" fill="none" stroke="#34d399" stroke-width="1" />
-      <circle cx="500" cy="460" r="6" fill="none" stroke="#a5b4fc" stroke-width="1" />
-      <circle cx="760" cy="560" r="6" fill="none" stroke="#22d3ee" stroke-width="1" />
-      <circle cx="1040" cy="480" r="6" fill="none" stroke="#34d399" stroke-width="1" />
+    <!-- Layer 3: Pulse rings — moves fastest (parallax depth 0.7) -->
+    <g id="hb-layer-pulse" class="hb-pulse">
+      <circle cx="420" cy="260" r="7" fill="none" stroke="#818cf8" stroke-width="1" />
+      <circle cx="680" cy="180" r="7" fill="none" stroke="#22d3ee" stroke-width="1" />
+      <circle cx="960" cy="300" r="7" fill="none" stroke="#34d399" stroke-width="1" />
+      <circle cx="500" cy="460" r="7" fill="none" stroke="#a5b4fc" stroke-width="1" />
+      <circle cx="760" cy="560" r="7" fill="none" stroke="#22d3ee" stroke-width="1" />
+      <circle cx="1040" cy="480" r="7" fill="none" stroke="#34d399" stroke-width="1" />
     </g>
   </svg>
 </div>
@@ -61,14 +72,41 @@
 <style>
   .hero-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
   .hero-bg-svg { width: 100%; height: 100%; display: block; }
-  .hb-edges line { stroke-dasharray: 4 6; animation: hb-drift 18s linear infinite; }
-  .hb-pulse circle { transform-box: fill-box; transform-origin: center; animation: hb-pulse 3.2s cubic-bezier(0.22, 1, 0.36, 1) infinite; opacity: 0.7; }
-  .hb-pulse circle:nth-child(2) { animation-delay: 0.5s; }
-  .hb-pulse circle:nth-child(3) { animation-delay: 1.0s; }
-  .hb-pulse circle:nth-child(4) { animation-delay: 1.5s; }
-  .hb-pulse circle:nth-child(5) { animation-delay: 2.0s; }
-  .hb-pulse circle:nth-child(6) { animation-delay: 2.5s; }
-  @keyframes hb-pulse { 0% { transform: scale(0.6); opacity: 0.9; } 80% { transform: scale(2.6); opacity: 0; } 100% { transform: scale(2.6); opacity: 0; } }
-  @keyframes hb-drift { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -200; } }
-  @media (prefers-reduced-motion: reduce) { .hb-edges line, .hb-pulse circle { animation: none; } }
+
+  /* Edge drift animation */
+  .hb-edges line {
+    stroke-dasharray: 4 8;
+    animation: hb-drift 22s linear infinite;
+  }
+  .hb-edges line:nth-child(odd) { animation-duration: 26s; animation-direction: reverse; }
+  .hb-edges line:nth-child(3n) { animation-duration: 30s; }
+
+  /* Pulse rings */
+  .hb-pulse circle {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: hb-pulse 4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    opacity: 0.6;
+  }
+  .hb-pulse circle:nth-child(1) { animation-delay: 0s; }
+  .hb-pulse circle:nth-child(2) { animation-delay: 0.65s; }
+  .hb-pulse circle:nth-child(3) { animation-delay: 1.3s; }
+  .hb-pulse circle:nth-child(4) { animation-delay: 1.95s; }
+  .hb-pulse circle:nth-child(5) { animation-delay: 2.6s; }
+  .hb-pulse circle:nth-child(6) { animation-delay: 3.25s; }
+
+  @keyframes hb-pulse {
+    0%   { transform: scale(0.5); opacity: 0.8; }
+    80%  { transform: scale(3.0); opacity: 0; }
+    100% { transform: scale(3.0); opacity: 0; }
+  }
+  @keyframes hb-drift {
+    from { stroke-dashoffset: 0; }
+    to   { stroke-dashoffset: -240; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hb-edges line,
+    .hb-pulse circle { animation: none; }
+  }
 </style>

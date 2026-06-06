@@ -1,5 +1,5 @@
 ---
-const { title = "Jagadeesh Thiruveedula | Data Architect & GenAI Leader" } = Astro.props;
+const { title = "Jagadeesh Thiruveedula — GenAI Systems Architect", description = "A premium portfolio for a GenAI-driven data architect building private LLM systems, enterprise RAG, and governed AI workflows on GCP." } = Astro.props;
 const { pathname } = Astro.url;
 
 const navLinks = [
@@ -17,11 +17,12 @@ function isActive(href: string) {
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="dark scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="A premium portfolio for a GenAI-driven data architect building private LLM systems, enterprise RAG, and governed AI workflows on GCP." />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="dark" />
     <title>{title}</title>
     <meta name="theme-color" content="#020617" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -30,72 +31,157 @@ function isActive(href: string) {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <slot name="head" />
     <style>
-      @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
+      /* Motion tokens */
+      :root {
+        --dur-instant:    80ms;
+        --dur-fast:      180ms;
+        --dur-normal:    350ms;
+        --dur-slow:      600ms;
+        --dur-cinematic: 1200ms;
+        --ease-system:   cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-in:       cubic-bezier(0.4, 0, 1, 1);
+        --ease-snap:     cubic-bezier(0.34, 1.56, 0.64, 1);
+        color-scheme: dark;
+        --surface: rgba(15, 23, 42, 0.72);
+        --stroke: rgba(148, 163, 184, 0.12);
       }
-      @keyframes pulse-ring {
-        0% { transform: scale(0.95); opacity: 1; }
-        100% { transform: scale(1.3); opacity: 0; }
+
+      html { background-color: #020617; }
+
+      body {
+        background-color: #020617;
+        background-image:
+          radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.04), transparent 40%),
+          radial-gradient(circle at 85% 20%, rgba(34, 211, 238, 0.03), transparent 35%);
       }
-      .animate-fade-in {
-        animation: fadeInUp 0.6s ease-out both;
+
+      /* Logo cursor blink */
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0; }
       }
-      .animate-pulse-ring {
-        animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      .logo-cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1em;
+        background: currentColor;
+        margin-left: 1px;
+        vertical-align: text-bottom;
+        animation: blink 1.2s step-end infinite;
+      }
+
+      /* Scroll progress bar */
+      #scroll-progress {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 9999;
+        height: 1px;
+        width: 0%;
+        background: linear-gradient(90deg, #6366f1, #22d3ee 50%, #34d399);
+        pointer-events: none;
+        transition: width 80ms linear;
+      }
+
+      /* Nav underline hover effect */
+      .nav-link {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 14px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: rgb(148 163 184);
+        border-radius: 6px;
+        transition: color var(--dur-fast) var(--ease-system);
+        text-decoration: none;
+      }
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 2px;
+        left: 14px;
+        right: 14px;
+        height: 1px;
+        background: #6366f1;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform var(--dur-normal) var(--ease-system);
+      }
+      .nav-link:hover { color: #e2e8f0; }
+      .nav-link:hover::after { transform: scaleX(1); }
+      .nav-link.active { color: #a5b4fc; }
+      .nav-link.active::after { transform: scaleX(1); background: #818cf8; }
+
+      /* Mobile menu */
+      #mobile-menu-overlay {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+
+      /* Footer monospace system terminal */
+      .footer-mono {
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
       }
     </style>
   </head>
-  <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 font-sans antialiased">
-    <!-- Dark mode init: run before paint to avoid flash -->
-    <script is:inline>
-      (function() {
-        const stored = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (stored === 'dark' || (!stored && prefersDark)) {
-          document.documentElement.classList.add('dark');
-        }
-      })();
-    </script>
+  <body class="bg-slate-950 text-slate-50 font-sans antialiased">
+
+    <!-- Scroll progress bar (1px gradient, fixed bottom) -->
+    <div id="scroll-progress" aria-hidden="true"></div>
 
     <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-lg z-50 hidden">
-      <div class="flex flex-col items-center justify-center h-full gap-8">
-        <button id="mobile-menu-close" class="absolute top-6 right-6 text-white text-3xl hover:rotate-90 transition-transform duration-300" aria-label="Close menu">&times;</button>
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-950/95 z-50 hidden">
+      <div class="flex flex-col items-center justify-center h-full gap-10">
+        <button id="mobile-menu-close" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors" aria-label="Close menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+        <!-- Logo in mobile menu -->
+        <span class="font-mono text-2xl font-bold text-indigo-400 mb-4">JT_<span class="logo-cursor"></span></span>
         {navLinks.map(link => (
-          <a href={link.href} class={`text-2xl font-bold transition-colors ${
-            isActive(link.href) ? 'text-blue-400' : 'text-white hover:text-blue-400'
+          <a href={link.href} class={`text-2xl font-semibold transition-colors ${
+            isActive(link.href) ? 'text-indigo-300' : 'text-slate-200 hover:text-indigo-300'
           }`}>{link.label}</a>
         ))}
-        <a href="https://www.linkedin.com/in/jagadeesh-thiruveedula/" target="_blank" rel="noopener" class="text-2xl font-bold text-white hover:text-blue-400 transition-colors">LinkedIn</a>
+        <a
+          href="https://www.linkedin.com/in/jagadeesh-thiruveedula/"
+          target="_blank"
+          rel="noopener"
+          class="mt-4 text-base font-mono text-slate-400 hover:text-indigo-300 transition-colors"
+        >LinkedIn ↗</a>
       </div>
     </div>
 
     <!-- Top Navbar -->
-    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-40 border-b border-slate-200/80 bg-white/75 backdrop-blur-2xl dark:border-slate-800 dark:bg-slate-950/80 transition-all duration-300">
+    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-40 border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-xl transition-all duration-300">
       <div class="container mx-auto px-4 md:px-6">
-        <div class="flex items-center justify-between h-16">
-          <a href="/" class="text-xl md:text-2xl font-black tracking-tight text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
-            JT Data Architect
+        <div class="flex items-center justify-between h-14">
+
+          <!-- Logo -->
+          <a href="/" class="flex items-center gap-2 group" aria-label="Home">
+            <span class="font-mono text-base font-bold text-indigo-400 group-hover:text-indigo-300 transition-colors">
+              JT_<span class="logo-cursor" aria-hidden="true"></span>
+            </span>
+            <span id="nav-section-label" class="hidden md:inline-block font-mono text-xs text-slate-500 tracking-widest transition-all duration-300"></span>
           </a>
 
           <!-- Desktop Nav -->
-          <div class="hidden md:flex items-center gap-1">
+          <div class="hidden md:flex items-center gap-0.5">
             {navLinks.map(link => (
               <a href={link.href} class={`nav-link ${isActive(link.href) ? 'active' : ''}`}>{link.label}</a>
             ))}
-            <!-- Dark Mode Toggle -->
-            <button id="dark-mode-toggle" aria-label="Toggle dark mode" class="ml-2 p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-              <svg id="icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
-              <svg id="icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-            </button>
-            <a href="https://www.linkedin.com/in/jagadeesh-thiruveedula/" target="_blank" rel="noopener" class="ml-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-all hover:scale-105">LinkedIn</a>
+            <a
+              href="https://www.linkedin.com/in/jagadeesh-thiruveedula/"
+              target="_blank"
+              rel="noopener"
+              class="ml-3 px-4 py-1.5 rounded-full border border-indigo-500/40 text-indigo-300 text-xs font-mono font-semibold hover:bg-indigo-500/10 hover:border-indigo-400/60 transition-all duration-200"
+            >LinkedIn ↗</a>
           </div>
 
           <!-- Mobile Menu Button -->
-          <button id="mobile-menu-toggle" aria-label="Open menu" class="md:hidden text-slate-900 dark:text-white focus:outline-none">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          <button id="mobile-menu-toggle" aria-label="Open menu" class="md:hidden text-slate-400 hover:text-white transition-colors p-1">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
         </div>
@@ -103,120 +189,178 @@ function isActive(href: string) {
     </nav>
 
     <!-- Main Content -->
-    <main class="min-h-screen pt-16">
+    <main class="min-h-screen pt-14">
       <slot />
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-slate-200/80 bg-slate-100/90 dark:border-slate-800 dark:bg-slate-950/90 py-12">
-      <div class="container mx-auto px-4 text-center">
-        <p class="text-sm text-slate-600 dark:text-slate-400">
-          &copy; {new Date().getFullYear()} Jagadeesh Thiruveedula. Built with Astro + Tailwind CSS. All rights reserved.
-        </p>
+    <!-- Footer: System Terminal -->
+    <footer class="border-t border-slate-800/60 bg-slate-950 py-16">
+      <div class="container mx-auto px-4 md:px-6">
+        <div class="grid md:grid-cols-3 gap-10 md:gap-6 mb-10">
+
+          <!-- Brand block -->
+          <div class="flex flex-col gap-3">
+            <div class="flex items-baseline gap-3">
+              <span class="footer-mono text-xl font-bold text-indigo-400">JT_</span>
+              <span class="footer-mono text-xs text-slate-500 tracking-widest">
+                // SYSTEM STATUS: <span class="text-emerald-400" id="footer-status">AVAILABLE</span>
+              </span>
+            </div>
+            <p class="text-sm text-slate-300 font-semibold mt-1">Jagadeesh Thiruveedula</p>
+            <p class="footer-mono text-xs text-slate-500 leading-relaxed">GenAI Systems Architect<br/>GCP-native · Vertex AI · Enterprise RAG</p>
+          </div>
+
+          <!-- Links block -->
+          <div class="flex flex-col gap-4">
+            <p class="footer-mono text-xs text-slate-600 tracking-widest uppercase">Connect</p>
+            <div class="flex flex-col gap-2">
+              <a href="https://www.linkedin.com/in/jagadeesh-thiruveedula/" target="_blank" rel="noopener" class="footer-mono text-sm text-slate-400 hover:text-indigo-300 transition-colors">LinkedIn ↗</a>
+              <a href="https://github.com/jthiruveedula" target="_blank" rel="noopener" class="footer-mono text-sm text-slate-400 hover:text-indigo-300 transition-colors">GitHub ↗</a>
+              <a href="/contact" class="footer-mono text-sm text-slate-400 hover:text-indigo-300 transition-colors">Contact ↗</a>
+            </div>
+          </div>
+
+          <!-- System block -->
+          <div class="flex flex-col gap-4">
+            <p class="footer-mono text-xs text-slate-600 tracking-widest uppercase">Stack</p>
+            <div class="flex flex-col gap-1.5">
+              <span class="footer-mono text-xs text-slate-500">Astro · Tailwind · GSAP + ScrollTrigger</span>
+              <span class="footer-mono text-xs text-slate-500">Lenis · GitHub Pages</span>
+              <span class="footer-mono text-xs text-slate-600 mt-2">6 production GenAI systems</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider + copyright -->
+        <div class="border-t border-slate-800/60 pt-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+          <p class="footer-mono text-xs text-slate-600">
+            © {new Date().getFullYear()} Jagadeesh Thiruveedula · All rights reserved
+          </p>
+          <p class="footer-mono text-xs text-slate-700">
+            Built on Astro · Deployed on GitHub Pages
+          </p>
+        </div>
       </div>
     </footer>
 
+    <!-- Mobile menu scripts -->
     <script>
-      // Mobile menu toggle
       const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
       const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
       const mobileMenuClose = document.getElementById('mobile-menu-close');
 
-      mobileMenuToggle?.addEventListener('click', () => {
+      function openMenu() {
         mobileMenuOverlay?.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
-      });
-
-      mobileMenuClose?.addEventListener('click', () => {
+      }
+      function closeMenu() {
         mobileMenuOverlay?.classList.add('hidden');
         document.body.style.overflow = '';
-      });
+      }
 
+      mobileMenuToggle?.addEventListener('click', openMenu);
+      mobileMenuClose?.addEventListener('click', closeMenu);
       mobileMenuOverlay?.addEventListener('click', (e) => {
-        if (e.target === mobileMenuOverlay) {
-          mobileMenuOverlay.classList.add('hidden');
-          document.body.style.overflow = '';
-        }
+        if (e.target === mobileMenuOverlay) closeMenu();
       });
 
-      // Navbar scroll effect
+      // Nav scroll elevation
       const nav = document.getElementById('main-nav');
       window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 10) {
-          nav?.classList.add('shadow-lg');
-        } else {
-          nav?.classList.remove('shadow-lg');
-        }
-      });
-
-      // Dark mode toggle
-      const toggle = document.getElementById('dark-mode-toggle');
-      const iconSun = document.getElementById('icon-sun');
-      const iconMoon = document.getElementById('icon-moon');
-
-      function updateIcons() {
-        const isDark = document.documentElement.classList.contains('dark');
-        iconSun?.classList.toggle('hidden', !isDark);
-        iconMoon?.classList.toggle('hidden', isDark);
-      }
-      updateIcons();
-
-      toggle?.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.toggle('dark');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        updateIcons();
-      });
+        nav?.classList.toggle('shadow-[0_1px_0_rgba(99,102,241,0.15)]', window.scrollY > 10);
+      }, { passive: true });
     </script>
 
+    <!-- Scroll progress bar -->
     <script>
-      import Lenis from 'lenis'
-      import gsap from 'gsap'
-      import { ScrollTrigger } from 'gsap/ScrollTrigger'
+      const bar = document.getElementById('scroll-progress');
+      function updateProgress() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        if (bar) bar.style.width = pct + '%';
+      }
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
+    </script>
 
-      // Initialize Lenis
+    <!-- Lenis smooth scroll + GSAP ticker -->
+    <script>
+      import Lenis from 'lenis';
+      import gsap from 'gsap';
+      import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+      gsap.registerPlugin(ScrollTrigger);
+
       const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/brs54l4xou
+        duration: 1.15,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: 'vertical',
         gestureOrientation: 'vertical',
         smoothWheel: true,
-        wheelMultiplier: 1,
+        wheelMultiplier: 0.9,
         smoothTouch: false,
         touchMultiplier: 2,
         infinite: false,
-      })
+      });
 
-      gsap.registerPlugin(ScrollTrigger)
+      lenis.on('scroll', ScrollTrigger.update);
 
-      lenis.on('scroll', ScrollTrigger.update)
+      gsap.ticker.add((time: number) => {
+        lenis.raf(time * 1000);
+      });
 
-      gsap.ticker.add((time) => {
-        lenis.raf(time * 1000)
-      })
-
-      gsap.ticker.lagSmoothing(0)
+      gsap.ticker.lagSmoothing(0);
     </script>
 
     <style is:global>
-      .nav-link {
-        @apply px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 rounded-lg transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400;
-      }
-      .nav-link.active {
-        @apply bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400;
-      }
-      .card {
-        @apply bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg transition-all duration-300;
-      }
-      .card:hover {
-        @apply shadow-2xl -translate-y-1;
-      }
-      :root {
-        color-scheme: dark;
-        --surface: rgba(15, 23, 42, 0.72);
-        --stroke: rgba(148, 163, 184, 0.18);
-      }
+      /* Base */
       html { background-color: #020617; }
-      body { background-image: radial-gradient(circle at top, rgba(56, 189, 248, 0.04), transparent 18%), linear-gradient(180deg, #020617 0%, #111827 100%); }
+      body { min-height: 100vh; }
+
+      /* Container max-width */
+      .container { max-width: 1200px; }
+
+      /* System chip / tag pattern */
+      .sys-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        background: rgba(15, 23, 42, 0.6);
+        color: rgb(148, 163, 184);
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: 11px;
+        letter-spacing: 0.03em;
+      }
+
+      /* Section eyebrow label */
+      .section-eyebrow {
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+
+      /* Global will-change for animated elements */
+      .hero-line,
+      .hero-badge,
+      .hero-subtitle,
+      .hero-description,
+      .stack-card,
+      .pipeline-step,
+      .chaos-p,
+      .clean-p,
+      .gov-layer,
+      .proof-card {
+        will-change: transform;
+      }
+
+      /* Ensure smooth rendering */
+      * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
     </style>
   </body>
 </html>
