@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import HeroNodeGraph from '../components/HeroNodeGraph.astro';
 
 const capabilityCards = [
   ['Private LLM systems', 'Secure, domain-specific assistants with guardrails, observability, and deployment patterns designed for real enterprise use.'],
@@ -20,6 +21,8 @@ const projectCards = [
 <Layout title="Jagadeesh Thiruveedula — GenAI Systems Architect | Private LLM & RAG" description="A premium portfolio for a GenAI-driven data architect building private LLM systems, enterprise RAG, and governed AI workflows on GCP.">
   <section class="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.12),transparent_18%),linear-gradient(135deg,#020617_0%,#111827_45%,#0f172a_100%)] py-16 md:py-20">
     <div class="absolute inset-0 overflow-hidden" aria-hidden="true">
+      <HeroNodeGraph />
+      <div class="absolute inset-0 bg-[linear-gradient(135deg,rgba(2,6,23,0.78),rgba(15,23,42,0.55),rgba(2,6,23,0.92))]"></div>
       <div class="absolute -top-24 left-10 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl"></div>
       <div class="absolute top-16 right-8 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl"></div>
       <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-emerald-400/8 blur-3xl"></div>
@@ -49,6 +52,24 @@ const projectCards = [
           <a href="#systems" class="rounded-full bg-cyan-400 px-6 py-2.5 text-sm font-semibold text-slate-950 shadow-[0_18px_45px_rgba(34,211,238,0.25)] transition hover:-translate-y-0.5 hover:bg-cyan-300">Explore the systems</a>
           <a href="/contact" class="rounded-full border border-white/10 bg-white/8 px-6 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/12">Start a conversation</a>
         </div>
+
+        <aside class="mt-2 hidden w-full max-w-xl rounded-3xl border border-white/10 bg-white/8 p-5 text-left shadow-[0_18px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl lg:block">
+          <p class="text-[11px] uppercase tracking-[0.35em] text-cyan-100/90">Story in motion</p>
+          <div class="mt-4 grid gap-3 text-sm text-slate-100">
+            <div class="flex items-center gap-3 rounded-2xl border border-cyan-400/20 bg-slate-950/60 p-3">
+              <span class="h-2.5 w-2.5 rounded-full bg-cyan-300 shadow-[0_0_0_6px_rgba(34,211,238,0.15)]"></span>
+              <span>Data is shaped into trusted context before any model is asked to answer.</span>
+            </div>
+            <div class="flex items-center gap-3 rounded-2xl border border-emerald-400/20 bg-slate-950/60 p-3">
+              <span class="h-2.5 w-2.5 rounded-full bg-emerald-300 shadow-[0_0_0_6px_rgba(52,211,153,0.15)]"></span>
+              <span>Retrieval, orchestration, and governance work together to make every answer reliable.</span>
+            </div>
+            <div class="flex items-center gap-3 rounded-2xl border border-indigo-400/20 bg-slate-950/60 p-3">
+              <span class="h-2.5 w-2.5 rounded-full bg-indigo-300 shadow-[0_0_0_6px_rgba(129,140,248,0.15)]"></span>
+              <span>What lands on the screen is the result of a systems design discipline, not a demo trick.</span>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   </section>
