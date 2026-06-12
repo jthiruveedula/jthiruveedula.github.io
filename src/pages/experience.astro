@@ -3,162 +3,59 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Experience — Jagadeesh Thiruveedula">
-  <main class="min-h-screen px-4 py-20 md:px-8 lg:px-12 bg-slate-950 text-slate-100">
+  <main class="min-h-screen bg-slate-950 px-4 py-20 text-slate-100 md:px-8 lg:px-12">
     <section class="mx-auto flex w-full max-w-6xl flex-col gap-10">
       <header class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-8 shadow-[0_12px_40px_rgba(2,6,23,0.45)] md:p-10">
         <p class="section-eyebrow text-amber-300">[MODULE: EXPERIENCE]</p>
         <h1 class="text-3xl font-black text-white md:text-4xl">Experience Timeline</h1>
-        <p class="mt-3 max-w-3xl text-sm text-slate-300 leading-relaxed">A concise view of the roles, platforms, and delivery outcomes that shaped my enterprise data and GenAI work.</p>
+        <p class="mt-3 max-w-3xl text-sm text-slate-400 leading-relaxed">A production-style view of the systems, platforms, and delivery outcomes behind enterprise AI and data modernization work.</p>
       </header>
-    <!-- Work Experience Section -->
-    <section>
-      <h2 class="text-2xl font-bold mb-8 text-blue-700 dark:text-blue-300 flex items-center gap-2">
-        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7V3a1 1 0 00-1-1H9a1 1 0 00-1 1v4M5 9a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V9z" /></svg>
-        Work Experience
-      </h2>
-      <div class="relative border-l-4 border-blue-300 pl-10 space-y-14 max-w-3xl mx-auto">
-        <!-- Quantiphi -->
-        <div class="relative flex items-start group">
-        <span class="absolute -left-6 mt-4 w-8 h-8 bg-blue-600 border-4 border-white dark:border-slate-900 shadow-md rounded-full flex items-center justify-center animate-pulse">
-            <span class="text-white font-bold text-sm">Q</span>
-          </span>
-          <div class="card flex-1 p-7 ml-1">
-            <div class="flex gap-2 items-center mb-1">
-              <span class="text-lg font-bold text-blue-700 dark:text-blue-200">Data Architect</span>
-              <span class="ml-2 text-slate-700 dark:text-slate-400">Quantiphi</span>
-              <span class="ml-auto text-xs rounded-full bg-blue-50 text-blue-900 dark:bg-blue-900 dark:text-white px-2 py-0.5 font-mono">Sep 2022 – Present</span>
-            </div>
-            <ul class="list-disc pl-6 mt-1 text-md mb-3 space-y-1">
-              <li>GCP modernization: <b>-28% infra cost</b>, +35% perf, multi-cloud best practices</li>
-              <li>Brought RAG/GenAI pipelines to prod; LLM eval, vector DBs, IAM governance</li>
-              <li>Standardized CDC/streaming (Dataflow); <b>cut pipeline time 40%</b>, audit pass 99%</li>
-              <li>3x GenAI adoption across teams</li>
-            </ul>
-            <div class="flex gap-2 text-xs mt-1 flex-wrap">
-              <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold">GCP</span>
-              <span class="bg-slate-100 text-blue-900 px-3 py-1 rounded-full font-bold">GenAI</span>
-              <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">Vector DBs</span>
-            </div>
-          </div>
-        </div>
-        <!-- Charles Schwab -->
-        <div class="relative flex items-start group">
-          <span class="absolute -left-6 mt-4 w-8 h-8 bg-indigo-600 border-4 border-white dark:border-slate-900 shadow-md rounded-full flex items-center justify-center animate-pulse">
-            <img src="https://content.schwab.com/web/favicon.ico" alt="Charles Schwab" class="w-5 h-5 rounded-full" />
-          </span>
-          <div class="card flex-1 p-7 ml-1">
-            <div class="flex gap-2 items-center mb-1">
-              <span class="text-lg font-bold text-indigo-700 dark:text-indigo-200">Sr. Data Engineer</span>
-              <span class="ml-2 text-slate-700 dark:text-slate-400">Charles Schwab</span>
-              <span class="ml-auto text-xs rounded-full bg-indigo-50 text-indigo-900 dark:bg-indigo-950 dark:text-white px-2 py-0.5 font-mono">Nov 2021 – Sep 2022</span>
-            </div>
-            <ul class="list-disc pl-6 mt-1 text-md mb-3 space-y-1">
-              <li>Migrated Hadoop/Teradata warehouse to GCP; <b>+25% perf, cost down</b></li>
-              <li>Automated ETL: BigQuery, PySpark, Talend; SLA + reliability</li>
-              <li>DevOps: Terraform-based CI/CD, rollback, full IaC adoption</li>
-              <li>Press-featured early cloud-migration leader</li>
-            </ul>
-            <div class="flex gap-2 text-xs mt-1 flex-wrap">
-              <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-bold">PySpark</span>
-              <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-bold">BigQuery</span>
-              <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold">DevOps</span>
-            </div>
-          </div>
-        </div>
 
-      <!-- Wiley Publications -->
-      <div class="relative flex items-start group">
-        <span class="absolute -left-6 mt-4 w-8 h-8 bg-purple-600 border-4 border-white dark:border-slate-900 shadow-md rounded-full flex items-center justify-center">
-          <img src="https://media.licdn.com/dms/image/v2/D560BAQGXWLbYUdNZ6Q/company-logo_200_200/company-logo_200_200/0/1719262844645/wiley_logo?e=2147483647&v=beta&t=abc" alt="Wiley Publications" class="w-5 h-5 rounded-full" />
-        </span>
-        <div class="card flex-1 p-7 ml-1">
-          <div class="flex gap-2 items-center mb-1">
-            <span class="text-lg font-bold text-purple-700 dark:text-purple-200">Data Engineer</span>
-            <span class="ml-2 text-slate-700 dark:text-slate-400">Wiley Publications</span>
-            <span class="ml-auto text-xs rounded-full bg-purple-50 text-purple-900 dark:bg-purple-900 dark:text-white px-2 py-0.5 font-mono">Mar 2019 - Nov 2021</span>
-          </div>
-          <ul class="list-disc pl-6 mt-1 text-md mb-3 space-y-1">
-            <li>Data pipeline development and ETL automation</li>
-            <li>Publishing platform data integration and analytics</li>
-            <li>Content delivery optimization and workflow automation</li>
-          </ul>
-          <div class="flex gap-2 text-xs mt-1 flex-wrap">
-            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold">ETL</span>
-            <span class="bg-slate-100 text-gray-700 px-3 py-1 rounded-full font-bold">Data Pipelines</span>
-            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-bold">Publishing</span>
-          </div>
+      <section class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-6 md:p-8">
+        <p class="section-eyebrow text-indigo-300">[MODULE: WORK]</p>
+        <div class="mt-6 space-y-6 border-l border-slate-800/70 pl-6">
+          {[
+            ['Data Architect','Quantiphi','Sep 2022 – Present','GCP modernization, RAG platforms, evaluation harnesses, and secure enterprise AI delivery.','GCP · GenAI · RAG · IAM'],
+            ['Senior Data Engineer','Charles Schwab','Nov 2021 – Sep 2022','Migrated warehouse workloads to GCP and stabilized CI/CD, observability, and performance at scale.','BigQuery · PySpark · Terraform · DevOps'],
+            ['Data Engineer','Wiley Publications','Mar 2019 – Nov 2021','Built ETL pipelines, data integration layers, and analytics workflows for publishing platforms.','ETL · Data Pipelines · Analytics'],
+          ].map(([role, company, date, summary, chips]) => (
+            <article class="rounded-2xl border border-slate-800/70 bg-slate-950/70 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
+              <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <h2 class="text-base font-bold text-white md:text-lg">{role}</h2>
+                  <p class="text-sm text-slate-400">{company}</p>
+                </div>
+                <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{date}</span>
+              </div>
+              <p class="mt-4 text-sm text-slate-400 leading-relaxed">{summary}</p>
+              <div class="mt-4 flex flex-wrap gap-2">{chips.split(' · ').map(tag => <span class="rounded border border-slate-700/60 bg-slate-900/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{tag}</span>)}</div>
+            </article>
+          ))}
         </div>
-      </div>
-        <!-- DSOgroup TEOTYS -->
-        <div class="relative flex items-start group">
-          <span class="absolute -left-6 mt-4 w-8 h-8 bg-green-600 border-4 border-white dark:border-slate-900 shadow-md rounded-full flex items-center justify-center">
-            <img src="https://www.dso.co.za/sites/all/themes/dso/favicon.ico" alt="DSOgroup TEOTYS" class="w-5 h-5 rounded-full" />
-          </span>
-          <div class="card flex-1 p-7 ml-1">
-            <div class="flex gap-2 items-center mb-1">
-              <span class="text-lg font-bold text-green-700 dark:text-green-200">Software Engineer</span>
-              <span class="ml-2 text-slate-700 dark:text-slate-400">DSOgroup TEOTYS</span>
-              <span class="ml-auto text-xs rounded-full bg-green-50 text-green-900 dark:bg-green-950 dark:text-white px-2 py-0.5 font-mono">Aug 2018 – Mar 2019</span>
-            </div>
-            <ul class="list-disc pl-6 mt-1 text-md mb-3 space-y-1">
-              <li>Talend big data streaming jobs; reusable CDC/ETL, mainframe, DR frameworks</li>
-            </ul>
-            <div class="flex gap-2 text-xs mt-1 flex-wrap">
-              <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold">Talend</span>
-              <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">ETL</span>
-            </div>
-          </div>
+      </section>
+
+      <section class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-6 md:p-8">
+        <p class="section-eyebrow text-cyan-300">[MODULE: EARLY CAREER]</p>
+        <div class="mt-6 space-y-6 border-l border-slate-800/70 pl-6">
+          {[
+            ['Software Engineer','DSOgroup TEOTYS','Aug 2018 – Mar 2019','Talend streaming jobs, CDC pipelines, and DR-ready data frameworks.','Talend · ETL · CDC'],
+            ['Software Engineer','Innominds','Jun 2015 – Jul 2018','Warehouse and ETL design with reusable business logic and reliability improvements.','ETL · Talend · Data Quality'],
+            ['Intern','Vizag Steel Plant','Jan 2015 – Mar 2015','SCADA and automation work for monitoring and operational troubleshooting.','IoT · Automation · Monitoring'],
+          ].map(([role, company, date, summary, chips]) => (
+            <article class="rounded-2xl border border-slate-800/70 bg-slate-950/70 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
+              <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <h2 class="text-base font-bold text-white md:text-lg">{role}</h2>
+                  <p class="text-sm text-slate-400">{company}</p>
+                </div>
+                <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{date}</span>
+              </div>
+              <p class="mt-4 text-sm text-slate-400 leading-relaxed">{summary}</p>
+              <div class="mt-4 flex flex-wrap gap-2">{chips.split(' · ').map(tag => <span class="rounded border border-slate-700/60 bg-slate-900/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{tag}</span>)}</div>
+            </article>
+          ))}
         </div>
-        <!-- Innominds -->
-        <div class="relative flex items-start group">
-          <span class="absolute -left-6 mt-4 w-8 h-8 bg-yellow-500 border-4 border-white dark:border-slate-900 shadow-md rounded-full flex items-center justify-center">
-            <img src="https://www.innominds.com/hubfs/favicon.ico" alt="Innominds" class="w-5 h-5 rounded-full" />
-          </span>
-          <div class="card flex-1 p-7 ml-1">
-            <div class="flex gap-2 items-center mb-1">
-              <span class="text-lg font-bold text-yellow-700 dark:text-yellow-100">Software Engineer</span>
-              <span class="ml-2 text-slate-700 dark:text-slate-400">Innominds</span>
-              <span class="ml-auto text-xs rounded-full bg-yellow-50 text-yellow-900 dark:bg-yellow-950 dark:text-white px-2 py-0.5 font-mono">Jun 2015 – Jul 2018</span>
-            </div>
-            <ul class="list-disc pl-6 mt-1 text-md mb-3 space-y-1">
-              <li>Warehouse/ETL pipeline design: Talend + business logic; error handling</li>
-            </ul>
-            <div class="flex gap-2 text-xs mt-1 flex-wrap">
-              <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold">ETL</span>
-              <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full font-bold">Talend</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- Internships Section -->
-    <section class="mt-18 pt-12">
-      <h2 class="text-2xl font-bold mb-8 text-orange-700 dark:text-orange-300 flex items-center gap-2">
-        <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h4m0 0h4m-4 0v4m0-4V8" /></svg>
-        Internships
-      </h2>
-      <div class="relative border-l-4 border-orange-300 pl-10 space-y-10 max-w-3xl mx-auto">
-        <!-- Vizag Steel Plant -->
-        <div class="relative flex items-start group">
-          <span class="absolute -left-6 mt-4 w-8 h-8 bg-orange-500 border-4 border-white dark:border-slate-900 shadow-md rounded-full flex items-center justify-center">
-            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M8 12h8" stroke="white" stroke-width="2" stroke-linecap="round" /></svg>
-          </span>
-          <div class="card flex-1 p-7 ml-1">
-            <div class="flex gap-2 items-center mb-1">
-              <span class="text-lg font-bold text-orange-700 dark:text-orange-200">Intern</span>
-              <span class="ml-2 text-slate-700 dark:text-slate-400">Vizag Steel Plant</span>
-              <span class="ml-auto text-xs rounded-full bg-orange-50 text-orange-900 dark:bg-orange-950 dark:text-white px-2 py-0.5 font-mono">Jan 2015 – Mar 2015</span>
-            </div>
-            <ul class="list-disc pl-6 mt-1 text-md mb-3 space-y-1">
-              <li>SCADA/IoT systems for patient monitoring, troubleshooting automation</li>
-            </ul>
-            <div class="flex gap-2 text-xs mt-1 flex-wrap">
-              <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full font-bold">IoT</span>
-              <span class="bg-slate-100 text-blue-900 px-3 py-1 rounded-full">Automation</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
     </section>
   </main>
 </Layout>

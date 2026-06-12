@@ -558,19 +558,27 @@ const capabilityCards = [
   // ─────────────────────────────────────────────────────────────────
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (!prefersReduced) {
-    const status = document.getElementById('hero-status-text');
-    if (status) {
-      const phrase = '// SYSTEM_STATE: ACTIVE';
+  const status = document.getElementById('hero-status-text');
+  if (status) {
+    const phrase = '// SYSTEM_STATE: ACTIVE';
+    if (prefersReduced) {
+      status.textContent = phrase;
+    } else {
       let i = 0;
       const type = () => {
         status.textContent = phrase.slice(0, i);
         i += 1;
-        if (i <= phrase.length) setTimeout(type, 45);
+        if (i <= phrase.length) {
+          setTimeout(type, 45);
+        } else {
+          status.textContent = phrase;
+        }
       };
       setTimeout(type, 150);
-      setTimeout(() => { status.textContent = ''; }, 1500);
     }
+  }
+
+  if (!prefersReduced) {
 
     const split = new SplitText('#hero-headline', { type: 'chars' });
     gsap.from(split.chars, { opacity: 0, y: 40, rotateX: -90, duration: 0.8, stagger: 0.03, ease: 'power4.out' });
@@ -737,22 +745,32 @@ const capabilityCards = [
     btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.45, ease: 'elastic.out(1, 0.45)' }));
   });
 
+  function parseMetricValue(raw: string) {
+    const match = raw.match(/^(\D*)(-?\d+(?:\.\d+)?)(.*)$/);
+    if (!match) return null;
+    return {
+      prefix: match[1] || '',
+      target: parseFloat(match[2]),
+      suffix: match[3] || '',
+    };
+  }
+
   document.querySelectorAll('.metric-value').forEach((node) => {
     const el = node as HTMLElement;
     const raw = el.dataset.value || '';
-    const match = raw.match(/(-?\d+(?:\.\d+)?)/);
-    if (!match) return;
-    const target = parseFloat(match[1]);
-    const suffix = raw.slice(match.index! + match[1].length);
+    const parsed = parseMetricValue(raw);
+    if (!parsed) return;
+
+    const { prefix, target, suffix } = parsed;
     const easeOutExpo = (t: number) => 1 - Math.pow(2, -10 * t);
     const observer = new IntersectionObserver((entries) => {
       if (!entries[0]?.isIntersecting) return;
-      let start = 0;
       const from = performance.now();
       const step = (now: number) => {
         const p = Math.min(1, (now - from) / 1800);
         const value = target * easeOutExpo(p);
-        el.textContent = `${value.toFixed(target % 1 === 0 ? 0 : 1)}${suffix}`;
+        const digits = target % 1 === 0 ? 0 : 1;
+        el.textContent = `${prefix}${value.toFixed(digits)}${suffix}`;
         if (p < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
