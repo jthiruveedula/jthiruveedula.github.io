@@ -118,27 +118,19 @@ const capabilityCards = [
         <!-- System badge -->
         <div class="hero-badge inline-flex items-center gap-3 rounded-full border border-indigo-400/20 bg-slate-900/60 px-4 py-2 text-xs font-mono font-semibold tracking-[0.22em] text-indigo-300 uppercase shadow-[0_0_24px_rgba(99,102,241,0.12)] backdrop-blur-md">
           <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)] animate-pulse"></span>
-          // SYSTEM_STATE: ACTIVE
+          <span id="hero-status-text">// SYSTEM_STATE: ACTIVE</span>
         </div>
 
         <!-- Subtitle -->
-        <p class="hero-subtitle text-xs font-mono font-semibold uppercase tracking-[0.4em] text-slate-500">Command surface for production AI</p>
+        <p class="hero-subtitle text-[11px] font-mono font-semibold uppercase tracking-[0.3em] text-slate-400">Command surface for production AI</p>
 
         <!-- H1 — split into lines for stagger reveal -->
-        <h1 class="hero-title font-black tracking-tight text-white leading-[1.05]" style="font-size: clamp(2.5rem, 7vw, 5.5rem);">
-          <span class="hero-line-wrap block overflow-hidden">
-            <span class="hero-line block">I architect AI systems</span>
-          </span>
-          <span class="hero-line-wrap block overflow-hidden">
-            <span class="hero-line block">that feel as <em class="not-italic text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">reliable</em></span>
-          </span>
-          <span class="hero-line-wrap block overflow-hidden">
-            <span class="hero-line block">as they look ambitious.</span>
-          </span>
+        <h1 id="hero-headline" class="hero-title font-black tracking-tight text-white leading-[1.05]" style="font-size: clamp(3rem, 0.5rem + 7vw, 8rem);">
+          COMMAND SURFACE FOR PRODUCTION AI
         </h1>
 
         <!-- Description -->
-        <p class="hero-description max-w-2xl text-lg text-slate-400 font-light leading-relaxed md:text-xl">
+        <p class="hero-description max-w-2xl text-base text-slate-300 font-light leading-relaxed md:text-lg">
           Private LLM applications, enterprise-grade RAG pipelines, and governed agentic workflows on GCP — built for teams that need performance, security, and operational clarity.
         </p>
 
@@ -151,11 +143,11 @@ const capabilityCards = [
 
         <!-- CTAs -->
         <div class="hero-ctas flex flex-wrap items-center gap-4 mt-4">
-          <a href="#deployments" class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 px-7 py-3 text-sm font-bold text-slate-950 shadow-[0_0_24px_rgba(99,102,241,0.3)] hover:shadow-[0_0_32px_rgba(99,102,241,0.5)] hover:scale-[1.03] transition-all duration-200">
+          <a href="#deployments" class="btn-primary inline-flex items-center gap-2 rounded-full bg-cyan-400 px-7 py-3 text-sm font-bold text-slate-950 shadow-[0_0_18px_rgba(34,211,238,0.18)] hover:bg-cyan-300 hover:scale-[1.02] transition-all duration-200">
             See the systems
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
-          <a href="/contact" class="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/50 px-7 py-3 text-sm font-semibold text-slate-300 hover:border-indigo-500/50 hover:text-indigo-300 backdrop-blur-sm transition-all duration-200">
+          <a href="/contact" class="btn-primary inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 px-7 py-3 text-sm font-semibold text-slate-300 hover:border-cyan-400/40 hover:text-cyan-100 backdrop-blur-sm transition-all duration-200">
             Discuss a system
           </a>
         </div>
@@ -341,7 +333,7 @@ const capabilityCards = [
       <div class="stacking-container relative">
         {capabilityCards.map(({ num, title, desc, tags, detail }, index) => (
           <article
-            class={`stack-card sticky mb-6 rounded-3xl border border-slate-700/60 bg-slate-900 p-8 md:p-10 shadow-[0_-8px_40px_rgba(0,0,0,0.6)] transform-gpu origin-top relative overflow-hidden`}
+            class={`capability-card stack-card sticky mb-6 rounded-3xl border border-slate-700/60 bg-slate-900 p-8 md:p-10 shadow-[0_-8px_40px_rgba(0,0,0,0.6)] transform-gpu origin-top relative overflow-hidden`}
             style={`top: ${4 + index * 1.5}rem; z-index: ${index + 10};`}
           >
             <!-- Top accent line -->
@@ -364,6 +356,7 @@ const capabilityCards = [
 
               <!-- Numbered badge -->
               <div class="flex-shrink-0 w-16 h-16 rounded-2xl border border-indigo-500/20 flex items-center justify-center bg-indigo-500/5 relative">
+                <span class="absolute -top-2 -right-2 font-mono text-[11px] uppercase tracking-[0.25em] text-amber-300/60">0{index + 1}</span>
                 <div class="absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.15)_0%,transparent_70%)]"></div>
                 <span class="font-mono text-indigo-400/60 font-bold text-xl relative z-10">{num}</span>
               </div>
@@ -394,8 +387,8 @@ const capabilityCards = [
       </div>
 
       <div class="grid gap-5 md:grid-cols-2 proof-grid">
-        {projects.map(({ slug, title, kicker, summary, stack, metric, metricLabel }) => (
-          <article class="proof-card group relative rounded-2xl border border-slate-700/60 bg-slate-800/30 p-7 hover:border-cyan-500/30 hover:bg-slate-800/50 transition-all duration-500 overflow-hidden opacity-0 translate-y-8">
+        {projects.map(({ slug, title, kicker, summary, stack, metric, metricLabel }, index) => (
+          <article class={`proof-card group relative rounded-2xl border border-slate-700/60 bg-slate-800/30 p-7 hover:border-cyan-500/30 hover:bg-slate-800/50 transition-all duration-500 overflow-hidden opacity-0 translate-y-8 ${index === 0 ? 'md:col-span-2' : ''}`}>
             <!-- Status bar at top -->
             <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-amber-500/40 via-emerald-400/60 to-emerald-400/40"></div>
             <!-- Arrow -->
@@ -422,7 +415,7 @@ const capabilityCards = [
 
             <!-- Metric -->
             <div class="pt-4 border-t border-slate-800/60">
-              <span class="font-mono text-2xl font-bold text-emerald-400 proof-metric">{metric}</span>
+              <span class="metric-value font-mono text-2xl font-bold text-emerald-400 proof-metric" data-value="{metric}">{metric}</span>
               <span class="font-mono text-xs text-slate-600 ml-2">{metricLabel}</span>
             </div>
           </article>
@@ -529,8 +522,9 @@ const capabilityCards = [
 <script>
   import gsap from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { SplitText } from 'gsap/SplitText';
 
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger, SplitText);
 
   // ─────────────────────────────────────────────────────────────────
   // SECTION-AWARE NAV LABEL
@@ -565,6 +559,22 @@ const capabilityCards = [
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (!prefersReduced) {
+    const status = document.getElementById('hero-status-text');
+    if (status) {
+      const phrase = '// SYSTEM_STATE: ACTIVE';
+      let i = 0;
+      const type = () => {
+        status.textContent = phrase.slice(0, i);
+        i += 1;
+        if (i <= phrase.length) setTimeout(type, 45);
+      };
+      setTimeout(type, 150);
+      setTimeout(() => { status.textContent = ''; }, 1500);
+    }
+
+    const split = new SplitText('#hero-headline', { type: 'chars' });
+    gsap.from(split.chars, { opacity: 0, y: 40, rotateX: -90, duration: 0.8, stagger: 0.03, ease: 'power4.out' });
+    gsap.from('.hero-description', { opacity: 0, y: 20, duration: 0.8, delay: 0.6, ease: 'power3.out' });
     const tlHero = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
     // Set initial states
@@ -717,9 +727,52 @@ const capabilityCards = [
   });
 
 
+  document.querySelectorAll('.btn-primary').forEach((btn) => {
+    btn.addEventListener('mousemove', (e: MouseEvent) => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      gsap.to(btn, { x: x * 0.25, y: y * 0.25, duration: 0.25, ease: 'power2.out' });
+    });
+    btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.45, ease: 'elastic.out(1, 0.45)' }));
+  });
+
+  document.querySelectorAll('.metric-value').forEach((node) => {
+    const el = node as HTMLElement;
+    const raw = el.dataset.value || '';
+    const match = raw.match(/(-?\d+(?:\.\d+)?)/);
+    if (!match) return;
+    const target = parseFloat(match[1]);
+    const suffix = raw.slice(match.index! + match[1].length);
+    const easeOutExpo = (t: number) => 1 - Math.pow(2, -10 * t);
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries[0]?.isIntersecting) return;
+      let start = 0;
+      const from = performance.now();
+      const step = (now: number) => {
+        const p = Math.min(1, (now - from) / 1800);
+        const value = target * easeOutExpo(p);
+        el.textContent = `${value.toFixed(target % 1 === 0 ? 0 : 1)}${suffix}`;
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+      observer.disconnect();
+    }, { threshold: 0.5 });
+    observer.observe(el);
+  });
+
   // ─────────────────────────────────────────────────────────────────
   // §4 · CAPABILITIES — stacking cards with depth scaling
   // ─────────────────────────────────────────────────────────────────
+  gsap.from('.capability-card', {
+    opacity: 0,
+    y: 60,
+    stagger: 0.2,
+    duration: 0.9,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.capabilities-section', start: 'top 75%' },
+  });
+
   const cards = gsap.utils.toArray<HTMLElement>('.stack-card');
   cards.forEach((card, i) => {
     if (i === 0) return; // First card is always visible
