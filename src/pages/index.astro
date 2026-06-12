@@ -121,10 +121,7 @@ const capabilityCards = [
           <span id="hero-status-text">// SYSTEM_STATE: ACTIVE</span>
         </div>
 
-        <!-- Subtitle -->
-        <p class="hero-subtitle text-[11px] font-mono font-semibold uppercase tracking-[0.3em] text-slate-400">Command surface for production AI</p>
-
-        <!-- H1 — split into lines for stagger reveal -->
+        <!-- H1 — split into chars for stagger reveal -->
         <h1 id="hero-headline" class="hero-title font-black tracking-tight text-white leading-[1.05]" style="font-size: clamp(3rem, 0.5rem + 7vw, 8rem);">
           COMMAND SURFACE FOR PRODUCTION AI
         </h1>
@@ -506,9 +503,7 @@ const capabilityCards = [
     .scroll-line {
       animation: none;
     }
-    .hero-line,
     .hero-badge,
-    .hero-subtitle,
     .hero-description,
     .hero-tags,
     .hero-ctas {
@@ -586,15 +581,12 @@ const capabilityCards = [
     const tlHero = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
     // Set initial states
-    gsap.set('.hero-line',        { y: '105%' });
-    gsap.set(['.hero-badge', '.hero-subtitle', '.hero-description', '.hero-ctas'], { y: 18, opacity: 0 });
+    gsap.set(['.hero-badge', '.hero-description', '.hero-ctas'], { y: 18, opacity: 0 });
     gsap.set('.hero-tags',        { y: 10, opacity: 0 });
     gsap.set('.scroll-indicator', { opacity: 0 });
 
     tlHero
       .to('.hero-badge',       { y: 0, opacity: 1, duration: 0.7, delay: 0.15 })
-      .to('.hero-subtitle',    { y: 0, opacity: 1, duration: 0.6 }, '-=0.45')
-      .to('.hero-line',        { y: '0%', duration: 0.85, stagger: 0.1 }, '-=0.35')
       .to('.hero-description', { y: 0, opacity: 1, duration: 0.7 }, '-=0.45')
       .to('.hero-tags',        { y: 0, opacity: 1, duration: 0.5 }, '-=0.5')
       .to('.hero-ctas',        { y: 0, opacity: 1, duration: 0.5 }, '-=0.4')

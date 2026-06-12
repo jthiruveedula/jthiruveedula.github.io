@@ -14,11 +14,12 @@ import Layout from '../layouts/Layout.astro';
       <section class="grid gap-6 md:grid-cols-2">
         <article class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
           <h2 class="text-sm font-bold text-white">Platform & Cloud</h2>
-          <div class="mt-5 space-y-4">
+          <p class="mt-1 text-xs text-slate-500 max-w-xs">Where the systems actually run.</p>
+          <div class="mt-5 space-y-5">
             {['GCP', 'BigQuery', 'Dataflow', 'Vertex AI', 'Cloud Run', 'Terraform'].map((item, i) => (
-              <div>
+              <div class="skill-bar" data-percent={[95, 88, 82, 78, 74, 70][i]}>
                 <div class="mb-1 flex items-center justify-between text-[11px] font-mono text-slate-400"><span>{item}</span><span>{[95, 88, 82, 78, 74, 70][i]}%</span></div>
-                <div class="h-1.5 rounded-full bg-slate-800/80"><div class="h-1.5 rounded-full bg-gradient-to-r from-cyan-400 via-indigo-400 to-emerald-400" style={`width:${[95, 88, 82, 78, 74, 70][i]}%`}></div></div>
+                <div class="h-px rounded-none bg-slate-800/80 overflow-hidden"><div class="h-px rounded-none bg-gradient-to-r from-cyan-400 via-indigo-400 to-emerald-400 transform origin-left scale-x-0" style={`--target-width: ${[95, 88, 82, 78, 74, 70][i]}%;`}></div></div>
               </div>
             ))}
           </div>
@@ -26,11 +27,12 @@ import Layout from '../layouts/Layout.astro';
 
         <article class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
           <h2 class="text-sm font-bold text-white">AI & Retrieval</h2>
-          <div class="mt-5 space-y-4">
+          <p class="mt-1 text-xs text-slate-500 max-w-xs">How models see and navigate your data.</p>
+          <div class="mt-5 space-y-5">
             {['RAG', 'LLM Ops', 'Vector Search', 'Eval Harness', 'Guardrails', 'Observability'].map((item, i) => (
-              <div>
+              <div class="skill-bar" data-percent={[92, 89, 86, 81, 77, 74][i]}>
                 <div class="mb-1 flex items-center justify-between text-[11px] font-mono text-slate-400"><span>{item}</span><span>{[92, 89, 86, 81, 77, 74][i]}%</span></div>
-                <div class="h-1.5 rounded-full bg-slate-800/80"><div class="h-1.5 rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400" style={`width:${[92, 89, 86, 81, 77, 74][i]}%`}></div></div>
+                <div class="h-px rounded-none bg-slate-800/80 overflow-hidden"><div class="h-px rounded-none bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 transform origin-left scale-x-0" style={`--target-width: ${[92, 89, 86, 81, 77, 74][i]}%;`}></div></div>
               </div>
             ))}
           </div>
@@ -66,3 +68,42 @@ import Layout from '../layouts/Layout.astro';
     </section>
   </main>
 </Layout>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!prefersReduced) {
+    document.querySelectorAll('.skill-bar').forEach((bar) => {
+      const inner = bar.querySelector('div:last-child > div') as HTMLElement;
+      const targetWidth = bar.getAttribute('data-percent');
+      if (inner && targetWidth) {
+        ScrollTrigger.create({
+          trigger: bar,
+          start: 'top 85%',
+          once: true,
+          onEnter: () => {
+            gsap.to(inner, {
+              scaleX: parseInt(targetWidth) / 100,
+              duration: 1.2,
+              ease: 'power3.out',
+            });
+          },
+        });
+      }
+    });
+  } else {
+    // Respect reduced motion - show bars at full width immediately
+    document.querySelectorAll('.skill-bar').forEach((bar) => {
+      const inner = bar.querySelector('div:last-child > div') as HTMLElement;
+      const targetWidth = bar.getAttribute('data-percent');
+      if (inner && targetWidth) {
+        inner.style.transform = `scaleX(${parseInt(targetWidth) / 100})`;
+      }
+    });
+  }
+</script>
