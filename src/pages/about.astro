@@ -3,72 +3,73 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="About — Jagadeesh Thiruveedula">
-  <!-- Hero / Summary Card -->
-  <main class="w-full min-h-[80vh] py-16 sm:py-24 px-4 flex flex-col items-center">
-    <!-- Profile Section -->
-    <section class="card max-w-4xl w-full flex flex-col md:flex-row gap-8 p-8 lg:p-12 shadow-2xl bg-white/95 backdrop-blur-md items-center" role="banner">
-    <div class="rounded-full h-36 w-36 md:h-48 md:w-48 border-4 border-blue-300 shadow-lg mb-4 md:mb-0 flex-shrink-0 bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
-        <span class="text-white text-5xl md:text-7xl font-bold">JT</span>
-      </div>
-      <div class="flex-1 text-center md:text-left">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">About Me</h1>
-        <h2 class="text-xl md:text-2xl font-semibold text-blue-700 dark:text-blue-300 mb-4">Senior Data Architect & GenAI Strategist</h2>
-        <p class="text-lg mb-4 text-blue-900 dark:text-blue-100 leading-relaxed">
-          10+ years enabling enterprise modernization, cloud adoption, and GenAI at scale.
-        </p>
-        <p class="text-slate-700 dark:text-slate-200 text-base leading-relaxed mb-6">
-          As a Data Engineering Architect, I specialize in the migration and modernization of legacy data stacks to cutting-edge, cloud-native solutions. My expertise lies in transforming complex data landscapes into agile, scalable, and high-performance environments. I excel at designing and implementing advanced data solutions that not only address intricate technical challenges but also drive actionable business insights, driving innovation and strategic decision-making. My work centers on delivering robust and secure data-intensive solutions, primarily leveraging the Google Cloud Platform (GCP), while also drawing on practical experience with AWS and Azure to operate effectively in multi-cloud scenarios.
-        </p>
-        <div class="flex flex-wrap justify-center md:justify-start gap-3 text-sm">
-          <span class="bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-full font-medium">Dallas, TX</span>
-          <span class="bg-indigo-100 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-200 px-4 py-2 rounded-full font-medium">10+ Years Exp</span>
-          <span class="bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 px-4 py-2 rounded-full font-medium">GCP, GenAI, Data</span>
+  <main class="min-h-screen px-4 py-20 md:px-8 lg:px-12 bg-slate-950 text-slate-100">
+    <section class="mx-auto flex w-full max-w-6xl flex-col gap-10">
+      <header class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-8 shadow-[0_12px_40px_rgba(2,6,23,0.45)] md:p-10">
+        <p class="section-eyebrow text-amber-300">[MODULE: PROFILE]</p>
+        <div class="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div class="flex items-center gap-5">
+            <div class="flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-700/70 bg-slate-950 text-xl font-black text-cyan-300">JT</div>
+            <div>
+              <h1 class="text-3xl font-black text-white md:text-4xl">About Me</h1>
+              <p class="mt-1 text-sm text-slate-400">GenAI Systems Architect · GCP-native · Enterprise RAG</p>
+            </div>
+          </div>
+          <span class="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.25em] text-emerald-300">STATUS: AVAILABLE</span>
+        </div>
+        <p class="mt-6 max-w-3xl text-sm text-slate-300 leading-relaxed">I design governed AI systems, high-reliability retrieval pipelines, and production-ready cloud architectures for enterprise teams that need confidence, security, and measurable outcomes.</p>
+      </header>
+
+      <section class="grid grid-cols-2 gap-4 md:grid-cols-4" aria-labelledby="metrics-heading">
+      <h2 id="metrics-heading" class="sr-only">Professional Achievement Metrics</h2>
+      
+      <article class="rounded-2xl border border-slate-800/70 bg-slate-900/40 p-5 text-center shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
+        <div class="font-mono text-2xl font-bold text-white">10+</div>
+        <div class="mt-1 text-[10px] uppercase tracking-[0.25em] text-slate-500">Years</div>
+      </article>
+      
+      <article class="rounded-2xl border border-slate-800/70 bg-slate-900/40 p-5 text-center shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
+        <div class="font-mono text-2xl font-bold text-emerald-300">$MM</div>
+        <div class="mt-1 text-[10px] uppercase tracking-[0.25em] text-slate-500">Transformations</div>
+      </article>
+      
+      <article class="rounded-2xl border border-slate-800/70 bg-slate-900/40 p-5 text-center shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
+        <div class="font-mono text-2xl font-bold text-indigo-300">F500</div>
+        <div class="mt-1 text-[10px] uppercase tracking-[0.25em] text-slate-500">Clients</div>
+      </article>
+      
+      <article class="rounded-2xl border border-slate-800/70 bg-slate-900/40 p-5 text-center shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
+        <div class="font-mono text-2xl font-bold text-cyan-300">GenAI</div>
+        <div class="mt-1 text-[10px] uppercase tracking-[0.25em] text-slate-500">Scale</div>
+      </article>
+    </section>
+
+    <section class="grid grid-cols-1 gap-6 md:grid-cols-3" aria-labelledby="expertise-heading">
+      <h2 id="expertise-heading" class="sr-only">Areas of Technical Expertise</h2>
+      <article class="rounded-2xl border border-slate-800/70 bg-slate-900/40 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)] transition-all duration-300 hover:border-cyan-400/30 hover:-translate-y-0.5">
+        <h3 class="text-base font-bold text-white">Cloud Data Architectures</h3>
+        <p class="mt-3 text-sm text-slate-400 leading-relaxed">Expert in GCP, BigQuery, Dataflow, and multi-cloud lakehouse patterns with enterprise-grade security and scalability.</p>
+      </article>
+      <article class="rounded-2xl border border-slate-800/70 bg-slate-900/40 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)] transition-all duration-300 hover:border-cyan-400/30 hover:-translate-y-0.5">
+        <h3 class="text-base font-bold text-white">Enterprise GenAI & Vector Search</h3>
+        <p class="mt-3 text-sm text-slate-400 leading-relaxed">Building private LLM systems, RAG pipelines, and controlled retrieval experiences for production teams.</p>
+      </article>
+      <article class="rounded-2xl border border-slate-800/70 bg-slate-900/40 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)] transition-all duration-300 hover:border-cyan-400/30 hover:-translate-y-0.5">
+        <h3 class="text-base font-bold text-white">Impact & Leadership</h3>
+        <p class="mt-3 text-sm text-slate-400 leading-relaxed">Trusted for modernization, governance, platform design, and delivery across enterprise environments.</p>
+      </article>
+    </section>
+
+    <section class="max-w-3xl text-center" aria-labelledby="cta-heading">
+      <div class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-8 shadow-[0_10px_30px_rgba(2,6,23,0.35)] md:p-10">
+        <h2 id="cta-heading" class="text-2xl font-black text-white md:text-3xl">Ready to Transform Your Data Strategy?</h2>
+        <p class="mt-4 text-sm text-slate-400 leading-relaxed">Let’s discuss how cloud modernization and GenAI can drive measurable business impact for your organization.</p>
+        <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+          <a href="/contact" class="inline-flex items-center justify-center rounded-full bg-cyan-400 px-7 py-3 text-sm font-bold text-slate-950 transition-all duration-200 hover:bg-cyan-300">Get In Touch</a>
+          <a href="/experience" class="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900/60 px-7 py-3 text-sm font-semibold text-slate-300 transition-all duration-200 hover:border-cyan-400/40 hover:text-cyan-100">View Experience</a>
         </div>
       </div>
     </section>
-
-    <!-- Section Divider -->
-    <div class="w-full max-w-4xl my-12">
-      <hr class="border-t-2 border-gray-200 dark:border-gray-700 rounded-full" />
-      <div class="flex justify-center -mt-3">
-        <span class="bg-white dark:bg-gray-900 px-6 py-2 text-gray-500 dark:text-gray-400 text-sm font-medium">Key Metrics</span>
-      </div>
-    </div>
-
-    <!-- Metric Highlight Cards -->
-    <section class="grid grid-cols-2 md:grid-cols-4 w-full max-w-5xl gap-4 md:gap-6 mb-12" aria-labelledby="metrics-heading">
-      <h2 id="metrics-heading" class="sr-only">Professional Achievement Metrics</h2>
-      
-      <div class="card flex flex-col items-center p-4 md:p-6 text-center bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200 dark:border-blue-700">
-        <div class="text-2xl md:text-3xl font-bold text-blue-700 dark:text-blue-300 mb-2">10+</div>
-        <div class="text-sm font-medium text-blue-600 dark:text-blue-400">Years Experience</div>
-      </div>
-      
-      <div class="card flex flex-col items-center p-4 md:p-6 text-center bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-700">
-        <div class="text-2xl md:text-3xl font-bold text-green-700 dark:text-green-300 mb-2">$MM</div>
-        <div class="text-sm font-medium text-green-600 dark:text-green-400">Data Transformations</div>
-      </div>
-      
-      <div class="card flex flex-col items-center p-4 md:p-6 text-center bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-700">
-        <div class="text-2xl md:text-3xl font-bold text-purple-700 dark:text-purple-300 mb-2">F500</div>
-        <div class="text-sm font-medium text-purple-600 dark:text-purple-400">Enterprise Clients</div>
-      </div>
-      
-      <div class="card flex flex-col items-center p-4 md:p-6 text-center bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 border border-indigo-200 dark:border-indigo-700">
-        <div class="text-2xl md:text-3xl font-bold text-indigo-700 dark:text-indigo-300 mb-2">GenAI</div>
-        <div class="text-sm font-medium text-indigo-600 dark:text-indigo-400">Scale Specialist</div>
-      </div>
-    </section>
-
-    <!-- Section Divider -->
-    <div class="w-full max-w-4xl my-12">
-      <hr class="border-t-2 border-gray-200 dark:border-gray-700 rounded-full" />
-      <div class="flex justify-center -mt-3">
-        <span class="bg-white dark:bg-gray-900 px-6 py-2 text-gray-500 dark:text-gray-400 text-sm font-medium">Core Expertise</span>
-      </div>
-    </div>
-
-    <!-- Expertise Highlights -->
     <section class="grid grid-cols-1 md:grid-cols-3 w-full max-w-5xl gap-6 lg:gap-8 mb-12" aria-labelledby="expertise-heading">
       <h2 id="expertise-heading" class="sr-only">Areas of Technical Expertise</h2>
       
@@ -79,8 +80,8 @@ import Layout from '../layouts/Layout.astro';
             <path d="M12 4v16" stroke-width="2"></path>
           </svg>
         </div>
-        <h3 class="text-lg font-bold text-blue-700 dark:text-blue-300">Cloud Data Architectures</h3>
-        <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+        <h3 class="text-base font-bold text-white">Cloud Data Architectures</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">
           Expert in GCP, BigQuery, Dataflow & multi-cloud datalake platforms. Leading $MM data transformations with enterprise-grade security and scalability.
         </p>
       </article>
@@ -92,8 +93,8 @@ import Layout from '../layouts/Layout.astro';
             <path d="M8 12h8m-4-4v8" stroke-width="2"></path>
           </svg>
         </div>
-        <h3 class="text-lg font-bold text-green-700 dark:text-green-300">Enterprise GenAI & Vector Search</h3>
-        <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+        <h3 class="text-base font-bold text-white">Enterprise GenAI & Vector Search</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">
           Building GenAI at scale: Vertex AI, secure LLMs, RAG, Pinecone, Weaviate—driving measurable business value and competitive advantage.
         </p>
       </article>
@@ -104,8 +105,8 @@ import Layout from '../layouts/Layout.astro';
             <path d="M3 10h18M4 6h16M6 18h12" stroke-width="2"></path>
           </svg>
         </div>
-        <h3 class="text-lg font-bold text-indigo-700 dark:text-indigo-300">Impact & Leadership</h3>
-        <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+        <h3 class="text-base font-bold text-white">Impact & Leadership</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">
           Trusted for cloud adoption, cost optimization, and high-SLA delivery at Quantiphi, Charles Schwab, and Fortune 500 enterprises.
         </p>
       </article>
@@ -121,19 +122,19 @@ import Layout from '../layouts/Layout.astro';
 
     <!-- CTA Section -->
     <section class="max-w-3xl w-full text-center" aria-labelledby="cta-heading">
-      <div class="card p-8 lg:p-10 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-200 dark:border-blue-700">
-        <h2 id="cta-heading" class="text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-200 mb-4">Ready to Transform Your Data Strategy?</h2>
-        <p class="text-lg text-blue-700 dark:text-blue-300 mb-6 leading-relaxed">
+      <div class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-8 shadow-[0_10px_30px_rgba(2,6,23,0.35)] md:p-10">
+        <h2 id="cta-heading" class="text-2xl font-black text-white md:text-3xl">Ready to Transform Your Data Strategy?</h2>
+        <p class="mt-4 text-sm text-slate-400 leading-relaxed">
           Let's discuss how cloud modernization and GenAI can drive measurable business impact for your organization.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <a href="/contact" 
-             class="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+             class="inline-flex items-center justify-center rounded-full bg-cyan-400 px-7 py-3 text-sm font-bold text-slate-950 transition-all duration-200 hover:bg-cyan-300"
              aria-label="Navigate to contact page">
             Get In Touch
           </a>
           <a href="/projects" 
-             class="inline-flex items-center justify-center px-8 py-3 border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+             class="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900/60 px-7 py-3 text-sm font-semibold text-slate-300 transition-all duration-200 hover:border-cyan-400/40 hover:text-cyan-100"
              aria-label="View my portfolio projects">
             View Projects
           </a>

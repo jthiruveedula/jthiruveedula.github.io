@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('homepage renders the premium hero and key sections', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: /I architect AI systems/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /COMMAND SURFACE FOR PRODUCTION AI/i })).toBeVisible();
   await expect(page.getByText(/Private LLM applications/i)).toBeVisible();
   await expect(page.getByRole('link', { name: /See the systems/i })).toBeVisible();
   await expect(page.getByRole('heading', { name: /The gap between a demo and production is/i })).toBeVisible();
