@@ -326,40 +326,34 @@ const capabilityCards = [
         <h2 class="text-4xl font-black text-white md:text-5xl">Systems expertise.</h2>
       </div>
 
-      <div class="stacking-container relative">
+      <div class="stacking-container relative" style="perspective: 1200px;">
         {capabilityCards.map(({ num, title, desc, tags, detail }, index) => (
           <article
-            class={`capability-card stack-card sticky mb-6 rounded-3xl border border-slate-700/60 bg-slate-900 p-8 md:p-10 shadow-[0_-8px_40px_rgba(0,0,0,0.6)] transform-gpu origin-top relative overflow-hidden group`}
+            class={`capability-card stack-card sticky mb-6 rounded-3xl border border-slate-700/50 bg-slate-900/80 p-8 md:p-10 shadow-[0_-8px_40px_rgba(0,0,0,0.6)] origin-top relative`}
             style={`top: ${4 + index * 1.5}rem; z-index: ${index + 10};`}
           >
-            <!-- Left accent strip -->
-            <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-500/40 via-cyan-500/30 to-transparent rounded-l-2xl" aria-hidden="true"></div>
-            <!-- Top accent line -->
-            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent"></div>
-            <!-- Hover radial glow -->
-            <div class="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-[radial-gradient(800px_circle_at_var(--mx,50%)_var(--my,0%),rgba(99,102,241,0.06),transparent_40%)]" aria-hidden="true"></div>
+            <div class="cap-card-inner will-change-transform">
+              <!-- Left accent strip -->
+              <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-500/40 via-cyan-500/25 to-transparent" aria-hidden="true"></div>
+              <!-- Top accent line -->
+              <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/25 to-transparent" aria-hidden="true"></div>
 
-            <div class="flex flex-col md:flex-row justify-between gap-8 items-start relative z-10">
-              <div class="flex-1 min-w-0">
-                <!-- Tag row -->
-                <div class="flex flex-wrap items-center gap-2 mb-5">
-                  <span class="font-mono text-[10px] tracking-widest uppercase text-indigo-400/70">{tags}</span>
+              <div class="flex flex-col md:flex-row justify-between gap-8 items-start">
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-2 mb-4">
+                    <span class="font-mono text-[10px] tracking-widest uppercase text-indigo-400/60">{tags}</span>
+                  </div>
+                  <h2 class="mb-3 text-xl md:text-2xl font-bold text-white tracking-tight">{title}</h2>
+                  <p class="text-sm text-slate-400 leading-relaxed max-w-lg">{desc}</p>
+                  <div class="mt-5 pt-4 border-t border-slate-800/40">
+                    <p class="font-mono text-xs text-slate-600 leading-relaxed">{detail}</p>
+                  </div>
                 </div>
-                <h2 class="mb-4 text-2xl md:text-3xl font-bold text-white tracking-tight group-hover:text-indigo-100 transition-colors duration-300">{title}</h2>
-                <p class="text-base text-slate-400 leading-relaxed max-w-lg">{desc}</p>
 
-                <!-- Technical depth row -->
-                <div class="mt-6 pt-4 border-t border-slate-800/60">
-                  <p class="font-mono text-xs text-slate-600 leading-relaxed">{detail}</p>
+                <div class="flex-shrink-0 w-14 h-14 rounded-2xl border border-indigo-500/15 flex items-center justify-center bg-indigo-500/5 relative">
+                  <span class="absolute -top-2 -right-2 font-mono text-[10px] uppercase tracking-[0.25em] text-amber-300/50">0{index + 1}</span>
+                  <span class="font-mono text-indigo-400/50 font-bold text-lg">{num}</span>
                 </div>
-              </div>
-
-              <!-- Numbered badge with hover glow -->
-              <div class="flex-shrink-0 w-16 h-16 rounded-2xl border border-indigo-500/20 flex items-center justify-center bg-indigo-500/5 relative group/badge">
-                <span class="absolute -top-2 -right-2 font-mono text-[11px] uppercase tracking-[0.25em] text-amber-300/60">0{index + 1}</span>
-                <div class="absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.15)_0%,transparent_70%)] group-hover/badge:opacity-60 transition-opacity duration-500"></div>
-                <div class="absolute inset-0 rounded-2xl opacity-0 group-hover/badge:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.25)_0%,transparent_70%)]"></div>
-                <span class="font-mono text-indigo-400/60 font-bold text-xl relative z-10 group-hover/badge:text-cyan-300 transition-colors duration-300">{num}</span>
               </div>
             </div>
           </article>
@@ -497,12 +491,11 @@ const capabilityCards = [
     100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
   }
 
-  .stack-card {
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  .cap-card-inner {
+    transition: box-shadow 0.35s ease;
   }
-  .stack-card:hover {
-    border-color: rgba(99,102,241,0.3);
-    box-shadow: 0 12px 48px -16px rgba(99,102,241,0.2);
+  .cap-card-inner:hover {
+    box-shadow: 0 16px 48px -20px rgba(99,102,241,0.15);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -517,24 +510,14 @@ const capabilityCards = [
       opacity: 1 !important;
       transform: none !important;
     }
-    .exp-card,
-    .capability-card,
-    .group-hover\:text-indigo-200,
-    .group-hover\/badge\:text-cyan-300 {
+    .exp-card-inner,
+    .cap-card-inner {
       transition: none !important;
     }
-    .exp-card:hover,
-    .capability-card:hover {
+    .exp-card-inner:hover,
+    .cap-card-inner:hover {
       transform: none !important;
-    }
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .exp-card {
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-    .exp-card:hover {
-      border-color: rgba(99,102,241,0.25);
-      box-shadow: 0 12px 40px -16px rgba(99,102,241,0.25);
+      box-shadow: none !important;
     }
   }
 </style>
@@ -849,15 +832,23 @@ const capabilityCards = [
     }
   });
 
-  // Mouse-follow glow on capability cards
+  // 3D tilt on capability cards
   if (!prefersReduced) {
     document.querySelectorAll('.capability-card').forEach((card) => {
+      const inner = card.querySelector('.cap-card-inner') as HTMLElement;
+      if (!inner) return;
       card.addEventListener('mousemove', (ev) => {
         const rect = card.getBoundingClientRect();
-        const mx = ((ev.clientX - rect.left) / rect.width) * 100;
-        const my = ((ev.clientY - rect.top) / rect.height) * 100;
-        card.style.setProperty('--mx', mx + '%');
-        card.style.setProperty('--my', my + '%');
+        const x = ev.clientX - rect.left;
+        const y = ev.clientY - rect.top;
+        const halfW = rect.width / 2;
+        const halfH = rect.height / 2;
+        const rotateY = ((x - halfW) / halfW) * 2;
+        const rotateX = ((halfH - y) / halfH) * 2;
+        gsap.to(inner, { rotateX, rotateY, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+      });
+      card.addEventListener('mouseleave', () => {
+        gsap.to(inner, { rotateX: 0, rotateY: 0, duration: 0.5, ease: 'power3.out' });
       });
     });
   }
