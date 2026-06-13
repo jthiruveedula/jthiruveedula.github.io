@@ -114,13 +114,7 @@ const capabilityCards = [
     <div class="container relative z-10 mx-auto px-4 md:px-6 py-24">
       <div class="mx-auto flex max-w-5xl flex-col items-start gap-6">
 
-        <!-- System badge -->
-        <div class="hero-badge inline-flex items-center gap-3 rounded-full border border-indigo-400/20 bg-slate-900/60 px-4 py-2 text-xs font-mono font-semibold tracking-[0.22em] text-indigo-300 uppercase shadow-[0_0_24px_rgba(99,102,241,0.12)] backdrop-blur-md">
-          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)] animate-pulse"></span>
-          <span id="hero-status-text">// SYSTEM_STATE: ACTIVE</span>
-        </div>
-
-        <!-- H1 — split into chars for stagger reveal -->
+        <!-- H1 — split into words for stagger reveal -->
         <h1 id="hero-headline" class="hero-title font-black tracking-tight text-white leading-[1.05]" style="font-size: clamp(3rem, 0.5rem + 7vw, 8rem);">
           COMMAND SURFACE FOR PRODUCTION AI
         </h1>
@@ -503,7 +497,6 @@ const capabilityCards = [
     .scroll-line {
       animation: none;
     }
-    .hero-badge,
     .hero-description,
     .hero-tags,
     .hero-ctas {
@@ -561,26 +554,6 @@ const capabilityCards = [
   // ─────────────────────────────────────────────────────────────────
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const status = document.getElementById('hero-status-text');
-  if (status) {
-    const phrase = '// SYSTEM_STATE: ACTIVE';
-    if (prefersReduced) {
-      status.textContent = phrase;
-    } else {
-      let i = 0;
-      const type = () => {
-        status.textContent = phrase.slice(0, i);
-        i += 1;
-        if (i <= phrase.length) {
-          setTimeout(type, 45);
-        } else {
-          status.textContent = phrase;
-        }
-      };
-      setTimeout(type, 150);
-    }
-  }
-
   if (!prefersReduced) {
 
     const heroH1 = document.getElementById('hero-headline');
@@ -595,13 +568,12 @@ const capabilityCards = [
     const tlHero = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
     // Set initial states
-    gsap.set(['.hero-badge', '.hero-description', '.hero-ctas'], { y: 18, opacity: 0 });
+    gsap.set(['.hero-description', '.hero-ctas'], { y: 18, opacity: 0 });
     gsap.set('.hero-tags',        { y: 10, opacity: 0 });
     gsap.set('.scroll-indicator', { opacity: 0 });
 
     tlHero
-      .to('.hero-badge',       { y: 0, opacity: 1, duration: 0.7, delay: 0.15 })
-      .to('.hero-description', { y: 0, opacity: 1, duration: 0.7 }, '-=0.45')
+      .to('.hero-description', { y: 0, opacity: 1, duration: 0.7 })
       .to('.hero-tags',        { y: 0, opacity: 1, duration: 0.5 }, '-=0.5')
       .to('.hero-ctas',        { y: 0, opacity: 1, duration: 0.5 }, '-=0.4')
       .to('.scroll-indicator', { opacity: 1, duration: 0.6 }, '-=0.2');
