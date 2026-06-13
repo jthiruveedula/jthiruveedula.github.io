@@ -1,5 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const workRoles = [
+  ['Data Architect','Quantiphi','Sep 2022 – Present','GCP modernization, RAG platforms, evaluation harnesses, and secure enterprise AI delivery.','GCP · GenAI · RAG · IAM','3','production GenAI systems'],
+  ['Senior Data Engineer','Charles Schwab','Nov 2021 – Sep 2022','Migrated warehouse workloads to GCP and stabilized CI/CD, observability, and performance at scale.','BigQuery · PySpark · Terraform · DevOps','$MM','cloud migration programs'],
+  ['Data Engineer','Wiley Publications','Mar 2019 – Nov 2021','Built ETL pipelines, data integration layers, and analytics workflows for publishing platforms.','ETL · Data Pipelines · Analytics','12+','enterprise pipelines'],
+];
+
+const earlyRoles = [
+  ['Software Engineer','DSOgroup TEOTYS','Aug 2018 – Mar 2019','Talend streaming jobs, CDC pipelines, and DR-ready data frameworks.','Talend · ETL · CDC','Real-time','CDC pipelines'],
+  ['Software Engineer','Innominds','Jun 2015 – Jul 2018','Warehouse and ETL design with reusable business logic and reliability improvements.','ETL · Talend · Data Quality','50+','data warehouse ETLs'],
+  ['Intern','Vizag Steel Plant','Jan 2015 – Mar 2015','SCADA and automation work for monitoring and operational troubleshooting.','IoT · Automation · Monitoring','SCADA','industrial automation'],
+];
 ---
 
 <Layout title="Experience — Jagadeesh Thiruveedula">
@@ -14,48 +26,60 @@ import Layout from '../layouts/Layout.astro';
       <section class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-6 md:p-8">
         <p class="section-eyebrow text-indigo-300">[MODULE: WORK]</p>
         <div class="mt-6">
+          <!-- Desktop timeline -->
           <div class="hidden md:flex relative">
-            <!-- Vertical timeline line -->
             <div class="absolute left-3 top-0 bottom-0 w-px bg-slate-600/30" aria-hidden="true"></div>
-            <div class="pl-10 space-y-6">
-              {[
-                ['Data Architect','Quantiphi','Sep 2022 – Present','GCP modernization, RAG platforms, evaluation harnesses, and secure enterprise AI delivery.','GCP · GenAI · RAG · IAM'],
-                ['Senior Data Engineer','Charles Schwab','Nov 2021 – Sep 2022','Migrated warehouse workloads to GCP and stabilized CI/CD, observability, and performance at scale.','BigQuery · PySpark · Terraform · DevOps'],
-                ['Data Engineer','Wiley Publications','Mar 2019 – Nov 2021','Built ETL pipelines, data integration layers, and analytics workflows for publishing platforms.','ETL · Data Pipelines · Analytics'],
-              ].map(([role, company, date, summary, chips], index) => (
-                <article class="relative rounded-2xl border border-slate-800/70 bg-slate-950/70 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)] timeline-card">
+            <div class="pl-10 space-y-6 w-full">
+              {workRoles.map(([role, company, date, summary, chips, metric, metricLabel]) => (
+                <article class="relative rounded-2xl border border-slate-800/70 bg-slate-950/70 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)] exp-card group overflow-hidden">
+                  <!-- Mouse-follow glow -->
+                  <div class="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(600px_circle_at_var(--mx,50%)_var(--my,0%),rgba(99,102,241,0.08),transparent_40%)]" aria-hidden="true"></div>
+                  <!-- Left accent strip -->
+                  <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-500/60 via-cyan-500/40 to-transparent rounded-l-2xl" aria-hidden="true"></div>
                   <!-- Timeline dot -->
-                  <div class="absolute -left-10 top-6 w-2 h-2 rounded-full bg-indigo-400/70 ring-4 ring-slate-950" aria-hidden="true"></div>
+                  <div class="absolute -left-10 top-6 w-2 h-2 rounded-full bg-indigo-400/70 ring-4 ring-slate-950 timeline-dot" aria-hidden="true"></div>
                   <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
                     <div>
-                      <h2 class="text-base font-bold text-white md:text-lg">{role}</h2>
+                      <h2 class="text-base font-bold text-white md:text-lg group-hover:text-indigo-200 transition-colors duration-300">{role}</h2>
                       <p class="text-sm text-slate-400">{company}</p>
                     </div>
                     <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{date}</span>
                   </div>
                   <p class="mt-4 text-sm text-slate-400 leading-relaxed">{summary}</p>
-                  <div class="mt-4 flex flex-wrap gap-2">{chips.split(' · ').map(tag => <span class="rounded border border-slate-700/60 bg-slate-900/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{tag}</span>)}</div>
+                  <div class="mt-4 flex flex-wrap items-center gap-2">
+                    {chips.split(' · ').map(tag => <span class="rounded border border-slate-700/60 bg-slate-900/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{tag}</span>)}
+                  </div>
+                  {metric && metricLabel && (
+                    <div class="mt-4 pt-3 border-t border-slate-800/40 flex items-baseline gap-2">
+                      <span class="font-mono text-sm font-bold text-emerald-400">{metric}</span>
+                      <span class="font-mono text-[10px] text-slate-600 uppercase tracking-wider">{metricLabel}</span>
+                    </div>
+                  )}
                 </article>
               ))}
             </div>
           </div>
-          <!-- Mobile fallback: stacked cards without line -->
+          <!-- Mobile fallback -->
           <div class="md:hidden space-y-6 border-l border-slate-800/70 pl-6">
-            {[
-              ['Data Architect','Quantiphi','Sep 2022 – Present','GCP modernization, RAG platforms, evaluation harnesses, and secure enterprise AI delivery.','GCP · GenAI · RAG · IAM'],
-              ['Senior Data Engineer','Charles Schwab','Nov 2021 – Sep 2022','Migrated warehouse workloads to GCP and stabilized CI/CD, observability, and performance at scale.','BigQuery · PySpark · Terraform · DevOps'],
-              ['Data Engineer','Wiley Publications','Mar 2019 – Nov 2021','Built ETL pipelines, data integration layers, and analytics workflows for publishing platforms.','ETL · Data Pipelines · Analytics'],
-            ].map(([role, company, date, summary, chips]) => (
-              <article class="rounded-2xl border border-slate-800/70 bg-slate-950/70 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
-                <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+            {workRoles.map(([role, company, date, summary, chips, metric, metricLabel]) => (
+              <article class="relative rounded-2xl border border-slate-800/70 bg-slate-950/70 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)] exp-card group overflow-hidden">
+                <!-- Left accent strip -->
+                <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-500/60 via-cyan-500/40 to-transparent rounded-l-2xl" aria-hidden="true"></div>
+                <div class="flex flex-col gap-2">
                   <div>
-                    <h2 class="text-base font-bold text-white md:text-lg">{role}</h2>
+                    <h2 class="text-base font-bold text-white group-hover:text-indigo-200 transition-colors duration-300">{role}</h2>
                     <p class="text-sm text-slate-400">{company}</p>
                   </div>
                   <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{date}</span>
                 </div>
                 <p class="mt-4 text-sm text-slate-400 leading-relaxed">{summary}</p>
                 <div class="mt-4 flex flex-wrap gap-2">{chips.split(' · ').map(tag => <span class="rounded border border-slate-700/60 bg-slate-900/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{tag}</span>)}</div>
+                {metric && metricLabel && (
+                  <div class="mt-4 pt-3 border-t border-slate-800/40 flex items-baseline gap-2">
+                    <span class="font-mono text-sm font-bold text-emerald-400">{metric}</span>
+                    <span class="font-mono text-[10px] text-slate-600 uppercase tracking-wider">{metricLabel}</span>
+                  </div>
+                )}
               </article>
             ))}
           </div>
@@ -65,48 +89,60 @@ import Layout from '../layouts/Layout.astro';
       <section class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-6 md:p-8">
         <p class="section-eyebrow text-cyan-300">[MODULE: EARLY CAREER]</p>
         <div class="mt-6">
+          <!-- Desktop timeline -->
           <div class="hidden md:flex relative">
-            <!-- Vertical timeline line -->
             <div class="absolute left-3 top-0 bottom-0 w-px bg-slate-600/30" aria-hidden="true"></div>
-            <div class="pl-10 space-y-6">
-              {[
-                ['Software Engineer','DSOgroup TEOTYS','Aug 2018 – Mar 2019','Talend streaming jobs, CDC pipelines, and DR-ready data frameworks.','Talend · ETL · CDC'],
-                ['Software Engineer','Innominds','Jun 2015 – Jul 2018','Warehouse and ETL design with reusable business logic and reliability improvements.','ETL · Talend · Data Quality'],
-                ['Intern','Vizag Steel Plant','Jan 2015 – Mar 2015','SCADA and automation work for monitoring and operational troubleshooting.','IoT · Automation · Monitoring'],
-              ].map(([role, company, date, summary, chips]) => (
-                <article class="relative rounded-2xl border border-slate-800/70 bg-slate-950/70 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)] timeline-card">
+            <div class="pl-10 space-y-6 w-full">
+              {earlyRoles.map(([role, company, date, summary, chips, metric, metricLabel]) => (
+                <article class="relative rounded-2xl border border-slate-800/70 bg-slate-950/70 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)] exp-card group overflow-hidden">
+                  <!-- Mouse-follow glow -->
+                  <div class="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(600px_circle_at_var(--mx,50%)_var(--my,0%),rgba(99,102,241,0.08),transparent_40%)]" aria-hidden="true"></div>
+                  <!-- Left accent strip -->
+                  <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-500/60 via-cyan-500/40 to-transparent rounded-l-2xl" aria-hidden="true"></div>
                   <!-- Timeline dot -->
-                  <div class="absolute -left-10 top-6 w-2 h-2 rounded-full bg-indigo-400/70 ring-4 ring-slate-950" aria-hidden="true"></div>
+                  <div class="absolute -left-10 top-6 w-2 h-2 rounded-full bg-indigo-400/70 ring-4 ring-slate-950 timeline-dot" aria-hidden="true"></div>
                   <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
                     <div>
-                      <h2 class="text-base font-bold text-white md:text-lg">{role}</h2>
+                      <h2 class="text-base font-bold text-white md:text-lg group-hover:text-indigo-200 transition-colors duration-300">{role}</h2>
                       <p class="text-sm text-slate-400">{company}</p>
                     </div>
                     <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{date}</span>
                   </div>
                   <p class="mt-4 text-sm text-slate-400 leading-relaxed">{summary}</p>
-                  <div class="mt-4 flex flex-wrap gap-2">{chips.split(' · ').map(tag => <span class="rounded border border-slate-700/60 bg-slate-900/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{tag}</span>)}</div>
+                  <div class="mt-4 flex flex-wrap items-center gap-2">
+                    {chips.split(' · ').map(tag => <span class="rounded border border-slate-700/60 bg-slate-900/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{tag}</span>)}
+                  </div>
+                  {metric && metricLabel && (
+                    <div class="mt-4 pt-3 border-t border-slate-800/40 flex items-baseline gap-2">
+                      <span class="font-mono text-sm font-bold text-emerald-400">{metric}</span>
+                      <span class="font-mono text-[10px] text-slate-600 uppercase tracking-wider">{metricLabel}</span>
+                    </div>
+                  )}
                 </article>
               ))}
             </div>
           </div>
-          <!-- Mobile fallback: stacked cards without line -->
+          <!-- Mobile fallback -->
           <div class="md:hidden space-y-6 border-l border-slate-800/70 pl-6">
-            {[
-              ['Software Engineer','DSOgroup TEOTYS','Aug 2018 – Mar 2019','Talend streaming jobs, CDC pipelines, and DR-ready data frameworks.','Talend · ETL · CDC'],
-              ['Software Engineer','Innominds','Jun 2015 – Jul 2018','Warehouse and ETL design with reusable business logic and reliability improvements.','ETL · Talend · Data Quality'],
-              ['Intern','Vizag Steel Plant','Jan 2015 – Mar 2015','SCADA and automation work for monitoring and operational troubleshooting.','IoT · Automation · Monitoring'],
-            ].map(([role, company, date, summary, chips]) => (
-              <article class="rounded-2xl border border-slate-800/70 bg-slate-950/70 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
-                <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+            {earlyRoles.map(([role, company, date, summary, chips, metric, metricLabel]) => (
+              <article class="relative rounded-2xl border border-slate-800/70 bg-slate-950/70 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)] exp-card group overflow-hidden">
+                <!-- Left accent strip -->
+                <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-500/60 via-cyan-500/40 to-transparent rounded-l-2xl" aria-hidden="true"></div>
+                <div class="flex flex-col gap-2">
                   <div>
-                    <h2 class="text-base font-bold text-white md:text-lg">{role}</h2>
+                    <h2 class="text-base font-bold text-white group-hover:text-indigo-200 transition-colors duration-300">{role}</h2>
                     <p class="text-sm text-slate-400">{company}</p>
                   </div>
                   <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{date}</span>
                 </div>
                 <p class="mt-4 text-sm text-slate-400 leading-relaxed">{summary}</p>
                 <div class="mt-4 flex flex-wrap gap-2">{chips.split(' · ').map(tag => <span class="rounded border border-slate-700/60 bg-slate-900/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{tag}</span>)}</div>
+                {metric && metricLabel && (
+                  <div class="mt-4 pt-3 border-t border-slate-800/40 flex items-baseline gap-2">
+                    <span class="font-mono text-sm font-bold text-emerald-400">{metric}</span>
+                    <span class="font-mono text-[10px] text-slate-600 uppercase tracking-wider">{metricLabel}</span>
+                  </div>
+                )}
               </article>
             ))}
           </div>
@@ -115,3 +151,43 @@ import Layout from '../layouts/Layout.astro';
     </section>
   </main>
 </Layout>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!prefersReduced) {
+    gsap.from('.exp-card', {
+      opacity: 0,
+      y: 30,
+      stagger: 0.12,
+      duration: 0.7,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: '.exp-card', start: 'top 80%', toggleActions: 'play none none none' },
+    });
+
+    gsap.to('.timeline-dot', {
+      boxShadow: '0 0 12px rgba(99,102,241,0.5)',
+      duration: 1.5,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+    });
+  }
+
+  if (!prefersReduced) {
+    document.querySelectorAll('.exp-card').forEach((card) => {
+      card.addEventListener('mousemove', (ev) => {
+        const rect = card.getBoundingClientRect();
+        const mx = ((ev.clientX - rect.left) / rect.width) * 100;
+        const my = ((ev.clientY - rect.top) / rect.height) * 100;
+        card.style.setProperty('--mx', mx + '%');
+        card.style.setProperty('--my', my + '%');
+      });
+    });
+  }
+</script>
