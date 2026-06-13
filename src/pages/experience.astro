@@ -33,9 +33,15 @@ const allRoles = [
 <style>
   .exp-card {
     transition: box-shadow 0.35s ease;
+    content-visibility: auto;
+    contain-intrinsic-size: 240px;
   }
   .exp-card:hover {
     box-shadow: 0 16px 48px -20px rgba(99,102,241,0.15);
+  }
+  .exp-card:focus-visible {
+    outline: 2px solid rgba(99,102,241,0.5);
+    outline-offset: 2px;
   }
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
@@ -43,6 +49,19 @@ const allRoles = [
   }
   .exp-card-header {
     animation: float 6s ease-in-out infinite;
+  }
+  @media (max-width: 767px) {
+    .exp-card {
+      content-visibility: visible;
+    }
+    .exp-card-header {
+      animation: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .exp-card { box-shadow: none !important; transition: none !important; }
+    .exp-card:hover { box-shadow: none !important; }
+    .exp-card-header { animation: none !important; }
   }
 </style>
 
@@ -53,6 +72,7 @@ const allRoles = [
   gsap.registerPlugin(ScrollTrigger);
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
   if (!prefersReduced) {
     const cards = gsap.utils.toArray<HTMLElement>('.exp-card');
@@ -92,19 +112,26 @@ const allRoles = [
     document.querySelectorAll('.exp-card').forEach((card) => {
       const inner = card.querySelector('.exp-card-inner') as HTMLElement;
       if (!inner) return;
-      card.addEventListener('mousemove', (ev) => {
-        const rect = card.getBoundingClientRect();
-        const x = ev.clientX - rect.left;
-        const y = ev.clientY - rect.top;
-        const halfW = rect.width / 2;
-        const halfH = rect.height / 2;
-        const rotateY = ((x - halfW) / halfW) * 1.5;
-        const rotateX = ((halfH - y) / halfH) * 1.5;
-        gsap.to(inner, { rotateX, rotateY, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
-      });
-      card.addEventListener('mouseleave', () => {
-        gsap.to(inner, { rotateX: 0, rotateY: 0, duration: 0.5, ease: 'power3.out' });
-      });
+
+      if (!isTouchDevice) {
+        let rafId: number | null = null;
+        card.addEventListener('mousemove', (ev) => {
+          if (rafId) cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(() => {
+            const rect = card.getBoundingClientRect();
+            const x = ev.clientX - rect.left;
+            const y = ev.clientY - rect.top;
+            const halfW = rect.width / 2;
+            const halfH = rect.height / 2;
+            const rotateY = ((x - halfW) / halfW) * 1.5;
+            const rotateX = ((halfH - y) / halfH) * 1.5;
+            gsap.to(inner, { rotateX, rotateY, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+          });
+        });
+        card.addEventListener('mouseleave', () => {
+          gsap.to(inner, { rotateX: 0, rotateY: 0, duration: 0.5, ease: 'power3.out' });
+        });
+      }
 
       card.addEventListener('mouseenter', () => {
         gsap.to(card, {
@@ -112,11 +139,9 @@ const allRoles = [
           duration: 0.4,
           ease: 'power2.out'
         });
-        gsap.to(inner, {
-          scale: 1.02,
-          duration: 0.4,
-          ease: 'power2.out'
-        });
+        if (!isTouchDevice) {
+          gsap.to(inner, { scale: 1.02, duration: 0.4, ease: 'power2.out' });
+        }
       });
 
       card.addEventListener('mouseleave', () => {
@@ -125,38 +150,40 @@ const allRoles = [
           duration: 0.4,
           ease: 'power2.out'
         });
-        gsap.to(inner, {
-          scale: 1,
-          duration: 0.4,
-          ease: 'power2.out'
-        });
+        if (!isTouchDevice) {
+          gsap.to(inner, { scale: 1, duration: 0.4, ease: 'power2.out' });
+        }
       });
     });
 
-    document.querySelectorAll('.exp-card').forEach((card) => {
+    function toggleCard(card: HTMLElement) {
       const details = card.querySelector('.exp-details') as HTMLElement;
       if (!details) return;
 
-      let isOpen = false;
-      let anim: gsap.core.Tween | null = null;
+      const isOpen = card.getAttribute('data-expanded') === 'true';
+      const newState = !isOpen;
+      card.setAttribute('data-expanded', String(newState));
+      card.setAttribute('aria-expanded', String(newState));
+      details.setAttribute('aria-hidden', String(!newState));
 
-      card.addEventListener('click', () => {
-        isOpen = !isOpen;
-        card.setAttribute('data-expanded', String(isOpen));
+      if (newState) {
+        gsap.fromTo(details,
+          { maxHeight: 0, opacity: 0 },
+          { maxHeight: details.scrollHeight, opacity: 1, duration: 0.5, ease: 'power3.inOut', overwrite: 'auto' }
+        );
+      } else {
+        gsap.to(details,
+          { maxHeight: 0, opacity: 0, duration: 0.4, ease: 'power3.inOut', overwrite: 'auto' }
+        );
+      }
+    }
 
-        if (anim) {
-          anim.kill();
-        }
-
-        if (isOpen) {
-          anim = gsap.fromTo(details,
-            { maxHeight: 0, opacity: 0 },
-            { maxHeight: details.scrollHeight, opacity: 1, duration: 0.5, ease: 'power3.inOut', overwrite: 'auto' }
-          );
-        } else {
-          anim = gsap.to(details,
-            { maxHeight: 0, opacity: 0, duration: 0.4, ease: 'power3.inOut', overwrite: 'auto' }
-          );
+    document.querySelectorAll('.exp-card').forEach((card) => {
+      card.addEventListener('click', () => toggleCard(card));
+      card.addEventListener('keydown', (ev: KeyboardEvent) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          toggleCard(card);
         }
       });
     });
@@ -207,17 +234,19 @@ const allRoles = [
       }
     });
 
-    const particles = document.querySelectorAll('.particle');
-    particles.forEach(particle => {
-      gsap.to(particle, {
-        y: -20,
-        x: gsap.utils.random(-10, 10),
-        opacity: 0,
-        duration: gsap.utils.random(2, 4),
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut'
+    if (!isTouchDevice) {
+      const particles = document.querySelectorAll('.particle');
+      particles.forEach(particle => {
+        gsap.to(particle, {
+          y: -20,
+          x: gsap.utils.random(-10, 10),
+          opacity: 0,
+          duration: gsap.utils.random(2, 4),
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut'
+        });
       });
-    });
+    }
   }
 </script>
