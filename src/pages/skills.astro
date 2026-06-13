@@ -165,10 +165,9 @@ const stackTags = ['GCP','BigQuery','Dataflow','Vertex AI','GenAI','RAG','Python
       });
     });
 
-    // ── Tile entrance (translate, no opacity) ──
+    // ── Tile entrance (position only, always visible) ──
     gsap.from('.skill-tile', {
-      x: -10,
-      opacity: 0.6,
+      y: 8,
       stagger: 0.035,
       duration: 0.45,
       ease: 'power2.out',
@@ -181,7 +180,6 @@ const stackTags = ['GCP','BigQuery','Dataflow','Vertex AI','GenAI','RAG','Python
 
     // ── Cert cards ──
     gsap.from('.cert-card', {
-      opacity: 0,
       y: 12,
       stagger: 0.06,
       duration: 0.4,
@@ -191,8 +189,7 @@ const stackTags = ['GCP','BigQuery','Dataflow','Vertex AI','GenAI','RAG','Python
 
     // ── Stack tags ──
     gsap.from('.stack-tag', {
-      opacity: 0,
-      scale: 0.7,
+      scale: 0.8,
       stagger: 0.025,
       duration: 0.3,
       ease: 'back.out(1.7)',
