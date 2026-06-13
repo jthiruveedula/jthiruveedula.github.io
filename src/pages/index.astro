@@ -69,6 +69,18 @@ const pipelineStages = [
   { num: '05', name: 'Serve',     desc: 'Low-latency inference with policy-aware grounding and guardrails.',  tech: ['Cloud Run', 'CDN'],                         color: '#34d399' },
 ];
 
+// Helper to map metric values to bar widths
+function getBarWidth(metric: string): number {
+  const cleaned = metric.replace(/[<>\s]/g, '');
+  const num = parseFloat(cleaned);
+  if (isNaN(num)) return 50;
+  if (metric.includes('%')) return Math.min(num, 100);
+  if (metric.includes('×')) return Math.min(num * 20, 92);
+  if (metric.includes('ms') || metric.includes('s')) return metric.includes('<') ? 80 : 70;
+  if (num === 0) return 2;
+  return 50;
+}
+
 // Capability cards
 const capabilityCards = [
   {
@@ -158,146 +170,186 @@ const capabilityCards = [
        §2 · TENSION — The Governance Problem (sticky scroll)
   ═══════════════════════════════════════════════════════════════ -->
   <section class="complexity-section relative bg-slate-950" style="height: 200vh;">
-    <div class="sticky top-0 h-screen flex items-center overflow-hidden border-t border-slate-800/40">
+    <div class="sticky top-0 h-screen flex items-center justify-center overflow-hidden border-t border-slate-800/40">
 
       <!-- Section dissolve transition zone from hero -->
-      <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-slate-950 to-transparent z-10 pointer-events-none"></div>
+      <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-slate-950 to-transparent z-20 pointer-events-none"></div>
 
-      <div class="container mx-auto px-4 md:px-6 grid md:grid-cols-2 gap-12 items-center">
-        <!-- Copy -->
-        <div class="max-w-xl z-10">
+      <!-- Full-bleed SVG background -->
+      <div class="absolute inset-0 flex items-center justify-center tension-viz" aria-hidden="true">
+        <svg class="tension-svg w-full h-full max-w-[95vw] max-h-[90vh]" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="node-glow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="pulse-glow">
+              <feGaussianBlur stdDeviation="4" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <marker id="arrow-clean" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0.5 L0,5.5 L5,3 z" fill="#34d399"/>
+            </marker>
+            <marker id="arrow-chaos" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0.5 L0,5.5 L5,3 z" fill="#f59e0b"/>
+            </marker>
+            <linearGradient id="energy-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#34d399" stop-opacity="0"/>
+              <stop offset="50%" stop-color="#34d399" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Grid background -->
+          <g class="tension-grid" opacity="0.06">
+            <line x1="0" y1="50" x2="800" y2="50" stroke="#475569" stroke-width="0.4"/>
+            <line x1="0" y1="100" x2="800" y2="100" stroke="#475569" stroke-width="0.4"/>
+            <line x1="0" y1="150" x2="800" y2="150" stroke="#475569" stroke-width="0.4"/>
+            <line x1="0" y1="200" x2="800" y2="200" stroke="#475569" stroke-width="0.4"/>
+            <line x1="0" y1="250" x2="800" y2="250" stroke="#475569" stroke-width="0.4"/>
+            <line x1="0" y1="300" x2="800" y2="300" stroke="#475569" stroke-width="0.4"/>
+            <line x1="0" y1="350" x2="800" y2="350" stroke="#475569" stroke-width="0.4"/>
+            <line x1="0" y1="400" x2="800" y2="400" stroke="#475569" stroke-width="0.4"/>
+            <line x1="0" y1="450" x2="800" y2="450" stroke="#475569" stroke-width="0.4"/>
+            <line x1="60" y1="0" x2="60" y2="500" stroke="#475569" stroke-width="0.4"/>
+            <line x1="120" y1="0" x2="120" y2="500" stroke="#475569" stroke-width="0.4"/>
+            <line x1="180" y1="0" x2="180" y2="500" stroke="#475569" stroke-width="0.4"/>
+            <line x1="240" y1="0" x2="240" y2="500" stroke="#475569" stroke-width="0.4"/>
+            <line x1="300" y1="0" x2="300" y2="500" stroke="#475569" stroke-width="0.4"/>
+            <line x1="360" y1="0" x2="360" y2="500" stroke="#475569" stroke-width="0.4"/>
+            <line x1="420" y1="0" x2="420" y2="500" stroke="#475569" stroke-width="0.4"/>
+            <line x1="480" y1="0" x2="480" y2="500" stroke="#475569" stroke-width="0.4"/>
+            <line x1="540" y1="0" x2="540" y2="500" stroke="#475569" stroke-width="0.4"/>
+            <line x1="600" y1="0" x2="600" y2="500" stroke="#475569" stroke-width="0.4"/>
+            <line x1="660" y1="0" x2="660" y2="500" stroke="#475569" stroke-width="0.4"/>
+            <line x1="720" y1="0" x2="720" y2="500" stroke="#475569" stroke-width="0.4"/>
+          </g>
+
+          <!-- Grid row highlights (light up during governance phase) -->
+          <g class="grid-highlights" opacity="0">
+            <rect class="grid-hl" x="300" y="148" width="200" height="4" rx="2" fill="#6366f1" opacity="0"/>
+            <rect class="grid-hl" x="300" y="198" width="200" height="4" rx="2" fill="#6366f1" opacity="0"/>
+            <rect class="grid-hl" x="300" y="248" width="200" height="4" rx="2" fill="#6366f1" opacity="0"/>
+          </g>
+
+          <!-- Source nodes (left) with pulse rings -->
+          <g class="tension-sources">
+            <circle class="source-pulse-ring" cx="60" cy="90"  r="28" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0"/>
+            <circle class="source-node" cx="60" cy="90"  r="22" fill="#0f172a" stroke="#f59e0b" stroke-width="1.8"/>
+            <text x="60" y="95" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#fbbf24" font-weight="bold">API</text>
+            <circle class="source-pulse-ring" cx="60" cy="250" r="28" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0"/>
+            <circle class="source-node" cx="60" cy="250" r="22" fill="#0f172a" stroke="#f59e0b" stroke-width="1.8"/>
+            <text x="60" y="255" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#fbbf24" font-weight="bold">DB</text>
+            <circle class="source-pulse-ring" cx="60" cy="410" r="28" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0"/>
+            <circle class="source-node" cx="60" cy="410" r="22" fill="#0f172a" stroke="#f59e0b" stroke-width="1.8"/>
+            <text x="60" y="415" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#fbbf24" font-weight="bold">DOCS</text>
+          </g>
+
+          <!-- Data packet dots (chaos phase — scattered) -->
+          <g class="chaos-dots" opacity="0">
+            <circle class="chaos-dot" cx="230" cy="160" r="4" fill="#f59e0b" opacity="0.9"/>
+            <circle class="chaos-dot" cx="370" cy="100" r="3" fill="#f59e0b" opacity="0.6"/>
+            <circle class="chaos-dot" cx="500" cy="380" r="4" fill="#f59e0b" opacity="0.7"/>
+            <circle class="chaos-dot" cx="310" cy="420" r="3" fill="#f59e0b" opacity="0.5"/>
+            <circle class="chaos-dot" cx="550" cy="150" r="3.5" fill="#f59e0b" opacity="0.6"/>
+            <circle class="chaos-dot" cx="180" cy="320" r="3" fill="#f59e0b" opacity="0.7"/>
+            <circle class="chaos-dot" cx="440" cy="280" r="4" fill="#f59e0b" opacity="0.5"/>
+            <circle class="chaos-dot" cx="280" cy="60" r="3" fill="#f59e0b" opacity="0.8"/>
+          </g>
+
+          <!-- Target node (right) with pulse ring -->
+          <g class="tension-target">
+            <circle class="target-pulse-ring" cx="740" cy="250" r="40" fill="none" stroke="#34d399" stroke-width="0.6" opacity="0" filter="url(#pulse-glow)"/>
+            <circle cx="740" cy="250" r="30" fill="#0f172a" stroke="#34d399" stroke-width="1.8" filter="url(#node-glow)"/>
+            <text x="740" y="244" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#34d399" font-weight="bold">AI</text>
+            <text x="740" y="260" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#34d399" font-weight="bold">SYS</text>
+          </g>
+
+          <!-- CHAOS PATHS (amber, phase 1) -->
+          <g class="chaos-paths">
+            <path class="chaos-p" d="M82,90  C220,400 380,20  520,380 S660,140 710,250" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="1000" stroke-dashoffset="1000" opacity="0.7" stroke-linecap="round" marker-end="url(#arrow-chaos)"/>
+            <path class="chaos-p" d="M82,250 C180,440 400,30  580,460 S680,180 710,250" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="1000" stroke-dashoffset="1000" opacity="0.6" stroke-linecap="round" marker-end="url(#arrow-chaos)"/>
+            <path class="chaos-p" d="M82,410 C140,30  460,490 580,60  S700,320 710,250" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="1000" stroke-dashoffset="1000" opacity="0.65" stroke-linecap="round" marker-end="url(#arrow-chaos)"/>
+          </g>
+
+          <!-- GOVERNANCE LAYER (phase 2) -->
+          <g class="gov-layer" opacity="0">
+            <rect class="gov-glow" x="280" y="148" width="180" height="204" rx="16" fill="#6366f1" opacity="0"/>
+            <rect x="295" y="163" width="150" height="174" rx="10" fill="#0f172a" stroke="#6366f1" stroke-width="1.8"/>
+            <text x="370" y="220" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#818cf8" letter-spacing="3" font-weight="bold">POLICY</text>
+            <text x="370" y="240" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#6366f1" letter-spacing="3" font-weight="bold">LAYER</text>
+            <line x1="315" y1="256" x2="425" y2="256" stroke="#6366f1" stroke-width="0.6" opacity="0.5"/>
+            <text x="370" y="276" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#475569">eval · guard · rollback</text>
+            <!-- Governance particles -->
+            <circle class="gov-particle" cx="290" cy="170" r="2" fill="#818cf8" opacity="0"/>
+            <circle class="gov-particle" cx="450" cy="200" r="1.5" fill="#818cf8" opacity="0"/>
+            <circle class="gov-particle" cx="310" cy="330" r="2" fill="#818cf8" opacity="0"/>
+            <circle class="gov-particle" cx="440" cy="310" r="1.5" fill="#818cf8" opacity="0"/>
+            <circle class="gov-particle" cx="370" cy="150" r="2" fill="#818cf8" opacity="0"/>
+            <!-- Scanning line -->
+            <rect class="gov-scan-line" x="295" y="163" width="150" height="2" fill="#818cf8" opacity="0" filter="url(#pulse-glow)"/>
+          </g>
+
+          <!-- CLEAN PATHS (phase 3, emerald) -->
+          <g class="clean-paths" opacity="0">
+            <path class="clean-p" d="M82,90  Q190,90  295,230 L445,230 Q570,230 710,250" fill="none" stroke="#34d399" stroke-width="2.2" stroke-dasharray="700" stroke-dashoffset="700" stroke-linecap="round" marker-end="url(#arrow-clean)"/>
+            <path class="clean-p" d="M82,250 L295,250 L445,250 L710,250" fill="none" stroke="#34d399" stroke-width="2.2" stroke-dasharray="700" stroke-dashoffset="700" stroke-linecap="round" marker-end="url(#arrow-clean)"/>
+            <path class="clean-p" d="M82,410 Q190,410 295,270 L445,270 Q570,270 710,250" fill="none" stroke="#34d399" stroke-width="2.2" stroke-dasharray="700" stroke-dashoffset="700" stroke-linecap="round" marker-end="url(#arrow-clean)"/>
+            <circle class="clean-data-dot" cx="190" cy="120" r="4" fill="#34d399" opacity="0"/>
+            <circle class="clean-data-dot" cx="370" cy="245" r="4" fill="#34d399" opacity="0"/>
+            <circle class="clean-data-dot" cx="570" cy="250" r="4" fill="#34d399" opacity="0"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Compact copy overlay card -->
+      <div class="relative z-10 w-full container mx-auto px-4 md:px-6">
+        <div class="max-w-sm ml-0 md:ml-6 p-4 md:p-5 rounded-2xl border border-slate-800/40 bg-slate-950/70 backdrop-blur-md shadow-xl">
           <p class="section-eyebrow text-amber-400/80">TENSION</p>
-          <h2 class="text-2xl md:text-3xl font-bold text-white leading-snug complexity-text">
+          <h2 class="text-lg md:text-xl font-bold text-white leading-snug complexity-text">
             The gap between a demo and production is <em class="not-italic text-slate-400">governance.</em>
           </h2>
-          <p class="mt-4 text-sm text-slate-400 leading-relaxed max-w-md complexity-subtext">
-            Enterprise data is messy. APIs are unpredictable. Without orchestration, AI is just a parlor trick. I bring the discipline of data architecture to generative models.
+          <p class="mt-2 text-xs md:text-sm text-slate-400 leading-relaxed complexity-subtext">
+            Enterprise data is messy. APIs are unpredictable. Without orchestration, AI is just a parlor trick.
           </p>
           <!-- Phase indicator -->
-          <div class="mt-8 flex items-center gap-3 phase-indicator opacity-0">
-            <div class="h-px w-8 bg-emerald-500"></div>
-            <span class="font-mono text-xs text-emerald-400 tracking-widest uppercase">Governance applied</span>
+          <div class="mt-4 flex items-center gap-2 phase-indicator opacity-0">
+            <div class="h-px w-6 bg-emerald-500"></div>
+            <span class="font-mono text-[11px] text-emerald-400 tracking-widest uppercase">Governance applied</span>
           </div>
-        </div>
-
-        <!-- Label + Governance narrative SVG visualization -->
-        <div class="flex flex-col items-center gap-3">
-          <div class="flex items-center gap-8 font-mono text-[10px] uppercase tracking-[0.2em]">
-            <span class="text-amber-500/50">Demo</span>
-            <span class="w-16 h-px bg-slate-700/40"></span>
-            <span class="text-emerald-400/50">Production</span>
+          <!-- Demo vs Production diagram -->
+          <div class="tension-diagram mt-4 flex flex-col gap-2 opacity-0 translate-y-4">
+            <span class="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-600">Architecture Gap</span>
+            <div class="flex items-center gap-2">
+              <div class="demo-box flex-1 rounded-lg border border-amber-500/20 bg-amber-500/5 p-1.5 md:p-2 text-center">
+                <span class="font-mono text-[9px] uppercase tracking-widest text-amber-400/60">DEMO</span>
+                <div class="mt-1 mx-auto w-10 h-6 rounded border border-amber-500/30 bg-amber-500/10 flex items-center justify-center">
+                  <span class="font-mono text-[7px] text-amber-300/80">LLM</span>
+                </div>
+              </div>
+              <div class="demo-prod-arrow shrink-0 flex items-center">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.5" class="opacity-40">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+              <div class="prod-box flex-[1.5] rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-1.5 md:p-2">
+                <span class="font-mono text-[9px] uppercase tracking-widest text-emerald-400/60 text-center block">PRODUCTION</span>
+                <div class="mt-1 flex items-center justify-center gap-0.5">
+                  <div class="w-7 h-5 rounded border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center">
+                    <span class="font-mono text-[6px] text-emerald-300/80">LLM</span>
+                  </div>
+                  <div class="w-7 h-5 rounded border border-cyan-500/30 bg-cyan-500/10 flex items-center justify-center">
+                    <span class="font-mono text-[6px] text-cyan-300/80">DATA</span>
+                  </div>
+                  <div class="w-7 h-5 rounded border border-indigo-500/30 bg-indigo-500/10 flex items-center justify-center">
+                    <span class="font-mono text-[6px] text-indigo-300/80">POL</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="relative h-[340px] w-full flex items-center justify-center tension-viz" aria-hidden="true">
-          <svg class="tension-svg w-full max-w-[520px]" viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <filter id="node-glow">
-                <feGaussianBlur stdDeviation="3" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-              <filter id="pulse-glow">
-                <feGaussianBlur stdDeviation="4" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-              <marker id="arrow-clean" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0.5 L0,5.5 L5,3 z" fill="#34d399"/>
-              </marker>
-              <marker id="arrow-chaos" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0.5 L0,5.5 L5,3 z" fill="#f59e0b"/>
-              </marker>
-            </defs>
-
-            <!-- Grid background -->
-            <g class="tension-grid" opacity="0.08">
-              <line x1="0" y1="38" x2="520" y2="38" stroke="#475569" stroke-width="0.3"/>
-              <line x1="0" y1="76" x2="520" y2="76" stroke="#475569" stroke-width="0.3"/>
-              <line x1="0" y1="114" x2="520" y2="114" stroke="#475569" stroke-width="0.3"/>
-              <line x1="0" y1="152" x2="520" y2="152" stroke="#475569" stroke-width="0.3"/>
-              <line x1="0" y1="190" x2="520" y2="190" stroke="#475569" stroke-width="0.3"/>
-              <line x1="0" y1="228" x2="520" y2="228" stroke="#475569" stroke-width="0.3"/>
-              <line x1="0" y1="266" x2="520" y2="266" stroke="#475569" stroke-width="0.3"/>
-              <line x1="0" y1="304" x2="520" y2="304" stroke="#475569" stroke-width="0.3"/>
-              <line x1="0" y1="342" x2="520" y2="342" stroke="#475569" stroke-width="0.3"/>
-              <line x1="40" y1="0" x2="40" y2="380" stroke="#475569" stroke-width="0.3"/>
-              <line x1="80" y1="0" x2="80" y2="380" stroke="#475569" stroke-width="0.3"/>
-              <line x1="120" y1="0" x2="120" y2="380" stroke="#475569" stroke-width="0.3"/>
-              <line x1="160" y1="0" x2="160" y2="380" stroke="#475569" stroke-width="0.3"/>
-              <line x1="200" y1="0" x2="200" y2="380" stroke="#475569" stroke-width="0.3"/>
-              <line x1="240" y1="0" x2="240" y2="380" stroke="#475569" stroke-width="0.3"/>
-              <line x1="280" y1="0" x2="280" y2="380" stroke="#475569" stroke-width="0.3"/>
-              <line x1="320" y1="0" x2="320" y2="380" stroke="#475569" stroke-width="0.3"/>
-              <line x1="360" y1="0" x2="360" y2="380" stroke="#475569" stroke-width="0.3"/>
-              <line x1="400" y1="0" x2="400" y2="380" stroke="#475569" stroke-width="0.3"/>
-              <line x1="440" y1="0" x2="440" y2="380" stroke="#475569" stroke-width="0.3"/>
-              <line x1="480" y1="0" x2="480" y2="380" stroke="#475569" stroke-width="0.3"/>
-            </g>
-
-            <!-- Source nodes (left) with pulse rings -->
-            <g class="tension-sources">
-              <circle class="source-pulse-ring" cx="44" cy="80"  r="24" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0"/>
-              <circle class="source-node" cx="44" cy="80"  r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
-              <text x="44" y="84"  text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#fbbf24">API</text>
-              <circle class="source-pulse-ring" cx="44" cy="190" r="24" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0"/>
-              <circle class="source-node" cx="44" cy="190" r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
-              <text x="44" y="194" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#fbbf24">DB</text>
-              <circle class="source-pulse-ring" cx="44" cy="300" r="24" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0"/>
-              <circle class="source-node" cx="44" cy="300" r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
-              <text x="44" y="304" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#fbbf24">DOCS</text>
-            </g>
-
-            <!-- Data packet dots (chaos phase) -->
-            <g class="chaos-dots" opacity="0">
-              <circle cx="160" cy="180" r="3" fill="#f59e0b" opacity="0.8"/>
-              <circle cx="260" cy="140" r="3" fill="#f59e0b" opacity="0.6"/>
-              <circle cx="360" cy="280" r="3" fill="#f59e0b" opacity="0.7"/>
-              <circle cx="200" cy="320" r="3" fill="#f59e0b" opacity="0.5"/>
-              <circle cx="380" cy="100" r="3" fill="#f59e0b" opacity="0.6"/>
-            </g>
-
-            <!-- Target node (right) with pulse ring -->
-            <g class="tension-target">
-              <circle class="target-pulse-ring" cx="476" cy="190" r="34" fill="none" stroke="#34d399" stroke-width="0.6" opacity="0" filter="url(#pulse-glow)"/>
-              <circle cx="476" cy="190" r="26" fill="#0f172a" stroke="#34d399" stroke-width="1.5" filter="url(#node-glow)"/>
-              <text x="476" y="186" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#34d399">AI</text>
-              <text x="476" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#34d399">SYS</text>
-            </g>
-
-            <!-- CHAOS PATHS (amber, visible in phase 1) -->
-            <g class="chaos-paths">
-              <path class="chaos-p" d="M64,80  C160,360 240,10  360,310 S465,140 452,190" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="800" stroke-dashoffset="800" opacity="0.7" stroke-linecap="round" marker-end="url(#arrow-chaos)"/>
-              <path class="chaos-p" d="M64,190 C110,340 290,20  390,330 S458,150 452,190" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="800" stroke-dashoffset="800" opacity="0.6" stroke-linecap="round" marker-end="url(#arrow-chaos)"/>
-              <path class="chaos-p" d="M64,300 C90,20  320,370 380,50  S468,260 452,190" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="800" stroke-dashoffset="800" opacity="0.65" stroke-linecap="round" marker-end="url(#arrow-chaos)"/>
-            </g>
-
-            <!-- GOVERNANCE LAYER (hidden → phase 2) -->
-            <g class="gov-layer" opacity="0">
-              <rect class="gov-glow" x="180" y="113" width="160" height="154" rx="12" fill="#6366f1" opacity="0"/>
-              <rect x="195" y="128" width="130" height="124" rx="8" fill="#0f172a" stroke="#6366f1" stroke-width="1.5"/>
-              <text x="260" y="180" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#818cf8" letter-spacing="2">POLICY</text>
-              <text x="260" y="196" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6366f1" letter-spacing="2">LAYER</text>
-              <line x1="210" y1="208" x2="310" y2="208" stroke="#6366f1" stroke-width="0.5" opacity="0.5"/>
-              <text x="260" y="222" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#475569">eval · guard · rollback</text>
-              <!-- Governance particles -->
-              <circle class="gov-particle" cx="190" cy="140" r="1.5" fill="#818cf8" opacity="0"/>
-              <circle class="gov-particle" cx="330" cy="160" r="1" fill="#818cf8" opacity="0"/>
-              <circle class="gov-particle" cx="210" cy="250" r="1.5" fill="#818cf8" opacity="0"/>
-              <circle class="gov-particle" cx="320" cy="240" r="1" fill="#818cf8" opacity="0"/>
-              <circle class="gov-particle" cx="260" cy="120" r="1.5" fill="#818cf8" opacity="0"/>
-            </g>
-
-            <!-- CLEAN PATHS (hidden → phase 3, emerald, draw in) -->
-            <g class="clean-paths" opacity="0">
-              <path class="clean-p" d="M64,80  Q130,80  195,155 L325,170 Q410,180 452,190" fill="none" stroke="#34d399" stroke-width="1.8" stroke-dasharray="500" stroke-dashoffset="500" stroke-linecap="round" marker-end="url(#arrow-clean)"/>
-              <path class="clean-p" d="M64,190 L195,190 L325,190 Q410,190 452,190"           fill="none" stroke="#34d399" stroke-width="1.8" stroke-dasharray="500" stroke-dashoffset="500" stroke-linecap="round" marker-end="url(#arrow-clean)"/>
-              <path class="clean-p" d="M64,300 Q130,300 195,225 L325,210 Q410,200 452,190"   fill="none" stroke="#34d399" stroke-width="1.8" stroke-dasharray="500" stroke-dashoffset="500" stroke-linecap="round" marker-end="url(#arrow-clean)"/>
-              <!-- Data packet dots (clean phase) -->
-              <circle class="clean-data-dot" cx="150" cy="90" r="3" fill="#34d399" opacity="0"/>
-              <circle class="clean-data-dot" cx="260" cy="185" r="3" fill="#34d399" opacity="0"/>
-              <circle class="clean-data-dot" cx="370" cy="190" r="3" fill="#34d399" opacity="0"/>
-            </g>
-          </svg>
         </div>
       </div>
-    </div>
     </div>
   </section>
 
@@ -326,15 +378,30 @@ const capabilityCards = [
       </div>
 
       <!-- Pipeline card grid -->
-      <div class="pipeline-container relative">
-        <!-- Desktop connector line (behind cards) -->
-        <div class="hidden md:block absolute top-[4.5rem] left-[10%] right-[10%] h-px bg-slate-800 z-0">
+      <div class="pipeline-container relative md:flex md:gap-6 md:items-start">
+        <!-- Desktop vertical rail (hidden mobile) -->
+        <div class="pipeline-rail hidden md:flex flex-col items-center w-6 flex-shrink-0 relative pt-4" style="min-height: 360px;">
+          <div class="absolute top-0 bottom-0 left-1/2 w-px bg-slate-800 -translate-x-1/2 overflow-hidden">
+            <div class="rail-fill-line absolute top-0 left-0 w-full bg-gradient-to-b from-indigo-500 via-cyan-400 to-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.3)]" style="height: 0%"></div>
+          </div>
+          <div class="relative flex flex-col justify-between flex-1 w-full py-1">
+            {pipelineStages.map((stage, index) => (
+              <div class="rail-node flex items-center gap-2 relative" style="z-index: 2;">
+                <div class={`rail-dot w-3 h-3 rounded-full border-2 border-slate-700 bg-slate-900 transition-all duration-500 rail-dot-${index}`}></div>
+                <span class="font-mono text-[10px] text-slate-600">{stage.num}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Desktop connector line (behind cards, kept for desktop) -->
+        <div class="hidden md:block absolute top-[4.5rem] left-[10%] right-[10%] h-px bg-slate-800 z-0 pointer-events-none">
           <div class="pipeline-progress-line h-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)] w-0"></div>
         </div>
 
-        <div class="grid gap-4 md:grid-cols-5 relative">
+        <div class="grid gap-4 md:grid-cols-5 relative flex-1">
           {pipelineStages.map((stage, index) => (
-            <div class={`pipeline-step step-${index} relative z-10 flex flex-col gap-4 opacity-0 translate-y-4`} style={`will-change:transform;`}>
+            <div class={`pipeline-step step-${index} relative z-10 flex flex-col gap-4 opacity-0`} style={`will-change:transform; --step-offset: ${index % 2 === 0 ? -18 : 18}; transform: translateX(var(--step-offset)px)`}>
               <!-- Card -->
               <div class="rounded-2xl border border-slate-700/60 bg-slate-950/70 backdrop-blur-sm p-4 flex flex-col gap-2 h-full hover:border-opacity-100 transition-colors duration-300 group"
                    style={`--step-color: ${stage.color};`}>
@@ -400,16 +467,31 @@ const capabilityCards = [
                   </div>
                 </div>
 
-                <div class="flex-shrink-0 w-12 h-12 rounded-xl border border-indigo-500/15 flex items-center justify-center bg-indigo-500/5 relative">
+                <div class="cap-icon-wrap flex-shrink-0 w-12 h-12 rounded-xl border border-indigo-500/15 flex items-center justify-center bg-indigo-500/5 relative transition-all duration-300">
                   <span class="absolute -top-2 -right-2 font-mono text-[10px] uppercase tracking-[0.25em] text-amber-300/50">0{index + 1}</span>
                   {index === 0 && (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M8 10h8M8 14h6"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="cap-icon">
+                      <path d="M12 2L3 7v6c0 5.25 3.83 10.15 9 11 5.17-.85 9-5.75 9-11V7l-9-5z"/>
+                      <path d="M8 12l2 2 4-4"/>
+                    </svg>
                   )}
                   {index === 1 && (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.5"><path d="M4 7a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7z"/><path d="M14 2v4M10 2v4M4 12h16"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="cap-icon">
+                      <path d="M4 7a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V7z"/>
+                      <path d="M4 15a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"/>
+                      <circle cx="17" cy="9" r="3" stroke="#22d3ee" stroke-width="1.2"/>
+                      <path d="M19 11l2 2" stroke="#22d3ee" stroke-width="1.2"/>
+                    </svg>
                   )}
                   {index === 2 && (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v7M12 15v7M2 12h7M15 12h7"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="cap-icon">
+                      <circle cx="7" cy="7" r="3"/>
+                      <circle cx="17" cy="7" r="3"/>
+                      <circle cx="12" cy="17" r="3"/>
+                      <path d="M9 9l1 5"/>
+                      <path d="M15 9l-1 5"/>
+                      <path d="M12 14v0"/>
+                    </svg>
                   )}
                 </div>
               </div>
@@ -469,8 +551,8 @@ const capabilityCards = [
             <!-- Metric with micro bar -->
             <div class="pt-3 border-t border-slate-800/60">
               <div class="relative">
-                <div class="metric-bar-bg absolute -bottom-0.5 left-0 right-0 h-[3px] bg-slate-800/60 rounded-full overflow-hidden">
-                  <div class="metric-bar-fill h-full bg-gradient-to-r from-emerald-500/30 to-cyan-400/30 rounded-full" style="width:0%"></div>
+                <div class="metric-bar-bg absolute -bottom-0 left-0 right-0 h-[2px] bg-slate-800/60 rounded-full overflow-hidden">
+                  <div class="metric-bar-fill h-full bg-gradient-to-r from-emerald-500/40 to-cyan-400/40 rounded-full" style={`--bar-w: ${getBarWidth(metric)}; width: 0%`}></div>
                 </div>
                 <div class="relative flex items-baseline gap-2">
                   <span class="metric-value font-mono text-base font-semibold text-emerald-400 proof-metric" data-value="{metric}">{metric}</span>
@@ -563,7 +645,18 @@ const capabilityCards = [
     box-shadow: 0 16px 48px -20px rgba(99,102,241,0.15);
   }
 
-  @media (prefers-reduced-motion: reduce) {
+  .cap-icon-wrap {
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+  .capability-card:hover .cap-icon-wrap {
+    transform: translateY(-2px);
+    border-color: rgba(129,140,248,0.35);
+  }
+  .capability-card:hover .cap-icon {
+    stroke: #a5b4fc;
+  }
+
+    @media (prefers-reduced-motion: reduce) {
     .pulse-ring,
     .scroll-line {
       animation: none;
@@ -584,8 +677,23 @@ const capabilityCards = [
       transform: none !important;
       box-shadow: none !important;
     }
-    .metric-bar-fill { width: 0 !important; }
+    .metric-bar-fill { width: calc(var(--bar-w, 0) * 1%) !important; }
+    .rail-fill-line { height: 100% !important; }
+    .pipeline-step { opacity: 1 !important; transform: none !important; }
+    .tension-diagram { opacity: 1 !important; transform: none !important; }
+    .demo-box, .prod-box, .demo-prod-arrow { opacity: 1 !important; transform: none !important; }
+    .phase-indicator { opacity: 1 !important; }
     .session-step { opacity: 1 !important; transform: none !important; }
+    /* TENSION SVG final state (resolution) for reduced motion */
+    .chaos-paths, .chaos-dots, .source-pulse-ring { opacity: 0 !important; }
+    .gov-layer, .clean-paths { opacity: 1 !important; }
+    .clean-p { stroke-dashoffset: 0 !important; }
+    .clean-data-dot { opacity: 1 !important; }
+    .source-node { stroke: #34d399 !important; }
+    .tension-sources text { fill: #34d399 !important; }
+    .target-pulse-ring { opacity: 0.4 !important; }
+    .gov-scan-line, .grid-highlights { opacity: 0 !important; }
+    .gov-glow { opacity: 0.08 !important; }
   }
 </style>
 
@@ -691,80 +799,192 @@ const capabilityCards = [
 
 
   // ─────────────────────────────────────────────────────────────────
-  // §2 · TENSION — 3-phase chaos → governance animation
+  // §2 · TENSION — 3-phase cinematic (chaos → governance → resolution)
   // ─────────────────────────────────────────────────────────────────
   const tlTension = gsap.timeline({
     scrollTrigger: {
       trigger: '.complexity-section',
       start: 'top top',
       end: 'bottom bottom',
-      scrub: 1.5,
+      scrub: 1.8,
       invalidateOnRefresh: true,
     }
   });
 
-  // Phase 1 (0 → 0.38): draw chaos paths, pulse sources, scatter dots
+  // ── PHASE 1: CHAOS (0.00 → 0.35) ──
+  // Chaos paths whip-draw with dramatic spring-back
   tlTension.to('.chaos-p', {
     strokeDashoffset: 0,
-    stagger: 0.06,
-    duration: 0.38,
-    ease: 'power2.inOut',
+    stagger: 0.08,
+    duration: 0.35,
+    ease: 'back.out(3)',
   }, 0);
 
+  // Source pulse rings expand with heartbeat stagger
   tlTension.to('.source-pulse-ring', {
-    opacity: 0.5,
-    scale: 1.3,
+    opacity: 0.6,
+    scale: 1.35,
     transformOrigin: 'center',
-    stagger: 0.1,
+    stagger: 0.12,
     duration: 0.3,
-    ease: 'power1.out',
+    ease: 'power2.out',
   }, 0.05);
 
+  // Chaos dots scatter in with small random motion offset
   tlTension.to('.chaos-dots', {
     opacity: 1,
-    duration: 0.2,
+    duration: 0.25,
     ease: 'power1.out',
   }, 0.1);
 
-  // Phase 2 (0.30 → 0.65): governance layer appears, particles float in
+  // Chaos dots drift during phase 1 (via onUpdate approach using a tween)
+  tlTension.to('.chaos-dot', {
+    x: gsap.utils.wrap([-12, 8, 6, -8, 10, -6, 4, -10]),
+    y: gsap.utils.wrap([8, -10, -6, 12, -8, 6, -12, 4]),
+    duration: 0.35,
+    ease: 'sine.inOut',
+  }, 0.15);
+
+  // ── PHASE 2: GOVERNANCE (0.30 → 0.65) ──
+  // Governance layer materializes with scale-up + blur reveal
   tlTension.fromTo('.gov-layer',
-    { opacity: 0, scale: 0.9, transformOrigin: '260px 190px' },
-    { opacity: 1, scale: 1,   duration: 0.35, ease: 'power2.out' },
+    { opacity: 0, scale: 0.85, transformOrigin: '370px 250px', filter: 'blur(4px)' },
+    { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.4, ease: 'power3.out' },
     0.30
   );
 
+  // Governance glow pulse
   tlTension.to('.gov-glow', {
-    opacity: 0.08,
-    scale: 1.05,
-    duration: 0.4,
+    opacity: 0.1,
+    scale: 1.06,
+    duration: 0.5,
     ease: 'sine.inOut',
     yoyo: true,
     repeat: 1,
-  }, 0.32);
+  }, 0.33);
 
-  tlTension.to('.gov-particle', {
-    opacity: 0.6,
-    y: gsap.utils.wrap([-8, 6, -4, 5, -6]),
-    x: gsap.utils.wrap([4, -6, 8, -5, 3]),
-    duration: 0.5,
-    ease: 'sine.inOut',
+  // Scanning line sweeps top→bottom inside governance layer
+  tlTension.to('.gov-scan-line', {
+    opacity: 0.7,
+    y: 170,
+    duration: 0.6,
+    ease: 'power1.inOut',
+    yoyo: true,
+    repeat: 1,
+  }, 0.35);
+
+  // Grid highlights light up sequentially
+  tlTension.to('.grid-highlights', { opacity: 1, duration: 0.1 }, 0.36);
+  tlTension.to('.grid-hl', {
+    opacity: 0.15,
+    stagger: 0.06,
+    duration: 0.2,
+    ease: 'power1.out',
   }, 0.38);
 
-  // Phase 3 (0.58 → 1.0): chaos fades, clean paths draw, nodes turn emerald
-  tlTension.to('.chaos-p',      { opacity: 0, duration: 0.18 }, 0.58);
-  tlTension.to('.chaos-dots',   { opacity: 0, duration: 0.12 }, 0.58);
-  tlTension.to('.source-pulse-ring', { opacity: 0, duration: 0.1 }, 0.58);
-  tlTension.to('.target-pulse-ring', { opacity: 0.4, scale: 1.15, transformOrigin: 'center', duration: 0.3, ease: 'power1.out' }, 0.60);
-  tlTension.to('.clean-paths',  { opacity: 1, duration: 0.08 }, 0.64);
-  tlTension.to('.clean-p',      { strokeDashoffset: 0, stagger: 0.06, duration: 0.34, ease: 'power3.out' }, 0.66);
-  tlTension.to('.clean-data-dot', { opacity: 0.9, scale: 1.3, stagger: 0.08, duration: 0.2, ease: 'back.out(2)' }, 0.70);
-  tlTension.to('.source-node', { stroke: '#34d399', duration: 0.18 }, 0.82);
-  tlTension.to('.tension-sources text', { fill: '#34d399', duration: 0.12 }, 0.84);
-  tlTension.to('.phase-indicator',        { opacity: 1, duration: 0.15 }, 0.88);
+  // Governance particles float/orbit
+  tlTension.to('.gov-particle', {
+    opacity: 0.7,
+    y: gsap.utils.wrap([-12, 10, -8, 14, -10]),
+    x: gsap.utils.wrap([6, -8, 12, -6, 5]),
+    duration: 0.5,
+    ease: 'sine.inOut',
+  }, 0.42);
+
+  // Governance layer border glow intensifies
+  tlTension.to('.gov-layer rect:last-child', {
+    stroke: '#818cf8',
+    strokeWidth: 2.5,
+    duration: 0.3,
+    ease: 'power2.out',
+  }, 0.48);
+
+  // ── PHASE 3: RESOLUTION (0.60 → 1.0) ──
+  // Chaos paths dissolve
+  tlTension.to('.chaos-p',      { opacity: 0, scale: 0.9, transformOrigin: 'center', duration: 0.2 }, 0.60);
+  tlTension.to('.chaos-dots',   { opacity: 0, scale: 0.7, duration: 0.15 }, 0.60);
+  tlTension.to('.source-pulse-ring', { opacity: 0, duration: 0.12 }, 0.60);
+  tlTension.to('.grid-highlights',   { opacity: 0, duration: 0.1 }, 0.62);
+
+  // Clean paths emerge
+  tlTension.to('.clean-paths',  { opacity: 1, duration: 0.1 }, 0.64);
+  tlTension.to('.clean-p', {
+    strokeDashoffset: 0,
+    stagger: 0.08,
+    duration: 0.36,
+    ease: 'power3.out',
+  }, 0.66);
+
+  // Target node expands with strong emerald pulse
+  tlTension.to('.target-pulse-ring', {
+    opacity: 0.5,
+    scale: 1.2,
+    transformOrigin: 'center',
+    duration: 0.35,
+    ease: 'power2.out',
+  }, 0.68);
+
+  // Clean data dots pulse in with heartbeat stagger
+  tlTension.to('.clean-data-dot', {
+    opacity: 1,
+    scale: 1.4,
+    stagger: 0.1,
+    duration: 0.25,
+    ease: 'back.out(2.5)',
+  }, 0.72);
+
+  // Source nodes transition amber→emerald
+  tlTension.to('.source-node',  { stroke: '#34d399', duration: 0.2 }, 0.82);
+  tlTension.to('.tension-sources text', { fill: '#34d399', duration: 0.15 }, 0.84);
+
+  // Phase indicator fades in at final state
+  tlTension.to('.phase-indicator', { opacity: 1, duration: 0.15 }, 0.88);
+
+  // ── Chaos dots independent drift animation (runs concurrently) ──
+  // (already done inline above via tlTension.to on .chaos-dot)
+
+  // ── Tension diagram — DEMO vs PRODUCTION scroll-in ──
+  const tlTensionDiagram = gsap.timeline({
+    scrollTrigger: {
+      trigger: '.tension-diagram',
+      start: 'top 85%',
+      end: 'top 40%',
+      toggleActions: 'play none none none',
+      invalidateOnRefresh: true,
+    }
+  });
+
+  tlTensionDiagram
+    .to('.tension-diagram', { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' })
+    .fromTo('.demo-box', { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
+    .fromTo('.prod-box', { opacity: 0, x: 12 }, { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' }, '-=0.3')
+    .fromTo('.demo-prod-arrow', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.3, ease: 'back.out(2)' }, '-=0.3')
+    .to('.demo-box', { opacity: 0.5, duration: 0.3 }, '+=0.3');
+
+  // ── Global entry patterns: section eyebrow + heading + body ──
+  const sectionEntries = [
+    { sec: '.orchestration-section', eyebrow: '.section-eyebrow', heading: 'h2' },
+    { sec: '.capabilities-section', eyebrow: '.section-eyebrow', heading: 'h2' },
+    { sec: '.deployments-section', eyebrow: '.section-eyebrow', heading: 'h2' },
+    { sec: '.contact-section', eyebrow: '.section-eyebrow', heading: 'h2' },
+  ];
+
+  sectionEntries.forEach(({ sec, eyebrow, heading }) => {
+    const section = document.querySelector(sec);
+    if (!section) return;
+
+    const e = section.querySelector(eyebrow) as HTMLElement;
+    const h = section.querySelector(heading) as HTMLElement;
+    const p = section.querySelector('p:not(.section-eyebrow)') as HTMLElement;
+
+    if (e) gsap.from(e, { opacity: 0, y: 10, duration: 0.5, ease: 'power2.out', scrollTrigger: { trigger: section, start: 'top 82%', toggleActions: 'play none none none', invalidateOnRefresh: true } });
+    if (h) gsap.from(h, { opacity: 0, y: 14, duration: 0.6, ease: 'power2.out', scrollTrigger: { trigger: section, start: 'top 80%', toggleActions: 'play none none none', invalidateOnRefresh: true } });
+    if (p && !p.classList.contains('section-eyebrow')) gsap.from(p, { opacity: 0, y: 8, duration: 0.5, delay: 0.1, ease: 'power2.out', scrollTrigger: { trigger: section, start: 'top 78%', toggleActions: 'play none none none', invalidateOnRefresh: true } });
+  });
 
 
   // ─────────────────────────────────────────────────────────────────
-  // §3 · PIPELINE — sequential card reveal + progress line
+  // §3 · PIPELINE — sequential card reveal + progress line + rail
   // ─────────────────────────────────────────────────────────────────
   const tlPipeline = gsap.timeline({
     scrollTrigger: {
@@ -776,18 +996,26 @@ const capabilityCards = [
     }
   });
 
+  // Rail line fills top to bottom
+  if (document.querySelector('.rail-fill-line')) {
+    tlPipeline.to('.rail-fill-line', { height: '100%', duration: 2, ease: 'none' }, 0);
+  }
+
   // Progress line draws left to right
-  tlPipeline.to('.pipeline-progress-line', { width: '100%', duration: 2, ease: 'none' }, 0);
+  if (document.querySelector('.pipeline-progress-line')) {
+    tlPipeline.to('.pipeline-progress-line', { width: '100%', duration: 2, ease: 'none' }, 0);
+  }
 
   // Each step activates as line reaches it
   const steps = document.querySelectorAll('.pipeline-step');
   steps.forEach((step, i) => {
     const offset = (i / (steps.length - 1)) * 1.8;
 
+    // Card slides in from direction based on parity
     tlPipeline.to(step, {
       opacity: 1,
-      y: 0,
-      duration: 0.25,
+      x: 0,
+      duration: 0.35,
       ease: 'power2.out',
     }, offset);
 
@@ -805,6 +1033,17 @@ const capabilityCards = [
         boxShadow: '0 0 8px rgba(52,211,153,0.6)',
         duration: 0.15,
       }, offset + 0.1);
+    }
+
+    // Rail node glows when its card activates
+    const railDot = document.querySelector(`.rail-dot-${i}`) as HTMLElement;
+    if (railDot) {
+      tlPipeline.to(railDot, {
+        borderColor: 'rgba(52,211,153,0.8)',
+        backgroundColor: '#34d399',
+        boxShadow: '0 0 10px rgba(52,211,153,0.5)',
+        duration: 0.2,
+      }, offset);
     }
 
     // Card border accent
@@ -1053,12 +1292,17 @@ const capabilityCards = [
 
 
   // ─────────────────────────────────────────────────────────────────
-  // §5b · DEPLOYMENTS — metric micro-bar fill
+  // §5b · DEPLOYMENTS — metric micro-bar fill (value-mapped)
   // ─────────────────────────────────────────────────────────────────
-  document.querySelectorAll('.proof-card').forEach((card, index) => {
+  document.querySelectorAll('.proof-card').forEach((card) => {
     const bar = card.querySelector('.metric-bar-fill') as HTMLElement;
     if (!bar) return;
-    const pct = 30 + (index * 12) % 60; // varied fill between 30-90%
+
+    const style = bar.getAttribute('style') || '';
+    const match = style.match(/--bar-w:\s*([\d.]+)/);
+    if (!match) return;
+    const pct = parseFloat(match[1]);
+
     gsap.to(bar, {
       width: pct + '%',
       duration: 1.2,
@@ -1069,6 +1313,18 @@ const capabilityCards = [
         toggleActions: 'play none none none',
         invalidateOnRefresh: true,
       }
+    });
+  });
+
+  // Metric-only hover glow (not whole card)
+  document.querySelectorAll('.proof-card .metric-bar-bg').forEach((barBg) => {
+    const parent = barBg.closest('.proof-card') as HTMLElement;
+    if (!parent) return;
+    parent.addEventListener('mouseenter', () => {
+      gsap.to(barBg, { opacity: 1, duration: 0.2 });
+    });
+    parent.addEventListener('mouseleave', () => {
+      gsap.to(barBg, { opacity: 0.6, duration: 0.3 });
     });
   });
 

@@ -21,10 +21,28 @@ const allRoles = [
         <p class="mt-3 max-w-3xl text-xs text-slate-400 leading-relaxed">A production-style view of the systems, platforms, and delivery outcomes behind enterprise AI and data modernization work.</p>
       </header>
 
-      <section class="relative" style="perspective: 1200px;">
-        {allRoles.map((r, i) => (
-          <ExpCard role={r.role} company={r.company} date={r.date} summary={r.summary} chips={r.chips} metric={r.metric} metricLabel={r.metricLabel} badge={r.badge} details={r.details} index={i} />
-        ))}
+      <section class="relative experience-timeline md:flex md:gap-8" style="perspective: 1200px;">
+        <!-- Desktop timeline rail -->
+        <div class="exp-rail hidden md:flex flex-col items-center w-8 flex-shrink-0 relative pt-8">
+          <div class="absolute top-0 bottom-0 left-1/2 w-px bg-slate-800 -translate-x-1/2 overflow-hidden">
+            <div class="exp-rail-fill absolute top-0 left-0 w-full bg-gradient-to-b from-indigo-500 via-cyan-400 to-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.2)]" style="height: 0%"></div>
+          </div>
+          <div class="relative flex flex-col justify-between flex-1 w-full py-2" style="min-height: 300px;">
+            {allRoles.map((_, index) => (
+              <div class="exp-rail-node flex items-center gap-2 relative" style="z-index: 2;">
+                <div class={`exp-dot w-3.5 h-3.5 rounded-full border-2 border-slate-700 bg-slate-900 transition-all duration-500 exp-dot-${index}`}></div>
+                <span class="font-mono text-[10px] text-slate-600">{String(index + 1).padStart(2, '0')}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="exp-cards-col flex-1 min-w-0">
+          {allRoles.map((r, i) => (
+            <ExpCard role={r.role} company={r.company} date={r.date} summary={r.summary} chips={r.chips} metric={r.metric} metricLabel={r.metricLabel} badge={r.badge} details={r.details} index={i} />
+          ))}
+        </div>
       </section>
     </section>
   </main>
@@ -62,6 +80,8 @@ const allRoles = [
     .exp-card { box-shadow: none !important; transition: none !important; }
     .exp-card:hover { box-shadow: none !important; }
     .exp-card-header { animation: none !important; }
+    .exp-rail-fill { height: 100% !important; }
+    .exp-card { opacity: 1 !important; transform: none !important; }
   }
 </style>
 
@@ -75,6 +95,68 @@ const allRoles = [
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
   if (!prefersReduced) {
+    // ── Timeline rail fill on scroll ──
+    const railFill = document.querySelector('.exp-rail-fill') as HTMLElement;
+    if (railFill) {
+      gsap.to(railFill, {
+        height: '100%',
+        scrollTrigger: {
+          trigger: '.experience-timeline',
+          start: 'top 40%',
+          end: 'bottom 60%',
+          scrub: 1,
+          invalidateOnRefresh: true,
+        }
+      });
+    }
+
+    // ── Card scroll-triggered reveal with node glow ──
+    document.querySelectorAll('.exp-card').forEach((card, i) => {
+      const dot = document.querySelector(`.exp-dot-${i}`) as HTMLElement;
+
+      // Card slides in with slight x offset
+      gsap.fromTo(card,
+        { x: i % 2 === 0 ? -16 : 16, opacity: 0 },
+        {
+          x: 0, opacity: 1, duration: 0.7,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+            end: 'top 45%',
+            scrub: 0.5,
+            invalidateOnRefresh: true,
+          }
+        }
+      );
+
+      // Node glows when card enters view
+      if (dot) {
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top 80%',
+          onEnter: () => {
+            gsap.to(dot, {
+              borderColor: 'rgba(52,211,153,0.8)',
+              backgroundColor: '#34d399',
+              boxShadow: '0 0 12px rgba(52,211,153,0.5)',
+              duration: 0.3,
+            });
+          },
+          onLeaveBack: () => {
+            gsap.to(dot, {
+              borderColor: '',
+              backgroundColor: '',
+              boxShadow: '',
+              duration: 0.3,
+            });
+          },
+          invalidateOnRefresh: true,
+        });
+      }
+    });
+
+    // ── Existing card stacking animation ──
     const cards = gsap.utils.toArray<HTMLElement>('.exp-card');
     cards.forEach((card, i) => {
       if (i === 0) return;
@@ -109,6 +191,7 @@ const allRoles = [
       }
     });
 
+    // ── Hover effects ──
     document.querySelectorAll('.exp-card').forEach((card) => {
       const inner = card.querySelector('.exp-card-inner') as HTMLElement;
       if (!inner) return;
