@@ -2,22 +2,27 @@
 import Layout from '../layouts/Layout.astro';
 
 const platformSkills = [
-  { name: 'GCP',         tag: 'Cloud Platform',       color: '#22d3ee', icon: 'M5 15a4 4 0 0 1 0-8 4 4 0 0 1 7.4-2A3 3 0 0 1 16 9.5a2.5 2.5 0 0 1 0 5H5Z' },
-  { name: 'BigQuery',    tag: 'Data Warehouse',       color: '#818cf8', icon: 'M4 7h16M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2M4 7v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7M4 12h16' },
-  { name: 'Dataflow',    tag: 'Stream Processing',    color: '#34d399', icon: 'M3 17l5-5 4 5 5-7 4 4' },
-  { name: 'Vertex AI',   tag: 'Machine Learning',     color: '#a78bfa', icon: 'M12 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM6 12a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM18 12a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM12 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM7 7l5 4ZM17 7l-5 4ZM7 17l5-4ZM17 17l5-4Z' },
-  { name: 'Cloud Run',   tag: 'Serverless',           color: '#38bdf8', icon: 'M8 4v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V4M8 4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2M8 4H6M16 4h2M9 14h6' },
-  { name: 'Terraform',   tag: 'Infrastructure as Code',color: '#f59e0b', icon: 'M5 20V9l7-4 7 4v11M5 20h14M5 20H3M19 20h2M12 9v4' },
+  { name: 'GCP',         tag: 'Cloud Platform',       color: '#22d3ee', pct: 95, icon: 'M5 15a4 4 0 0 1 0-8 4 4 0 0 1 7.4-2A3 3 0 0 1 16 9.5a2.5 2.5 0 0 1 0 5H5Z' },
+  { name: 'BigQuery',    tag: 'Data Warehouse',       color: '#818cf8', pct: 92, icon: 'M4 7h16M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2M4 7v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7M4 12h16' },
+  { name: 'Dataflow',    tag: 'Stream Processing',    color: '#34d399', pct: 85, icon: 'M3 17l5-5 4 5 5-7 4 4' },
+  { name: 'Vertex AI',   tag: 'Machine Learning',     color: '#a78bfa', pct: 88, icon: 'M12 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM6 12a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM18 12a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM12 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM7 7l5 4ZM17 7l-5 4ZM7 17l5-4ZM17 17l5-4Z' },
+  { name: 'Cloud Run',   tag: 'Serverless',           color: '#38bdf8', pct: 82, icon: 'M8 4v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V4M8 4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2M8 4H6M16 4h2M9 14h6' },
+  { name: 'Terraform',   tag: 'Infrastructure as Code',color: '#f59e0b', pct: 80, icon: 'M5 20V9l7-4 7 4v11M5 20h14M5 20H3M19 20h2M12 9v4' },
 ];
 
 const aiSkills = [
-  { name: 'RAG',              tag: 'Retrieval Augmented', color: '#34d399', icon: 'M7 4h6l4 4v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2ZM14 8V4M9 13l2 2 4-4' },
-  { name: 'LLM Ops',          tag: 'Lifecycle',           color: '#818cf8', icon: 'M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8ZM12 2v2M12 20v2M2 12h2M20 12h2' },
-  { name: 'Vector Search',    tag: 'Similarity',          color: '#22d3ee', icon: 'M4 20L12 4l8 16M8 13l8-2M8 13l2 6M16 11l2 6' },
-  { name: 'Eval Harness',     tag: 'Evaluation',          color: '#fbbf24', icon: 'M12 2a10 10 0 1 0 10 10M12 2v10l6 6M12 2a10 10 0 0 1 10 10' },
-  { name: 'Guardrails',       tag: 'Safety',              color: '#34d399', icon: 'M12 2l8 4v6a8 8 0 0 1-8 8 8 8 0 0 1-8-8V6l8-4ZM9 12l2 2 4-4' },
-  { name: 'Observability',    tag: 'Monitoring',          color: '#38bdf8', icon: 'M2 20h20M4 16l4-8 4 4 4-6 4 8' },
+  { name: 'RAG',              tag: 'Retrieval Augmented', color: '#34d399', pct: 90, icon: 'M7 4h6l4 4v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2ZM14 8V4M9 13l2 2 4-4' },
+  { name: 'LLM Ops',          tag: 'Lifecycle',           color: '#818cf8', pct: 85, icon: 'M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8ZM12 2v2M12 20v2M2 12h2M20 12h2' },
+  { name: 'Vector Search',    tag: 'Similarity',          color: '#22d3ee', pct: 82, icon: 'M4 20L12 4l8 16M8 13l8-2M8 13l2 6M16 11l2 6' },
+  { name: 'Eval Harness',     tag: 'Evaluation',          color: '#fbbf24', pct: 80, icon: 'M12 2a10 10 0 1 0 10 10M12 2v10l6 6M12 2a10 10 0 0 1 10 10' },
+  { name: 'Guardrails',       tag: 'Safety',              color: '#34d399', pct: 78, icon: 'M12 2l8 4v6a8 8 0 0 1-8 8 8 8 0 0 1-8-8V6l8-4ZM9 12l2 2 4-4' },
+  { name: 'Observability',    tag: 'Monitoring',          color: '#38bdf8', pct: 85, icon: 'M2 20h20M4 16l4-8 4 4 4-6 4 8' },
 ];
+
+const groupAvgs = {
+  platform: Math.round(platformSkills.reduce((a, s) => a + s.pct, 0) / platformSkills.length),
+  ai: Math.round(aiSkills.reduce((a, s) => a + s.pct, 0) / aiSkills.length),
+};
 
 const certs = [
   ['Google Cloud Certified — Professional Data Engineer', 'GCP · BigQuery · Dataflow · AI/ML', 'google'],
@@ -46,21 +51,34 @@ const stackTags = ['GCP','BigQuery','Dataflow','Vertex AI','GenAI','RAG','Python
       <section class="grid gap-5 md:grid-cols-2">
         <!-- Platform & Cloud -->
         <article class="rounded-2xl border border-slate-800/70 bg-slate-900/40 p-5 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
-          <h2 class="text-[10px] font-semibold text-white flex items-center gap-2 mb-4 uppercase tracking-widest">
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
-            Platform & Cloud
-          </h2>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-[10px] font-semibold text-white flex items-center gap-2 uppercase tracking-widest">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+              Platform & Cloud
+            </h2>
+            <span class="skill-group-bar font-mono text-[9px] text-slate-600 flex items-center gap-2">
+              <span class="w-12 h-px bg-slate-800 rounded-full overflow-hidden inline-block align-middle">
+                <span class="skill-group-fill block h-full bg-gradient-to-r from-cyan-500/40 to-indigo-500/40 rounded-full" style={`width: ${groupAvgs.platform}%`}></span>
+              </span>
+              <span>{groupAvgs.platform}%</span>
+            </span>
+          </div>
           <div class="flex flex-col gap-2">
             {platformSkills.map(s => (
-              <div class="skill-tile flex items-center gap-2.5 rounded-lg border border-slate-800/30 bg-slate-950/30 px-3 py-2 transition-all duration-200 hover:bg-slate-900/60 hover:border-slate-700/50">
-                <div class="shrink-0 w-8 h-8 rounded-lg border border-slate-700/30 bg-slate-900/50 flex items-center justify-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={s.color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-path">
-                    <path d={s.icon} />
-                  </svg>
+              <div class="skill-tile flex flex-col rounded-lg border border-slate-800/30 bg-slate-950/30 px-3 py-2 transition-all duration-200 hover:bg-slate-900/60 hover:border-slate-700/50">
+                <div class="flex items-center gap-2.5">
+                  <div class="shrink-0 w-8 h-8 rounded-lg border border-slate-700/30 bg-slate-900/50 flex items-center justify-center">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={s.color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-path">
+                      <path d={s.icon} />
+                    </svg>
+                  </div>
+                  <div class="flex-1 flex items-center justify-between min-w-0">
+                    <span class="font-mono text-xs font-medium text-slate-200">{s.name}</span>
+                    <span class="font-mono text-[9px] text-slate-500">{s.pct}%</span>
+                  </div>
                 </div>
-                <div class="flex-1 flex items-center justify-between min-w-0">
-                  <span class="font-mono text-xs font-medium text-slate-200">{s.name}</span>
-                  <span class="font-mono text-[9px] text-slate-600 uppercase tracking-wider">{s.tag}</span>
+                <div class="mt-1 ml-10 h-px bg-slate-800/60 rounded-full overflow-hidden">
+                  <div class="skill-bar-fill h-full bg-gradient-to-r rounded-full" style={`--bar-pct: ${s.pct}; width: 0%; background-image: linear-gradient(to right, ${s.color}66, ${s.color}99);`} data-pct={s.pct}></div>
                 </div>
               </div>
             ))}
@@ -69,21 +87,34 @@ const stackTags = ['GCP','BigQuery','Dataflow','Vertex AI','GenAI','RAG','Python
 
         <!-- AI & Retrieval -->
         <article class="rounded-2xl border border-slate-800/70 bg-slate-900/40 p-5 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
-          <h2 class="text-[10px] font-semibold text-white flex items-center gap-2 mb-4 uppercase tracking-widest">
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            AI & Retrieval
-          </h2>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-[10px] font-semibold text-white flex items-center gap-2 uppercase tracking-widest">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              AI & Retrieval
+            </h2>
+            <span class="skill-group-bar font-mono text-[9px] text-slate-600 flex items-center gap-2">
+              <span class="w-12 h-px bg-slate-800 rounded-full overflow-hidden inline-block align-middle">
+                <span class="skill-group-fill block h-full bg-gradient-to-r from-emerald-500/40 to-indigo-500/40 rounded-full" style={`width: ${groupAvgs.ai}%`}></span>
+              </span>
+              <span>{groupAvgs.ai}%</span>
+            </span>
+          </div>
           <div class="flex flex-col gap-2">
             {aiSkills.map(s => (
-              <div class="skill-tile flex items-center gap-2.5 rounded-lg border border-slate-800/30 bg-slate-950/30 px-3 py-2 transition-all duration-200 hover:bg-slate-900/60 hover:border-slate-700/50">
-                <div class="shrink-0 w-8 h-8 rounded-lg border border-slate-700/30 bg-slate-900/50 flex items-center justify-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={s.color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-path">
-                    <path d={s.icon} />
-                  </svg>
+              <div class="skill-tile flex flex-col rounded-lg border border-slate-800/30 bg-slate-950/30 px-3 py-2 transition-all duration-200 hover:bg-slate-900/60 hover:border-slate-700/50">
+                <div class="flex items-center gap-2.5">
+                  <div class="shrink-0 w-8 h-8 rounded-lg border border-slate-700/30 bg-slate-900/50 flex items-center justify-center">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={s.color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-path">
+                      <path d={s.icon} />
+                    </svg>
+                  </div>
+                  <div class="flex-1 flex items-center justify-between min-w-0">
+                    <span class="font-mono text-xs font-medium text-slate-200">{s.name}</span>
+                    <span class="font-mono text-[9px] text-slate-500">{s.pct}%</span>
+                  </div>
                 </div>
-                <div class="flex-1 flex items-center justify-between min-w-0">
-                  <span class="font-mono text-xs font-medium text-slate-200">{s.name}</span>
-                  <span class="font-mono text-[9px] text-slate-600 uppercase tracking-wider">{s.tag}</span>
+                <div class="mt-1 ml-10 h-px bg-slate-800/60 rounded-full overflow-hidden">
+                  <div class="skill-bar-fill h-full bg-gradient-to-r rounded-full transition-all duration-1000 ease-out" style={`width: 0%; background-image: linear-gradient(to right, ${s.color}66, ${s.color}99);`} data-pct={s.pct}></div>
                 </div>
               </div>
             ))}
@@ -146,6 +177,8 @@ const stackTags = ['GCP','BigQuery','Dataflow','Vertex AI','GenAI','RAG','Python
   }
   @media (prefers-reduced-motion: reduce) {
     .icon-path path { stroke-dashoffset: 0; transition: none; }
+    .skill-bar-fill { width: calc(var(--bar-pct, 0) * 1%) !important; }
+    .skill-group-bar { opacity: 1 !important; transform: none !important; }
   }
 </style>
 
@@ -155,6 +188,21 @@ const stackTags = ['GCP','BigQuery','Dataflow','Vertex AI','GenAI','RAG','Python
   gsap.registerPlugin(ScrollTrigger);
 
   if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // ── Skill bar width animation on scroll ──
+    document.querySelectorAll('.skill-bar-fill').forEach((bar, i) => {
+      const pct = parseInt(bar.getAttribute('data-pct') || '0', 10);
+      ScrollTrigger.create({
+        trigger: bar.closest('.skill-tile') || bar,
+        start: 'top 92%',
+        once: true,
+        onEnter: () => {
+          setTimeout(() => {
+            gsap.to(bar, { width: pct + '%', duration: 0.8, ease: 'power3.out' });
+          }, i * 50);
+        },
+      });
+    });
+
     // ── Icon path draw on scroll ──
     document.querySelectorAll('.skill-tile').forEach((tile, i) => {
       ScrollTrigger.create({
@@ -173,6 +221,20 @@ const stackTags = ['GCP','BigQuery','Dataflow','Vertex AI','GenAI','RAG','Python
       ease: 'power2.out',
       scrollTrigger: {
         trigger: '.skill-tile',
+        start: 'top 88%',
+        toggleActions: 'play none none none',
+      },
+    });
+
+    // ── Group avg bar reveal ──
+    gsap.from('.skill-group-bar', {
+      opacity: 0,
+      x: 8,
+      stagger: 0.1,
+      duration: 0.4,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '.skill-group-bar',
         start: 'top 88%',
         toggleActions: 'play none none none',
       },
