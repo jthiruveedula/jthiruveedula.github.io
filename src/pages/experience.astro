@@ -3,12 +3,12 @@ import Layout from '../layouts/Layout.astro';
 import ExpCard from '../components/ExpCard.astro';
 
 const allRoles = [
-  ['Data Architect','Quantiphi','Sep 2022 – Present','GCP modernization, RAG platforms, evaluation harnesses, and secure enterprise AI delivery.','GCP · GenAI · RAG · IAM','3','production GenAI systems'],
-  ['Senior Data Engineer','Charles Schwab','Nov 2021 – Sep 2022','Migrated warehouse workloads to GCP and stabilized CI/CD, observability, and performance at scale.','BigQuery · PySpark · Terraform · DevOps','$MM','cloud migration programs'],
-  ['Data Engineer','Wiley Publications','Mar 2019 – Nov 2021','Built ETL pipelines, data integration layers, and analytics workflows for publishing platforms.','ETL · Data Pipelines · Analytics','12+','enterprise pipelines'],
-  ['Software Engineer','DSOgroup TEOTYS','Aug 2018 – Mar 2019','Talend streaming jobs, CDC pipelines, and DR-ready data frameworks.','Talend · ETL · CDC','Real-time','CDC pipelines'],
-  ['Software Engineer','Innominds','Jun 2015 – Jul 2018','Warehouse and ETL design with reusable business logic and reliability improvements.','ETL · Talend · Data Quality','50+','data warehouse ETLs'],
-  ['Intern','Vizag Steel Plant','Jan 2015 – Mar 2015','SCADA and automation work for monitoring and operational troubleshooting.','IoT · Automation · Monitoring','SCADA','industrial automation'],
+  { role:'Data Architect',company:'Quantiphi',date:'Sep 2022 – Present',summary:'GCP modernization, RAG platforms, evaluation harnesses, and secure enterprise AI delivery.',chips:'GCP · GenAI · RAG · IAM',metric:'3',metricLabel:'production GenAI systems',badge:'Production',details:['Designed and deployed end-to-end RAG platform on Vertex AI with hybrid retrieval','Built evaluation harness for LLM outputs with 92%+ citation precision','Implemented IAM-governed access controls across all GenAI services','Architected agentic orchestration layer with LangGraph for SOP automation'] },
+  { role:'Senior Data Engineer',company:'Charles Schwab',date:'Nov 2021 – Sep 2022',summary:'Migrated warehouse workloads to GCP and stabilized CI/CD, observability, and performance at scale.',chips:'BigQuery · PySpark · Terraform · DevOps',metric:'$MM',metricLabel:'cloud migration programs',badge:'Enterprise',details:['Led migration of on-premise data warehouse to BigQuery, reducing query latency by 60%','Implemented automated CI/CD pipelines with Terraform for infrastructure provisioning','Built real-time observability dashboards for pipeline health and cost tracking','Optimized PySpark jobs for 40% reduction in compute costs'] },
+  { role:'Data Engineer',company:'Wiley Publications',date:'Mar 2019 – Nov 2021',summary:'Built ETL pipelines, data integration layers, and analytics workflows for publishing platforms.',chips:'ETL · Data Pipelines · Analytics',metric:'12+',metricLabel:'enterprise pipelines',badge:'Pipeline',details:['Designed and maintained 12+ production ETL pipelines serving analytics teams','Developed data quality framework with automated validation and alerting','Migrated legacy SSIS packages to cloud-native data integration workflows','Built reporting layer for business intelligence dashboards used by 50+ stakeholders'] },
+  { role:'Software Engineer',company:'DSOgroup TEOTYS',date:'Aug 2018 – Mar 2019',summary:'Talend streaming jobs, CDC pipelines, and DR-ready data frameworks.',chips:'Talend · ETL · CDC',metric:'Real-time',metricLabel:'CDC pipelines',badge:'Real-time',details:['Architected real-time CDC pipeline using Talend streaming jobs for sub-minute latency','Implemented disaster recovery framework with automated failover and data consistency checks','Built monitoring dashboards for pipeline health and SLA tracking','Reduced data freshness from hourly to near-real-time for critical business reports'] },
+  { role:'Software Engineer',company:'Innominds',date:'Jun 2015 – Jul 2018',summary:'Warehouse and ETL design with reusable business logic and reliability improvements.',chips:'ETL · Talend · Data Quality',metric:'50+',metricLabel:'data warehouse ETLs',badge:'Enterprise',details:['Developed 50+ ETL mappings for enterprise data warehouse modernization initiatives','Created reusable business logic library reducing development time by 30%','Implemented data lineage and impact analysis for regulatory compliance','Established code review and testing best practices for the data engineering team'] },
+  { role:'Intern',company:'Vizag Steel Plant',date:'Jan 2015 – Mar 2015',summary:'SCADA and automation work for monitoring and operational troubleshooting.',chips:'IoT · Automation · Monitoring',metric:'SCADA',metricLabel:'industrial automation',badge:'SCADA',details:['Developed SCADA monitoring dashboards for production line metrics and alerts','Assisted in troubleshooting automation control systems for industrial equipment','Created documentation and runbooks for operational procedures','Contributed to IoT data collection pipeline for sensor telemetry'] },
 ];
 ---
 
@@ -23,7 +23,7 @@ const allRoles = [
 
       <section class="relative" style="perspective: 1200px;">
         {allRoles.map((r, i) => (
-          <ExpCard role={r[0]} company={r[1]} date={r[2]} summary={r[3]} chips={r[4]} metric={r[5]} metricLabel={r[6]} index={i} />
+          <ExpCard role={r.role} company={r.company} date={r.date} summary={r.summary} chips={r.chips} metric={r.metric} metricLabel={r.metricLabel} badge={r.badge} details={r.details} index={i} />
         ))}
       </section>
     </section>
@@ -33,9 +33,35 @@ const allRoles = [
 <style>
   .exp-card {
     transition: box-shadow 0.35s ease;
+    content-visibility: auto;
+    contain-intrinsic-size: 240px;
   }
   .exp-card:hover {
     box-shadow: 0 16px 48px -20px rgba(99,102,241,0.15);
+  }
+  .exp-card:focus-visible {
+    outline: 2px solid rgba(99,102,241,0.5);
+    outline-offset: 2px;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+  .exp-card-header {
+    animation: float 6s ease-in-out infinite;
+  }
+  @media (max-width: 767px) {
+    .exp-card {
+      content-visibility: visible;
+    }
+    .exp-card-header {
+      animation: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .exp-card { box-shadow: none !important; transition: none !important; }
+    .exp-card:hover { box-shadow: none !important; }
+    .exp-card-header { animation: none !important; }
   }
 </style>
 
@@ -46,6 +72,7 @@ const allRoles = [
   gsap.registerPlugin(ScrollTrigger);
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
   if (!prefersReduced) {
     const cards = gsap.utils.toArray<HTMLElement>('.exp-card');
@@ -85,19 +112,141 @@ const allRoles = [
     document.querySelectorAll('.exp-card').forEach((card) => {
       const inner = card.querySelector('.exp-card-inner') as HTMLElement;
       if (!inner) return;
-      card.addEventListener('mousemove', (ev) => {
-        const rect = card.getBoundingClientRect();
-        const x = ev.clientX - rect.left;
-        const y = ev.clientY - rect.top;
-        const halfW = rect.width / 2;
-        const halfH = rect.height / 2;
-        const rotateY = ((x - halfW) / halfW) * 1.5;
-        const rotateX = ((halfH - y) / halfH) * 1.5;
-        gsap.to(inner, { rotateX, rotateY, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+
+      if (!isTouchDevice) {
+        let rafId: number | null = null;
+        card.addEventListener('mousemove', (ev) => {
+          if (rafId) cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(() => {
+            const rect = card.getBoundingClientRect();
+            const x = ev.clientX - rect.left;
+            const y = ev.clientY - rect.top;
+            const halfW = rect.width / 2;
+            const halfH = rect.height / 2;
+            const rotateY = ((x - halfW) / halfW) * 1.5;
+            const rotateX = ((halfH - y) / halfH) * 1.5;
+            gsap.to(inner, { rotateX, rotateY, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+          });
+        });
+        card.addEventListener('mouseleave', () => {
+          gsap.to(inner, { rotateX: 0, rotateY: 0, duration: 0.5, ease: 'power3.out' });
+        });
+      }
+
+      card.addEventListener('mouseenter', () => {
+        gsap.to(card, {
+          boxShadow: '0 20px 60px -20px rgba(99,102,241,0.25)',
+          duration: 0.4,
+          ease: 'power2.out'
+        });
+        if (!isTouchDevice) {
+          gsap.to(inner, { scale: 1.02, duration: 0.4, ease: 'power2.out' });
+        }
       });
+
       card.addEventListener('mouseleave', () => {
-        gsap.to(inner, { rotateX: 0, rotateY: 0, duration: 0.5, ease: 'power3.out' });
+        gsap.to(card, {
+          boxShadow: '0 16px 48px -20px rgba(99,102,241,0.15)',
+          duration: 0.4,
+          ease: 'power2.out'
+        });
+        if (!isTouchDevice) {
+          gsap.to(inner, { scale: 1, duration: 0.4, ease: 'power2.out' });
+        }
       });
     });
+
+    function toggleCard(card: HTMLElement) {
+      const details = card.querySelector('.exp-details') as HTMLElement;
+      if (!details) return;
+
+      const isOpen = card.getAttribute('data-expanded') === 'true';
+      const newState = !isOpen;
+      card.setAttribute('data-expanded', String(newState));
+      card.setAttribute('aria-expanded', String(newState));
+      details.setAttribute('aria-hidden', String(!newState));
+
+      if (newState) {
+        gsap.fromTo(details,
+          { maxHeight: 0, opacity: 0 },
+          { maxHeight: details.scrollHeight, opacity: 1, duration: 0.5, ease: 'power3.inOut', overwrite: 'auto' }
+        );
+      } else {
+        gsap.to(details,
+          { maxHeight: 0, opacity: 0, duration: 0.4, ease: 'power3.inOut', overwrite: 'auto' }
+        );
+      }
+    }
+
+    document.querySelectorAll('.exp-card').forEach((card) => {
+      card.addEventListener('click', () => toggleCard(card));
+      card.addEventListener('keydown', (ev: KeyboardEvent) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          toggleCard(card);
+        }
+      });
+    });
+
+    const header = document.querySelector('.exp-card.sticky');
+    if (header) {
+      gsap.to(header, {
+        y: -10,
+        scrollTrigger: {
+          trigger: '.exp-card',
+          start: 'top 30%',
+          end: 'top 10%',
+          scrub: true,
+          invalidateOnRefresh: true,
+        }
+      });
+    }
+
+    gsap.fromTo('.exp-card-header', {
+      opacity: 0,
+      y: 20
+    }, {
+      opacity: 1,
+      y: 0,
+      stagger: 0.1,
+      duration: 0.8,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '.exp-card',
+        start: 'top 90%',
+        toggleActions: 'play none none none'
+      }
+    });
+
+    gsap.fromTo('.exp-metric', {
+      scale: 0.8,
+      opacity: 0
+    }, {
+      scale: 1,
+      opacity: 1,
+      stagger: 0.1,
+      duration: 0.6,
+      ease: 'back.out(1.7)',
+      scrollTrigger: {
+        trigger: '.exp-metric',
+        start: 'top 85%',
+        toggleActions: 'play none none none'
+      }
+    });
+
+    if (!isTouchDevice) {
+      const particles = document.querySelectorAll('.particle');
+      particles.forEach(particle => {
+        gsap.to(particle, {
+          y: -20,
+          x: gsap.utils.random(-10, 10),
+          opacity: 0,
+          duration: gsap.utils.random(2, 4),
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut'
+        });
+      });
+    }
   }
 </script>

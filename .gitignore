@@ -10,4 +10,5 @@ dist/
 .understand-anything/
 data/
 session-*.md
-graphify-**
+graphify-out*
+test-results/
