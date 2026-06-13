@@ -587,9 +587,9 @@ const capabilityCards = [
     if (heroH1) {
       const txt = heroH1.textContent || '';
       heroH1.textContent = '';
-      const chars = [...txt];
-      heroH1.innerHTML = chars.map(c => `<span class="hero-char" style="display:inline-block">${c === ' ' ? '\u00A0' : c}</span>`).join('');
-      gsap.from(heroH1.querySelectorAll('.hero-char'), { opacity: 0, y: 40, rotateX: -90, duration: 0.8, stagger: 0.03, ease: 'power4.out' });
+      const words = txt.split(/\s+/);
+      heroH1.innerHTML = words.map((w, i) => `<span class="hero-word" style="display:inline-block">${w}${i < words.length - 1 ? '\u00A0' : ''}</span>`).join('');
+      gsap.from(heroH1.querySelectorAll('.hero-word'), { opacity: 0, y: 40, rotateX: -90, duration: 0.8, stagger: 0.06, ease: 'power4.out' });
     }
     gsap.from('.hero-description', { opacity: 0, y: 20, duration: 0.8, delay: 0.6, ease: 'power3.out' });
     const tlHero = gsap.timeline({ defaults: { ease: 'power3.out' } });
