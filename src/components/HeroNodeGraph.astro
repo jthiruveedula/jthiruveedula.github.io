@@ -1,8 +1,8 @@
 ---
 // HeroNodeGraph.astro
-// Subtle animated node-graph background for the hero section.
-// Pure SVG + CSS. No external deps. Respects prefers-reduced-motion.
-// SVG groups have IDs for GSAP cursor-parallax (hb-layer-edges, hb-layer-nodes, hb-layer-pulse).
+// Enhanced node-graph background with system labels + breathing nodes.
+// Pure SVG + CSS. Respects prefers-reduced-motion.
+// SVG groups have IDs for GSAP cursor-parallax.
 ---
 
 <div class="hero-bg" aria-hidden="true">
@@ -21,8 +21,8 @@
     <rect width="1440" height="800" fill="url(#hb-grid)" opacity="0.3" />
     <rect width="1440" height="800" fill="url(#hb-glow)" />
 
-    <!-- Layer 1: Edges — moves slowest with cursor (parallax depth 0.3) -->
-    <g id="hb-layer-edges" class="hb-edges" stroke="#334155" stroke-width="0.8" fill="none" opacity="0.5">
+    <!-- Layer 1: Edges — moves slowest with cursor -->
+    <g id="hb-layer-edges" class="hb-edges" stroke="#334155" stroke-width="0.8" fill="none" opacity="0.55">
       <line x1="180" y1="160" x2="420" y2="260" />
       <line x1="420" y1="260" x2="680" y2="180" />
       <line x1="680" y1="180" x2="960" y2="300" />
@@ -34,37 +34,45 @@
       <line x1="420" y1="260" x2="500" y2="460" />
       <line x1="680" y1="180" x2="760" y2="560" />
       <line x1="960" y1="300" x2="1040" y2="480" />
-      <!-- Secondary network -->
       <line x1="100" y1="400" x2="260" y2="540" />
       <line x1="1300" y1="600" x2="1400" y2="500" />
-      <line x1="1240" y1="220" x2="1300" y2="600" opacity="0.3" />
-      <line x1="180" y1="160" x2="260" y2="540" opacity="0.25" />
+      <line x1="1240" y1="220" x2="1300" y2="600" opacity="0.35" />
+      <line x1="180" y1="160" x2="260" y2="540" opacity="0.3" />
     </g>
 
-    <!-- Layer 2: Nodes — moves at medium speed (parallax depth 0.5) -->
+    <!-- Layer 2: Nodes — medium parallax speed -->
     <g id="hb-layer-nodes" class="hb-nodes">
-      <circle cx="180" cy="160" r="3" fill="#818cf8" />
-      <circle cx="420" cy="260" r="3.5" fill="#a5b4fc" />
-      <circle cx="680" cy="180" r="3" fill="#22d3ee" />
-      <circle cx="960" cy="300" r="3.5" fill="#34d399" />
-      <circle cx="1240" cy="220" r="3" fill="#a7f3d0" />
-      <circle cx="260" cy="540" r="3" fill="#818cf8" />
-      <circle cx="500" cy="460" r="3.5" fill="#a5b4fc" />
-      <circle cx="760" cy="560" r="3" fill="#22d3ee" />
-      <circle cx="1040" cy="480" r="3.5" fill="#34d399" />
-      <circle cx="1300" cy="600" r="3" fill="#a7f3d0" />
-      <circle cx="100" cy="400" r="2.5" fill="#6366f1" opacity="0.6" />
-      <circle cx="1400" cy="500" r="2.5" fill="#6366f1" opacity="0.6" />
+      <!-- Primary nodes -->
+      <circle cx="180" cy="160" r="3.5" fill="#818cf8" class="node-breathe" />
+      <circle cx="420" cy="260" r="4" fill="#a5b4fc" class="node-breathe" />
+      <circle cx="680" cy="180" r="3.5" fill="#22d3ee" class="node-breathe" />
+      <circle cx="960" cy="300" r="4" fill="#34d399" class="node-breathe" />
+      <circle cx="1240" cy="220" r="3.5" fill="#a7f3d0" />
+      <circle cx="260" cy="540" r="3.5" fill="#818cf8" />
+      <circle cx="500" cy="460" r="4" fill="#a5b4fc" class="node-breathe" />
+      <circle cx="760" cy="560" r="3.5" fill="#22d3ee" class="node-breathe" />
+      <circle cx="1040" cy="480" r="4" fill="#34d399" />
+      <circle cx="1300" cy="600" r="3.5" fill="#a7f3d0" />
+      <circle cx="100" cy="400" r="3" fill="#6366f1" opacity="0.6" />
+      <circle cx="1400" cy="500" r="3" fill="#6366f1" opacity="0.6" />
     </g>
 
-    <!-- Layer 3: Pulse rings — moves fastest (parallax depth 0.7) -->
+    <!-- System labels — small mono labels on key nodes -->
+    <g class="hb-labels" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(148,163,184,0.45)" letter-spacing="0.12em">
+      <text x="430" y="250" >DATA</text>
+      <text x="690" y="168" >RAG</text>
+      <text x="775" y="550" >AGENTS</text>
+      <text x="1055" y="470" >GUARD</text>
+    </g>
+
+    <!-- Layer 3: Pulse rings — fastest parallax -->
     <g id="hb-layer-pulse" class="hb-pulse">
-      <circle cx="420" cy="260" r="7" fill="none" stroke="#818cf8" stroke-width="1" />
-      <circle cx="680" cy="180" r="7" fill="none" stroke="#22d3ee" stroke-width="1" />
-      <circle cx="960" cy="300" r="7" fill="none" stroke="#34d399" stroke-width="1" />
-      <circle cx="500" cy="460" r="7" fill="none" stroke="#a5b4fc" stroke-width="1" />
-      <circle cx="760" cy="560" r="7" fill="none" stroke="#22d3ee" stroke-width="1" />
-      <circle cx="1040" cy="480" r="7" fill="none" stroke="#34d399" stroke-width="1" />
+      <circle cx="420" cy="260" r="7" fill="none" stroke="#818cf8" stroke-width="1.2" />
+      <circle cx="680" cy="180" r="7" fill="none" stroke="#22d3ee" stroke-width="1.2" />
+      <circle cx="960" cy="300" r="7" fill="none" stroke="#34d399" stroke-width="1.2" />
+      <circle cx="500" cy="460" r="7" fill="none" stroke="#a5b4fc" stroke-width="1.2" />
+      <circle cx="760" cy="560" r="7" fill="none" stroke="#22d3ee" stroke-width="1.2" />
+      <circle cx="1040" cy="480" r="7" fill="none" stroke="#34d399" stroke-width="1.2" />
     </g>
   </svg>
 </div>
@@ -80,6 +88,21 @@
   }
   .hb-edges line:nth-child(odd) { animation-duration: 26s; animation-direction: reverse; }
   .hb-edges line:nth-child(3n) { animation-duration: 30s; }
+
+  /* Node breathing — gentle opacity pulse on key nodes */
+  .node-breathe {
+    animation: hb-breathe 5s ease-in-out infinite;
+  }
+  .node-breathe:nth-child(2) { animation-delay: 0.5s; }
+  .node-breathe:nth-child(3) { animation-delay: 1.8s; }
+  .node-breathe:nth-child(4) { animation-delay: 3s; }
+  .node-breathe:nth-child(5) { animation-delay: 1.2s; }
+  .node-breathe:nth-child(6) { animation-delay: 2.5s; }
+
+  @keyframes hb-breathe {
+    0%, 100% { opacity: 0.55; }
+    50%      { opacity: 1; }
+  }
 
   /* Pulse rings */
   .hb-pulse circle {
@@ -107,6 +130,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .hb-edges line,
-    .hb-pulse circle { animation: none; }
+    .hb-pulse circle,
+    .node-breathe { animation: none; }
   }
 </style>
