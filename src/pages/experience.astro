@@ -3,12 +3,12 @@ import Layout from '../layouts/Layout.astro';
 import ExpCard from '../components/ExpCard.astro';
 
 const allRoles = [
-  ['Data Architect','Quantiphi','Sep 2022 – Present','GCP modernization, RAG platforms, evaluation harnesses, and secure enterprise AI delivery.','GCP · GenAI · RAG · IAM','3','production GenAI systems'],
-  ['Senior Data Engineer','Charles Schwab','Nov 2021 – Sep 2022','Migrated warehouse workloads to GCP and stabilized CI/CD, observability, and performance at scale.','BigQuery · PySpark · Terraform · DevOps','$MM','cloud migration programs'],
-  ['Data Engineer','Wiley Publications','Mar 2019 – Nov 2021','Built ETL pipelines, data integration layers, and analytics workflows for publishing platforms.','ETL · Data Pipelines · Analytics','12+','enterprise pipelines'],
-  ['Software Engineer','DSOgroup TEOTYS','Aug 2018 – Mar 2019','Talend streaming jobs, CDC pipelines, and DR-ready data frameworks.','Talend · ETL · CDC','Real-time','CDC pipelines'],
-  ['Software Engineer','Innominds','Jun 2015 – Jul 2018','Warehouse and ETL design with reusable business logic and reliability improvements.','ETL · Talend · Data Quality','50+','data warehouse ETLs'],
-  ['Intern','Vizag Steel Plant','Jan 2015 – Mar 2015','SCADA and automation work for monitoring and operational troubleshooting.','IoT · Automation · Monitoring','SCADA','industrial automation'],
+  { role:'Data Architect',company:'Quantiphi',date:'Sep 2022 – Present',summary:'GCP modernization, RAG platforms, evaluation harnesses, and secure enterprise AI delivery.',chips:'GCP · GenAI · RAG · IAM',metric:'3',metricLabel:'production GenAI systems',badge:'Production',details:['Designed and deployed end-to-end RAG platform on Vertex AI with hybrid retrieval','Built evaluation harness for LLM outputs with 92%+ citation precision','Implemented IAM-governed access controls across all GenAI services','Architected agentic orchestration layer with LangGraph for SOP automation'] },
+  { role:'Senior Data Engineer',company:'Charles Schwab',date:'Nov 2021 – Sep 2022',summary:'Migrated warehouse workloads to GCP and stabilized CI/CD, observability, and performance at scale.',chips:'BigQuery · PySpark · Terraform · DevOps',metric:'$MM',metricLabel:'cloud migration programs',badge:'Enterprise',details:['Led migration of on-premise data warehouse to BigQuery, reducing query latency by 60%','Implemented automated CI/CD pipelines with Terraform for infrastructure provisioning','Built real-time observability dashboards for pipeline health and cost tracking','Optimized PySpark jobs for 40% reduction in compute costs'] },
+  { role:'Data Engineer',company:'Wiley Publications',date:'Mar 2019 – Nov 2021',summary:'Built ETL pipelines, data integration layers, and analytics workflows for publishing platforms.',chips:'ETL · Data Pipelines · Analytics',metric:'12+',metricLabel:'enterprise pipelines',badge:'Pipeline',details:['Designed and maintained 12+ production ETL pipelines serving analytics teams','Developed data quality framework with automated validation and alerting','Migrated legacy SSIS packages to cloud-native data integration workflows','Built reporting layer for business intelligence dashboards used by 50+ stakeholders'] },
+  { role:'Software Engineer',company:'DSOgroup TEOTYS',date:'Aug 2018 – Mar 2019',summary:'Talend streaming jobs, CDC pipelines, and DR-ready data frameworks.',chips:'Talend · ETL · CDC',metric:'Real-time',metricLabel:'CDC pipelines',badge:'Real-time',details:['Architected real-time CDC pipeline using Talend streaming jobs for sub-minute latency','Implemented disaster recovery framework with automated failover and data consistency checks','Built monitoring dashboards for pipeline health and SLA tracking','Reduced data freshness from hourly to near-real-time for critical business reports'] },
+  { role:'Software Engineer',company:'Innominds',date:'Jun 2015 – Jul 2018',summary:'Warehouse and ETL design with reusable business logic and reliability improvements.',chips:'ETL · Talend · Data Quality',metric:'50+',metricLabel:'data warehouse ETLs',badge:'Enterprise',details:['Developed 50+ ETL mappings for enterprise data warehouse modernization initiatives','Created reusable business logic library reducing development time by 30%','Implemented data lineage and impact analysis for regulatory compliance','Established code review and testing best practices for the data engineering team'] },
+  { role:'Intern',company:'Vizag Steel Plant',date:'Jan 2015 – Mar 2015',summary:'SCADA and automation work for monitoring and operational troubleshooting.',chips:'IoT · Automation · Monitoring',metric:'SCADA',metricLabel:'industrial automation',badge:'SCADA',details:['Developed SCADA monitoring dashboards for production line metrics and alerts','Assisted in troubleshooting automation control systems for industrial equipment','Created documentation and runbooks for operational procedures','Contributed to IoT data collection pipeline for sensor telemetry'] },
 ];
 ---
 
@@ -23,7 +23,7 @@ const allRoles = [
 
       <section class="relative" style="perspective: 1200px;">
         {allRoles.map((r, i) => (
-          <ExpCard role={r[0]} company={r[1]} date={r[2]} summary={r[3]} chips={r[4]} metric={r[5]} metricLabel={r[6]} index={i} />
+          <ExpCard role={r.role} company={r.company} date={r.date} summary={r.summary} chips={r.chips} metric={r.metric} metricLabel={r.metricLabel} badge={r.badge} details={r.details} index={i} />
         ))}
       </section>
     </section>
@@ -130,6 +130,34 @@ const allRoles = [
           duration: 0.4,
           ease: 'power2.out'
         });
+      });
+    });
+
+    document.querySelectorAll('.exp-card').forEach((card) => {
+      const details = card.querySelector('.exp-details') as HTMLElement;
+      if (!details) return;
+
+      let isOpen = false;
+      let anim: gsap.core.Tween | null = null;
+
+      card.addEventListener('click', () => {
+        isOpen = !isOpen;
+        card.setAttribute('data-expanded', String(isOpen));
+
+        if (anim) {
+          anim.kill();
+        }
+
+        if (isOpen) {
+          anim = gsap.fromTo(details,
+            { maxHeight: 0, opacity: 0 },
+            { maxHeight: details.scrollHeight, opacity: 1, duration: 0.5, ease: 'power3.inOut', overwrite: 'auto' }
+          );
+        } else {
+          anim = gsap.to(details,
+            { maxHeight: 0, opacity: 0, duration: 0.4, ease: 'power3.inOut', overwrite: 'auto' }
+          );
+        }
       });
     });
 
