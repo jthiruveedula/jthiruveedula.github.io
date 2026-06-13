@@ -194,6 +194,10 @@ const capabilityCards = [
                 <feGaussianBlur stdDeviation="3" result="blur"/>
                 <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
               </filter>
+              <filter id="pulse-glow">
+                <feGaussianBlur stdDeviation="4" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
               <marker id="arrow-clean" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
                 <path d="M0,0.5 L0,5.5 L5,3 z" fill="#34d399"/>
               </marker>
@@ -202,18 +206,56 @@ const capabilityCards = [
               </marker>
             </defs>
 
-            <!-- Source nodes (left) -->
+            <!-- Grid background -->
+            <g class="tension-grid" opacity="0.08">
+              <line x1="0" y1="38" x2="520" y2="38" stroke="#475569" stroke-width="0.3"/>
+              <line x1="0" y1="76" x2="520" y2="76" stroke="#475569" stroke-width="0.3"/>
+              <line x1="0" y1="114" x2="520" y2="114" stroke="#475569" stroke-width="0.3"/>
+              <line x1="0" y1="152" x2="520" y2="152" stroke="#475569" stroke-width="0.3"/>
+              <line x1="0" y1="190" x2="520" y2="190" stroke="#475569" stroke-width="0.3"/>
+              <line x1="0" y1="228" x2="520" y2="228" stroke="#475569" stroke-width="0.3"/>
+              <line x1="0" y1="266" x2="520" y2="266" stroke="#475569" stroke-width="0.3"/>
+              <line x1="0" y1="304" x2="520" y2="304" stroke="#475569" stroke-width="0.3"/>
+              <line x1="0" y1="342" x2="520" y2="342" stroke="#475569" stroke-width="0.3"/>
+              <line x1="40" y1="0" x2="40" y2="380" stroke="#475569" stroke-width="0.3"/>
+              <line x1="80" y1="0" x2="80" y2="380" stroke="#475569" stroke-width="0.3"/>
+              <line x1="120" y1="0" x2="120" y2="380" stroke="#475569" stroke-width="0.3"/>
+              <line x1="160" y1="0" x2="160" y2="380" stroke="#475569" stroke-width="0.3"/>
+              <line x1="200" y1="0" x2="200" y2="380" stroke="#475569" stroke-width="0.3"/>
+              <line x1="240" y1="0" x2="240" y2="380" stroke="#475569" stroke-width="0.3"/>
+              <line x1="280" y1="0" x2="280" y2="380" stroke="#475569" stroke-width="0.3"/>
+              <line x1="320" y1="0" x2="320" y2="380" stroke="#475569" stroke-width="0.3"/>
+              <line x1="360" y1="0" x2="360" y2="380" stroke="#475569" stroke-width="0.3"/>
+              <line x1="400" y1="0" x2="400" y2="380" stroke="#475569" stroke-width="0.3"/>
+              <line x1="440" y1="0" x2="440" y2="380" stroke="#475569" stroke-width="0.3"/>
+              <line x1="480" y1="0" x2="480" y2="380" stroke="#475569" stroke-width="0.3"/>
+            </g>
+
+            <!-- Source nodes (left) with pulse rings -->
             <g class="tension-sources">
-              <circle cx="44" cy="80"  r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
+              <circle class="source-pulse-ring" cx="44" cy="80"  r="24" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0"/>
+              <circle class="source-node" cx="44" cy="80"  r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
               <text x="44" y="84"  text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#fbbf24">API</text>
-              <circle cx="44" cy="190" r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
+              <circle class="source-pulse-ring" cx="44" cy="190" r="24" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0"/>
+              <circle class="source-node" cx="44" cy="190" r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
               <text x="44" y="194" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#fbbf24">DB</text>
-              <circle cx="44" cy="300" r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
+              <circle class="source-pulse-ring" cx="44" cy="300" r="24" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0"/>
+              <circle class="source-node" cx="44" cy="300" r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
               <text x="44" y="304" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#fbbf24">DOCS</text>
             </g>
 
-            <!-- Target node (right) -->
+            <!-- Data packet dots (chaos phase) -->
+            <g class="chaos-dots" opacity="0">
+              <circle cx="160" cy="180" r="3" fill="#f59e0b" opacity="0.8"/>
+              <circle cx="260" cy="140" r="3" fill="#f59e0b" opacity="0.6"/>
+              <circle cx="360" cy="280" r="3" fill="#f59e0b" opacity="0.7"/>
+              <circle cx="200" cy="320" r="3" fill="#f59e0b" opacity="0.5"/>
+              <circle cx="380" cy="100" r="3" fill="#f59e0b" opacity="0.6"/>
+            </g>
+
+            <!-- Target node (right) with pulse ring -->
             <g class="tension-target">
+              <circle class="target-pulse-ring" cx="476" cy="190" r="34" fill="none" stroke="#34d399" stroke-width="0.6" opacity="0" filter="url(#pulse-glow)"/>
               <circle cx="476" cy="190" r="26" fill="#0f172a" stroke="#34d399" stroke-width="1.5" filter="url(#node-glow)"/>
               <text x="476" y="186" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#34d399">AI</text>
               <text x="476" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#34d399">SYS</text>
@@ -228,16 +270,18 @@ const capabilityCards = [
 
             <!-- GOVERNANCE LAYER (hidden → phase 2) -->
             <g class="gov-layer" opacity="0">
-              <!-- Glow behind rect -->
-              <rect x="195" y="128" width="130" height="124" rx="8" fill="#6366f1" opacity="0.06" />
-              <!-- Border rect -->
+              <rect class="gov-glow" x="180" y="113" width="160" height="154" rx="12" fill="#6366f1" opacity="0"/>
               <rect x="195" y="128" width="130" height="124" rx="8" fill="#0f172a" stroke="#6366f1" stroke-width="1.5"/>
-              <!-- Inner label -->
               <text x="260" y="180" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#818cf8" letter-spacing="2">POLICY</text>
               <text x="260" y="196" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6366f1" letter-spacing="2">LAYER</text>
-              <!-- Horizontal rule inside -->
               <line x1="210" y1="208" x2="310" y2="208" stroke="#6366f1" stroke-width="0.5" opacity="0.5"/>
               <text x="260" y="222" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#475569">eval · guard · rollback</text>
+              <!-- Governance particles -->
+              <circle class="gov-particle" cx="190" cy="140" r="1.5" fill="#818cf8" opacity="0"/>
+              <circle class="gov-particle" cx="330" cy="160" r="1" fill="#818cf8" opacity="0"/>
+              <circle class="gov-particle" cx="210" cy="250" r="1.5" fill="#818cf8" opacity="0"/>
+              <circle class="gov-particle" cx="320" cy="240" r="1" fill="#818cf8" opacity="0"/>
+              <circle class="gov-particle" cx="260" cy="120" r="1.5" fill="#818cf8" opacity="0"/>
             </g>
 
             <!-- CLEAN PATHS (hidden → phase 3, emerald, draw in) -->
@@ -245,6 +289,10 @@ const capabilityCards = [
               <path class="clean-p" d="M64,80  Q130,80  195,155 L325,170 Q410,180 452,190" fill="none" stroke="#34d399" stroke-width="1.8" stroke-dasharray="500" stroke-dashoffset="500" stroke-linecap="round" marker-end="url(#arrow-clean)"/>
               <path class="clean-p" d="M64,190 L195,190 L325,190 Q410,190 452,190"           fill="none" stroke="#34d399" stroke-width="1.8" stroke-dasharray="500" stroke-dashoffset="500" stroke-linecap="round" marker-end="url(#arrow-clean)"/>
               <path class="clean-p" d="M64,300 Q130,300 195,225 L325,210 Q410,200 452,190"   fill="none" stroke="#34d399" stroke-width="1.8" stroke-dasharray="500" stroke-dashoffset="500" stroke-linecap="round" marker-end="url(#arrow-clean)"/>
+              <!-- Data packet dots (clean phase) -->
+              <circle class="clean-data-dot" cx="150" cy="90" r="3" fill="#34d399" opacity="0"/>
+              <circle class="clean-data-dot" cx="260" cy="185" r="3" fill="#34d399" opacity="0"/>
+              <circle class="clean-data-dot" cx="370" cy="190" r="3" fill="#34d399" opacity="0"/>
             </g>
           </svg>
         </div>
@@ -655,7 +703,7 @@ const capabilityCards = [
     }
   });
 
-  // Phase 1 (0 → 0.38): draw chaos paths
+  // Phase 1 (0 → 0.38): draw chaos paths, pulse sources, scatter dots
   tlTension.to('.chaos-p', {
     strokeDashoffset: 0,
     stagger: 0.06,
@@ -663,18 +711,55 @@ const capabilityCards = [
     ease: 'power2.inOut',
   }, 0);
 
-  // Phase 2 (0.30 → 0.65): governance layer appears
+  tlTension.to('.source-pulse-ring', {
+    opacity: 0.5,
+    scale: 1.3,
+    transformOrigin: 'center',
+    stagger: 0.1,
+    duration: 0.3,
+    ease: 'power1.out',
+  }, 0.05);
+
+  tlTension.to('.chaos-dots', {
+    opacity: 1,
+    duration: 0.2,
+    ease: 'power1.out',
+  }, 0.1);
+
+  // Phase 2 (0.30 → 0.65): governance layer appears, particles float in
   tlTension.fromTo('.gov-layer',
     { opacity: 0, scale: 0.9, transformOrigin: '260px 190px' },
     { opacity: 1, scale: 1,   duration: 0.35, ease: 'power2.out' },
     0.30
   );
 
-  // Phase 3 (0.58 → 1.0): chaos fades, clean paths draw, source nodes turn emerald
+  tlTension.to('.gov-glow', {
+    opacity: 0.08,
+    scale: 1.05,
+    duration: 0.4,
+    ease: 'sine.inOut',
+    yoyo: true,
+    repeat: 1,
+  }, 0.32);
+
+  tlTension.to('.gov-particle', {
+    opacity: 0.6,
+    y: gsap.utils.wrap([-8, 6, -4, 5, -6]),
+    x: gsap.utils.wrap([4, -6, 8, -5, 3]),
+    duration: 0.5,
+    ease: 'sine.inOut',
+  }, 0.38);
+
+  // Phase 3 (0.58 → 1.0): chaos fades, clean paths draw, nodes turn emerald
   tlTension.to('.chaos-p',      { opacity: 0, duration: 0.18 }, 0.58);
+  tlTension.to('.chaos-dots',   { opacity: 0, duration: 0.12 }, 0.58);
+  tlTension.to('.source-pulse-ring', { opacity: 0, duration: 0.1 }, 0.58);
+  tlTension.to('.target-pulse-ring', { opacity: 0.4, scale: 1.15, transformOrigin: 'center', duration: 0.3, ease: 'power1.out' }, 0.60);
   tlTension.to('.clean-paths',  { opacity: 1, duration: 0.08 }, 0.64);
   tlTension.to('.clean-p',      { strokeDashoffset: 0, stagger: 0.06, duration: 0.34, ease: 'power3.out' }, 0.66);
-  tlTension.to('.tension-sources circle', { stroke: '#34d399', duration: 0.18 }, 0.82);
+  tlTension.to('.clean-data-dot', { opacity: 0.9, scale: 1.3, stagger: 0.08, duration: 0.2, ease: 'back.out(2)' }, 0.70);
+  tlTension.to('.source-node', { stroke: '#34d399', duration: 0.18 }, 0.82);
+  tlTension.to('.tension-sources text', { fill: '#34d399', duration: 0.12 }, 0.84);
   tlTension.to('.phase-indicator',        { opacity: 1, duration: 0.15 }, 0.88);
 
 
