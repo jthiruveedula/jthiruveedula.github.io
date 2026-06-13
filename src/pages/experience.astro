@@ -89,7 +89,7 @@ const allRoles = [
       }
     });
 
-    document.querySelectorAll('.exp-card').forEach((card, i) => {
+    document.querySelectorAll('.exp-card').forEach((card) => {
       const inner = card.querySelector('.exp-card-inner') as HTMLElement;
       if (!inner) return;
       card.addEventListener('mousemove', (ev) => {

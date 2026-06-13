@@ -329,7 +329,7 @@ const capabilityCards = [
       </div>
 
       <div class="stacking-container relative" style="perspective: 1200px;">
-        {capabilityCards.map(({ num, title, desc, tags, detail }, index) => (
+        {capabilityCards.map(({ title, desc, tags, detail }, index) => (
           <article
             class={`capability-card stack-card sticky mb-4 rounded-2xl border border-slate-700/50 bg-slate-900/80 p-6 md:p-8 shadow-[0_-8px_40px_rgba(0,0,0,0.6)] origin-top relative`}
             style={`top: ${3 + index * 1}rem; z-index: ${index + 10};`}
@@ -392,7 +392,7 @@ const capabilityCards = [
       </div>
 
       <div class="grid gap-5 md:grid-cols-2 proof-grid">
-        {projects.map(({ slug, title, kicker, summary, stack, metric, metricLabel }, index) => (
+        {projects.map(({ title, kicker, summary, stack, metric, metricLabel }, index) => (
           <article class={`proof-card group relative rounded-2xl border border-slate-700/60 bg-slate-800/30 p-7 hover:border-cyan-500/30 hover:bg-slate-800/50 transition-all duration-500 overflow-hidden opacity-0 translate-y-8 ${index === 0 ? 'md:col-span-2' : ''}`}>
             <!-- Status bar at top -->
             <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-amber-500/40 via-emerald-400/60 to-emerald-400/40"></div>
