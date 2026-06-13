@@ -6,4 +6,8 @@ dist/
 *.log
 .DS_Store
 .opencode
+.codegraph/
+.understand-anything/
+data/
+session-*.md
 graphify-**
