@@ -1,5 +1,5 @@
 ---
-const { title = "Jagadeesh Thiruveedula — GenAI Systems Architect", description = "A premium portfolio for a GenAI-driven data architect building private LLM systems, enterprise RAG, and governed AI workflows on GCP." } = Astro.props;
+const { title = "Jagadeesh Thiruveedula — GenAI Systems Architect", description = "A premium portfolio for a GenAI-driven data architect building private LLM systems, enterprise RAG, and governed AI workflows on GCP.", navLabel } = Astro.props;
 const { pathname } = Astro.url;
 
 const navLinks = [
@@ -179,7 +179,7 @@ function isActive(href: string) {
             <span class="font-mono text-base font-bold text-indigo-400 group-hover:text-indigo-300 transition-colors">
               JT_<span class="logo-cursor" aria-hidden="true"></span>
             </span>
-            <span id="nav-section-label" class="hidden md:inline-block font-mono text-xs text-slate-500 tracking-widest transition-all duration-300"></span>
+            <span id="nav-section-label" class="hidden md:inline-block font-mono text-xs text-slate-500 tracking-widest transition-all duration-300 opacity-40">{navLabel || 'Jagadeesh Thiruveedula'}</span>
           </a>
 
           <!-- Desktop Nav -->
@@ -217,13 +217,10 @@ function isActive(href: string) {
 
           <!-- Brand block -->
           <div class="flex flex-col gap-3">
-            <div class="flex items-baseline gap-3">
-              <span class="footer-mono text-xl font-bold text-indigo-400">JT_</span>
-              <span class="footer-mono text-xs text-slate-500 tracking-widest">
-                // SYSTEM STATUS: <span class="text-emerald-400" id="footer-status">AVAILABLE</span>
-              </span>
+            <div class="flex items-baseline">
+              <span class="footer-mono text-xl font-semibold text-indigo-400">JT_</span>
             </div>
-            <p class="text-sm text-slate-300 font-semibold mt-1">Jagadeesh Thiruveedula</p>
+            <p class="text-sm text-slate-300 mt-1">Jagadeesh Thiruveedula</p>
             <p class="footer-mono text-xs text-slate-500 leading-relaxed">GenAI Systems Architect<br/>GCP-native · Vertex AI · Enterprise RAG</p>
           </div>
 
@@ -363,6 +360,7 @@ function isActive(href: string) {
       }
 
       /* Global will-change for animated elements */
+      .hero-line,
       .hero-description,
       .stack-card,
       .pipeline-step,

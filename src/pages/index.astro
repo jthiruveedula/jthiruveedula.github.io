@@ -111,33 +111,34 @@ const capabilityCards = [
       <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(2,6,23,0.7)_100%)]"></div>
     </div>
 
-    <div class="container relative z-10 mx-auto px-4 md:px-6 py-24">
-      <div class="mx-auto flex max-w-5xl flex-col items-start gap-6">
+      <div class="container relative z-10 mx-auto px-4 md:px-6 py-24">
+      <div class="mx-auto flex max-w-3xl flex-col items-start gap-4">
 
-        <!-- H1 — split into words for stagger reveal -->
-        <h1 id="hero-headline" class="hero-title font-black tracking-tight text-white" style="font-size: clamp(1.75rem, 1rem + 2.5vw, 3.5rem); line-height: 1.1;">
-          Command Surface for Production AI
+        <!-- H1 — two-line with line stagger -->
+        <h1 id="hero-headline" class="hero-title font-bold tracking-tight text-white" style="font-size: clamp(1.5rem, 1rem + 2vw, 2.75rem); line-height: 1.2;">
+          <span class="hero-line">Command Surface</span>
+          <span class="hero-line">for Production AI</span>
         </h1>
 
         <!-- Description -->
-        <p class="hero-description max-w-2xl text-base text-slate-300 font-light leading-relaxed md:text-lg">
+        <p class="hero-description max-w-lg text-sm text-slate-300 font-light leading-relaxed md:text-base">
           Private LLM applications, enterprise-grade RAG pipelines, and governed agentic workflows on GCP — built for teams that need performance, security, and operational clarity.
         </p>
 
         <!-- Tag pills -->
-        <div class="hero-tags flex flex-wrap items-center gap-2 mt-2">
+        <div class="hero-tags flex flex-wrap items-center gap-2 mt-1">
           {['GCP-native', 'Vertex AI', 'Token-efficient', 'Governed workflows'].map((item) => (
             <span class="sys-chip">{item}</span>
           ))}
         </div>
 
         <!-- CTAs -->
-        <div class="hero-ctas flex flex-wrap items-center gap-4 mt-4">
-          <a href="#deployments" class="btn-primary inline-flex items-center gap-2 rounded-full bg-cyan-400 px-7 py-3 text-sm font-bold text-slate-950 shadow-[0_0_18px_rgba(34,211,238,0.18)] hover:bg-cyan-300 hover:scale-[1.02] transition-all duration-200">
+        <div class="hero-ctas flex flex-wrap items-center gap-4 mt-3">
+          <a href="#deployments" class="btn-primary inline-flex items-center gap-2 rounded-full bg-cyan-400 px-6 py-2.5 text-sm font-semibold text-slate-950 shadow-[0_0_18px_rgba(34,211,238,0.18)] hover:bg-cyan-300 hover:scale-[1.02] transition-all duration-200">
             See the systems
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
-          <a href="/contact" class="btn-primary inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 px-7 py-3 text-sm font-semibold text-slate-300 hover:border-cyan-400/40 hover:text-cyan-100 backdrop-blur-sm transition-all duration-200">
+          <a href="/contact" class="btn-primary inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 px-6 py-2.5 text-sm font-medium text-slate-300 hover:border-cyan-400/40 hover:text-cyan-100 backdrop-blur-sm transition-all duration-200">
             Discuss a system
           </a>
         </div>
@@ -165,11 +166,11 @@ const capabilityCards = [
       <div class="container mx-auto px-4 md:px-6 grid md:grid-cols-2 gap-12 items-center">
         <!-- Copy -->
         <div class="max-w-xl z-10">
-          <p class="section-eyebrow text-amber-400/80">[MODULE: TENSION]</p>
-          <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05] complexity-text">
+          <p class="section-eyebrow text-amber-400/80">TENSION</p>
+          <h2 class="text-2xl md:text-3xl font-bold text-white leading-snug complexity-text">
             The gap between a demo and production is <em class="not-italic text-slate-400">governance.</em>
           </h2>
-          <p class="mt-6 text-lg text-slate-400 leading-relaxed complexity-subtext">
+          <p class="mt-4 text-sm text-slate-400 leading-relaxed max-w-md complexity-subtext">
             Enterprise data is messy. APIs are unpredictable. Without orchestration, AI is just a parlor trick. I bring the discipline of data architecture to generative models.
           </p>
           <!-- Phase indicator -->
@@ -179,8 +180,14 @@ const capabilityCards = [
           </div>
         </div>
 
-        <!-- Governance narrative SVG visualization -->
-        <div class="relative h-[380px] w-full flex items-center justify-center tension-viz" aria-hidden="true">
+        <!-- Label + Governance narrative SVG visualization -->
+        <div class="flex flex-col items-center gap-3">
+          <div class="flex items-center gap-8 font-mono text-[10px] uppercase tracking-[0.2em]">
+            <span class="text-amber-500/50">Demo</span>
+            <span class="w-16 h-px bg-slate-700/40"></span>
+            <span class="text-emerald-400/50">Production</span>
+          </div>
+          <div class="relative h-[340px] w-full flex items-center justify-center tension-viz" aria-hidden="true">
           <svg class="tension-svg w-full max-w-[520px]" viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <filter id="node-glow">
@@ -243,13 +250,14 @@ const capabilityCards = [
         </div>
       </div>
     </div>
+    </div>
   </section>
 
 
   <!-- ═══════════════════════════════════════════════════════════════
        §3 · PIPELINE — Architectural Clarity
   ═══════════════════════════════════════════════════════════════ -->
-  <section class="orchestration-section bg-slate-900 py-32 border-t border-slate-800/40 relative overflow-hidden">
+  <section class="orchestration-section bg-slate-900 py-24 border-t border-slate-800/40 relative overflow-hidden">
     <!-- Animated blueprint background -->
     <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
       <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -264,9 +272,9 @@ const capabilityCards = [
 
     <div class="container relative z-10 mx-auto px-4 md:px-6">
       <div class="mb-16 max-w-3xl">
-        <p class="section-eyebrow text-emerald-400">[MODULE: PIPELINE]</p>
-        <h2 class="text-4xl font-black text-white md:text-5xl">Architectural clarity.</h2>
-        <p class="mt-4 text-xl text-slate-400 font-light">How raw data becomes trusted, served intelligence.</p>
+        <p class="section-eyebrow text-emerald-400">PIPELINE</p>
+        <h2 class="text-2xl font-bold text-white md:text-3xl">Architectural clarity.</h2>
+        <p class="mt-2 text-sm text-slate-400 font-light">How raw data becomes trusted, served intelligence.</p>
       </div>
 
       <!-- Pipeline card grid -->
@@ -280,17 +288,17 @@ const capabilityCards = [
           {pipelineStages.map((stage, index) => (
             <div class={`pipeline-step step-${index} relative z-10 flex flex-col gap-4 opacity-0 translate-y-4`} style={`will-change:transform;`}>
               <!-- Card -->
-              <div class="rounded-2xl border border-slate-700/60 bg-slate-950/70 backdrop-blur-sm p-5 flex flex-col gap-3 h-full hover:border-opacity-100 transition-colors duration-300 group"
+              <div class="rounded-2xl border border-slate-700/60 bg-slate-950/70 backdrop-blur-sm p-4 flex flex-col gap-2 h-full hover:border-opacity-100 transition-colors duration-300 group"
                    style={`--step-color: ${stage.color};`}>
 
                 <!-- Step number + active dot -->
                 <div class="flex items-center justify-between">
-                  <span class="font-mono text-3xl font-bold leading-none step-number" style={`color: ${stage.color}; opacity: 0.25;`}>{stage.num}</span>
+                  <span class="font-mono text-2xl font-bold leading-none step-number" style={`color: ${stage.color}; opacity: 0.25;`}>{stage.num}</span>
                   <span class="step-status h-1.5 w-1.5 rounded-full bg-slate-700 transition-colors duration-300"></span>
                 </div>
 
                 <!-- Name -->
-                <h3 class="text-base font-bold text-white tracking-tight">{stage.name}</h3>
+                <h3 class="text-sm font-semibold text-white tracking-tight">{stage.name}</h3>
 
                 <!-- Description -->
                 <p class="text-xs text-slate-500 leading-relaxed flex-1">{stage.desc}</p>
@@ -313,18 +321,18 @@ const capabilityCards = [
   <!-- ═══════════════════════════════════════════════════════════════
        §4 · CAPABILITIES — Systems Expertise (stacking cards)
   ═══════════════════════════════════════════════════════════════ -->
-  <section class="capabilities-section bg-slate-950 py-32 relative border-t border-slate-800/40">
+  <section class="capabilities-section bg-slate-950 py-24 relative border-t border-slate-800/40">
     <div class="container mx-auto px-4 md:px-6 max-w-4xl">
       <div class="mb-16">
-        <p class="section-eyebrow text-indigo-400">[MODULE: CAPABILITIES]</p>
-        <h2 class="text-4xl font-black text-white md:text-5xl">Systems expertise.</h2>
+        <p class="section-eyebrow text-indigo-400">CAPABILITIES</p>
+        <h2 class="text-2xl font-bold text-white md:text-3xl">Systems expertise.</h2>
       </div>
 
       <div class="stacking-container relative" style="perspective: 1200px;">
         {capabilityCards.map(({ num, title, desc, tags, detail }, index) => (
           <article
-            class={`capability-card stack-card sticky mb-6 rounded-3xl border border-slate-700/50 bg-slate-900/80 p-8 md:p-10 shadow-[0_-8px_40px_rgba(0,0,0,0.6)] origin-top relative`}
-            style={`top: ${4 + index * 1.5}rem; z-index: ${index + 10};`}
+            class={`capability-card stack-card sticky mb-4 rounded-2xl border border-slate-700/50 bg-slate-900/80 p-6 md:p-8 shadow-[0_-8px_40px_rgba(0,0,0,0.6)] origin-top relative`}
+            style={`top: ${3 + index * 1}rem; z-index: ${index + 10};`}
           >
             <div class="cap-card-inner will-change-transform">
               <!-- Left accent strip -->
@@ -332,21 +340,29 @@ const capabilityCards = [
               <!-- Top accent line -->
               <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/25 to-transparent" aria-hidden="true"></div>
 
-              <div class="flex flex-col md:flex-row justify-between gap-8 items-start">
+              <div class="flex flex-col md:flex-row justify-between gap-6 items-start">
                 <div class="flex-1 min-w-0">
                   <div class="flex flex-wrap items-center gap-2 mb-4">
                     <span class="font-mono text-[10px] tracking-widest uppercase text-indigo-400/60">{tags}</span>
                   </div>
-                  <h2 class="mb-3 text-xl md:text-2xl font-bold text-white tracking-tight">{title}</h2>
-                  <p class="text-sm text-slate-400 leading-relaxed max-w-lg">{desc}</p>
-                  <div class="mt-5 pt-4 border-t border-slate-800/40">
-                    <p class="font-mono text-xs text-slate-600 leading-relaxed">{detail}</p>
+                  <h2 class="mb-2 text-base md:text-lg font-semibold text-white tracking-tight">{title}</h2>
+                  <p class="text-xs text-slate-400 leading-relaxed max-w-md">{desc}</p>
+                  <div class="mt-3 pt-3 border-t border-slate-800/40">
+                    <p class="font-mono text-[10px] text-slate-600 leading-relaxed">{detail}</p>
                   </div>
                 </div>
 
-                <div class="flex-shrink-0 w-14 h-14 rounded-2xl border border-indigo-500/15 flex items-center justify-center bg-indigo-500/5 relative">
+                <div class="flex-shrink-0 w-12 h-12 rounded-xl border border-indigo-500/15 flex items-center justify-center bg-indigo-500/5 relative">
                   <span class="absolute -top-2 -right-2 font-mono text-[10px] uppercase tracking-[0.25em] text-amber-300/50">0{index + 1}</span>
-                  <span class="font-mono text-indigo-400/50 font-bold text-lg">{num}</span>
+                  {index === 0 && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M8 10h8M8 14h6"/></svg>
+                  )}
+                  {index === 1 && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.5"><path d="M4 7a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7z"/><path d="M14 2v4M10 2v4M4 12h16"/></svg>
+                  )}
+                  {index === 2 && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v7M12 15v7M2 12h7M15 12h7"/></svg>
+                  )}
                 </div>
               </div>
             </div>
@@ -360,15 +376,15 @@ const capabilityCards = [
   <!-- ═══════════════════════════════════════════════════════════════
        §5 · DEPLOYMENTS — Production Proof
   ═══════════════════════════════════════════════════════════════ -->
-  <section id="deployments" class="deployments-section bg-slate-900 py-32 border-t border-slate-800/40 relative overflow-hidden">
+  <section id="deployments" class="deployments-section bg-slate-900 py-24 border-t border-slate-800/40 relative overflow-hidden">
     <!-- Canvas background for constellation hover effect -->
     <canvas id="constellation-canvas" class="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true"></canvas>
 
     <div class="container relative z-10 mx-auto px-4 md:px-6">
       <div class="mb-16 flex items-end justify-between gap-8">
         <div>
-          <p class="section-eyebrow text-cyan-400">[MODULE: DEPLOYMENTS]</p>
-          <h2 class="text-4xl font-black text-white md:text-5xl">Production-facing AI work.</h2>
+          <p class="section-eyebrow text-cyan-400">DEPLOYMENTS</p>
+          <h2 class="text-2xl font-bold text-white md:text-3xl">Production-facing AI work.</h2>
         </div>
         <a href="/experience" class="hidden md:inline-flex items-center gap-1.5 font-mono text-sm text-slate-500 hover:text-slate-300 transition-colors whitespace-nowrap">
           Full experience <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -392,7 +408,7 @@ const capabilityCards = [
             </div>
 
             <!-- Title -->
-            <h3 class="text-lg font-bold text-white mb-2 group-hover:text-cyan-100 transition-colors duration-300 pr-8">{title}</h3>
+            <h3 class="text-base font-semibold text-white mb-2 group-hover:text-cyan-100 transition-colors duration-300 pr-8">{title}</h3>
             <p class="text-sm text-slate-500 leading-relaxed mb-5">{summary}</p>
 
             <!-- Stack chips -->
@@ -402,10 +418,17 @@ const capabilityCards = [
               ))}
             </div>
 
-            <!-- Metric -->
-            <div class="pt-4 border-t border-slate-800/60">
-              <span class="metric-value font-mono text-2xl font-bold text-emerald-400 proof-metric" data-value="{metric}">{metric}</span>
-              <span class="font-mono text-xs text-slate-600 ml-2">{metricLabel}</span>
+            <!-- Metric with micro bar -->
+            <div class="pt-3 border-t border-slate-800/60">
+              <div class="relative">
+                <div class="metric-bar-bg absolute -bottom-0.5 left-0 right-0 h-[3px] bg-slate-800/60 rounded-full overflow-hidden">
+                  <div class="metric-bar-fill h-full bg-gradient-to-r from-emerald-500/30 to-cyan-400/30 rounded-full" style="width:0%"></div>
+                </div>
+                <div class="relative flex items-baseline gap-2">
+                  <span class="metric-value font-mono text-base font-semibold text-emerald-400 proof-metric" data-value="{metric}">{metric}</span>
+                  <span class="font-mono text-[10px] text-slate-600">{metricLabel}</span>
+                </div>
+              </div>
             </div>
           </article>
         ))}
@@ -417,7 +440,7 @@ const capabilityCards = [
   <!-- ═══════════════════════════════════════════════════════════════
        §6 · INITIATE — Contact CTA
   ═══════════════════════════════════════════════════════════════ -->
-  <section class="contact-section bg-slate-950 py-40 border-t border-slate-800/40 relative overflow-hidden">
+  <section class="contact-section bg-slate-950 py-32 border-t border-slate-800/40 relative overflow-hidden">
     <!-- Breathing pulse background -->
     <div class="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
       <svg width="600" height="600" viewBox="0 0 600 600" class="cta-pulse-svg">
@@ -429,12 +452,12 @@ const capabilityCards = [
     </div>
 
     <div class="container mx-auto px-4 md:px-6 relative z-10 text-center">
-      <article class="contact-card mx-auto max-w-3xl rounded-3xl border border-slate-700/40 bg-slate-900/50 backdrop-blur-xl p-12 md:p-16 shadow-[0_0_60px_rgba(0,0,0,0.5)] opacity-0 translate-y-6">
-        <p class="section-eyebrow text-cyan-400 text-center">[MODULE: INITIATE]</p>
-        <h2 class="text-3xl font-black text-white md:text-5xl mb-5 tracking-tight">
+      <article class="contact-card mx-auto max-w-3xl rounded-3xl border border-slate-700/40 bg-slate-900/50 backdrop-blur-xl p-10 md:p-12 shadow-[0_0_60px_rgba(0,0,0,0.5)] opacity-0 translate-y-6">
+        <p class="section-eyebrow text-cyan-400 text-center">INITIATE</p>
+        <h2 class="text-2xl font-bold text-white md:text-3xl mb-4 tracking-tight">
           Architecting your next AI system?
         </h2>
-        <p class="text-lg text-slate-400 mb-10 leading-relaxed max-w-xl mx-auto">
+        <p class="text-sm text-slate-400 mb-8 leading-relaxed max-w-lg mx-auto">
           Available for architectural advisory, systems design, and production AI engagements. GCP-native by default.
         </p>
 
@@ -497,6 +520,7 @@ const capabilityCards = [
     .scroll-line {
       animation: none;
     }
+    .hero-line,
     .hero-description,
     .hero-tags,
     .hero-ctas {
@@ -512,6 +536,8 @@ const capabilityCards = [
       transform: none !important;
       box-shadow: none !important;
     }
+    .metric-bar-fill { width: 0 !important; }
+    .session-step { opacity: 1 !important; transform: none !important; }
   }
 </style>
 
@@ -526,12 +552,13 @@ const capabilityCards = [
   // SECTION-AWARE NAV LABEL
   // ─────────────────────────────────────────────────────────────────
   const navLabel = document.getElementById('nav-section-label');
+  const names = ['Jagadeesh', 'Thiruveedula', 'J. T.', 'Jagadeesh T.', 'Jagadeesh Thiruveedula'];
   const sectionDefs = [
-    { trigger: '.complexity-section',   label: '/ TENSION'      },
-    { trigger: '.orchestration-section',label: '/ PIPELINE'     },
-    { trigger: '.capabilities-section', label: '/ CAPABILITIES' },
-    { trigger: '.deployments-section',  label: '/ DEPLOYMENTS'  },
-    { trigger: '.contact-section',      label: '/ INITIATE'     },
+    { trigger: '.complexity-section',   label: names[0] },
+    { trigger: '.orchestration-section',label: names[1] },
+    { trigger: '.capabilities-section', label: names[2] },
+    { trigger: '.deployments-section',  label: names[3] },
+    { trigger: '.contact-section',      label: names[4] },
   ];
 
   if (navLabel) {
@@ -556,27 +583,20 @@ const capabilityCards = [
 
   if (!prefersReduced) {
 
-    const heroH1 = document.getElementById('hero-headline');
-    if (heroH1) {
-      const txt = heroH1.textContent || '';
-      heroH1.textContent = '';
-      const words = txt.split(/\s+/);
-      heroH1.innerHTML = words.map((w, i) => `<span class="hero-word" style="display:inline-block">${w}${i < words.length - 1 ? '\u00A0' : ''}</span>`).join('');
-      gsap.from(heroH1.querySelectorAll('.hero-word'), { opacity: 0, y: 40, rotateX: -90, duration: 0.8, stagger: 0.06, ease: 'power4.out' });
-    }
-    gsap.from('.hero-description', { opacity: 0, y: 20, duration: 0.8, delay: 0.6, ease: 'power3.out' });
+    gsap.from('.hero-line', { opacity: 0, y: 30, rotateX: -45, duration: 0.8, stagger: 0.08, ease: 'power4.out' });
+    gsap.from('.hero-description', { opacity: 0, y: 15, duration: 0.8, delay: 0.5, ease: 'power3.out' });
     const tlHero = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
     // Set initial states
-    gsap.set(['.hero-description', '.hero-ctas'], { y: 18, opacity: 0 });
-    gsap.set('.hero-tags',        { y: 10, opacity: 0 });
+    gsap.set(['.hero-description', '.hero-ctas'], { y: 12, opacity: 0 });
+    gsap.set('.hero-tags',        { y: 8, opacity: 0 });
     gsap.set('.scroll-indicator', { opacity: 0 });
 
     tlHero
-      .to('.hero-description', { y: 0, opacity: 1, duration: 0.7 })
-      .to('.hero-tags',        { y: 0, opacity: 1, duration: 0.5 }, '-=0.5')
-      .to('.hero-ctas',        { y: 0, opacity: 1, duration: 0.5 }, '-=0.4')
-      .to('.scroll-indicator', { opacity: 1, duration: 0.6 }, '-=0.2');
+      .to('.hero-description', { y: 0, opacity: 1, duration: 0.6 })
+      .to('.hero-tags',        { y: 0, opacity: 1, duration: 0.4 }, '-=0.4')
+      .to('.hero-ctas',        { y: 0, opacity: 1, duration: 0.4 }, '-=0.3')
+      .to('.scroll-indicator', { opacity: 1, duration: 0.4 }, '-=0.15');
 
     // ── Cursor parallax on HeroNodeGraph SVG layers ──
     const heroSection  = document.querySelector('.hero-section') as HTMLElement;
@@ -597,9 +617,9 @@ const capabilityCards = [
         const dx = (e.clientX - rect.width  / 2) / rect.width;   // -0.5 → 0.5
         const dy = (e.clientY - rect.height / 2) / rect.height;  // -0.5 → 0.5
 
-        qxE(dx * 18);  qyE(dy * 12);
-        qxN(dx * 30);  qyN(dy * 20);
-        qxP(dx * 42);  qyP(dy * 28);
+        qxE(dx * 12);  qyE(dy * 8);
+        qxN(dx * 20);  qyN(dy * 14);
+        qxP(dx * 30);  qyP(dy * 20);
       }, { passive: true });
 
       heroSection.addEventListener('mouseleave', () => {
@@ -610,7 +630,7 @@ const capabilityCards = [
     // ── Hero scroll-out parallax (SVG dims as hero exits) ──
     gsap.to('#hero-node-svg', {
       opacity: 0,
-      scale: 1.06,
+      scale: 1.03,
       scrollTrigger: {
         trigger: '.hero-section',
         start: 'top top',
@@ -718,9 +738,9 @@ const capabilityCards = [
       const rect = btn.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
-      gsap.to(btn, { x: x * 0.25, y: y * 0.25, duration: 0.25, ease: 'power2.out' });
+      gsap.to(btn, { x: x * 0.15, y: y * 0.15, duration: 0.3, ease: 'power2.out' });
     });
-    btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.45, ease: 'elastic.out(1, 0.45)' }));
+    btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.4, ease: 'power3.out' }));
   });
 
   function parseMetricValue(raw: string) {
@@ -760,21 +780,13 @@ const capabilityCards = [
   // ─────────────────────────────────────────────────────────────────
   // §4 · CAPABILITIES — stacking cards with depth scaling
   // ─────────────────────────────────────────────────────────────────
-  gsap.from('.capability-card', {
-    opacity: 0,
-    y: 60,
-    stagger: 0.2,
-    duration: 0.9,
-    ease: 'power3.out',
-    scrollTrigger: { trigger: '.capabilities-section', start: 'top 75%' },
-  });
-
+  // §4 · CAPABILITIES — reduced depth stacking
   const cards = gsap.utils.toArray<HTMLElement>('.stack-card');
   cards.forEach((card, i) => {
-    if (i === 0) return; // First card is always visible
+    if (i === 0) return;
 
     gsap.fromTo(card,
-      { y: 80, scale: 0.96, opacity: 0.85 },
+      { y: 40, scale: 0.97, opacity: 0.9 },
       {
         y: 0, scale: 1, opacity: 1,
         duration: 1,
@@ -788,11 +800,10 @@ const capabilityCards = [
       }
     );
 
-    // Scale down previous cards as next one stacks
     if (i > 0) {
       const prevCard = cards[i - 1];
       gsap.to(prevCard, {
-        scale: 0.97,
+        scale: 0.98,
         scrollTrigger: {
           trigger: card,
           start: 'top 60%',
@@ -815,8 +826,8 @@ const capabilityCards = [
         const y = ev.clientY - rect.top;
         const halfW = rect.width / 2;
         const halfH = rect.height / 2;
-        const rotateY = ((x - halfW) / halfW) * 2;
-        const rotateX = ((halfH - y) / halfH) * 2;
+        const rotateY = ((x - halfW) / halfW) * 1.5;
+        const rotateX = ((halfH - y) / halfH) * 1.5;
         gsap.to(inner, { rotateX, rotateY, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
       });
       card.addEventListener('mouseleave', () => {
@@ -955,6 +966,26 @@ const capabilityCards = [
     resize();
   })();
 
+
+  // ─────────────────────────────────────────────────────────────────
+  // §5b · DEPLOYMENTS — metric micro-bar fill
+  // ─────────────────────────────────────────────────────────────────
+  document.querySelectorAll('.proof-card').forEach((card, index) => {
+    const bar = card.querySelector('.metric-bar-fill') as HTMLElement;
+    if (!bar) return;
+    const pct = 30 + (index * 12) % 60; // varied fill between 30-90%
+    gsap.to(bar, {
+      width: pct + '%',
+      duration: 1.2,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: card,
+        start: 'top 80%',
+        toggleActions: 'play none none none',
+        invalidateOnRefresh: true,
+      }
+    });
+  });
 
   // ─────────────────────────────────────────────────────────────────
   // §6 · CONTACT CTA — slide in

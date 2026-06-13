@@ -1,65 +1,132 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const platformSkills = [
+  { name: 'GCP',         tag: 'Cloud Platform',       color: '#22d3ee', icon: 'M5 15a4 4 0 0 1 0-8 4 4 0 0 1 7.4-2A3 3 0 0 1 16 9.5a2.5 2.5 0 0 1 0 5H5Z' },
+  { name: 'BigQuery',    tag: 'Data Warehouse',       color: '#818cf8', icon: 'M4 7h16M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2M4 7v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7M4 12h16' },
+  { name: 'Dataflow',    tag: 'Stream Processing',    color: '#34d399', icon: 'M3 17l5-5 4 5 5-7 4 4' },
+  { name: 'Vertex AI',   tag: 'Machine Learning',     color: '#a78bfa', icon: 'M12 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM6 12a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM18 12a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM12 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM7 7l5 4ZM17 7l-5 4ZM7 17l5-4ZM17 17l5-4Z' },
+  { name: 'Cloud Run',   tag: 'Serverless',           color: '#38bdf8', icon: 'M8 4v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V4M8 4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2M8 4H6M16 4h2M9 14h6' },
+  { name: 'Terraform',   tag: 'Infrastructure as Code',color: '#f59e0b', icon: 'M5 20V9l7-4 7 4v11M5 20h14M5 20H3M19 20h2M12 9v4' },
+];
+
+const aiSkills = [
+  { name: 'RAG',              tag: 'Retrieval Augmented', color: '#34d399', icon: 'M7 4h6l4 4v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2ZM14 8V4M9 13l2 2 4-4' },
+  { name: 'LLM Ops',          tag: 'Lifecycle',           color: '#818cf8', icon: 'M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8ZM12 2v2M12 20v2M2 12h2M20 12h2' },
+  { name: 'Vector Search',    tag: 'Similarity',          color: '#22d3ee', icon: 'M4 20L12 4l8 16M8 13l8-2M8 13l2 6M16 11l2 6' },
+  { name: 'Eval Harness',     tag: 'Evaluation',          color: '#fbbf24', icon: 'M12 2a10 10 0 1 0 10 10M12 2v10l6 6M12 2a10 10 0 0 1 10 10' },
+  { name: 'Guardrails',       tag: 'Safety',              color: '#34d399', icon: 'M12 2l8 4v6a8 8 0 0 1-8 8 8 8 0 0 1-8-8V6l8-4ZM9 12l2 2 4-4' },
+  { name: 'Observability',    tag: 'Monitoring',          color: '#38bdf8', icon: 'M2 20h20M4 16l4-8 4 4 4-6 4 8' },
+];
+
+const certs = [
+  ['Google Cloud Certified — Professional Data Engineer', 'GCP · BigQuery · Dataflow · AI/ML', 'google'],
+  ['Talend Data Explorer Certification', 'Big Data · ETL · CDC', 'talend'],
+  ['CCA Spark and Hadoop Developer', 'PySpark · Hadoop · Big Data', 'spark'],
+  ['Advanced Certificate in Blockchain — IIIT Hyderabad', 'DLT · Security · Enterprise Blockchain', 'blockchain'],
+  ['Globee Award — IT World Awards\u00ae', 'Leadership · Innovation · Transformation', 'award'],
+];
+
+const stackTags = ['GCP','BigQuery','Dataflow','Vertex AI','GenAI','RAG','Python','SQL','Terraform','Cloud Run','LangGraph','Postgres'];
 ---
 
-<Layout title="Skills & Certifications — Jagadeesh Thiruveedula">
+<Layout title="Skills & Certifications — Jagadeesh Thiruveedula" navLabel="J. T.">
   <main class="min-h-screen bg-slate-950 px-4 py-20 text-slate-100 md:px-8 lg:px-12">
-    <section class="mx-auto flex w-full max-w-6xl flex-col gap-10">
-      <header class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-8 shadow-[0_12px_40px_rgba(2,6,23,0.45)] md:p-10">
-        <p class="section-eyebrow text-amber-300">[MODULE: SKILLS]</p>
-        <h1 class="text-3xl font-black text-white md:text-4xl">Skills & Certifications</h1>
-        <p class="mt-3 max-w-3xl text-sm text-slate-400 leading-relaxed">A compact systems view of the cloud, data, AI, and automation stack behind enterprise delivery.</p>
+    <section class="mx-auto flex w-full max-w-6xl flex-col gap-8">
+
+      <header class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-6 shadow-[0_12px_40px_rgba(2,6,23,0.45)] md:p-8">
+        <p class="section-eyebrow text-amber-300">SKILLS</p>
+        <h1 class="text-2xl font-bold text-white md:text-3xl">Skills & Certifications</h1>
+        <p class="mt-2 max-w-3xl text-xs text-slate-400 leading-relaxed">Cloud, data, AI, and automation stack behind enterprise delivery.</p>
       </header>
 
-      <section class="grid gap-6 md:grid-cols-2">
-        <article class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
-          <h2 class="text-sm font-bold text-white">Platform & Cloud</h2>
-          <div class="mt-5 space-y-5">
-            {['GCP', 'BigQuery', 'Dataflow', 'Vertex AI', 'Cloud Run', 'Terraform'].map((item, i) => (
-              <div class="skill-bar" data-percent={[95, 88, 82, 78, 74, 70][i]}>
-                <div class="mb-1 flex items-center justify-between text-[11px] font-mono text-slate-400"><span>{item}</span><span>{[95, 88, 82, 78, 74, 70][i]}%</span></div>
-                <div class="h-px bg-slate-800/80 overflow-hidden"><div class="skill-bar-fill h-px bg-gradient-to-r from-cyan-400 via-indigo-400 to-emerald-400" style="width:0%"></div></div>
+      <!-- ════════════════════════════════════════
+           Concept tiles — visual storytelling
+      ════════════════════════════════════════ -->
+      <section class="grid gap-5 md:grid-cols-2">
+        <!-- Platform & Cloud -->
+        <article class="rounded-2xl border border-slate-800/70 bg-slate-900/40 p-5 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
+          <h2 class="text-[10px] font-semibold text-white flex items-center gap-2 mb-4 uppercase tracking-widest">
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+            Platform & Cloud
+          </h2>
+          <div class="flex flex-col gap-2">
+            {platformSkills.map(s => (
+              <div class="skill-tile flex items-center gap-2.5 rounded-lg border border-slate-800/30 bg-slate-950/30 px-3 py-2 transition-all duration-200 hover:bg-slate-900/60 hover:border-slate-700/50">
+                <div class="shrink-0 w-8 h-8 rounded-lg border border-slate-700/30 bg-slate-900/50 flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={s.color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-path">
+                    <path d={s.icon} />
+                  </svg>
+                </div>
+                <div class="flex-1 flex items-center justify-between min-w-0">
+                  <span class="font-mono text-xs font-medium text-slate-200">{s.name}</span>
+                  <span class="font-mono text-[9px] text-slate-600 uppercase tracking-wider">{s.tag}</span>
+                </div>
               </div>
             ))}
           </div>
         </article>
 
-        <article class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
-          <h2 class="text-sm font-bold text-white">AI & Retrieval</h2>
-          <div class="mt-5 space-y-5">
-            {['RAG', 'LLM Ops', 'Vector Search', 'Eval Harness', 'Guardrails', 'Observability'].map((item, i) => (
-              <div class="skill-bar" data-percent={[92, 89, 86, 81, 77, 74][i]}>
-                <div class="mb-1 flex items-center justify-between text-[11px] font-mono text-slate-400"><span>{item}</span><span>{[92, 89, 86, 81, 77, 74][i]}%</span></div>
-                <div class="h-px bg-slate-800/80 overflow-hidden"><div class="skill-bar-fill h-px bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400" style="width:0%"></div></div>
+        <!-- AI & Retrieval -->
+        <article class="rounded-2xl border border-slate-800/70 bg-slate-900/40 p-5 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
+          <h2 class="text-[10px] font-semibold text-white flex items-center gap-2 mb-4 uppercase tracking-widest">
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            AI & Retrieval
+          </h2>
+          <div class="flex flex-col gap-2">
+            {aiSkills.map(s => (
+              <div class="skill-tile flex items-center gap-2.5 rounded-lg border border-slate-800/30 bg-slate-950/30 px-3 py-2 transition-all duration-200 hover:bg-slate-900/60 hover:border-slate-700/50">
+                <div class="shrink-0 w-8 h-8 rounded-lg border border-slate-700/30 bg-slate-900/50 flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={s.color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-path">
+                    <path d={s.icon} />
+                  </svg>
+                </div>
+                <div class="flex-1 flex items-center justify-between min-w-0">
+                  <span class="font-mono text-xs font-medium text-slate-200">{s.name}</span>
+                  <span class="font-mono text-[9px] text-slate-600 uppercase tracking-wider">{s.tag}</span>
+                </div>
               </div>
             ))}
           </div>
         </article>
       </section>
 
-      <section class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-8 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
-        <p class="section-eyebrow text-indigo-300">[MODULE: CERTIFICATIONS]</p>
-        <div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {[
-            ['Google Cloud Certified — Professional Data Engineer','GCP · BigQuery · Dataflow · AI/ML'],
-            ['Talend Data Explorer Certification','Big Data · ETL · CDC'],
-            ['CCA Spark and Hadoop Developer','PySpark · Hadoop · Big Data'],
-            ['Advanced Certificate in Blockchain — IIIT Hyderabad','DLT · Security · Enterprise Blockchain'],
-            ['Globee Award — IT World Awards®','Leadership · Innovation · Digital Transformation'],
-          ].map(([title, meta]) => (
-            <article class="rounded-2xl border border-slate-800/70 bg-slate-950/70 p-5 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
-              <h3 class="text-sm font-bold text-white">{title}</h3>
-              <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.25em] text-slate-500">{meta}</p>
+      <!-- ════════════════════════════════════════
+           Certifications
+      ════════════════════════════════════════ -->
+      <section class="rounded-2xl border border-slate-800/70 bg-slate-900/40 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
+        <p class="section-eyebrow text-indigo-300">CERTIFICATIONS</p>
+        <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {certs.map(([title, meta, type]) => (
+            <article class="cert-card rounded-xl border border-slate-800/60 bg-slate-950/60 p-4 transition-all duration-200 hover:border-indigo-500/25 hover:shadow-[0_0_20px_rgba(99,102,241,0.06)]">
+              <div class="flex items-start gap-2.5">
+                <div class="shrink-0 w-7 h-7 rounded-lg border border-slate-700/40 bg-slate-900/50 flex items-center justify-center">
+                  {type === 'google' && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>}
+                  {type === 'talend' && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>}
+                  {type === 'spark' && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>}
+                  {type === 'blockchain' && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>}
+                  {type === 'award' && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>}
+                </div>
+                <div class="min-w-0">
+                  <h3 class="text-xs font-medium text-white leading-snug">{title}</h3>
+                  <p class="mt-1 font-mono text-[9px] uppercase tracking-[0.15em] text-slate-500">{meta}</p>
+                </div>
+              </div>
             </article>
           ))}
         </div>
       </section>
 
-      <section class="rounded-3xl border border-slate-800/70 bg-slate-900/40 p-6 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
-        <p class="section-eyebrow text-cyan-300">[MODULE: STACK]</p>
-        <div class="mt-4 flex flex-wrap gap-2">
-          {['GCP','BigQuery','Dataflow','Vertex AI','GenAI','RAG','Python','SQL','Terraform','Cloud Run','LangGraph','Postgres'].map(item => (
-            <span class="rounded-full border border-slate-700/60 bg-slate-950/70 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.25em] text-slate-400">{item}</span>
+      <!-- ════════════════════════════════════════
+           Stack tags
+      ════════════════════════════════════════ -->
+      <section class="rounded-2xl border border-slate-800/70 bg-slate-900/40 px-5 py-4 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
+        <p class="section-eyebrow text-cyan-300">STACK</p>
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          {stackTags.map(item => (
+            <span class="stack-tag rounded-full border border-slate-700/50 bg-slate-950/60 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.2em] text-slate-400 transition-colors duration-200 hover:border-cyan-400/20 hover:text-cyan-300">
+              {item}
+            </span>
           ))}
         </div>
       </section>
@@ -67,29 +134,69 @@ import Layout from '../layouts/Layout.astro';
   </main>
 </Layout>
 
+<style>
+  .icon-path path {
+    stroke-dasharray: 60;
+    stroke-dashoffset: 60;
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .is-visible .icon-path path,
+  .skill-tile:hover .icon-path path {
+    stroke-dashoffset: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .icon-path path { stroke-dashoffset: 0; transition: none; }
+  }
+</style>
+
 <script>
   import gsap from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
   gsap.registerPlugin(ScrollTrigger);
 
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // ── Icon path draw on scroll ──
+    document.querySelectorAll('.skill-tile').forEach((tile, i) => {
+      ScrollTrigger.create({
+        trigger: tile,
+        start: 'top 92%',
+        once: true,
+        onEnter: () => setTimeout(() => tile.classList.add('is-visible'), i * 50),
+      });
+    });
 
-  if (!prefersReduced) {
-    document.querySelectorAll('.skill-bar').forEach((bar) => {
-      const inner = bar.querySelector('div:last-child > div') as HTMLElement;
-      const pct = bar.getAttribute('data-percent');
-      if (inner && pct) {
-        const target = pct + '%';
-        ScrollTrigger.create({
-          trigger: bar,
-          start: 'top 85%',
-          once: true,
-          onEnter: () => {
-            gsap.to(inner, { width: target, duration: 1.2, ease: 'power3.out' });
-          },
-        });
-      }
+    // ── Tile entrance (translate, no opacity) ──
+    gsap.from('.skill-tile', {
+      x: -10,
+      opacity: 0.6,
+      stagger: 0.035,
+      duration: 0.45,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '.skill-tile',
+        start: 'top 88%',
+        toggleActions: 'play none none none',
+      },
+    });
+
+    // ── Cert cards ──
+    gsap.from('.cert-card', {
+      opacity: 0,
+      y: 12,
+      stagger: 0.06,
+      duration: 0.4,
+      ease: 'power2.out',
+      scrollTrigger: { trigger: '.cert-card', start: 'top 88%', toggleActions: 'play none none none' },
+    });
+
+    // ── Stack tags ──
+    gsap.from('.stack-tag', {
+      opacity: 0,
+      scale: 0.7,
+      stagger: 0.025,
+      duration: 0.3,
+      ease: 'back.out(1.7)',
+      scrollTrigger: { trigger: '.stack-tag', start: 'top 85%', toggleActions: 'play none none none' },
     });
   }
 </script>
