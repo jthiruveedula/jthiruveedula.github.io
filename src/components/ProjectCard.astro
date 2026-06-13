@@ -14,7 +14,7 @@ export interface Props {
 const { title, repo, tagline, stack, metric, metricLabel, href } = Astro.props as Props;
 ---
 
-<a class="pc" href={href} target="_blank" rel="noopener noreferrer" aria-label={title}>
+<a class="pc" href={href} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noopener noreferrer' : undefined} aria-label={title}>
   <div class="pc-head">
     <span class="pc-eyebrow">CASE STUDY</span>
     <span class="pc-repo">{repo}</span>
@@ -28,13 +28,13 @@ const { title, repo, tagline, stack, metric, metricLabel, href } = Astro.props a
 
   {metric && (
     <div class="pc-metric">
-      <span class="pc-metric-value">{metric}</span>
-      <span class="pc-metric-label">{metricLabel}</span>
+      <span class="pc-metric-value">{(metric || '').length <= 8 ? metric : ''}</span>
+      <span class="pc-metric-label">{(metric || '').length <= 8 && metricLabel ? metricLabel : metric}</span>
     </div>
   )}
 
   <div class="pc-cta">
-    <span>Open repository</span>
+    <span>{href.startsWith('http') ? 'Open repository' : 'View case study'}</span>
     <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
 </a>
@@ -79,14 +79,16 @@ const { title, repo, tagline, stack, metric, metricLabel, href } = Astro.props a
 </style>
 
 <script>
-  const cards = document.querySelectorAll('.pc');
-  cards.forEach((card) => {
-    card.addEventListener('mousemove', (ev) => {
-      const rect = card.getBoundingClientRect();
-      const mx = ((ev.clientX - rect.left) / rect.width) * 100;
-      const my = ((ev.clientY - rect.top) / rect.height) * 100;
-      card.style.setProperty('--mx', mx + '%');
-      card.style.setProperty('--my', my + '%');
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const cards = document.querySelectorAll('.pc');
+    cards.forEach((card) => {
+      card.addEventListener('mousemove', (ev) => {
+        const rect = card.getBoundingClientRect();
+        const mx = ((ev.clientX - rect.left) / rect.width) * 100;
+        const my = ((ev.clientY - rect.top) / rect.height) * 100;
+        card.style.setProperty('--mx', mx + '%');
+        card.style.setProperty('--my', my + '%');
+      });
     });
-  });
+  }
 </script>

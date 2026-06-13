@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import HeroNodeGraph from '../components/HeroNodeGraph.astro';
-import ProjectCard from '../components/ProjectCard.astro';
 
 // Six real production projects
 const projects = [
@@ -517,9 +516,8 @@ const capabilityCards = [
 <script>
   import gsap from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import { SplitText } from 'gsap/SplitText';
 
-  gsap.registerPlugin(ScrollTrigger, SplitText);
+  gsap.registerPlugin(ScrollTrigger);
 
   // ─────────────────────────────────────────────────────────────────
   // SECTION-AWARE NAV LABEL
@@ -575,8 +573,14 @@ const capabilityCards = [
 
   if (!prefersReduced) {
 
-    const split = new SplitText('#hero-headline', { type: 'chars' });
-    gsap.from(split.chars, { opacity: 0, y: 40, rotateX: -90, duration: 0.8, stagger: 0.03, ease: 'power4.out' });
+    const heroH1 = document.getElementById('hero-headline');
+    if (heroH1) {
+      const txt = heroH1.textContent || '';
+      heroH1.textContent = '';
+      const chars = [...txt];
+      heroH1.innerHTML = chars.map(c => `<span class="hero-char" style="display:inline-block">${c === ' ' ? '\u00A0' : c}</span>`).join('');
+      gsap.from(heroH1.querySelectorAll('.hero-char'), { opacity: 0, y: 40, rotateX: -90, duration: 0.8, stagger: 0.03, ease: 'power4.out' });
+    }
     gsap.from('.hero-description', { opacity: 0, y: 20, duration: 0.8, delay: 0.6, ease: 'power3.out' });
     const tlHero = gsap.timeline({ defaults: { ease: 'power3.out' } });
 

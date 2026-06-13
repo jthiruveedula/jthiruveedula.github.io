@@ -81,7 +81,6 @@ import Layout from '../layouts/Layout.astro';
       const pct = bar.getAttribute('data-percent');
       if (inner && pct) {
         const target = pct + '%';
-        gsap.set(inner, { width: '0%' });
         ScrollTrigger.create({
           trigger: bar,
           start: 'top 85%',
