@@ -11,10 +11,19 @@ interface Props {
 }
 
 const { role, company, date, summary, chips, metric, metricLabel, index } = Astro.props as Props;
+
+const companyIcons = {
+  'Quantiphi': `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>`,
+  'Charles Schwab': `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path d="M3 6h18M3 12h18M3 18h18"/></svg>`,
+  'Wiley Publications': `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>`,
+  'DSOgroup TEOTYS': `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-purple-400"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+  'Innominds': `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-orange-400"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>`,
+  'Vizag Steel Plant': `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-red-400"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22v-8h6v8"/></svg>`,
+};
 ---
 
 <article
-  class="exp-card sticky rounded-2xl border border-slate-700/50 bg-slate-900/80 p-6 md:p-8 shadow-[0_-8px_40px_rgba(0,0,0,0.6)] origin-top"
+  class="exp-card sticky rounded-2xl border border-slate-700/50 bg-slate-900/80 p-6 md:p-8 shadow-[0_-8px_40px_rgba(0,0,0,0.6)] origin-top overflow-hidden"
   style={`top: ${4 + index * 1.5}rem; z-index: ${30 - index}; perspective: 1200px;`}
 >
   <div class="exp-card-inner will-change-transform">
@@ -43,5 +52,12 @@ const { role, company, date, summary, chips, metric, metricLabel, index } = Astr
         <span class="font-mono text-indigo-400/50 font-bold text-base">{String(index + 1).padStart(2, '0')}</span>
       </div>
     </div>
+
+    <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500/5 via-transparent to-cyan-500/5 opacity-0 transition-opacity duration-700 group-hover:opacity-100" aria-hidden="true"></div>
+    <div class="absolute inset-0 rounded-2xl border border-indigo-500/10 shadow-[inset_0_0_20px_rgba(99,102,241,0.05)]" aria-hidden="true"></div>
   </div>
+
+  {index === 0 && (
+    <div class="absolute -top-20 -right-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" aria-hidden="true"></div>
+  )}
 </article>

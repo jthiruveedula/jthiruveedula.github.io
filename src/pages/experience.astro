@@ -37,6 +37,13 @@ const allRoles = [
   .exp-card:hover {
     box-shadow: 0 16px 48px -20px rgba(99,102,241,0.15);
   }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+  .exp-card-header {
+    animation: float 6s ease-in-out infinite;
+  }
 </style>
 
 <script>
@@ -82,7 +89,7 @@ const allRoles = [
       }
     });
 
-    document.querySelectorAll('.exp-card').forEach((card) => {
+    document.querySelectorAll('.exp-card').forEach((card, i) => {
       const inner = card.querySelector('.exp-card-inner') as HTMLElement;
       if (!inner) return;
       card.addEventListener('mousemove', (ev) => {
@@ -97,6 +104,91 @@ const allRoles = [
       });
       card.addEventListener('mouseleave', () => {
         gsap.to(inner, { rotateX: 0, rotateY: 0, duration: 0.5, ease: 'power3.out' });
+      });
+
+      card.addEventListener('mouseenter', () => {
+        gsap.to(card, {
+          boxShadow: '0 20px 60px -20px rgba(99,102,241,0.25)',
+          duration: 0.4,
+          ease: 'power2.out'
+        });
+        gsap.to(inner, {
+          scale: 1.02,
+          duration: 0.4,
+          ease: 'power2.out'
+        });
+      });
+
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, {
+          boxShadow: '0 16px 48px -20px rgba(99,102,241,0.15)',
+          duration: 0.4,
+          ease: 'power2.out'
+        });
+        gsap.to(inner, {
+          scale: 1,
+          duration: 0.4,
+          ease: 'power2.out'
+        });
+      });
+    });
+
+    const header = document.querySelector('.exp-card.sticky');
+    if (header) {
+      gsap.to(header, {
+        y: -10,
+        scrollTrigger: {
+          trigger: '.exp-card',
+          start: 'top 30%',
+          end: 'top 10%',
+          scrub: true,
+          invalidateOnRefresh: true,
+        }
+      });
+    }
+
+    gsap.fromTo('.exp-card-header', {
+      opacity: 0,
+      y: 20
+    }, {
+      opacity: 1,
+      y: 0,
+      stagger: 0.1,
+      duration: 0.8,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '.exp-card',
+        start: 'top 90%',
+        toggleActions: 'play none none none'
+      }
+    });
+
+    gsap.fromTo('.exp-metric', {
+      scale: 0.8,
+      opacity: 0
+    }, {
+      scale: 1,
+      opacity: 1,
+      stagger: 0.1,
+      duration: 0.6,
+      ease: 'back.out(1.7)',
+      scrollTrigger: {
+        trigger: '.exp-metric',
+        start: 'top 85%',
+        toggleActions: 'play none none none'
+      }
+    });
+
+    const particles = document.querySelectorAll('.particle');
+    particles.forEach(particle => {
+      gsap.to(particle, {
+        y: -20,
+        x: gsap.utils.random(-10, 10),
+        opacity: 0,
+        duration: gsap.utils.random(2, 4),
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
       });
     });
   }
