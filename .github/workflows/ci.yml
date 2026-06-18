@@ -5,34 +5,113 @@ on:
     branches: ["**"]
   pull_request:
     branches: [master]
+  workflow_dispatch:
+    inputs:
+      rollback_ref:
+        description: "Git ref to roll back to (branch/tag/sha). Leave empty for normal build."
+        required: false
+        default: ""
 
 permissions:
   contents: read
+  pull-requests: write
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: "22"
+  RETENTION_DAYS: 14
+  KEEP_LAST_DEPLOYMENTS: 5
+
 jobs:
   ci:
     name: Lint, type-check, build, and test
     runs-on: ubuntu-latest
+    outputs:
+      build_sha: ${{ steps.vars.outputs.build_sha }}
+      branch_name: ${{ steps.vars.outputs.branch_name }}
     steps:
+      - name: Resolve target ref
+        id: vars
+        run: |
+          if [ -n "${{ inputs.rollback_ref }}" ]; then
+            echo "build_sha=${{ inputs.rollback_ref }}" >> $GITHUB_OUTPUT
+            echo "branch_name=rollback" >> $GITHUB_OUTPUT
+            echo "::notice::Rolling back to ${{ inputs.rollback_ref }}"
+          else
+            echo "build_sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+            echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.vars.outputs.build_sha }}
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate build metadata
+        id: meta
+        run: |
+          {
+            echo "### Build summary"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Build SHA | \`${GITHUB_SHA}\` |"
+            echo "| Resolved ref | \`${{ steps.vars.outputs.build_sha }}\` |"
+            echo "| Branch | \`${{ steps.vars.outputs.branch_name }}\` |"
+            echo "| Workflow | \`${GITHUB_WORKFLOW}\` |"
+            echo "| Run number | \`${GITHUB_RUN_NUMBER}\` |"
+            echo "| Trigger | \`${GITHUB_EVENT_NAME}}\` |"
+            echo "| Actor | \`${GITHUB_ACTOR}\` |"
+            echo "| Node | \`${{ env.NODE_VERSION }}\` |"
+            echo "| Time | \`$(date -u +%FT%TZ)\` |"
+            echo ""
+            echo "### Changes merged from ${{ steps.vars.outputs.branch_name }}"
+            echo ""
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              echo "| Change | Detail |"
+              echo "|---|---|"
+              echo "| Source | \`${{ github.head_ref }}\` |"
+              echo "| Target | \`${{ github.base_ref }}\` |"
+              echo "| PR | #${{ github.event.pull_request.number }} |"
+              echo "| Title | ${{ github.event.pull_request.title }} |"
+              echo ""
+              echo "### Files changed"
+              git fetch --no-tags --depth=50 origin "${{ github.base_ref }}" 2>/dev/null || true
+              git diff --stat "origin/${{ github.base_ref }}...HEAD" | head -30
+            else
+              echo "| Commit | Author | Subject |"
+              echo "|---|---|---|"
+              git log --no-merges --pretty=format:"| \`%h\` | %an | %s |" -10
+            fi
+            echo ""
+            echo "### Release tag"
+            echo ""
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "none")
+            echo "Latest tag: \`$LATEST_TAG\`"
+          } >> $GITHUB_STEP_SUMMARY
+
       - name: Lint
+        id: lint
         run: npm run lint
         continue-on-error: true
+
+      - name: Report lint result
+        if: steps.lint.outcome == 'failure'
+        run: |
+          echo "::warning::Lint reported issues. Continuing build."
 
       - name: Type check
         run: npx tsc --noEmit
@@ -46,12 +125,136 @@ jobs:
       - name: Run E2E tests
         id: e2e
         run: npm run test:e2e
-        continue-on-error: true
 
-      - name: Upload Playwright report on failure
-        if: steps.e2e.outcome == 'failure'
+      - name: Package test report (zip)
+        if: always()
+        run: |
+          mkdir -p test-report-bundle
+          if [ -d playwright-report ]; then
+            cp -r playwright-report test-report-bundle/playwright-report
+          fi
+          if [ -d test-results ]; then
+            cp -r test-results test-report-bundle/test-results
+          fi
+          if [ -f test-results/.last-run.json ]; then
+            cp test-results/.last-run.json test-report-bundle/
+          fi
+          cd test-report-bundle && zip -r ../test-report.zip . -q
+          echo "Report package size: $(du -h ../test-report.zip | cut -f1)"
+
+      - name: Upload test report (zip)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
-          path: playwright-report
-          retention-days: 7
+          name: playwright-report-${{ github.run_id }}
+          path: test-report.zip
+          if-no-files-found: warn
+          retention-days: ${{ env.RETENTION_DAYS }}
+
+      - name: Upload raw test artifacts (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-raw-${{ github.run_id }}
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: ${{ env.RETENTION_DAYS }}
+
+      - name: Build complete
+        if: success()
+        run: |
+          echo "### ✅ Build succeeded" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Artifact: \`out/\` ready for deploy" >> $GITHUB_STEP_SUMMARY
+          echo "Test report: attached as artifact" >> $GITHUB_STEP_SUMMARY
+          echo "Rollback: re-run this workflow with input \`rollback_ref\` set to a previous SHA/branch/tag" >> $GITHUB_STEP_SUMMARY
+        env:
+          GITHUB_STEP_SUMMARY: ${{ env.GITHUB_STEP_SUMMARY }}
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: ci
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || inputs.rollback_ref != '')
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Resolve deploy ref
+        id: deploy_vars
+        run: |
+          if [ -n "${{ inputs.rollback_ref }}" ]; then
+            echo "deploy_sha=${{ inputs.rollback_ref }}" >> $GITHUB_OUTPUT
+            echo "deploy_mode=rollback" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "deploy_mode=deploy" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.deploy_vars.outputs.deploy_sha }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Record deployment
+        run: |
+          DEPLOY_SHA="${{ steps.deploy_vars.outputs.deploy_sha }}"
+          DEPLOY_MODE="${{ steps.deploy_vars.outputs.deploy_mode }}"
+          DEPLOY_URL="${{ steps.deployment.outputs.page_url }}"
+          DEPLOY_TIME=$(date -u +%FT%TZ)
+          echo "### 🚀 Deployment ($DEPLOY_MODE)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Mode | \`$DEPLOY_MODE\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| SHA | \`$DEPLOY_SHA\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| URL | $DEPLOY_URL |" >> $GITHUB_STEP_SUMMARY
+          echo "| Time | \`$DEPLOY_TIME\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Rollback strategy" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "1. **Keep last ${{ env.KEEP_LAST_DEPLOYMENTS }} deployments** — GitHub Pages automatically retains history per environment." >> $GITHUB_STEP_SUMMARY
+          echo "2. **Trigger rollback** — Run this workflow from the Actions tab → \`workflow_dispatch\` → set \`rollback_ref\` to the target SHA, branch, or tag." >> $GITHUB_STEP_SUMMARY
+          echo "3. **Or re-deploy previous SHA** — \`git push --force origin <previous-sha>:master\` (use with care)." >> $GITHUB_STEP_SUMMARY
+          echo "4. **Pin release** — \`git tag -a v1.0.<n> -m 'release notes' && git push origin v1.0.<n>\` to create an immutable rollback point." >> $GITHUB_STEP_SUMMARY
+
+      - name: Tag release
+        if: steps.deploy_vars.outputs.deploy_mode == 'deploy' && startsWith(github.ref, 'refs/heads/master')
+        run: |
+          SHORT_SHA="${GITHUB_SHA::7}"
+          if git rev-parse "v0.0.0-$SHORT_SHA" >/dev/null 2>&1; then
+            echo "Tag v0.0.0-$SHORT_SHA already exists, skipping"
+            exit 0
+          fi
+          git tag -a "v0.0.0-$SHORT_SHA" -m "Auto release $SHORT_SHA at $(date -u +%FT%TZ)"
+          git push origin "v0.0.0-$SHORT_SHA"
+          echo "### 🏷️ Tagged release" >> $GITHUB_STEP_SUMMARY
+          echo "Created tag \`v0.0.0-$SHORT_SHA\`" >> $GITHUB_STEP_SUMMARY

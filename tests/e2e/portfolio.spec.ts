@@ -3,26 +3,25 @@ import { test, expect } from "@playwright/test";
 test("hero section renders with key content", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText("Data · RAG · Agents · Guardrails")).toBeVisible({ timeout: 15000 });
-  await expect(page.getByText("Data Architect", { exact: true })).toBeVisible();
-  await expect(page.getByText("Generative AI", { exact: true })).toBeVisible();
+  await expect(page.locator("#hero-heading").getByText("Data Architect", { exact: true })).toBeVisible();
+  await expect(page.locator("#hero-heading").getByText("Generative AI", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: /see the systems/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /discuss a system/i })).toBeVisible();
 });
 
-test("about section has bio and location", async ({ page }) => {
+test("about section has bio and content", async ({ page }) => {
   await page.goto("/");
   await page.locator("#about").scrollIntoViewIfNeeded();
-  await expect(page.locator("#about")).toContainText(/based in/i);
-  await expect(page.locator("#about")).toContainText("Corinth, Texas");
+  await expect(page.locator("#about")).toContainText("GCP Data Architect");
+  await expect(page.locator("#about")).toContainText(/bigquery/i);
+  await expect(page.locator("#about")).toContainText(/LLM/i);
 });
 
-test("skills section has orbital visualization", async ({ page }) => {
+test("skills section has radar visualization", async ({ page }) => {
   await page.goto("/");
   await page.locator("#skills").scrollIntoViewIfNeeded();
-  await expect(page.locator("#skills").getByRole("button", { name: "Cloud" })).toBeVisible();
-  await expect(page.locator("#skills").getByRole("button", { name: "Data Engineering" })).toBeVisible();
-  await expect(page.locator("#skills").getByRole("button", { name: "AI/ML" })).toBeVisible();
-  await expect(page.locator("#skills").getByText("Hover a node to explore skills")).toBeVisible();
+  await expect(page.locator("#skills canvas")).toBeVisible({ timeout: 8000 });
+  await expect(page.locator("#skills")).toContainText("Skills & capabilities");
 });
 
 test("projects section has filter and cards", async ({ page }) => {
