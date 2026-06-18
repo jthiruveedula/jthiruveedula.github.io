@@ -11,30 +11,38 @@ const themes = [
 
 export default function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false);
-  const [theme, setTheme] = useState<string>("noir");
+  const [theme, setTheme] = useState<typeof themes[number]["id"]>("noir");
+
+  const applyTheme = (id: typeof themes[number]["id"]) => {
+    document.documentElement.setAttribute("data-theme", id);
+  };
 
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem("film-grade-theme");
-    if (saved && themes.some((t) => t.id === saved)) {
-      setTheme(saved);
-      document.documentElement.setAttribute("data-theme", saved);
-    } else {
-      document.documentElement.setAttribute("data-theme", "noir");
-    }
+    try {
+      const saved = localStorage.getItem("film-grade-theme");
+      if (saved && themes.some((t) => t.id === saved)) {
+        setTheme(saved as typeof themes[number]["id"]);
+        applyTheme(saved as typeof themes[number]["id"]);
+        return;
+      }
+    } catch {}
+    applyTheme("noir");
   }, []);
 
   const cycleTheme = () => {
     const idx = themes.findIndex((t) => t.id === theme);
     const next = themes[(idx + 1) % themes.length];
     setTheme(next.id);
-    document.documentElement.setAttribute("data-theme", next.id);
-    localStorage.setItem("film-grade-theme", next.id);
+    applyTheme(next.id);
+    try {
+      localStorage.setItem("film-grade-theme", next.id);
+    } catch {}
   };
 
   if (!mounted) return null;
 
-  const current = themes.find((t) => t.id === theme)!;
+  const current = themes.find((t) => t.id === theme) ?? themes[0];
 
   return (
     <button
