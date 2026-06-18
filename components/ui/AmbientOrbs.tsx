@@ -3,12 +3,14 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
+const ORB_COUNT = [0, 1, 2] as const;
+
 export default function AmbientOrbs() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const container = containerRef.current;
+    if (!container || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!container) return;
 
     const orbs = container.querySelectorAll<HTMLElement>(".ambient-orb");
@@ -29,7 +31,6 @@ export default function AmbientOrbs() {
           repeat: -1,
           yoyo: true,
           ease: "sine.inOut",
-          overwrite: "auto",
         });
       });
     }, container);
@@ -39,7 +40,7 @@ export default function AmbientOrbs() {
 
   return (
     <div ref={containerRef} className="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {[0, 1, 2].map((i) => (
+      {ORB_COUNT.map((i) => (
         <div
           key={i}
           className="ambient-orb absolute w-[300px] md:w-[500px] h-[300px] md:h-[500px] rounded-full"
