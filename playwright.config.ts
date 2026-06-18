@@ -29,10 +29,10 @@ export default defineConfig({
   ],
   webServer: isCI
     ? {
-        command: "npx serve out -l 3000",
+        command: "npx serve out -l 3000 --no-clipboard --single",
         url: "http://127.0.0.1:3000",
         reuseExistingServer: !process.env.CI,
-        timeout: 60_000,
+        timeout: 30_000,
         stdout: "ignore",
         stderr: "pipe",
       }

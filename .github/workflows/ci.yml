@@ -110,17 +110,13 @@ jobs:
         run: npm run build
 
       - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: Run E2E tests
         id: e2e
-        uses: nick-fields/retry@v4
-        with:
-          timeout_minutes: 10
-          max_attempts: 2
-          retry_on: error
-          command: npx playwright test --project=chromium --reporter=line
+        run: npx playwright test --project=chromium --reporter=line
         continue-on-error: true
+        timeout-minutes: 8
 
       - name: Package test report
         if: always()
