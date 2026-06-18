@@ -1,4 +1,4 @@
-name: Deploy Astro site to GitHub Pages
+name: Deploy Next.js site to GitHub Pages
 
 on:
   push:
@@ -14,9 +14,6 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
-env:
-  BUILD_PATH: "."
-
 jobs:
   build:
     name: Build
@@ -28,22 +25,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: "npm"
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
       - name: Install dependencies
-        run: npm install
-        working-directory: ${{ env.BUILD_PATH }}
-      - name: Build with Astro
-        run: |
-          npx astro build \
-            --site "${{ steps.pages.outputs.origin }}" \
-            --base "${{ steps.pages.outputs.base_path }}"
-        working-directory: ${{ env.BUILD_PATH }}
+        run: npm ci
+      - name: Build with Next.js
+        run: npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ env.BUILD_PATH }}/dist
+          path: ./out
 
   deploy:
     environment:

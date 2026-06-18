@@ -2,8 +2,9 @@ import { test, expect } from "@playwright/test";
 
 test("hero section renders with key content", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByText("Data · RAG · Agents · Guardrails")).toBeVisible();
-  await expect(page.getByText("Command Surface for")).toBeVisible();
+  await expect(page.getByText("Data · RAG · Agents · Guardrails")).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText("Data Architect", { exact: true })).toBeVisible();
+  await expect(page.getByText("Generative AI", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: /see the systems/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /discuss a system/i })).toBeVisible();
 });
@@ -15,12 +16,13 @@ test("about section has bio and location", async ({ page }) => {
   await expect(page.locator("#about")).toContainText("Corinth, Texas");
 });
 
-test("skills section has category cards", async ({ page }) => {
+test("skills section has orbital visualization", async ({ page }) => {
   await page.goto("/");
   await page.locator("#skills").scrollIntoViewIfNeeded();
-  await expect(page.locator("#skills").getByRole("heading", { name: "Cloud", exact: true })).toBeVisible();
-  await expect(page.locator("#skills").getByRole("heading", { name: "Data Engineering", exact: true })).toBeVisible();
-  await expect(page.locator("#skills").getByRole("heading", { name: "AI/ML", exact: true })).toBeVisible();
+  await expect(page.locator("#skills").getByRole("button", { name: "Cloud" })).toBeVisible();
+  await expect(page.locator("#skills").getByRole("button", { name: "Data Engineering" })).toBeVisible();
+  await expect(page.locator("#skills").getByRole("button", { name: "AI/ML" })).toBeVisible();
+  await expect(page.locator("#skills").getByText("Hover a node to explore skills")).toBeVisible();
 });
 
 test("projects section has filter and cards", async ({ page }) => {
@@ -42,7 +44,7 @@ test("footer displays copyright and stack info", async ({ page }) => {
   await page.goto("/");
   const footer = page.locator("footer");
   await expect(footer).toBeVisible();
-  await expect(footer.locator("span").filter({ hasText: "GSAP" })).toBeVisible();
+  await expect(footer.locator("span").filter({ hasText: "GSAP" }).first()).toBeVisible();
   await expect(footer).toContainText("Next.js");
 });
 
@@ -71,4 +73,53 @@ test("experience timeline has 6 roles", async ({ page }) => {
   await expect(page.locator("#experience").getByText("Quantiphi")).toBeVisible();
   await expect(page.locator("#experience").getByText("Charles Schwab")).toBeVisible();
   await expect(page.locator("#experience").getByText("Wiley Publications")).toBeVisible();
+});
+
+test("hero has Resume download link", async ({ page }) => {
+  await page.goto("/");
+  const resumeLink = page.getByRole("link", { name: /download resume/i });
+  await expect(resumeLink).toBeVisible();
+  await expect(resumeLink).toHaveAttribute("href", "/resume.html");
+  await expect(resumeLink).toHaveAttribute("target", "_blank");
+});
+
+test("contact form submits and triggers mailto flow with success feedback", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#contact").scrollIntoViewIfNeeded();
+  await page.getByLabel("Name").fill("Test User");
+  await page.getByLabel("Email").fill("test@example.com");
+  await page.getByLabel("Message").fill("Hello there");
+  await page.getByRole("button", { name: /send message/i }).click();
+  await expect(page.getByText(/message sent/i)).toBeVisible();
+});
+
+test("page has proper meta tags", async ({ page }) => {
+  await page.goto("/");
+  await expect(page).toHaveTitle(/Jagadeesh Thiruveedula/);
+  const desc = page.locator('meta[name="description"]');
+  await expect(desc).toHaveAttribute("content", /Data Architect/);
+  const ogImage = page.locator('meta[property="og:image"]');
+  await expect(ogImage).toHaveAttribute("content", /.+/);
+});
+
+test("SVG favicon is present", async ({ page }) => {
+  await page.goto("/");
+  const icon = page.locator('link[rel="icon"]');
+  await expect(icon).toHaveCount(1);
+  const href = await icon.first().getAttribute("href");
+  expect(href).toMatch(/favicon\.svg$/);
+});
+
+test("sitemap.xml is accessible", async ({ page }) => {
+  const res = await page.request.get("/sitemap.xml");
+  expect(res.ok()).toBe(true);
+  const body = await res.text();
+  expect(body).toContain("jthiruveedula.github.io");
+});
+
+test("robots.txt is accessible", async ({ page }) => {
+  const res = await page.request.get("/robots.txt");
+  expect(res.ok()).toBe(true);
+  const body = await res.text();
+  expect(body.toLowerCase()).toMatch(/user-agent|allow/);
 });

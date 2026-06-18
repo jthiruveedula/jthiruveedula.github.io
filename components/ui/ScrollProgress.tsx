@@ -21,8 +21,8 @@ export default function ScrollProgress() {
   return (
     <div
       ref={barRef}
-      className="fixed top-0 left-0 z-[100] h-[2px] bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 pointer-events-none transition-[width] duration-150 ease-linear"
-      style={{ width: "0%" }}
+      className="fixed top-0 left-0 z-[100] h-[3px] bg-gradient-to-r from-[var(--color-accent)] via-[var(--color-accent-secondary)] to-[var(--color-accent-tertiary)] pointer-events-none transition-[width] duration-150 ease-linear"
+      style={{ width: "0%", boxShadow: "0 0 8px var(--color-accent), 0 0 16px var(--color-accent)" }}
       aria-hidden="true"
     />
   );

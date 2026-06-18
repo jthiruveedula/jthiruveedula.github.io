@@ -43,11 +43,12 @@ export default function AmbientOrbs() {
       {ORB_COUNT.map((i) => (
         <div
           key={i}
-          className="ambient-orb absolute w-[300px] md:w-[500px] h-[300px] md:h-[500px] rounded-full"
+          className="ambient-orb absolute w-[400px] md:w-[600px] h-[400px] md:h-[600px] rounded-full"
           style={{
             background: `var(--color-orb-${i + 1})`,
             filter: "blur(80px)",
             willChange: "transform",
+            mixBlendMode: "screen",
           }}
         />
       ))}

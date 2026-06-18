@@ -74,12 +74,9 @@ export const siteConfig = {
   github: "https://github.com/jthiruveedula",
   linkedin: "https://www.linkedin.com/in/jagadeesh-thiruveedula/",
   bio: [
-    "Data Architect and Senior Data Engineer with deep expertise in Google Cloud Platform, BigQuery optimization, and Generative AI application development. Based in Corinth, Texas (DFW region), I design and build enterprise-scale data systems that turn raw information into actionable intelligence.",
-    "My work spans the full data lifecycle — from architecting warehouse solutions with fact and dimension tables, to optimizing SQL stored procedures, to building Apache Airflow DAGs that orchestrate complex data pipelines. On the AI side, I develop agentic frameworks, engineer prompts for production LLM applications, and build MCP-based tools that extend model capabilities.",
-    "I'm equally passionate about financial markets and algorithmic trading. I build AI-driven trading solutions that analyze market momentum, optimize portfolios, and execute strategies with data-backed precision. My open-source projects reflect this intersection of data engineering and quantitative finance.",
-    "When I'm not architecting data systems or exploring trading algorithms, you'll find me watching Telugu movies, diving into YouTube deep-dives, or catching up on Netflix. I believe great engineering comes from diverse perspectives and genuine curiosity.",
+    "I design and build enterprise-scale data systems and private LLM applications on Google Cloud — from BigQuery warehouses to production RAG pipelines.",
+    "I work across the full stack: Airflow pipelines, SQL optimization, agentic workflows, prompt engineering, and quantitative trading systems.",
   ],
-  hobbies: ["Telugu Movies", "YouTube Deep-Dives", "Netflix", "Open Source"],
 };
 
 export const skillCategories: SkillCategory[] = [

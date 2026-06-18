@@ -7,14 +7,23 @@
     "build": "next build",
     "lint": "next lint",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:chrome": "playwright test --project=chromium",
+    "test:e2e:mobile": "playwright test --project=mobile",
+    "test:e2e:all": "playwright test --project=chromium --project=mobile",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
-    "gsap": "^3.12.7",
-    "lenis": "^1.2.3",
+    "@types/three": "^0.184.1",
+    "echarts": "^6.1.0",
+    "echarts-for-react": "^3.0.6",
+    "gsap": "^3.15.0",
     "next": "^15.2.4",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",

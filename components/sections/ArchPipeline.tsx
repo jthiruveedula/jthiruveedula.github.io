@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { archPipeline } from "@/lib/data";
-import { createHover3DTilt } from "@/lib/gsap-animations";
+import { createHover3DTilt } from "@/lib/gsap-helpers";
+import { useSound } from "@/hooks/useSound";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,20 +14,55 @@ const stepIcons: Record<string, string> = {
   brain: "\u{1F9E0}",
   code: "\u{1F4C1}",
   "trending-up": "\u{1F4C8}",
-  cloud: "\u{2601}\uFE0F",
+  cloud: "\u2601\uFE0F",
 };
+
+function FlowParticles() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(".flow-particle", {
+        x: -16,
+        opacity: 0.15,
+      }, {
+        x: 16,
+        opacity: 1,
+        duration: 1.4,
+        stagger: { each: 0.25, repeat: -1 },
+        ease: "power2.inOut",
+        yoyoEase: "power2.inOut",
+      });
+    }, containerRef);
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="absolute inset-0 flex items-center justify-center gap-0.5 pt-10 pointer-events-none">
+      {[0, 1, 2, 3].map((i) => (
+        <span
+          key={i}
+          className="flow-particle inline-block w-1 h-1 rounded-full"
+          style={{ backgroundColor: "var(--color-accent)", boxShadow: "0 0 4px var(--color-accent)", opacity: 0.3 }}
+        />
+      ))}
+    </div>
+  );
+}
 
 function ConnectorArrow() {
   return (
-    <div className="hidden md:flex shrink-0 items-center justify-center w-8 pt-10" aria-hidden>
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--color-accent)" }}>
+    <div className="hidden md:flex shrink-0 items-center justify-center w-8 pt-10 relative" aria-hidden>
+      <FlowParticles />
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--color-accent)", filter: "drop-shadow(0 0 4px var(--color-accent))" }}>
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
       </svg>
     </div>
   );
 }
 
-function PipelineCard({ step, icon, title, subtitle, description, tags, index }: {
+function PipelineCard({ step, icon, title, subtitle, description, tags, index, onCardHover }: {
   step: number;
   icon: string;
   title: string;
@@ -34,19 +70,21 @@ function PipelineCard({ step, icon, title, subtitle, description, tags, index }:
   description: string;
   tags: string[];
   index: number;
+  onCardHover?: () => void;
 }) {
   return (
     <div
-      className="pipeline-card glass rounded-2xl overflow-hidden relative flex-1 min-w-0"
+      className="pipeline-card glass rounded-2xl overflow-hidden relative flex-1 min-w-0 scanline"
       style={{ backgroundColor: "var(--color-surface)", borderColor: "var(--color-glass-border)" }}
       data-hoverable
+      onMouseEnter={onCardHover}
     >
-      <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: "var(--color-accent)" }} />
-      <div className="p-5">
+      <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: "var(--gradient-neon)" }} />
+      <div className="p-5 relative z-[2]">
         <div className="flex items-center gap-3 mb-3">
           <span
             className="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold shrink-0"
-            style={{ background: "var(--color-accent)", color: "var(--color-bg)" }}
+            style={{ background: "var(--color-accent)", color: "var(--color-bg)", boxShadow: "0 0 10px var(--color-accent)" }}
           >
             {step}
           </span>
@@ -85,6 +123,7 @@ export default function ArchPipeline() {
   const sectionRef = useRef<HTMLElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const mobileProgressRef = useRef<HTMLDivElement>(null);
+  const { play } = useSound();
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -92,6 +131,7 @@ export default function ArchPipeline() {
       gsap.from(".pipeline-card", {
         opacity: 0,
         y: 40,
+        filter: "blur(10px)",
         stagger: 0.08,
         duration: 0.7,
         ease: "power3.out",
@@ -99,6 +139,7 @@ export default function ArchPipeline() {
           trigger: "#pipeline",
           start: "top 75%",
           invalidateOnRefresh: true,
+          onEnter: () => play("sweep"),
         },
       });
     }, sectionRef);
@@ -167,16 +208,14 @@ export default function ArchPipeline() {
           </p>
         </div>
 
-        {/* Desktop progress line */}
         <div className="hidden md:block absolute left-0 right-0 h-[2px] top-[184px]" style={{ backgroundColor: "var(--color-glass-border)" }}>
           <div
             ref={progressRef}
             className="h-full origin-left"
-            style={{ backgroundColor: "var(--color-accent)", transform: "scaleX(0)" }}
+            style={{ backgroundColor: "var(--color-accent)", transform: "scaleX(0)", boxShadow: "-12px 0 10px -4px var(--color-accent), 0 0 6px var(--color-accent)", background: "linear-gradient(to left, var(--color-accent) 0%, var(--color-accent) 70%, transparent 100%)" }}
           />
         </div>
 
-        {/* Desktop horizontal flow */}
         <div className="hidden md:flex items-start justify-center gap-0 relative" style={{ paddingTop: "28px" }}>
           {archPipeline.map((step, i) => (
             <div key={step.step} className="flex items-start">
@@ -188,27 +227,26 @@ export default function ArchPipeline() {
                 description={step.description}
                 tags={step.tags}
                 index={i}
+                onCardHover={() => play("tick")}
               />
               {i < archPipeline.length - 1 && <ConnectorArrow />}
             </div>
           ))}
         </div>
 
-        {/* Mobile vertical stack */}
         <div className="md:hidden relative">
-          {/* Mobile progress line */}
           <div className="absolute left-[15px] top-0 bottom-0 w-[2px]" style={{ backgroundColor: "var(--color-glass-border)" }}>
             <div
               ref={mobileProgressRef}
               className="w-full origin-top"
-              style={{ backgroundColor: "var(--color-accent)", transform: "scaleY(0)" }}
+              style={{ backgroundColor: "var(--color-accent)", transform: "scaleY(0)", boxShadow: "0 -12px 10px -4px var(--color-accent), 0 0 6px var(--color-accent)", background: "linear-gradient(to bottom, transparent 0%, var(--color-accent) 30%, var(--color-accent) 100%)" }}
             />
           </div>
 
           <div className="space-y-6">
             {archPipeline.map((step, i) => (
               <div key={step.step} className="relative pl-10">
-                <div className="absolute left-0 top-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold -ml-[17px]" style={{ background: "var(--color-accent)", color: "var(--color-bg)" }}>
+                <div className="absolute left-0 top-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold -ml-[17px]" style={{ background: "var(--color-accent)", color: "var(--color-bg)", boxShadow: "0 0 10px var(--color-accent)" }}>
                   {step.step}
                 </div>
                 <PipelineCard
@@ -219,6 +257,7 @@ export default function ArchPipeline() {
                   description={step.description}
                   tags={step.tags}
                   index={i}
+                  onCardHover={() => play("tick")}
                 />
               </div>
             ))}

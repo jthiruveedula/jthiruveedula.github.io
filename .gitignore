@@ -1,17 +1,72 @@
+# Dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# Build output
 .next/
 out/
-*.tsbuildinfo
 dist/
+build/
+
+# Cache
+.cache/
+.parcel-cache/
+.turbo/
 .astro/
 .vercel/
 .netlify/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Logs
+logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
 .DS_Store
-.opencode
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors / IDEs
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Test output
+coverage/
+test-results/
+playwright-report/
+.playwright/
+/blob-report/
+/playwright/.cache/
+
+# Tooling artifacts
+.opencode/
 .codegraph/
 .understand-anything/
-data/
+.superpowers/
+graphify-out*/
 session-*.md
-graphify-out*
-test-results/
+
+# Legacy / unused
+data/

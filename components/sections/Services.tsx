@@ -5,7 +5,8 @@ import type React from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { services } from "@/lib/data";
-import { createHover3DTilt } from "@/lib/gsap-animations";
+import { createHover3DTilt } from "@/lib/gsap-helpers";
+import { useSound } from "@/hooks/useSound";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,6 +40,7 @@ const serviceIcons: Record<string, React.ReactNode> = {
 
 export default function Services() {
   const sectionRef = useRef<HTMLElement>(null);
+  const { play } = useSound();
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -53,6 +55,7 @@ export default function Services() {
           trigger: "#services",
           start: "top 75%",
           invalidateOnRefresh: true,
+          onEnter: () => play("tick"),
         },
       });
     }, sectionRef);
@@ -80,16 +83,16 @@ export default function Services() {
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 [&>:nth-child(4)]:lg:col-start-1 [&>:nth-child(4)]:lg:col-end-2 [&>:nth-child(5)]:lg:col-start-2 [&>:nth-child(5)]:lg:col-end-3">
           {services.map((service) => (
             <div
               key={service.title}
               className="service-card rounded-2xl border p-6 hover:-translate-y-0.5 transition-all duration-300" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--color-accent)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--color-glass-border)"; }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--color-accent)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--neon-shadow-sm)"; play("click"); }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--color-glass-border)"; (e.currentTarget as HTMLElement).style.boxShadow = ""; }}
               data-hoverable
             >
-              <span className="block mb-4" style={{ color: "var(--color-accent)" }}>{serviceIcons[service.icon] || serviceIcons.code}</span>
+              <span className="block mb-4" style={{ color: "var(--color-accent)", filter: "drop-shadow(0 0 6px var(--color-accent))" }}>{serviceIcons[service.icon] || serviceIcons.code}</span>
               <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--color-text-primary)" }}>{service.title}</h3>
               <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{service.description}</p>
             </div>

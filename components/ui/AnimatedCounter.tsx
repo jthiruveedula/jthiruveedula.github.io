@@ -12,6 +12,7 @@ interface AnimatedCounterProps {
   prefix?: string;
   duration?: number;
   className?: string;
+  onComplete?: () => void;
 }
 
 export default function AnimatedCounter({
@@ -20,8 +21,11 @@ export default function AnimatedCounter({
   prefix = "",
   duration = 2,
   className = "",
+  onComplete,
 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
     const el = ref.current;
@@ -41,6 +45,7 @@ export default function AnimatedCounter({
           duration,
           ease: "power2.out",
           snap: { textContent: 1 },
+          onComplete: () => onCompleteRef.current?.(),
           scrollTrigger: {
             trigger: el,
             start: "top 85%",

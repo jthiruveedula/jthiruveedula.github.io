@@ -5,26 +5,65 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { caseStudies } from "@/lib/data";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
+import { useSound } from "@/hooks/useSound";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function CaseStudies() {
   const sectionRef = useRef<HTMLElement>(null);
+  const { play } = useSound();
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const ctx = gsap.context(() => {
-      gsap.from(".case-study", {
-        opacity: 0,
-        y: 40,
-        stagger: 0.15,
-        duration: 0.8,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: "#case-studies",
-          start: "top 75%",
-          invalidateOnRefresh: true,
-        },
+      const studies = document.querySelectorAll(".case-study");
+
+      studies.forEach((study) => {
+        const heading = study.querySelector(".cs-heading") as HTMLElement;
+        const subtitle = study.querySelector(".cs-subtitle") as HTMLElement;
+        const contentSections = study.querySelectorAll(".cs-content-section");
+        const metricsWrap = study.querySelector(".cs-metrics") as HTMLElement;
+        const metrics = study.querySelectorAll(".cs-metric");
+        const techStack = study.querySelector(".cs-stack") as HTMLElement;
+        const accentBar = study.querySelector(".cs-accent-bar") as HTMLElement;
+        const studyEl = study as HTMLElement;
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: studyEl,
+            start: "top 80%",
+            onEnter: () => play("transition"),
+          },
+        });
+
+        tl.from(heading, { opacity: 0, x: -30, duration: 0.6, ease: "power3.out" })
+          .from(subtitle, { opacity: 0, x: -20, duration: 0.4, ease: "power3.out" }, "-=0.3")
+          .from(contentSections, { opacity: 0, y: 20, stagger: 0.08, duration: 0.5, ease: "power3.out" }, "-=0.2");
+
+        if (metrics.length) {
+          tl.from(metrics, {
+            opacity: 0,
+            scale: 0,
+            filter: "blur(8px)",
+            stagger: 0.08,
+            duration: 0.6,
+            ease: "back.out(2)",
+          }, "-=0.1");
+        }
+
+        tl.from(techStack, { opacity: 0, y: 10, duration: 0.4, ease: "power3.out" }, "-=0.2");
+
+        if (accentBar) {
+          ScrollTrigger.create({
+            trigger: studyEl,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.5,
+            onUpdate: (self) => {
+              accentBar.style.height = `${self.progress * 100}%`;
+            },
+          });
+        }
       });
     }, sectionRef);
     return () => ctx.revert();
@@ -41,20 +80,25 @@ export default function CaseStudies() {
           </p>
         </div>
 
-        <div className="space-y-10">
+        <div className="space-y-10 -mx-4 md:-mx-6">
           {caseStudies.map((study, i) => (
             <article
               key={i}
-              className="case-study rounded-2xl border p-6 md:p-8" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
+              className="case-study relative rounded-2xl border p-6 md:p-8 overflow-hidden" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
             >
+              <div
+                className="cs-accent-bar absolute left-0 top-0 w-1 rounded-l-2xl"
+                style={{ height: "0%", background: "var(--gradient-neon)" }}
+              />
+
               <div className="mb-6">
-                <h3 className="text-lg md:text-xl font-bold mb-2" style={{ color: "var(--color-text-primary)" }}>{study.title}</h3>
-                <p className="text-sm font-mono" style={{ color: "var(--color-accent)" }}>{study.subtitle}</p>
+                <h3 className="cs-heading text-lg md:text-xl font-bold mb-2" style={{ color: "var(--color-text-primary)" }}>{study.title}</h3>
+                <p className="cs-subtitle text-sm font-mono" style={{ color: "var(--color-accent)" }}>{study.subtitle}</p>
               </div>
 
               <div className="space-y-4 mb-6">
                 {study.content.map((section, j) => (
-                  <div key={j}>
+                  <div key={j} className="cs-content-section">
                     <h4 className="font-mono text-xs uppercase tracking-wider mb-1" style={{ color: "var(--color-text-muted)" }}>
                       {section.heading}
                     </h4>
@@ -63,13 +107,16 @@ export default function CaseStudies() {
                 ))}
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="cs-metrics grid grid-cols-3 gap-4 mb-6">
                 {study.metrics.map((m, j) => (
                   <div
                     key={j}
-                    className="rounded-xl border p-4 text-center" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
+                    className="cs-metric rounded-xl border p-4 text-center transition-all duration-300"
+                    style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--neon-shadow-sm)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--color-accent)"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = ""; (e.currentTarget as HTMLElement).style.borderColor = "var(--color-glass-border)"; }}
                   >
-                    <div className="font-mono text-xl md:text-2xl font-bold" style={{ color: "var(--color-accent)" }}>
+                    <div className="font-mono text-xl md:text-2xl font-bold" style={{ color: "var(--color-accent)", textShadow: "0 0 8px var(--color-accent)" }}>
                       <AnimatedCounter end={parseFloat(String(m.value))} suffix={m.suffix} prefix={m.prefix || ""} duration={2} />
                     </div>
                     <p className="font-mono text-[10px] mt-1" style={{ color: "var(--color-text-muted)" }}>{m.label}</p>
@@ -77,7 +124,7 @@ export default function CaseStudies() {
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-1.5">
+              <div className="cs-stack flex flex-wrap gap-1.5">
                 {study.stack.map((tech) => (
                   <span
                     key={tech}

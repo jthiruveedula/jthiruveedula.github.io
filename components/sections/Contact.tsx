@@ -4,15 +4,25 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { siteConfig } from "@/lib/data";
+import { useSound } from "@/hooks/useSound";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const { play } = useSound();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const name = String(formData.get("name") || "");
+    const email = String(formData.get("email") || "");
+    const message = String(formData.get("message") || "");
+    const subject = encodeURIComponent(`Portfolio contact from ${name}`);
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+    window.location.href = `mailto:${siteConfig.email}?subject=${subject}&body=${body}`;
+    play("success");
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 5000);
   };
@@ -63,7 +73,7 @@ export default function Contact() {
           <div>
             {submitted ? (
               <div className="rounded-2xl border p-8 text-center animate-in fade-in duration-300" style={{ borderColor: "var(--color-accent)", backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)" }}>
-                <svg className="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--color-accent)" }}>
+                <svg className="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--color-accent)", filter: "drop-shadow(0 0 8px var(--color-accent))" }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <p className="font-semibold" style={{ color: "var(--color-accent)" }}>Message sent!</p>
@@ -77,12 +87,13 @@ export default function Contact() {
                   </label>
                   <input
                     id="name"
+                    name="name"
                     type="text"
                     required
                     className="w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-1 transition-all placeholder:text-[color:var(--color-text-muted)]"
                     style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)", color: "var(--color-text-primary)" }}
                     placeholder="Your name"
-                    onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-accent)"; e.currentTarget.style.boxShadow = "0 0 0 1px color-mix(in srgb, var(--color-accent) 20%, transparent)"; }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-accent)"; e.currentTarget.style.boxShadow = "0 0 0 1px color-mix(in srgb, var(--color-accent) 20%, transparent)"; play("click"); }}
                     onBlur={(e) => { e.currentTarget.style.borderColor = "var(--color-glass-border)"; e.currentTarget.style.boxShadow = "none"; }}
                   />
                 </div>
@@ -92,12 +103,13 @@ export default function Contact() {
                   </label>
                   <input
                     id="email"
+                    name="email"
                     type="email"
                     required
                     className="w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-1 transition-all placeholder:text-[color:var(--color-text-muted)]"
                     style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)", color: "var(--color-text-primary)" }}
                     placeholder="your@email.com"
-                    onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-accent)"; e.currentTarget.style.boxShadow = "0 0 0 1px color-mix(in srgb, var(--color-accent) 20%, transparent)"; }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-accent)"; e.currentTarget.style.boxShadow = "0 0 0 1px color-mix(in srgb, var(--color-accent) 20%, transparent)"; play("click"); }}
                     onBlur={(e) => { e.currentTarget.style.borderColor = "var(--color-glass-border)"; e.currentTarget.style.boxShadow = "none"; }}
                   />
                 </div>
@@ -107,21 +119,22 @@ export default function Contact() {
                   </label>
                   <textarea
                     id="message"
+                    name="message"
                     required
                     rows={4}
                     className="w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-1 transition-all resize-none placeholder:text-[color:var(--color-text-muted)]"
                     style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)", color: "var(--color-text-primary)" }}
                     placeholder="Tell me about your project..."
-                    onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-accent)"; e.currentTarget.style.boxShadow = "0 0 0 1px color-mix(in srgb, var(--color-accent) 20%, transparent)"; }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-accent)"; e.currentTarget.style.boxShadow = "0 0 0 1px color-mix(in srgb, var(--color-accent) 20%, transparent)"; play("click"); }}
                     onBlur={(e) => { e.currentTarget.style.borderColor = "var(--color-glass-border)"; e.currentTarget.style.boxShadow = "none"; }}
                   />
                 </div>
                 <button
                   type="submit"
                   className="w-full py-3 rounded-xl text-sm font-semibold text-slate-950 hover:scale-[1.01] transition-all duration-200"
-                  style={{ background: "var(--gradient-accent)", boxShadow: "0 0 20px var(--color-glow)" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 32px var(--color-glow)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 20px var(--color-glow)"; }}
+                  style={{ background: "var(--gradient-accent)", boxShadow: "0 0 20px var(--color-accent), 0 0 40px var(--color-accent-muted)" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 32px var(--color-accent), 0 0 60px var(--color-accent-muted)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 20px var(--color-accent), 0 0 40px var(--color-accent-muted)"; }}
                 >
                   Send Message
                 </button>
@@ -178,7 +191,12 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="rounded-2xl border p-6" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}>
+            <div
+              className="rounded-2xl border p-6 transition-all duration-300"
+              style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--color-accent)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--neon-shadow-sm)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--color-glass-border)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
+            >
               <div className="flex items-center gap-3 mb-3">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--color-accent)" }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />

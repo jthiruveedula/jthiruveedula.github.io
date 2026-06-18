@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSound } from "@/hooks/useSound";
 
 const themes = [
+  { id: "cyberpunk", label: "Cyberpunk", dot: "bg-cyan-400" },
   { id: "noir", label: "Noir", dot: "bg-slate-400" },
   { id: "golden", label: "Golden", dot: "bg-amber-400" },
   { id: "teal-orange", label: "Teal & Orange", dot: "bg-cyan-400" },
@@ -10,6 +12,7 @@ const themes = [
 ] as const;
 
 export default function ThemeSwitcher() {
+  const { play } = useSound();
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<typeof themes[number]["id"]>("noir");
 
@@ -27,10 +30,11 @@ export default function ThemeSwitcher() {
         return;
       }
     } catch {}
-    applyTheme("noir");
+    applyTheme("cyberpunk");
   }, []);
 
   const cycleTheme = () => {
+    play("toggle");
     const idx = themes.findIndex((t) => t.id === theme);
     const next = themes[(idx + 1) % themes.length];
     setTheme(next.id);

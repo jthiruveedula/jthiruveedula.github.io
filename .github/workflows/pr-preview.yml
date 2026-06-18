@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: site-preview-${{ github.event.pull_request.number }}
-          path: dist
+          path: out
           retention-days: 14
 
       - name: Comment preview link on PR
@@ -41,7 +41,11 @@ jobs:
             const runId = context.runId;
             const repo = context.repo;
             const artifactUrl = `https://github.com/${repo.owner}/${repo.repo}/actions/runs/${runId}`;
-            const body = `✅ **PR Preview build succeeded.**\n\nDownload the built site artifact (\`site-preview-${context.issue.number}\`) from the workflow run: ${artifactUrl}\n\nUnzip and serve locally:\n\`\`\`bash\nnpx serve dist\n\`\`\`\nProduction deploy runs automatically on merge to \`master\` via \`deploy.yml\`.`;
+            const body = `✅ **PR Preview build succeeded.**\n\nDownload the built site artifact (\`site-preview-${context.issue.number}\`) from the workflow run: ${artifactUrl}\n\nUnzip and serve locally:
+            \`\`\`bash
+            npx serve out
+            \`\`\`
+            Production deploy runs automatically on merge to \`master\` via \`deploy.yml\`.`;
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: repo.owner,
