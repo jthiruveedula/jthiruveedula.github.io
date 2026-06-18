@@ -2,10 +2,10 @@ import { test, expect } from "@playwright/test";
 
 test("hero section renders with key content", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByText("DATA ARCHITECT · GCP & GENERATIVE AI")).toBeVisible();
-  await expect(page.getByRole("heading", { name: /architecting/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /view my work/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /contact me/i })).toBeVisible();
+  await expect(page.getByText("Data · RAG · Agents · Guardrails")).toBeVisible();
+  await expect(page.getByText("Command Surface for")).toBeVisible();
+  await expect(page.getByRole("link", { name: /see the systems/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /discuss a system/i })).toBeVisible();
 });
 
 test("about section has bio and location", async ({ page }) => {
@@ -44,4 +44,31 @@ test("footer displays copyright and stack info", async ({ page }) => {
   await expect(footer).toBeVisible();
   await expect(footer.locator("span").filter({ hasText: "GSAP" })).toBeVisible();
   await expect(footer).toContainText("Next.js");
+});
+
+test("architecture pipeline has 5 steps", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#pipeline").scrollIntoViewIfNeeded();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Ingest" })).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Embed" })).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Retrieve" })).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Govern" })).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Serve" })).toBeVisible();
+});
+
+test("professional metrics displays counters", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#metrics").scrollIntoViewIfNeeded();
+  await expect(page.locator("#metrics").getByText("Production Deployments")).toBeVisible();
+  await expect(page.locator("#metrics").getByText("Enterprise Clients")).toBeVisible();
+  await expect(page.locator("#metrics").getByText("RAG Pipelines")).toBeVisible();
+  await expect(page.locator("#metrics").getByText("Agentic Workflows")).toBeVisible();
+});
+
+test("experience timeline has 6 roles", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#experience").scrollIntoViewIfNeeded();
+  await expect(page.locator("#experience").getByText("Quantiphi")).toBeVisible();
+  await expect(page.locator("#experience").getByText("Charles Schwab")).toBeVisible();
+  await expect(page.locator("#experience").getByText("Wiley Publications")).toBeVisible();
 });
