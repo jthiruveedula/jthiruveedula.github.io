@@ -1,0 +1,119 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      rollback_ref:
+        description: "Git ref to deploy (branch/tag/sha). Leave empty to deploy HEAD of master."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: "22"
+  KEEP_LAST_DEPLOYMENTS: 5
+
+jobs:
+  deploy:
+    name: Build & deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Resolve deploy ref
+        id: deploy_vars
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.rollback_ref }}" ]; then
+            echo "deploy_sha=${{ inputs.rollback_ref }}" >> $GITHUB_OUTPUT
+            echo "deploy_mode=rollback" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "deploy_mode=deploy" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.deploy_vars.outputs.deploy_sha }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Tag release
+        if: steps.deploy_vars.outputs.deploy_mode == 'deploy'
+        run: |
+          SHORT_SHA="${GITHUB_SHA::7}"
+          if git rev-parse "v0.0.0-$SHORT_SHA" >/dev/null 2>&1; then
+            echo "Tag v0.0.0-$SHORT_SHA already exists, skipping"
+            exit 0
+          fi
+          git tag -a "v0.0.0-$SHORT_SHA" -m "Auto release $SHORT_SHA at $(date -u +%FT%TZ)"
+          git push origin "v0.0.0-$SHORT_SHA"
+          echo "Tagged release v0.0.0-$SHORT_SHA" >> $GITHUB_STEP_SUMMARY
+
+      - name: Record deployment
+        run: |
+          DEPLOY_SHA="${{ steps.deploy_vars.outputs.deploy_sha }}"
+          DEPLOY_MODE="${{ steps.deploy_vars.outputs.deploy_mode }}"
+          DEPLOY_URL="${{ steps.deployment.outputs.page_url }}"
+          DEPLOY_TIME=$(date -u +%FT%TZ)
+          SHORT_SHA="${DEPLOY_SHA::7}"
+          {
+            echo "### 🚀 Deployment ($DEPLOY_MODE)"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Mode | \`$DEPLOY_MODE\` |"
+            echo "| SHA | \`$DEPLOY_SHA\` |"
+            echo "| Short SHA | \`$SHORT_SHA\` |"
+            echo "| URL | $DEPLOY_URL |"
+            echo "| Time | \`$DEPLOY_TIME\` |"
+            echo ""
+            echo "### Rollback strategy"
+            echo ""
+            echo "GitHub Pages keeps the last \`${{ env.KEEP_LAST_DEPLOYMENTS }}\` deployments automatically per environment."
+            echo ""
+            echo "To roll back, use the Actions tab → select \`Deploy\` → \`Run workflow\` → set \`rollback_ref\` to:"
+            echo ""
+            echo "| Option | Value |"
+            echo "|---|---|"
+            echo "| Previous commit | \`<full-sha>\` (e.g. \`abc1234...\`) |"
+            echo "| Previous branch | \`refs/heads/<branch-name>\` |"
+            echo "| Release tag | \`v0.0.0-<short-sha>\` |"
+            echo ""
+            echo "Each successful master deploy creates an immutable tag \`v0.0.0-<sha>\` that can be redeployed."
+          } >> $GITHUB_STEP_SUMMARY
