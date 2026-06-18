@@ -9,6 +9,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import CustomCursor from "@/components/ui/CustomCursor";
+import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
+import FilmGrainOverlay from "@/components/ui/FilmGrainOverlay";
+import AmbientOrbs from "@/components/ui/AmbientOrbs";
 import Hero from "@/components/sections/Hero";
 import ProfessionalMetrics from "@/components/sections/ProfessionalMetrics";
 import About from "@/components/sections/About";
@@ -51,6 +54,9 @@ export default function Home() {
       <SmoothScroll />
       <ScrollProgress />
       <CustomCursor />
+      <ThemeSwitcher />
+      <FilmGrainOverlay />
+      <AmbientOrbs />
       <Navbar />
       <main className="relative z-10 min-h-screen pt-14">
         <Hero />
