@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { projects, filterCategories } from "@/lib/data";
+import { createHover3DTilt } from "@/lib/gsap-animations";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -50,14 +51,24 @@ export default function Projects() {
     );
   }, [activeFilter]);
 
+  useEffect(() => {
+    const cards = sectionRef.current?.querySelectorAll(".project-card");
+    if (!cards || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const cleanups: (() => void)[] = [];
+    cards.forEach((card) => {
+      cleanups.push(createHover3DTilt(card as HTMLElement, { scale: 1.02, maxTilt: 3 }));
+    });
+    return () => cleanups.forEach((fn) => fn());
+  }, [filtered.length]);
+
   return (
-    <section id="projects" ref={sectionRef} className="relative py-28 bg-slate-900 border-t border-slate-800/40">
+    <section id="projects" ref={sectionRef} className="relative py-28 border-t" style={{ backgroundColor: "var(--color-bg)", borderColor: "var(--color-glass-border)" }}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <p className="section-eyebrow text-cyan-400">Portfolio</p>
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Selected projects.</h2>
-            <p className="mt-2 text-sm text-slate-400 font-light">
+            <p className="section-eyebrow" style={{ color: "var(--color-accent)" }}>Portfolio</p>
+            <h2 className="text-2xl md:text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>Selected projects.</h2>
+            <p className="mt-2 text-sm font-light" style={{ color: "var(--color-text-secondary)" }}>
               Production AI and data systems I&apos;ve architected and shipped.
             </p>
           </div>
@@ -68,11 +79,11 @@ export default function Projects() {
             <button
               key={cat}
               onClick={() => setActiveFilter(cat)}
-              className={`font-mono text-xs px-3.5 py-1.5 rounded-full border transition-all duration-200 ${
-                activeFilter === cat
-                  ? "border-cyan-400 bg-cyan-500/10 text-cyan-300"
-                  : "border-slate-700/60 text-slate-500 hover:border-slate-600 hover:text-slate-300"
-              }`}
+               className={`font-mono text-xs px-3.5 py-1.5 rounded-full border transition-all duration-200 ${
+                 activeFilter === cat
+                   ? "border-[color:var(--color-accent)] bg-[color:var(--color-accent)]/10 text-[color:var(--color-accent)]"
+                   : "border-[color:var(--color-glass-border)] text-[color:var(--color-text-muted)] hover:border-[color:var(--color-accent)]/30 hover:text-[color:var(--color-text-secondary)]"
+               }`}
             >
               {cat}
             </button>
@@ -85,14 +96,19 @@ export default function Projects() {
             return (
               <article
                 key={project.id}
-                className={`project-card group relative rounded-2xl border border-slate-700/60 bg-slate-800/30 p-6 hover:border-cyan-500/30 hover:bg-slate-800/50 transition-all duration-500 overflow-hidden ${isFeatured ? "md:col-span-2 md:grid md:grid-cols-2 md:gap-6" : ""}`}
+                className={`project-card group relative rounded-2xl border p-6 transition-all duration-500 overflow-hidden ${isFeatured ? "md:col-span-2 md:grid md:grid-cols-2 md:gap-6" : ""}`}
+                style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--color-accent)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--color-glass-border)"; }}
+                data-hoverable
               >
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-cyan-500/40 via-indigo-400/60 to-emerald-400/40" />
+                <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "var(--gradient-accent)" }} />
 
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <span
-                      className={`font-mono text-[10px] px-2 py-0.5 rounded-full border ${categoryColors[project.category] || "border-slate-600 text-slate-400"}`}
+                      className={`font-mono text-[10px] px-2 py-0.5 rounded-full border ${categoryColors[project.category] || ""}`}
+                      style={!categoryColors[project.category] ? { borderColor: "var(--color-glass-border)", color: "var(--color-text-secondary)" } : undefined}
                     >
                       {project.category}
                     </span>
@@ -101,7 +117,10 @@ export default function Projects() {
                         href={project.githubUrl}
                         target="_blank"
                         rel="noopener"
-                        className="text-slate-500 hover:text-cyan-400 transition-colors"
+                        className="transition-colors"
+                        style={{ color: "var(--color-text-muted)" }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-accent)"; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-muted)"; }}
                         aria-label={`View ${project.title} on GitHub`}
                       >
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -111,28 +130,28 @@ export default function Projects() {
                     )}
                   </div>
 
-                  <h3 className="text-base font-semibold text-white mb-2 group-hover:text-cyan-100 transition-colors">
+                  <h3 className="text-base font-semibold mb-2 transition-colors" style={{ color: "var(--color-text-primary)" }}>
                     {project.title}
                   </h3>
-                  <p className="text-xs text-slate-500 leading-relaxed mb-3">{project.summary}</p>
+                  <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--color-text-muted)" }}>{project.summary}</p>
 
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     {project.stack.map((tech) => (
                       <span
                         key={tech}
-                        className="font-mono text-[9px] px-2 py-0.5 rounded border border-slate-700/50 text-slate-500 bg-slate-900/60"
+                        className="font-mono text-[9px] px-2 py-0.5 rounded border" style={{ borderColor: "var(--color-glass-border)", color: "var(--color-text-muted)", backgroundColor: "var(--color-surface)" }}
                       >
                         {tech}
                       </span>
                     ))}
                   </div>
 
-                  <div className="pt-3 border-t border-slate-800/60">
+                  <div className="pt-3 border-t" style={{ borderColor: "var(--color-glass-border)" }}>
                     <div className="flex items-baseline gap-2">
-                      <span className="font-mono text-sm font-semibold text-emerald-400">
+                      <span className="font-mono text-sm font-semibold" style={{ color: "var(--color-accent)" }}>
                         {project.metric}
                       </span>
-                      <span className="font-mono text-[9px] text-slate-600">
+                      <span className="font-mono text-[9px]" style={{ color: "var(--color-text-muted)" }}>
                         {project.metricLabel}
                       </span>
                     </div>
@@ -140,13 +159,13 @@ export default function Projects() {
                 </div>
 
                 {isFeatured && (
-                  <div className="hidden md:flex flex-col justify-center gap-3 pl-6 border-l border-slate-700/40">
-                    <p className="font-mono text-[10px] text-cyan-400/80 uppercase tracking-wider">
+                  <div className="hidden md:flex flex-col justify-center gap-3 pl-6 border-l" style={{ borderColor: "var(--color-glass-border)" }}>
+                    <p className="font-mono text-[10px] uppercase tracking-wider" style={{ color: "var(--color-accent)" }}>
                       Case Highlight
                     </p>
-                    <p className="text-xs text-slate-400 leading-relaxed">{project.detail}</p>
+                    <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{project.detail}</p>
                     <div className="flex flex-wrap gap-2 mt-2">
-                      <span className="font-mono text-[9px] text-slate-500">Role: {project.role}</span>
+                      <span className="font-mono text-[9px]" style={{ color: "var(--color-text-muted)" }}>Role: {project.role}</span>
                     </div>
                   </div>
                 )}

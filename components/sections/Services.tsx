@@ -5,6 +5,7 @@ import type React from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { services } from "@/lib/data";
+import { createHover3DTilt } from "@/lib/gsap-animations";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -58,13 +59,23 @@ export default function Services() {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    const cards = sectionRef.current?.querySelectorAll(".service-card");
+    if (!cards || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const cleanups: (() => void)[] = [];
+    cards.forEach((card) => {
+      cleanups.push(createHover3DTilt(card as HTMLElement, { scale: 1.03, maxTilt: 4 }));
+    });
+    return () => cleanups.forEach((fn) => fn());
+  }, []);
+
   return (
-    <section id="services" ref={sectionRef} className="relative py-28 bg-slate-900 border-t border-slate-800/40">
+    <section id="services" ref={sectionRef} className="relative py-28 border-t" style={{ backgroundColor: "var(--color-bg)", borderColor: "var(--color-glass-border)" }}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="mb-16">
-          <p className="section-eyebrow text-cyan-400">Services</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white">What I offer.</h2>
-          <p className="mt-2 text-sm text-slate-400 font-light">
+          <p className="section-eyebrow" style={{ color: "var(--color-accent)" }}>Services</p>
+          <h2 className="text-2xl md:text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>What I offer.</h2>
+          <p className="mt-2 text-sm font-light" style={{ color: "var(--color-text-secondary)" }}>
             Consulting and implementation for data & AI initiatives.
           </p>
         </div>
@@ -73,11 +84,14 @@ export default function Services() {
           {services.map((service) => (
             <div
               key={service.title}
-              className="service-card rounded-2xl border border-slate-700/50 bg-slate-800/30 p-6 hover:border-cyan-500/30 hover:-translate-y-0.5 transition-all duration-300"
+              className="service-card rounded-2xl border p-6 hover:-translate-y-0.5 transition-all duration-300" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--color-accent)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--color-glass-border)"; }}
+              data-hoverable
             >
-              <span className="text-cyan-400 block mb-4">{serviceIcons[service.icon] || serviceIcons.code}</span>
-              <h3 className="text-sm font-semibold text-white mb-2">{service.title}</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">{service.description}</p>
+              <span className="block mb-4" style={{ color: "var(--color-accent)" }}>{serviceIcons[service.icon] || serviceIcons.code}</span>
+              <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--color-text-primary)" }}>{service.title}</h3>
+              <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{service.description}</p>
             </div>
           ))}
         </div>

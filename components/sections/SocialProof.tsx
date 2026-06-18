@@ -48,66 +48,66 @@ export default function SocialProof() {
   }, []);
 
   return (
-    <section id="social-proof" ref={sectionRef} className="relative py-28 bg-slate-950 border-t border-slate-800/40">
+    <section id="social-proof" ref={sectionRef} className="relative py-28 border-t" style={{ backgroundColor: "var(--color-bg)", borderColor: "var(--color-glass-border)" }}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="mb-16">
-          <p className="section-eyebrow text-emerald-400">Social Proof</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white">Trusted by peers.</h2>
+          <p className="section-eyebrow" style={{ color: "var(--color-accent)" }}>Social Proof</p>
+          <h2 className="text-2xl md:text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>Trusted by peers.</h2>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3 mb-16">
           {testimonials.map((t, i) => (
             <div
               key={i}
-              className="proof-item rounded-2xl border border-slate-700/50 bg-slate-900/60 p-6 flex flex-col gap-4"
+              className="proof-item rounded-2xl border p-6 flex flex-col gap-4" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
             >
               <StarRating rating={t.rating} />
-              <p className="text-sm text-slate-400 leading-relaxed italic">&ldquo;{t.quote}&rdquo;</p>
+              <p className="text-sm leading-relaxed italic" style={{ color: "var(--color-text-secondary)" }}>&ldquo;{t.quote}&rdquo;</p>
               <div className="mt-auto">
-                <p className="text-sm font-semibold text-white">{t.name}</p>
-                <p className="font-mono text-[10px] text-slate-500">{t.title}</p>
+                <p className="text-sm font-semibold" style={{ color: "var(--color-text-primary)" }}>{t.name}</p>
+                <p className="font-mono text-[10px]" style={{ color: "var(--color-text-muted)" }}>{t.title}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 mb-16 proof-item">
-          <div className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-6 text-center">
-            <div className="font-mono text-3xl font-bold text-emerald-400">
-              <AnimatedCounter end={50} suffix="+" duration={2.5} />
+          <div className="grid gap-6 md:grid-cols-3 mb-16 proof-item">
+            <div className="rounded-2xl border p-6 text-center" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}>
+              <div className="font-mono text-3xl font-bold" style={{ color: "var(--color-accent)" }}>
+                <AnimatedCounter end={50} suffix="+" duration={2.5} />
+              </div>
+              <p className="font-mono text-xs mt-1" style={{ color: "var(--color-text-muted)" }}>GitHub Repositories</p>
             </div>
-            <p className="font-mono text-xs text-slate-500 mt-1">GitHub Repositories</p>
-          </div>
-          <div className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-6 text-center">
-            <div className="font-mono text-3xl font-bold text-cyan-400">
-              <AnimatedCounter end={1000} suffix="+" duration={2.5} />
+            <div className="rounded-2xl border p-6 text-center" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}>
+              <div className="font-mono text-3xl font-bold" style={{ color: "var(--color-accent)" }}>
+                <AnimatedCounter end={1000} suffix="+" duration={2.5} />
+              </div>
+              <p className="font-mono text-xs mt-1" style={{ color: "var(--color-text-muted)" }}>GitHub Commits</p>
             </div>
-            <p className="font-mono text-xs text-slate-500 mt-1">GitHub Commits</p>
-          </div>
-          <div className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-6 text-center">
-            <div className="font-mono text-3xl font-bold text-indigo-400">
-              <AnimatedCounter end={6} suffix="+" duration={2} />
+            <div className="rounded-2xl border p-6 text-center" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}>
+              <div className="font-mono text-3xl font-bold" style={{ color: "var(--color-accent)" }}>
+                <AnimatedCounter end={6} suffix="+" duration={2} />
+              </div>
+              <p className="font-mono text-xs mt-1" style={{ color: "var(--color-text-muted)" }}>Production GenAI Systems</p>
             </div>
-            <p className="font-mono text-xs text-slate-500 mt-1">Production GenAI Systems</p>
           </div>
-        </div>
 
         <div className="proof-item">
-          <p className="font-mono text-xs text-slate-600 tracking-widest uppercase mb-4">
+          <p className="font-mono text-xs tracking-widest uppercase mb-4" style={{ color: "var(--color-text-muted)" }}>
             Certifications
           </p>
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
             {certifications.map((cert) => (
               <div
                 key={cert.name}
-                className="rounded-xl border border-slate-700/40 bg-slate-800/30 p-4 flex items-center gap-3"
+                className="rounded-xl border p-4 flex items-center gap-3" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
               >
-                <svg className="w-5 h-5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--color-accent)" }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
-                  <p className="text-xs text-white font-medium">{cert.name}</p>
-                  <p className="font-mono text-[9px] text-slate-500">{cert.issuer}</p>
+                  <p className="text-xs font-medium" style={{ color: "var(--color-text-primary)" }}>{cert.name}</p>
+                  <p className="font-mono text-[9px]" style={{ color: "var(--color-text-muted)" }}>{cert.issuer}</p>
                 </div>
               </div>
             ))}

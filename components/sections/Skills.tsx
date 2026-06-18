@@ -5,7 +5,7 @@ import type React from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { skillCategories } from "@/lib/data";
-import { createHover3DTilt } from "@/lib/gsap-animations";
+import { createHover3DTilt, animateSkillBars } from "@/lib/gsap-animations";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -76,6 +76,14 @@ export default function Skills() {
   }, []);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const ctx = gsap.context(() => {
+      animateSkillBars(sectionRef.current);
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
     const cards = sectionRef.current?.querySelectorAll(".skill-card");
     if (!cards || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const cleanups: (() => void)[] = [];
@@ -86,12 +94,12 @@ export default function Skills() {
   }, []);
 
   return (
-    <section id="skills" ref={sectionRef} className="relative py-28 bg-slate-950 border-t border-slate-800/40">
+    <section id="skills" ref={sectionRef} className="relative py-28 border-t" style={{ backgroundColor: "var(--color-bg)", borderColor: "var(--color-glass-border)" }}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="mb-16 max-w-3xl">
-          <p className="section-eyebrow text-emerald-400">Expertise</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white">Skills & capabilities.</h2>
-          <p className="mt-2 text-sm text-slate-400 font-light">
+          <p className="section-eyebrow" style={{ color: "var(--color-accent)" }}>Expertise</p>
+          <h2 className="text-2xl md:text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>Skills & capabilities.</h2>
+          <p className="mt-2 text-sm font-light" style={{ color: "var(--color-text-secondary)" }}>
             Five years of deep expertise across the full data and AI stack.
           </p>
         </div>
@@ -100,26 +108,27 @@ export default function Skills() {
           {skillCategories.map((cat) => (
             <div
               key={cat.category}
-              className={`skill-card rounded-2xl border bg-slate-900/60 p-6 transition-colors duration-300 ${categoryColors[cat.category] || "border-slate-700/60"}`}
+              className={`skill-card rounded-2xl border p-6 transition-colors duration-300 ${categoryColors[cat.category] || ""}`}
+              style={{ backgroundColor: "var(--color-surface)", ...(categoryColors[cat.category] ? {} : { borderColor: "var(--color-glass-border)" }) }}
               data-hoverable
             >
               <div className="flex items-center gap-3 mb-4">
                 <span className={iconColors[cat.category] || "text-slate-400"}>
                   {iconPaths[cat.icon] || iconPaths.code}
                 </span>
-                <h3 className="text-sm font-semibold text-white">{cat.category}</h3>
+                <h3 className="text-sm font-semibold" style={{ color: "var(--color-text-primary)" }}>{cat.category}</h3>
               </div>
               <div className="space-y-2.5">
                 {cat.skills.map((skill) => (
                   <div key={skill.name}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-mono text-[11px] text-slate-400">{skill.name}</span>
-                      <span className="font-mono text-[9px] text-slate-600">{skill.level}%</span>
+                      <span className="font-mono text-[11px]" style={{ color: "var(--color-text-secondary)" }}>{skill.name}</span>
+                      <span className="font-mono text-[9px]" style={{ color: "var(--color-text-muted)" }}>{skill.level}%</span>
                     </div>
-                    <div className="h-1 rounded-full bg-slate-800 overflow-hidden">
+                    <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-indigo-500/60 to-cyan-400/60 transition-all duration-700"
-                        style={{ width: `${skill.level}%` }}
+                        className="skill-bar-fill h-full rounded-full" style={{ background: "var(--gradient-accent)" }}
+                        data-level={skill.level}
                       />
                     </div>
                   </div>

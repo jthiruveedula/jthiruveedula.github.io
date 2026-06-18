@@ -31,12 +31,12 @@ export default function CaseStudies() {
   }, []);
 
   return (
-    <section id="case-studies" ref={sectionRef} className="relative py-28 bg-slate-950 border-t border-slate-800/40">
+    <section id="case-studies" ref={sectionRef} className="relative py-28 border-t" style={{ backgroundColor: "var(--color-bg)", borderColor: "var(--color-glass-border)" }}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="mb-16">
-          <p className="section-eyebrow text-indigo-400">Case Studies</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white">Deep dives.</h2>
-          <p className="mt-2 text-sm text-slate-400 font-light">
+          <p className="section-eyebrow" style={{ color: "var(--color-accent)" }}>Case Studies</p>
+          <h2 className="text-2xl md:text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>Deep dives.</h2>
+          <p className="mt-2 text-sm font-light" style={{ color: "var(--color-text-secondary)" }}>
             Architecture decisions, challenges, and measurable outcomes.
           </p>
         </div>
@@ -45,20 +45,20 @@ export default function CaseStudies() {
           {caseStudies.map((study, i) => (
             <article
               key={i}
-              className="case-study rounded-2xl border border-slate-700/50 bg-slate-900/60 p-6 md:p-8"
+              className="case-study rounded-2xl border p-6 md:p-8" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
             >
               <div className="mb-6">
-                <h3 className="text-lg md:text-xl font-bold text-white mb-2">{study.title}</h3>
-                <p className="text-sm text-cyan-400/80 font-mono">{study.subtitle}</p>
+                <h3 className="text-lg md:text-xl font-bold mb-2" style={{ color: "var(--color-text-primary)" }}>{study.title}</h3>
+                <p className="text-sm font-mono" style={{ color: "var(--color-accent)" }}>{study.subtitle}</p>
               </div>
 
               <div className="space-y-4 mb-6">
                 {study.content.map((section, j) => (
                   <div key={j}>
-                    <h4 className="font-mono text-xs text-slate-500 uppercase tracking-wider mb-1">
+                    <h4 className="font-mono text-xs uppercase tracking-wider mb-1" style={{ color: "var(--color-text-muted)" }}>
                       {section.heading}
                     </h4>
-                    <p className="text-sm text-slate-400 leading-relaxed">{section.text}</p>
+                    <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{section.text}</p>
                   </div>
                 ))}
               </div>
@@ -67,12 +67,12 @@ export default function CaseStudies() {
                 {study.metrics.map((m, j) => (
                   <div
                     key={j}
-                    className="rounded-xl border border-slate-700/40 bg-slate-800/30 p-4 text-center"
+                    className="rounded-xl border p-4 text-center" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
                   >
-                    <div className="font-mono text-xl md:text-2xl font-bold text-emerald-400">
+                    <div className="font-mono text-xl md:text-2xl font-bold" style={{ color: "var(--color-accent)" }}>
                       <AnimatedCounter end={parseFloat(String(m.value))} suffix={m.suffix} prefix={m.prefix || ""} duration={2} />
                     </div>
-                    <p className="font-mono text-[10px] text-slate-500 mt-1">{m.label}</p>
+                    <p className="font-mono text-[10px] mt-1" style={{ color: "var(--color-text-muted)" }}>{m.label}</p>
                   </div>
                 ))}
               </div>
@@ -81,7 +81,7 @@ export default function CaseStudies() {
                 {study.stack.map((tech) => (
                   <span
                     key={tech}
-                    className="font-mono text-[9px] px-2 py-0.5 rounded border border-slate-700/50 text-slate-500 bg-slate-800/60"
+                    className="font-mono text-[9px] px-2 py-0.5 rounded border" style={{ borderColor: "var(--color-glass-border)", color: "var(--color-text-muted)", backgroundColor: "var(--color-surface)" }}
                   >
                     {tech}
                   </span>
