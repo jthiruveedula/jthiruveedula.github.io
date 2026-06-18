@@ -54,14 +54,14 @@ export default function Home() {
       <Navbar />
       <main className="relative z-10 min-h-screen pt-14">
         <Hero />
+        <ArchPipeline />
         <ProfessionalMetrics />
         <About />
-        <ExperienceTimeline />
         <Skills />
+        <ExperienceTimeline />
         <Projects />
         <CaseStudies />
         <Services />
-        <ArchPipeline />
         <SocialProof />
         <Contact />
       </main>
