@@ -16,6 +16,7 @@ import Projects from "@/components/sections/Projects";
 import CaseStudies from "@/components/sections/CaseStudies";
 import Services from "@/components/sections/Services";
 import SocialProof from "@/components/sections/SocialProof";
+import ArchPipeline from "@/components/sections/ArchPipeline";
 import Contact from "@/components/sections/Contact";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -56,6 +57,7 @@ export default function Home() {
         <Projects />
         <CaseStudies />
         <Services />
+        <ArchPipeline />
         <SocialProof />
         <Contact />
       </main>
