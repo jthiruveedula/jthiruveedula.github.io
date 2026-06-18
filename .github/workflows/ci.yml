@@ -114,7 +114,7 @@ jobs:
 
       - name: Run E2E tests
         id: e2e
-        uses: nick-fields/retry-action@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 10
           max_attempts: 2
