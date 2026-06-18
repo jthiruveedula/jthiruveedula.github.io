@@ -62,6 +62,7 @@ export interface PipelineStep {
 export interface Metric {
   value: string;
   label: string;
+  suffix: string;
 }
 
 export const siteConfig = {
@@ -508,10 +509,10 @@ export const archPipeline: PipelineStep[] = [
 ];
 
 export const metrics: Metric[] = [
-  { value: "10+", label: "Years" },
-  { value: "$MM", label: "Transformations" },
-  { value: "F500", label: "Clients" },
-  { value: "GenAI", label: "Scale" },
+  { value: "24+", label: "Production Deployments", suffix: "deployments" },
+  { value: "12+", label: "Enterprise Clients", suffix: "clients" },
+  { value: "15+", label: "RAG Pipelines", suffix: "pipelines" },
+  { value: "8+", label: "Agentic Workflows", suffix: "workflows" },
 ];
 
 export const categoryIcons: Record<string, string> = {

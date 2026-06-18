@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import CustomCursor from "@/components/ui/CustomCursor";
 import Hero from "@/components/sections/Hero";
+import ProfessionalMetrics from "@/components/sections/ProfessionalMetrics";
 import About from "@/components/sections/About";
 import Skills from "@/components/sections/Skills";
 import Projects from "@/components/sections/Projects";
@@ -52,6 +53,7 @@ export default function Home() {
       <Navbar />
       <main className="relative z-10 min-h-screen pt-14">
         <Hero />
+        <ProfessionalMetrics />
         <About />
         <Skills />
         <Projects />
