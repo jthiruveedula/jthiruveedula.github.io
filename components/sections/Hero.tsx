@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type MouseEvent } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { siteConfig } from "@/lib/data";
@@ -8,14 +8,25 @@ import SplineContainer from "@/components/ui/SplineContainer";
 
 gsap.registerPlugin(ScrollTrigger);
 
+interface SplitTypeInstance {
+  chars: HTMLElement[];
+  revert: () => void;
+}
+
+declare global {
+  interface Window {
+    SplitType?: new (selector: string, options: { types: string }) => SplitTypeInstance;
+  }
+}
+
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let splitInstance: any = null;
+    let splitInstance: SplitTypeInstance | null = null;
     const ctx = gsap.context(() => {
-      const SplitTypeClass = (window as any).SplitType;
+      const SplitTypeClass = window.SplitType;
       if (SplitTypeClass) {
         splitInstance = new SplitTypeClass(".hero-line", { types: "chars" });
       }
@@ -56,6 +67,7 @@ export default function Hero() {
     <section
       id="hero"
       ref={sectionRef}
+      aria-labelledby="hero-heading"
       className="relative min-h-svh flex items-center overflow-hidden isolate"
       style={{ backgroundColor: "var(--color-bg)" }}
     >
@@ -67,7 +79,7 @@ export default function Hero() {
           <p className="hero-eyebrow section-eyebrow">
             Data · RAG · Agents · Guardrails
           </p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1]" style={{ color: "var(--color-text-primary)" }}>
+          <h1 id="hero-heading" className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1]" style={{ color: "var(--color-text-primary)" }}>
             <span className="hero-line block">Command Surface for</span>
             <span className="hero-line block" style={{ color: "var(--color-accent)" }}>Production AI</span>
           </h1>
@@ -94,7 +106,7 @@ export default function Hero() {
           <div className="hero-cta flex flex-wrap gap-4 mt-8">
             <a
               href="#pipeline"
-              onClick={(e) => {
+              onClick={(e: MouseEvent<HTMLAnchorElement>) => {
                 e.preventDefault();
                 document.querySelector("#pipeline")?.scrollIntoView({ behavior: "smooth" });
               }}
@@ -108,7 +120,7 @@ export default function Hero() {
             </a>
             <a
               href="#contact"
-              onClick={(e) => {
+              onClick={(e: MouseEvent<HTMLAnchorElement>) => {
                 e.preventDefault();
                 document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
               }}
@@ -121,7 +133,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="scroll-indicator absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+      <div className="scroll-indicator absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" aria-hidden="true">
         <span className="font-mono text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--color-text-muted)" }}>scroll</span>
         <div className="w-px h-10 bg-gradient-to-b from-slate-600 to-transparent animate-[scroll-drop_1.8s_ease-in-out_infinite]" />
       </div>
