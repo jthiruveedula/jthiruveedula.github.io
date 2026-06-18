@@ -12,6 +12,7 @@ import CustomCursor from "@/components/ui/CustomCursor";
 import Hero from "@/components/sections/Hero";
 import ProfessionalMetrics from "@/components/sections/ProfessionalMetrics";
 import About from "@/components/sections/About";
+import ExperienceTimeline from "@/components/sections/ExperienceTimeline";
 import Skills from "@/components/sections/Skills";
 import Projects from "@/components/sections/Projects";
 import CaseStudies from "@/components/sections/CaseStudies";
@@ -55,6 +56,7 @@ export default function Home() {
         <Hero />
         <ProfessionalMetrics />
         <About />
+        <ExperienceTimeline />
         <Skills />
         <Projects />
         <CaseStudies />
