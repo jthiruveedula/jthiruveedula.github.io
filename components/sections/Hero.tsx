@@ -25,6 +25,7 @@ export default function Hero() {
   const particlesRef = useRef<HTMLDivElement>(null);
   const cameraToX = useRef<((v: number) => void) | null>(null);
   const cameraToY = useRef<((v: number) => void) | null>(null);
+  const ambientCtxRef = useRef<gsap.Context | null>(null); // UPGRADE: holds the post-reveal ambient motion context
   const { play } = useSound();
   const { normalizedX, normalizedY } = useMousePosition();
 
@@ -91,8 +92,9 @@ export default function Hero() {
       microCtx = gsap.context(() => {
         // UPGRADE: eyebrow line breathing shimmer (low amplitude, long duration)
         gsap.to(".hero-eyebrow-line", {
-          opacity: 0.65,
-          x: 2,
+          opacity: 0.7,
+          x: 1,
+          y: 1,
           duration: 4.2,
           ease: "sine.inOut",
           yoyo: true,
@@ -130,61 +132,70 @@ export default function Hero() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const ctx = gsap.context(() => {
-      gsap.to(".scroll-dot", {
-        y: 36,
-        duration: 1.5,
-        repeat: -1,
-        yoyo: true,
-        ease: "power2.inOut",
-      });
+    // UPGRADE: defer ambient motion (particles, scroll-dot, parallax) until PageReveal completes
+    // so it doesn't compete with the staged entrance sequence
+    const dispose = onPageRevealComplete(() => {
+      const ctx = gsap.context(() => {
+        gsap.to(".scroll-dot", {
+          y: 36,
+          duration: 1.5,
+          repeat: -1,
+          yoyo: true,
+          ease: "power2.inOut",
+        });
 
-      const autoFloat = gsap.timeline({ repeat: -1, yoyo: true, ease: "sine.inOut" });
-      autoFloat.to(contentInnerRef.current, { y: -8, duration: 3 });
+        const autoFloat = gsap.timeline({ repeat: -1, yoyo: true, ease: "sine.inOut" });
+        autoFloat.to(contentInnerRef.current, { y: -8, duration: 3 });
 
-      const particles = particlesRef.current?.children;
-      if (particles) {
-        gsap.utils.toArray(particles).forEach((el: any, i: number) => {
-          const data = particleData[i];
-          gsap.set(el, {
-            x: (data.startX / 100) * window.innerWidth,
-            y: (data.startY / 100) * window.innerHeight,
-          });
-
-          const animateParticle = () => {
-            gsap.to(el, {
-              x: () => Math.random() * window.innerWidth * 0.7 + window.innerWidth * 0.15,
-              y: () => Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2,
-              duration: 3 + Math.random() * 4,
-              ease: "sine.inOut",
-              onComplete: animateParticle,
+        const particles = particlesRef.current?.children;
+        if (particles) {
+          gsap.utils.toArray(particles).forEach((el: any, i: number) => {
+            const data = particleData[i];
+            gsap.set(el, {
+              x: (data.startX / 100) * window.innerWidth,
+              y: (data.startY / 100) * window.innerHeight,
             });
-          };
-          animateParticle();
-        });
-      }
 
-      const container = sectionRef.current?.querySelector(".hero-content");
-      if (container) {
-        gsap.to(container, {
-          y: -80,
-          opacity: 0.3,
-          ease: "none",
-          scrollTrigger: {
-            trigger: "#hero",
-            start: "top top",
-            end: "bottom top",
-            scrub: 1.5,
-            invalidateOnRefresh: true,
-          },
-        });
-      }
+            const animateParticle = () => {
+              gsap.to(el, {
+                x: () => Math.random() * window.innerWidth * 0.7 + window.innerWidth * 0.15,
+                y: () => Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2,
+                duration: 3 + Math.random() * 4,
+                ease: "sine.inOut",
+                onComplete: animateParticle,
+              });
+            };
+            animateParticle();
+          });
+        }
+
+        const container = sectionRef.current?.querySelector(".hero-content");
+        if (container) {
+          gsap.to(container, {
+            y: -80,
+            opacity: 0.3,
+            ease: "none",
+            scrollTrigger: {
+              trigger: "#hero",
+              start: "top top",
+              end: "bottom top",
+              scrub: 1.5,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
 
 
-    }, sectionRef);
+      }, sectionRef);
+
+      // UPGRADE: store ctx in a closure so cleanup can revert it
+      ambientCtxRef.current = ctx;
+    });
 
     return () => {
-      ctx.revert();
+      dispose();
+      ambientCtxRef.current?.revert();
+      ambientCtxRef.current = null;
     };
   }, [play, particleData]);
 

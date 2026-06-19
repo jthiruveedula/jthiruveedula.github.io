@@ -84,25 +84,25 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
-        defaults: { ease: "power3.out" },
+        defaults: { ease: "power2.out" },
         // UPGRADE: signal completion so Hero can defer/hand off cleanly
         onComplete: () => markRevealDone(),
       });
       tlRef.current = tl;
 
-      // Stage 1 — grid + vignette fade in (0.5s)
+      // Stage 1 — grid + vignette fade in (0.4s)
       tl.add("grid", 0).to(
         grid,
-        { autoAlpha: 0.55, duration: 0.5, ease: "power2.out" },
+        { autoAlpha: 0.55, duration: 0.4, ease: "power2.out" },
         "grid"
       );
 
       // Stage 2 — eyebrow line draws while Hero headline ScrambleText runs
       // (ScrambleText for "Generative AI" with duration=1.0, stagger=0.03
-      //  resolves around 1.4s after mount; we sync the rest to that.)
+      //  resolves around 1.27s after mount; we sync the rest to that.)
       tl.to(
         eyebrow,
-        { scaleX: 1, duration: 0.55, ease: "power4.inOut" },
+        { scaleX: 1, duration: 0.55, ease: "power2.out" },
         "grid+=0.2"
       );
 
@@ -110,13 +110,13 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
       tl.add("settle", "grid+=1.0");
       tl.to(
         sub,
-        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6 },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5 },
         "settle"
       );
       tl.to(
         tags,
-        { opacity: 1, y: 0, duration: 0.4, stagger: 0.05 },
-        "settle+=0.15"
+        { opacity: 1, y: 0, duration: 0.35, stagger: 0.04 },
+        "settle+=0.1"
       );
       tl.to(
         ctas,
@@ -124,23 +124,23 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
           opacity: 1,
           y: 0,
           scale: 1,
-          duration: 0.45,
-          stagger: 0.1,
-          ease: "back.out(1.4)",
+          duration: 0.4,
+          stagger: 0.08,
+          ease: "back.out(1.2)",
         },
-        "settle+=0.3"
+        "settle+=0.25"
       );
 
       // Stage 4 — scroll indicator last, then grid fades out
       tl.to(
         scroll,
-        { opacity: 1, y: 0, duration: 0.5 },
-        "settle+=0.7"
+        { opacity: 1, y: 0, duration: 0.45 },
+        "settle+=0.6"
       );
       tl.to(
         grid,
-        { autoAlpha: 0, duration: 0.6, ease: "power2.inOut" },
-        "settle+=0.85"
+        { autoAlpha: 0, duration: 0.5, ease: "power2.inOut" },
+        "settle+=0.75"
       );
 
       // UPGRADE: preserve Hero's pulsing CTA glow now that startSubTimeline is skipped

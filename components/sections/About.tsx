@@ -122,6 +122,11 @@ export default function About() {
     // gsap.context(), so we track them locally and kill on cleanup.
     const localTweens: gsap.core.Tween[] = [];
 
+    // UPGRADE: pre-hide scroll-driven elements so they don't flash visible before the timeline hides them
+    gsap.set(".about-eyebrow", { opacity: 0, y: 20 });
+    gsap.set(".bio-char", { opacity: 0 });
+    gsap.set(".bg-flow-line", { opacity: 0, x: -60 });
+
     const ctx = gsap.context(() => {
       const masterTl = gsap.timeline({
         scrollTrigger: {
@@ -178,7 +183,7 @@ export default function About() {
         const obj = { v: 0 };
         masterTl.to(obj, {
           v: target,
-          duration: 1.5,
+          duration: 1.1,
           ease: "power2.out",
           onUpdate: () => {
             numEl.textContent = `${stat.prefix}${Math.floor(obj.v)}${stat.suffix}`;
@@ -186,7 +191,7 @@ export default function About() {
           onComplete: () => {
             numEl.textContent = `${stat.prefix}${target}${stat.suffix}`;
             // UPGRADE: post-CountUp — settle the label with a brief scramble
-            scrambleTo(labelEl, stat.label, 0.6);
+            scrambleTo(labelEl, stat.label, 0.5);
           },
         }, "countup");
       });
@@ -212,21 +217,21 @@ export default function About() {
         const node = section.querySelector<SVGGElement>(`.arch-node[data-id="${id}"]`);
         if (!node) return;
         masterTl.to(node, {
-          scale: 1.18,
-          duration: 0.4,
+          scale: 1.12,
+          duration: 0.3,
           ease: "power2.out",
-        }, `nodes+=${i * 0.18}`);
+        }, `nodes+=${i * 0.16}`);
         masterTl.to(node, {
           scale: 1,
-          duration: 0.5,
+          duration: 0.4,
           ease: "power2.in",
-        }, `nodes+=${i * 0.18 + 0.4}`);
+        }, `nodes+=${i * 0.16 + 0.3}`);
       });
 
       // Stage 5 — start the looping data-packet motion along each arc
       masterTl.call(() => {
         packetRefs.current.forEach((p) => {
-          if (p) p.setAttribute("opacity", "0.9");
+          if (p) p.setAttribute("opacity", "0.7");
         });
         connRefs.current.forEach((path, i) => {
           const packet = packetRefs.current[i];
@@ -236,7 +241,7 @@ export default function About() {
           // UPGRADE: per-arc rAF-equivalent tween — staggered durations + delays for organic flow
           const tween = gsap.to(obj, {
             t: 1,
-            duration: 2.5 + (i * 0.35),
+            duration: 2.8 + (i * 0.35),
             repeat: -1,
             ease: "none",
             delay: i * 0.4,
@@ -248,21 +253,21 @@ export default function About() {
           });
           localTweens.push(tween);
         });
-      }, [], "nodes+=1.0");
+      }, [], "nodes+=0.9");
 
       // Stage 6 — subtle infinite breathing glow on the final "Insights" node
       masterTl.call(() => {
         const insights = section.querySelector<SVGGElement>('.arch-node[data-id="insights"]');
         if (!insights) return;
         const tween = gsap.to(insights, {
-          scale: 1.05,
-          duration: 2.5,
+          scale: 1.04,
+          duration: 2.8,
           repeat: -1,
           yoyo: true,
           ease: "sine.inOut",
         });
         localTweens.push(tween);
-      }, [], "nodes+=1.5");
+      }, [], "nodes+=1.4");
     }, section);
 
     return () => {
@@ -518,8 +523,8 @@ export default function About() {
 
       <style jsx>{`
         @keyframes nodePulse {
-          0%, 100% { r: 18; opacity: 0.3; }
-          50% { r: 24; opacity: 0.1; }
+          0%, 100% { r: 18; opacity: 0.2; }
+          50% { r: 24; opacity: 0.08; }
         }
         @keyframes pulseGlow {
           0%, 100% {

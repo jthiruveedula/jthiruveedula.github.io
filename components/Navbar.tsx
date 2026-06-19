@@ -97,11 +97,24 @@ export default function Navbar() {
   }, [scrollY, scrollDirection]);
 
   useEffect(() => {
+    // UPGRADE: rAF-throttle pointermove so top-edge detection doesn't fire on every event
+    let frame = 0;
+    let lastY = -1;
+    const tick = () => {
+      frame = 0;
+      if (lastY === -1) return;
+      setIsNearTopEdge(lastY <= TOP_EDGE_PX);
+    };
     const onMove = (e: PointerEvent) => {
-      setIsNearTopEdge(e.clientY <= TOP_EDGE_PX);
+      lastY = e.clientY;
+      if (frame) return;
+      frame = requestAnimationFrame(tick);
     };
     window.addEventListener("pointermove", onMove, { passive: true });
-    return () => window.removeEventListener("pointermove", onMove);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
 
   const isBarVisible = scrollY <= HIDE_BAR_THRESHOLD || scrollDirection === "up" || isNearTopEdge || mobileOpen;
