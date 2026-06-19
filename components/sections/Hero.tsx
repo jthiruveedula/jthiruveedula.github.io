@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplineContainer from "@/components/ui/SplineContainer";
 import ScrambleText from "@/components/ui/ScrambleText";
+import { isPageRevealDone } from "@/components/ui/PageReveal"; // UPGRADE: defer to PageReveal timeline
 import { useSound } from "@/hooks/useSound";
 import { useMousePosition } from "@/hooks/useMousePosition";
 
@@ -42,6 +43,7 @@ export default function Hero() {
   );
 
   const startSubTimeline = useCallback(() => {
+    if (!isPageRevealDone()) return; // UPGRADE: PageReveal owns the post-headline reveal
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const ctx = gsap.context(() => {
