@@ -5,19 +5,37 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { archPipeline } from "@/lib/data";
 import { createHover3DTilt } from "@/lib/gsap-helpers";
-import { useSound } from "@/hooks/useSound";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const stepIcons: Record<string, string> = {
-  database: "\u{1F4E6}",
-  brain: "\u{1F9E0}",
-  code: "\u{1F4C1}",
-  "trending-up": "\u{1F4C8}",
-  cloud: "\u2601\uFE0F",
+const stepIconSvgs: Record<string, React.ReactNode> = {
+  database: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+    </svg>
+  ),
+  brain: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+    </svg>
+  ),
+  code: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+    </svg>
+  ),
+  "trending-up": (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+    </svg>
+  ),
+  cloud: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" />
+    </svg>
+  ),
 };
 
-// UPGRADE: visual storytelling — connector carries a drawn SVG path + animated data packets
 function PipelineConnector({
   index,
   horizontal = true,
@@ -33,7 +51,6 @@ function PipelineConnector({
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      // UPGRADE: static fallback — path drawn, packets hidden
       const path = pathRef.current;
       if (path) {
         path.style.strokeDasharray = "none";
@@ -43,10 +60,9 @@ function PipelineConnector({
       return;
     }
 
-    // UPGRADE: register this connector with the parent's master timeline via a custom event
-    // so the parent can drive draw-in + packet ignition in sequence.
     const path = pathRef.current;
-    if (!path || !svgRef.current) return;
+    const svg = svgRef.current;
+    if (!path || !svg) return;
     const len = path.getTotalLength();
     path.style.strokeDasharray = `${len}`;
     path.style.strokeDashoffset = `${len}`;
@@ -55,13 +71,11 @@ function PipelineConnector({
     const onDraw = (e: Event) => {
       const detail = (e as CustomEvent<{ index: number }>).detail;
       if (detail?.index !== index) return;
-      // UPGRADE: draw-in tween on the path
       gsap.to(path, {
         strokeDashoffset: 0,
         duration: 0.45,
         ease: "power2.out",
       });
-      // UPGRADE: ignite looping packets on this connector
       packetRefs.current.forEach((p, pi) => {
         if (!p) return;
         gsap.to(p, { opacity: 0.85, duration: 0.2, delay: pi * 0.05 });
@@ -78,18 +92,17 @@ function PipelineConnector({
             p.setAttribute("cy", String(pt.y));
           },
         });
-        // UPGRADE: register the tween for cleanup via a ref on the svg element
-        (svgRef.current as unknown as { __tweens?: gsap.core.Tween[] }).__tweens = (
-          svgRef.current as unknown as { __tweens?: gsap.core.Tween[] }
+        (svg as unknown as { __tweens?: gsap.core.Tween[] }).__tweens = (
+          svg as unknown as { __tweens?: gsap.core.Tween[] }
         ).__tweens || [];
-        (svgRef.current as unknown as { __tweens: gsap.core.Tween[] }).__tweens.push(tween);
+        (svg as unknown as { __tweens: gsap.core.Tween[] }).__tweens.push(tween);
       });
     };
     window.addEventListener("pipeline:connector-draw", onDraw as EventListener);
 
     return () => {
       window.removeEventListener("pipeline:connector-draw", onDraw as EventListener);
-      const tweens = (svgRef.current as unknown as { __tweens?: gsap.core.Tween[] })?.__tweens;
+      const tweens = (svg as unknown as { __tweens?: gsap.core.Tween[] }).__tweens;
       tweens?.forEach((t) => t.kill());
     };
   }, [index]);
@@ -119,7 +132,7 @@ function PipelineConnector({
           strokeWidth="1.2"
           strokeLinecap="round"
           opacity="0.55"
-          style={{ filter: "drop-shadow(0 0 4px var(--color-accent))" }}
+          style={{ filter: "drop-shadow(0 0 2px rgba(201, 168, 76, 0.2))" }}
         />
         {Array.from({ length: packetCount }).map((_, i) => (
           <circle
@@ -128,7 +141,7 @@ function PipelineConnector({
             r="1.6"
             fill="var(--color-accent)"
             opacity="0"
-            style={{ filter: "drop-shadow(0 0 4px var(--color-accent))" }}
+            style={{ filter: "drop-shadow(0 0 2px rgba(201, 168, 76, 0.2))" }}
           />
         ))}
       </svg>
@@ -143,7 +156,6 @@ function StepCard({
   subline,
   details,
   tags,
-  onActivate,
 }: {
   step: number;
   icon: string;
@@ -151,7 +163,6 @@ function StepCard({
   subline: string;
   details: string;
   tags: string[];
-  onActivate?: () => void;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -165,8 +176,6 @@ function StepCard({
     return () => { cleanup(); };
   }, []);
 
-  // UPGRADE: hover opens tooltip; mouseleave closes after a small grace period
-  // so a fast mouse move to the tooltip itself doesn't blink it off
   const handleEnter = () => {
     if (tooltipTimeoutRef.current) clearTimeout(tooltipTimeoutRef.current);
     setTooltipOpen(true);
@@ -175,11 +184,9 @@ function StepCard({
     if (tooltipTimeoutRef.current) clearTimeout(tooltipTimeoutRef.current);
     tooltipTimeoutRef.current = setTimeout(() => setTooltipOpen(false), 120);
   };
-  // UPGRADE: tap (mobile) toggles tooltip — no hover reliance on coarse pointers
   const handleClick = (e: MouseEvent<HTMLDivElement>) => {
     if (e.currentTarget.dataset.hoverOnly === "true") return;
     setTooltipOpen((v) => !v);
-    onActivate?.();
   };
 
   return (
@@ -198,23 +205,22 @@ function StepCard({
         transformStyle: "preserve-3d",
       }}
     >
-      <div className="absolute left-0 top-0 bottom-0 w-[3px] pipeline-card-bar" style={{ background: "var(--gradient-neon)" }} />
+      <div className="absolute left-0 top-0 bottom-0 w-[3px] pipeline-card-bar" style={{ background: "var(--gradient-accent)" }} />
       <div className="p-5 relative z-[2]">
         <div className="flex items-center gap-3 mb-3">
           <span
-            className="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold shrink-0 pipeline-step-num"
-            style={{ background: "var(--color-accent)", color: "var(--color-bg)", boxShadow: "0 0 10px var(--color-accent)" }}
+            className="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold shrink-0 pipeline-step-num"
+            style={{ background: "var(--color-accent)", color: "var(--color-bg)", boxShadow: "0 0 6px rgba(201, 168, 76, 0.2)" }}
           >
             {step}
           </span>
           <span className="text-lg" style={{ color: "var(--color-accent)" }} aria-hidden>
-            {stepIcons[icon] || stepIcons.code}
+            {stepIconSvgs[icon] || stepIconSvgs.code}
           </span>
         </div>
         <h3 className="text-sm font-semibold mb-1" style={{ color: "var(--color-text-primary)" }}>
           {title}
         </h3>
-        {/* UPGRADE: minimal subline by default — long copy lives in the tooltip */}
         <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
           {subline}
         </p>
@@ -233,7 +239,6 @@ function StepCard({
         )}
       </div>
 
-      {/* UPGRADE: tooltip — 1-2 lines, hover (desktop) / tap (mobile) */}
       <div
         className="pipeline-tooltip absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 z-20 pointer-events-none"
         style={{
@@ -263,7 +268,6 @@ function StepCard({
 export default function ArchPipeline() {
   const sectionRef = useRef<HTMLElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
-  const { play } = useSound();
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -271,12 +275,9 @@ export default function ArchPipeline() {
     if (typeof window === "undefined") return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // UPGRADE: localTweens holds any infinite tween that escapes the master gsap.context
-    // so we can clean them up on unmount.
     const localTweens: gsap.core.Tween[] = [];
 
     if (reduced) {
-      // UPGRADE: static fallback — all cards powered on, all paths drawn, no packets
       gsap.set(".pipeline-card", { opacity: 1, scale: 1, clearProps: "filter" });
       window.dispatchEvent(new CustomEvent("pipeline:connector-draw", { detail: { index: 0 } }));
       window.dispatchEvent(new CustomEvent("pipeline:connector-draw", { detail: { index: 1 } }));
@@ -285,7 +286,6 @@ export default function ArchPipeline() {
       return;
     }
 
-    // UPGRADE: pre-hide cards (they'll power on in sequence)
     gsap.set(".pipeline-card", { opacity: 0, scale: 0.94, filter: "blur(6px)" });
 
     const ctx = gsap.context(() => {
@@ -295,12 +295,9 @@ export default function ArchPipeline() {
           trigger: section,
           start: "top 70%",
           once: true,
-          onEnter: () => play("sweep"),
         },
       });
 
-      // UPGRADE: each card "powers on" with a glow + scale-in, then a connector draws,
-      // and the next card powers on — left → right story flow.
       cards.forEach((card, i) => {
         masterTl.to(
           card,
@@ -311,7 +308,6 @@ export default function ArchPipeline() {
             duration: 0.45,
             ease: "power2.out",
             onStart: () => {
-              // UPGRADE: neon border pulse on activation
               gsap.fromTo(
                 card,
                 { boxShadow: "0 0 0 0 color-mix(in srgb, var(--color-accent) 0%, transparent)" },
@@ -329,7 +325,6 @@ export default function ArchPipeline() {
         );
         if (i < cards.length - 1) {
           masterTl.call(() => {
-            // UPGRADE: signal the next connector to draw + ignite its packets
             window.dispatchEvent(
               new CustomEvent("pipeline:connector-draw", { detail: { index: i } })
             );
@@ -343,7 +338,7 @@ export default function ArchPipeline() {
       localTweens.forEach((t) => t.kill());
       localTweens.length = 0;
     };
-  }, [play]);
+  }, []);
 
   return (
     <section
@@ -356,7 +351,7 @@ export default function ArchPipeline() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="mb-16 max-w-3xl mx-auto text-center">
           <p className="section-eyebrow">Architecture Pipeline</p>
-          <h2 className="text-2xl md:text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>
+          <h2 className="text-xl md:text-2xl font-semibold tracking-tight" style={{ color: "var(--color-text-primary)" }}>
             From Raw Data to <span style={{ color: "var(--color-accent)" }}>/</span> Production Intelligence
           </h2>
           <p className="mt-2 text-sm font-light" style={{ color: "var(--color-text-secondary)" }}>
@@ -364,7 +359,6 @@ export default function ArchPipeline() {
           </p>
         </div>
 
-        {/* UPGRADE: desktop — horizontal story strip with SVG connectors between cards */}
         <div
           ref={cardsContainerRef}
           className="hidden md:flex items-stretch justify-center gap-0 relative"
@@ -378,14 +372,12 @@ export default function ArchPipeline() {
                 subline={step.subline}
                 details={step.details}
                 tags={step.tags}
-                onActivate={() => play("tick")}
               />
               {i < archPipeline.length - 1 && <PipelineConnector index={i} horizontal packetCount={4} />}
             </div>
           ))}
         </div>
 
-        {/* UPGRADE: mobile — vertical story with shorter connectors + 50% fewer packets */}
         <div className="md:hidden">
           {archPipeline.map((step, i) => (
             <div key={step.step}>
@@ -396,7 +388,6 @@ export default function ArchPipeline() {
                 subline={step.subline}
                 details={step.details}
                 tags={step.tags}
-                onActivate={() => play("tick")}
               />
               {i < archPipeline.length - 1 && (
                 <div className="pl-3 py-2">

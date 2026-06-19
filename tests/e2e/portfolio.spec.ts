@@ -20,7 +20,7 @@ test("about section has bio and content", async ({ page }) => {
 test("skills section has radar visualization", async ({ page }) => {
   await page.goto("/");
   await page.locator("#skills").scrollIntoViewIfNeeded();
-  await expect(page.locator("#skills canvas")).toBeVisible({ timeout: 8000 });
+  await expect(page.locator("#skills svg")).toBeVisible({ timeout: 8000 });
   await expect(page.locator("#skills")).toContainText("Skills & capabilities");
 });
 
@@ -57,15 +57,6 @@ test("architecture pipeline has 5 steps", async ({ page }) => {
   await expect(page.locator("#pipeline").getByRole("heading", { name: "Serve" })).toBeVisible();
 });
 
-test("professional metrics displays counters", async ({ page }) => {
-  await page.goto("/");
-  await page.locator("#metrics").scrollIntoViewIfNeeded();
-  await expect(page.locator("#metrics").getByText("Production Deployments")).toBeVisible();
-  await expect(page.locator("#metrics").getByText("Enterprise Clients")).toBeVisible();
-  await expect(page.locator("#metrics").getByText("RAG Pipelines")).toBeVisible();
-  await expect(page.locator("#metrics").getByText("Agentic Workflows")).toBeVisible();
-});
-
 test("experience timeline has 6 roles", async ({ page }) => {
   await page.goto("/");
   await page.locator("#experience").scrollIntoViewIfNeeded();
@@ -74,8 +65,9 @@ test("experience timeline has 6 roles", async ({ page }) => {
   await expect(page.locator("#experience").getByText("Wiley Publications")).toBeVisible();
 });
 
-test("hero has Resume download link", async ({ page }) => {
+test("resume download link is available in contact section", async ({ page }) => {
   await page.goto("/");
+  await page.locator("#contact").scrollIntoViewIfNeeded();
   const resumeLink = page.getByRole("link", { name: /download resume/i });
   await expect(resumeLink).toBeVisible();
   await expect(resumeLink).toHaveAttribute("href", "/resume.html");

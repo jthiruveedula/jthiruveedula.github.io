@@ -4,13 +4,10 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { siteConfig } from "@/lib/data";
-import { useMousePosition } from "@/hooks/useMousePosition";
-import { useSound } from "@/hooks/useSound";
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface Stat {
-  // UPGRADE: numeric=null skips CountUp (used for the "GCP" static label card)
   value: number | null;
   prefix: string;
   suffix: string;
@@ -42,12 +39,10 @@ const CONNECTIONS = [
   { from: "bigquery", to: "insights" },
 ];
 
-// UPGRADE: visual order of node reveal pulse (left → right pipeline flow)
 const REVEAL_ORDER = ["sources", "ingestion", "bigquery", "transform", "aiml", "insights"];
 
 const SCRAMBLE_CHARS = "!<>-_\\/[]{}—=+*^?#ABCDEFGHIJKMNOPQRSTUVWXYZ0123456789";
 
-// UPGRADE: ScrambleText-style effect driven by rAF — used after CountUp to settle the label
 function scrambleTo(el: HTMLElement, final: string, duration = 0.6): void {
   if (typeof window === "undefined") return;
   const start = performance.now();
@@ -61,7 +56,6 @@ function scrambleTo(el: HTMLElement, final: string, duration = 0.6): void {
         out += " ";
         continue;
       }
-      // UPGRADE: each char settles at a staggered time (0.3 .. 1.0) for a left-to-right reveal
       const settleAt = 0.3 + (i / Math.max(len - 1, 1)) * 0.7;
       if (t < settleAt) {
         out += SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
@@ -78,10 +72,7 @@ function scrambleTo(el: HTMLElement, final: string, duration = 0.6): void {
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { normalizedX, normalizedY } = useMousePosition();
-  const { play } = useSound();
   const svgRef = useRef<SVGSVGElement>(null);
-  // UPGRADE: typed refs for the per-card number div, label div, arc path, and packet circle
   const numRefs = useRef<Array<HTMLDivElement | null>>([]);
   const labelRefs = useRef<Array<HTMLDivElement | null>>([]);
   const connRefs = useRef<Array<SVGPathElement | null>>([]);
@@ -94,7 +85,6 @@ export default function About() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (reduced) {
-      // UPGRADE: reduced-motion path — render final state synchronously, no motion
       STATS.forEach((stat, i) => {
         const numEl = numRefs.current[i];
         if (numEl) {
@@ -118,11 +108,8 @@ export default function About() {
       return;
     }
 
-    // UPGRADE: tweens spawned inside masterTl.call callbacks are not auto-collected by
-    // gsap.context(), so we track them locally and kill on cleanup.
     const localTweens: gsap.core.Tween[] = [];
 
-    // UPGRADE: pre-hide scroll-driven elements so they don't flash visible before the timeline hides them
     gsap.set(".about-eyebrow", { opacity: 0, y: 20 });
     gsap.set(".bio-char", { opacity: 0 });
     gsap.set(".bg-flow-line", { opacity: 0, x: -60 });
@@ -133,29 +120,22 @@ export default function About() {
           trigger: section,
           start: "top 75%",
           once: true,
-          onEnter: () => play("shimmer"),
         },
       });
 
-      // Stage 0 — section content fades in
-      // UPGRADE: fromTo with explicit end states — pre-hide via gsap.set above
-      // means .from() would record hidden state as end state and never reveal.
       masterTl.fromTo(".about-eyebrow", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0);
       masterTl.fromTo(".bio-char", { opacity: 0 }, { opacity: 1, duration: 0.04, stagger: 0.008, ease: "none" }, 0.1);
       masterTl.fromTo(".bg-flow-line", { opacity: 0, x: -60 }, { opacity: 1, x: 0, stagger: 0.06, duration: 1, ease: "power2.out" }, 0.2);
 
-      // Stage 1 — metric cards rise + fade in
       masterTl.add("cards", 0.3);
       masterTl.fromTo(".about-stat", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", stagger: 0.1 }, "cards");
 
-      // Stage 2 — CountUp on the numeric stat values
       masterTl.add("countup", "cards+=0.3");
       STATS.forEach((stat, i) => {
         const numEl = numRefs.current[i];
         const labelEl = labelRefs.current[i];
         if (!numEl || !labelEl) return;
         if (stat.value === null) {
-          // UPGRADE: "GCP" — no CountUp, render final immediately
           numEl.textContent = stat.prefix;
           return;
         }
@@ -170,13 +150,11 @@ export default function About() {
           },
           onComplete: () => {
             numEl.textContent = `${stat.prefix}${target}${stat.suffix}`;
-            // UPGRADE: post-CountUp — settle the label with a brief scramble
             scrambleTo(labelEl, stat.label, 0.5);
           },
         }, "countup");
       });
 
-      // Stage 3 — arch connections draw in via strokeDashoffset
       masterTl.add("conns", "countup+=0.2");
       connRefs.current.forEach((p) => {
         if (!p) return;
@@ -191,7 +169,6 @@ export default function About() {
         ease: "power2.inOut",
       }, "conns");
 
-      // Stage 4 — node pulse reveal L→R (sources → ingestion → bigquery → transform → aiml → insights)
       masterTl.add("nodes", "conns+=0.4");
       REVEAL_ORDER.forEach((id, i) => {
         const node = section.querySelector<SVGGElement>(`.arch-node[data-id="${id}"]`);
@@ -208,7 +185,6 @@ export default function About() {
         }, `nodes+=${i * 0.16 + 0.3}`);
       });
 
-      // Stage 5 — start the looping data-packet motion along each arc
       masterTl.call(() => {
         packetRefs.current.forEach((p) => {
           if (p) p.setAttribute("opacity", "0.7");
@@ -218,7 +194,6 @@ export default function About() {
           if (!path || !packet) return;
           const len = path.getTotalLength();
           const obj = { t: 0 };
-          // UPGRADE: per-arc rAF-equivalent tween — staggered durations + delays for organic flow
           const tween = gsap.to(obj, {
             t: 1,
             duration: 2.8 + (i * 0.35),
@@ -235,7 +210,6 @@ export default function About() {
         });
       }, [], "nodes+=0.9");
 
-      // Stage 6 — subtle infinite breathing glow on the final "Insights" node
       masterTl.call(() => {
         const insights = section.querySelector<SVGGElement>('.arch-node[data-id="insights"]');
         if (!insights) return;
@@ -252,13 +226,11 @@ export default function About() {
 
     return () => {
       ctx.revert();
-      // UPGRADE: kill any infinite tweens that escaped the gsap.context (packets + insights)
       localTweens.forEach((t) => t.kill());
       localTweens.length = 0;
     };
-  }, [play]);
+  }, []);
 
-  // UPGRADE: mouse-based tooltip listener preserved (independent of motion paths)
   useEffect(() => {
     const listener = (e: MouseEvent) => {
       if (!svgRef.current) return;
@@ -288,7 +260,7 @@ export default function About() {
     <section
       id="about"
       ref={sectionRef}
-      className="relative py-28 border-t overflow-hidden scanline"
+      className="relative py-24 border-t overflow-hidden"
       style={{
         backgroundColor: "var(--color-bg)",
         borderColor: "var(--color-glass-border)",
@@ -324,7 +296,7 @@ export default function About() {
               About
             </p>
             <h2
-              className="text-2xl md:text-3xl font-bold mb-8"
+              className="text-xl md:text-2xl font-semibold tracking-tight mb-8"
               style={{ color: "var(--color-text-primary)" }}
             >
               GCP Data Architect.
@@ -358,14 +330,13 @@ export default function About() {
               />
               <div
                 ref={(el) => { numRefs.current[i] = el; }}
-                className="text-2xl md:text-3xl font-black font-mono relative z-10"
+                className="text-xl md:text-2xl font-bold font-mono relative z-10"
                 style={{
                   color: stat.value === null
                     ? "var(--color-accent-tertiary)"
                     : "var(--color-accent)",
                 }}
               >
-                {/* UPGRADE: initial render shows 0 (or static prefix for GCP); CountUp overrides */}
                 {stat.value === null ? stat.prefix : `0${stat.suffix}`}
               </div>
               <div
@@ -384,7 +355,7 @@ export default function About() {
             ref={svgRef}
             viewBox="0 0 430 120"
             className="w-full h-auto"
-            style={{ filter: "drop-shadow(0 0 8px var(--color-accent))" }}
+            style={{ filter: "drop-shadow(0 0 4px rgba(201, 168, 76, 0.3))" }}
           >
             {CONNECTIONS.map(({ from, to }, i) => {
               const fn = ARCH_NODES.find((n) => n.id === from)!;
@@ -409,7 +380,7 @@ export default function About() {
                 />
               );
             })}
-            {/* UPGRADE: data packet circles that travel along each connection via rAF-equivalent tween */}
+
             {CONNECTIONS.map(({ from, to }, i) => (
               <circle
                 key={`packet-${from}-${to}`}

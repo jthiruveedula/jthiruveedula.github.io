@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useScrollSection } from "@/hooks/useScrollSection";
-import { useSound } from "@/hooks/useSound";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -39,7 +38,6 @@ export default function Navbar() {
   const nameRevealRef = useRef<HTMLSpanElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const wasVisibleRef = useRef(true);
-  const { play } = useSound();
 
   useEffect(() => {
     if (mobileOpen) {
@@ -55,12 +53,11 @@ export default function Navbar() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setMobileOpen(false);
-        play("click");
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [mobileOpen, play]);
+  }, [mobileOpen]);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -97,7 +94,6 @@ export default function Navbar() {
   }, [scrollY, scrollDirection]);
 
   useEffect(() => {
-    // UPGRADE: rAF-throttle pointermove so top-edge detection doesn't fire on every event
     let frame = 0;
     let lastY = -1;
     const tick = () => {
@@ -150,7 +146,7 @@ export default function Navbar() {
     const glowOpacity = Math.max(0.08, 0.35 - scrollY / 500);
     nav.style.backgroundColor = `color-mix(in srgb, var(--color-bg) ${intensity}%, transparent)`;
     nav.style.boxShadow = hovered
-      ? `0 1px 0 color-mix(in srgb, var(--color-accent) ${Math.min(glowOpacity * 2.2, 0.85) * 100}%, transparent), 0 0 ${14 + glowOpacity * 28}px color-mix(in srgb, var(--color-accent) ${Math.min(glowOpacity * 1.8, 0.7) * 100}%, transparent), var(--neon-shadow-sm)`
+      ? `0 1px 0 color-mix(in srgb, var(--color-accent) ${Math.min(glowOpacity * 2.2, 0.85) * 100}%, transparent), 0 0 ${14 + glowOpacity * 28}px color-mix(in srgb, var(--color-accent) ${Math.min(glowOpacity * 1.8, 0.7) * 100}%, transparent), var(--shadow-soft-sm)`
       : `0 1px 0 color-mix(in srgb, var(--color-accent) ${glowOpacity * 100}%, transparent), 0 0 ${10 + glowOpacity * 20}px color-mix(in srgb, var(--color-accent) ${glowOpacity * 60}%, transparent)`;
   }, [scrollY, hovered]);
 
@@ -196,7 +192,6 @@ export default function Navbar() {
   }, [reducedMotion]);
 
   const handleNavClick = (href: string) => {
-    play("click");
     setMobileOpen(false);
     const el = document.querySelector(href);
     el?.scrollIntoView({ behavior: "smooth" });
@@ -220,7 +215,7 @@ export default function Navbar() {
           ...navStyle,
           borderColor: "var(--color-glass-border)",
           backgroundColor: "color-mix(in srgb, var(--color-bg) 80%, transparent)",
-          boxShadow: "0 1px 0 color-mix(in srgb, var(--color-accent) 35%, transparent), var(--neon-shadow-sm)",
+          boxShadow: "0 1px 0 color-mix(in srgb, var(--color-accent) 35%, transparent), var(--shadow-soft-sm)",
         }}
         aria-label="Primary"
       >
@@ -240,13 +235,10 @@ export default function Navbar() {
             >
               <span
                 ref={logoRef}
-                className="font-mono text-base font-bold transition-colors flex items-center"
+                className="font-mono text-base font-bold transition-colors flex items-center text-[color:var(--color-accent)] hover:text-[color:var(--color-accent-hover)]"
                 style={{
-                  color: "var(--color-accent)",
                   textShadow: "0 0 7px var(--color-accent), 0 0 10px var(--color-accent), 0 0 21px var(--color-accent)",
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "color-mix(in srgb, var(--color-accent) 70%, white)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-accent)"; }}
               >
                 <span>JT</span>
                 <span className="inline-block w-[2px] h-[1em] ml-1 align-text-bottom animate-pulse" style={{ backgroundColor: "var(--color-accent)" }} />
@@ -271,23 +263,9 @@ export default function Navbar() {
                 <button
                   key={link.href}
                   onClick={() => handleNavClick(link.href)}
-                  className="nav-item-btn relative px-3 py-1.5 text-xs font-semibold rounded-md transition-colors duration-200"
-                  style={{
-                    color: active === link.href.slice(1) ? "var(--color-accent)" : "var(--color-text-secondary)",
-                    textShadow: active === link.href.slice(1) ? "0 0 8px var(--color-accent)" : "none",
-                  }}
-                  onMouseEnter={(e) => {
-                    const el = e.currentTarget as HTMLElement;
-                    if (active !== link.href.slice(1)) el.style.color = "var(--color-text-primary)";
-                    gsap.to(el, { scale: 1.05, duration: 0.2, ease: "power2.out" });
-                    el.style.textShadow = "0 0 10px var(--color-accent), 0 0 20px var(--color-accent), 0 0 30px var(--color-accent)";
-                  }}
-                  onMouseLeave={(e) => {
-                    const el = e.currentTarget as HTMLElement;
-                    if (active !== link.href.slice(1)) el.style.color = "var(--color-text-secondary)";
-                    gsap.to(el, { scale: 1, duration: 0.2, ease: "power2.out" });
-                    el.style.textShadow = active === link.href.slice(1) ? "0 0 8px var(--color-accent)" : "none";
-                  }}
+                  className={`nav-item-btn relative px-3 py-1.5 text-xs font-semibold rounded-md transition-colors duration-200 hover:[text-shadow:0_0_10px_var(--color-accent),0_0_20px_var(--color-accent),0_0_30px_var(--color-accent)] ${active === link.href.slice(1) ? "text-[color:var(--color-accent)] [text-shadow:0_0_8px_var(--color-accent)]" : "text-[color:var(--color-text-secondary)] [text-shadow:none] hover:text-[color:var(--color-text-primary)]"}`}
+                  onMouseEnter={(e) => { gsap.to(e.currentTarget, { scale: 1.05, duration: 0.2, ease: "power2.out" }); }}
+                  onMouseLeave={(e) => { gsap.to(e.currentTarget, { scale: 1, duration: 0.2, ease: "power2.out" }); }}
                 >
                   {link.label}
                   {active === link.href.slice(1) && (
@@ -299,23 +277,17 @@ export default function Navbar() {
                 href="https://www.linkedin.com/in/jagadeesh-thiruveedula/"
                 target="_blank"
                 rel="noopener"
-                onClick={() => play("tick")}
-                className="nav-item-btn ml-3 px-3.5 py-1.5 rounded-full border text-[11px] font-mono font-semibold transition-all duration-200"
-                style={{ borderColor: "color-mix(in srgb, var(--color-accent) 40%, transparent)", color: "var(--color-accent)" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "color-mix(in srgb, var(--color-accent) 10%, transparent)"; (e.currentTarget as HTMLElement).style.borderColor = "color-mix(in srgb, var(--color-accent) 60%, transparent)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; (e.currentTarget as HTMLElement).style.borderColor = "color-mix(in srgb, var(--color-accent) 40%, transparent)"; }}
+                className="nav-item-btn ml-3 px-3.5 py-1.5 rounded-full border text-[11px] font-mono font-semibold transition-all duration-200 border-[color:var(--color-glass-border-hover)] hover:border-[color:var(--color-accent)] hover:bg-[color:var(--color-accent-muted)]"
+                style={{ color: "var(--color-accent)" }}
               >
                 LinkedIn ↗
               </a>
             </div>
 
             <button
-              onClick={() => { setMobileOpen(true); play("whoosh"); }}
+              onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
-              className="md:hidden transition-colors p-1"
-              style={{ color: "var(--color-text-secondary)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-primary)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-secondary)"; }}
+              className="md:hidden transition-colors p-1 text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-text-primary)]"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -391,15 +363,12 @@ export default function Navbar() {
         <div
           className="fixed inset-0 z-50 backdrop-blur-2xl md:hidden"
           style={{ backgroundColor: "color-mix(in srgb, var(--color-bg) 95%, transparent)" }}
-          onClick={(e) => { if (e.target === e.currentTarget) { setMobileOpen(false); play("click"); } }}
+          onClick={(e) => { if (e.target === e.currentTarget) setMobileOpen(false); }}
         >
           <div className="flex flex-col items-center justify-center h-full gap-10">
             <button
-              onClick={() => { setMobileOpen(false); play("click"); }}
-              className="absolute top-6 right-6 transition-colors"
-              style={{ color: "var(--color-text-secondary)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-primary)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-secondary)"; }}
+              onClick={() => setMobileOpen(false)}
+              className="absolute top-6 right-6 transition-colors text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-text-primary)]"
               aria-label="Close menu"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -413,10 +382,7 @@ export default function Navbar() {
               <button
                 key={link.href}
                 onClick={() => handleNavClick(link.href)}
-                className="text-2xl font-semibold transition-colors"
-                style={{ color: active === link.href.slice(1) ? "var(--color-accent)" : "var(--color-text-primary)" }}
-                onMouseEnter={(e) => { if (active !== link.href.slice(1)) (e.currentTarget as HTMLElement).style.color = "var(--color-accent)"; }}
-                onMouseLeave={(e) => { if (active !== link.href.slice(1)) (e.currentTarget as HTMLElement).style.color = "var(--color-text-primary)"; }}
+                className={`text-2xl font-semibold transition-colors ${active === link.href.slice(1) ? "text-[color:var(--color-accent)]" : "text-[color:var(--color-text-primary)] hover:text-[color:var(--color-accent)]"}`}
               >
                 {link.label}
               </button>
@@ -426,11 +392,7 @@ export default function Navbar() {
               href="https://www.linkedin.com/in/jagadeesh-thiruveedula/"
               target="_blank"
               rel="noopener"
-              onClick={() => play("tick")}
-              className="mt-4 text-base font-mono transition-colors"
-              style={{ color: "var(--color-text-secondary)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-accent)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-secondary)"; }}
+              className="mt-4 text-base font-mono transition-colors text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-accent)]"
             >
               LinkedIn ↗
             </a>

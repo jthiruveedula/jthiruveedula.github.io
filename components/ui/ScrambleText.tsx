@@ -33,7 +33,10 @@ export default function ScrambleText({
 }: ScrambleTextProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const onCompleteRef = useRef(onComplete);
-  onCompleteRef.current = onComplete;
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     const el = ref.current;

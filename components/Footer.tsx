@@ -2,10 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { siteConfig } from "@/lib/data";
-import { useSound } from "@/hooks/useSound";
 
 export default function Footer() {
-  const { play } = useSound();
   const footerRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
   const year = new Date().getFullYear();
@@ -22,7 +20,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer ref={footerRef} className="relative border-t py-16 overflow-hidden transition-all duration-700" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-bg)", boxShadow: "0 -1px 0 0 var(--color-glass-border), var(--neon-shadow-sm)", opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(40px)" }}>
+    <footer ref={footerRef} className="relative border-t py-24 overflow-hidden transition-all duration-700" style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-bg)", boxShadow: "0 -1px 0 0 var(--color-glass-border), var(--shadow-soft-sm)", opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(40px)" }}>
       <div className="cyber-grid absolute inset-0 pointer-events-none" style={{ opacity: 0.04 }} />
       <div className="container relative z-10 mx-auto px-4 md:px-6">
         <div className="grid md:grid-cols-3 gap-10 md:gap-6 mb-10">
@@ -45,10 +43,8 @@ export default function Footer() {
                 href={siteConfig.linkedin}
                 target="_blank"
                 rel="noopener"
-                className="font-mono text-sm transition-colors"
+                className="font-mono text-sm transition-colors hover:text-[color:var(--color-accent)]"
                 style={{ color: "var(--color-text-secondary)" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-accent)"; play("tick"); }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-secondary)"; }}
               >
                 LinkedIn ↗
               </a>
@@ -56,19 +52,15 @@ export default function Footer() {
                 href={siteConfig.github}
                 target="_blank"
                 rel="noopener"
-                className="font-mono text-sm transition-colors"
+                className="font-mono text-sm transition-colors hover:text-[color:var(--color-accent)]"
                 style={{ color: "var(--color-text-secondary)" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-accent)"; play("tick"); }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-secondary)"; }}
               >
                 GitHub ↗
               </a>
               <a
                 href={`mailto:${siteConfig.email}`}
-                className="font-mono text-sm transition-colors"
+                className="font-mono text-sm transition-colors hover:text-[color:var(--color-accent)]"
                 style={{ color: "var(--color-text-secondary)" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-accent)"; play("tick"); }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-secondary)"; }}
               >
                 Email ↗
               </a>

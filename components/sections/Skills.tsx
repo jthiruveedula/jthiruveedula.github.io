@@ -3,7 +3,6 @@
 import { useState } from "react";
 import type React from "react";
 import { skillCategories } from "@/lib/data";
-import { useSound } from "@/hooks/useSound";
 import SkillRadar from "@/components/ui/SkillRadar";
 
 const iconPaths: Record<string, React.ReactNode> = {
@@ -34,22 +33,6 @@ const iconPaths: Record<string, React.ReactNode> = {
   ),
 };
 
-const accentColors: Record<string, string> = {
-  Cloud: "#06b6d4",
-  "Data Engineering": "#6366f1",
-  "AI/ML": "#34d399",
-  Development: "#fbbf24",
-  Finance: "#a855f7",
-};
-
-const iconColorClasses: Record<string, string> = {
-  Cloud: "text-cyan-400",
-  "Data Engineering": "text-indigo-400",
-  "AI/ML": "text-emerald-400",
-  Development: "text-amber-400",
-  Finance: "text-purple-400",
-};
-
 const skillToCategory: Record<string, string> = {
   GCP: "Cloud",
   BigQuery: "Cloud",
@@ -63,13 +46,11 @@ const skillToCategory: Record<string, string> = {
 
 export default function Skills() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const { play } = useSound();
 
   const handleSkillClick = (skillName: string) => {
     const category = skillToCategory[skillName] || null;
     if (category && category !== activeCategory) {
       setActiveCategory(category);
-      play("click");
     } else if (category && category === activeCategory) {
       setActiveCategory(null);
     }
@@ -80,7 +61,6 @@ export default function Skills() {
       setActiveCategory(null);
     } else {
       setActiveCategory(category);
-      play("tick");
     }
   };
 
@@ -95,7 +75,7 @@ export default function Skills() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="mb-12 max-w-3xl">
           <p className="section-eyebrow" style={{ color: "var(--color-accent)" }}>Expertise</p>
-          <h2 className="text-2xl md:text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>
+          <h2 className="text-xl md:text-2xl font-semibold tracking-tight" style={{ color: "var(--color-text-primary)" }}>
             Skills &amp; capabilities.
           </h2>
           <p className="mt-2 text-sm font-light" style={{ color: "var(--color-text-secondary)" }}>
@@ -108,7 +88,7 @@ export default function Skills() {
             className="relative w-full max-w-[520px] aspect-square flex-shrink-0 mx-auto"
             style={{
               background:
-                "radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.08) 0%, rgba(0, 240, 255, 0.02) 40%, transparent 70%)",
+                "radial-gradient(circle at 50% 50%, rgba(201, 168, 76, 0.06) 0%, rgba(201, 168, 76, 0.02) 40%, transparent 70%)",
             }}
           >
             <SkillRadar onSkillClick={handleSkillClick} />
@@ -118,17 +98,16 @@ export default function Skills() {
             <div className="flex flex-wrap gap-2">
               {skillCategories.map((cat) => {
                 const isActive = activeCategory === cat.category;
-                const accent = accentColors[cat.category] || "#6366f1";
                 return (
                   <button
                     key={cat.category}
                     onClick={() => handleChipClick(cat.category)}
                     className="text-[11px] font-mono px-3 py-1.5 rounded-full transition-all duration-300 cursor-pointer"
                     style={{
-                      backgroundColor: isActive ? accent : "transparent",
-                      color: isActive ? "#030014" : accent,
-                      border: `1px solid ${accent}`,
-                      boxShadow: isActive ? `0 0 12px ${accent}80, 0 0 24px ${accent}40` : "none",
+                      backgroundColor: isActive ? "var(--color-accent-muted)" : "transparent",
+                      color: isActive ? "var(--color-accent)" : "var(--color-text-muted)",
+                      border: `1px solid ${isActive ? "var(--color-accent)" : "var(--color-glass-border)"}`,
+                      boxShadow: "none",
                     }}
                   >
                     {cat.category}
@@ -150,20 +129,18 @@ export default function Skills() {
                   className="rounded-2xl border p-6"
                   style={{
                     backgroundColor: "var(--color-surface)",
-                    borderColor: (accentColors[activeData.category] || "#6366f1") + "40",
-                    boxShadow: `0 0 24px ${accentColors[activeData.category] || "#6366f1"}20`,
+                    borderColor: "var(--color-glass-border)",
                   }}
                 >
                   <div className="flex items-center gap-3 mb-5">
                     <span
                       className="w-10 h-10 rounded-full flex items-center justify-center"
                       style={{
-                        backgroundColor: (accentColors[activeData.category] || "#6366f1") + "20",
-                        color: accentColors[activeData.category] || "#6366f1",
-                        boxShadow: `0 0 12px ${accentColors[activeData.category] || "#6366f1"}60`,
+                        backgroundColor: "var(--color-accent-muted)",
+                        color: "var(--color-accent)",
                       }}
                     >
-                      <span className={iconColorClasses[activeData.category] || "text-slate-400"}>
+                      <span style={{ color: "var(--color-accent)" }}>
                         {iconPaths[activeData.icon] || iconPaths.code}
                       </span>
                     </span>
@@ -192,8 +169,7 @@ export default function Skills() {
                             className="h-full rounded-full transition-all duration-700 ease-out"
                             style={{
                               width: `${skill.level}%`,
-                              backgroundColor: accentColors[activeData.category],
-                              boxShadow: `0 0 8px ${accentColors[activeData.category]}`,
+                              backgroundColor: "var(--color-accent)",
                             }}
                           />
                         </div>

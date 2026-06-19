@@ -25,7 +25,10 @@ export default function AnimatedCounter({
 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const onCompleteRef = useRef(onComplete);
-  onCompleteRef.current = onComplete;
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     const el = ref.current;
@@ -56,7 +59,7 @@ export default function AnimatedCounter({
     });
 
     return () => ctx.revert();
-  }, [end, duration]);
+  }, [end, duration, prefix, suffix]);
 
   return (
     <span ref={ref} className={className}>

@@ -5,13 +5,11 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { caseStudies } from "@/lib/data";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
-import { useSound } from "@/hooks/useSound";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function CaseStudies() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { play } = useSound();
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -22,7 +20,6 @@ export default function CaseStudies() {
         const heading = study.querySelector(".cs-heading") as HTMLElement;
         const subtitle = study.querySelector(".cs-subtitle") as HTMLElement;
         const contentSections = study.querySelectorAll(".cs-content-section");
-        const metricsWrap = study.querySelector(".cs-metrics") as HTMLElement;
         const metrics = study.querySelectorAll(".cs-metric");
         const techStack = study.querySelector(".cs-stack") as HTMLElement;
         const accentBar = study.querySelector(".cs-accent-bar") as HTMLElement;
@@ -32,7 +29,6 @@ export default function CaseStudies() {
           scrollTrigger: {
             trigger: studyEl,
             start: "top 80%",
-            onEnter: () => play("transition"),
           },
         });
 
@@ -70,11 +66,11 @@ export default function CaseStudies() {
   }, []);
 
   return (
-    <section id="case-studies" ref={sectionRef} className="relative py-28 border-t" style={{ backgroundColor: "var(--color-bg)", borderColor: "var(--color-glass-border)" }}>
+    <section id="case-studies" ref={sectionRef} className="relative py-24 border-t" style={{ backgroundColor: "var(--color-bg)", borderColor: "var(--color-glass-border)" }}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="mb-16">
           <p className="section-eyebrow" style={{ color: "var(--color-accent)" }}>Case Studies</p>
-          <h2 className="text-2xl md:text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>Deep dives.</h2>
+          <h2 className="text-xl md:text-2xl font-semibold tracking-tight" style={{ color: "var(--color-text-primary)" }}>Deep dives.</h2>
           <p className="mt-2 text-sm font-light" style={{ color: "var(--color-text-secondary)" }}>
             Architecture decisions, challenges, and measurable outcomes.
           </p>
@@ -88,7 +84,7 @@ export default function CaseStudies() {
             >
               <div
                 className="cs-accent-bar absolute left-0 top-0 w-1 rounded-l-2xl"
-                style={{ height: "0%", background: "var(--gradient-neon)" }}
+                style={{ height: "0%", background: "var(--gradient-accent)" }}
               />
 
               <div className="mb-6">
@@ -111,10 +107,8 @@ export default function CaseStudies() {
                 {study.metrics.map((m, j) => (
                   <div
                     key={j}
-                    className="cs-metric rounded-xl border p-4 text-center transition-all duration-300"
+                    className="cs-metric rounded-xl border p-4 text-center transition-all duration-300 hover:border-[color:var(--color-accent)] hover:shadow-[var(--shadow-soft-sm)]"
                     style={{ borderColor: "var(--color-glass-border)", backgroundColor: "var(--color-surface)" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--neon-shadow-sm)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--color-accent)"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = ""; (e.currentTarget as HTMLElement).style.borderColor = "var(--color-glass-border)"; }}
                   >
                     <div className="font-mono text-xl md:text-2xl font-bold" style={{ color: "var(--color-accent)", textShadow: "0 0 8px var(--color-accent)" }}>
                       <AnimatedCounter end={parseFloat(String(m.value))} suffix={m.suffix} prefix={m.prefix || ""} duration={2} />

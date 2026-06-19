@@ -5,8 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplineContainer from "@/components/ui/SplineContainer";
 import ScrambleText from "@/components/ui/ScrambleText";
-import { isPageRevealDone, onPageRevealComplete } from "@/components/ui/PageReveal"; // UPGRADE: defer to PageReveal timeline + subscribe to its completion
-import { useSound } from "@/hooks/useSound";
+import { isPageRevealDone, onPageRevealComplete } from "@/components/ui/PageReveal";
 import { useMousePosition } from "@/hooks/useMousePosition";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -15,8 +14,8 @@ if (typeof window !== "undefined") {
   (window as unknown as { gsap: typeof gsap }).gsap = gsap;
 }
 
-const PARTICLE_COUNT = 35;
-const PARTICLE_COLORS = ["#00ffff", "#ff00ff", "#8b5cf6", "#06b6d4", "#d946ef"];
+const PARTICLE_COUNT = 18;
+const PARTICLE_COLOR = "rgba(201, 168, 76, 0.6)";
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -25,18 +24,16 @@ export default function Hero() {
   const particlesRef = useRef<HTMLDivElement>(null);
   const cameraToX = useRef<((v: number) => void) | null>(null);
   const cameraToY = useRef<((v: number) => void) | null>(null);
-  const ambientCtxRef = useRef<gsap.Context | null>(null); // UPGRADE: holds the post-reveal ambient motion context
-  const { play } = useSound();
+  const ambientCtxRef = useRef<gsap.Context | null>(null);
   const { normalizedX, normalizedY } = useMousePosition();
 
-  const [particleData] = useState<Array<{ id: number; size: number; color: string; startX: number; startY: number }>>(() =>
+  const [particleData] = useState<Array<{ id: number; size: number; startX: number; startY: number }>>(() =>
     Array.from({ length: PARTICLE_COUNT }, (_, i) => {
       const angle = (i * 137.508) % 360;
       const radius = 8 + ((i * 17) % 80);
       return {
         id: i,
         size: 2 + ((i * 13) % 28) / 10,
-        color: PARTICLE_COLORS[i % PARTICLE_COLORS.length],
         startX: 50 + Math.cos((angle * Math.PI) / 180) * radius,
         startY: 50 + Math.sin((angle * Math.PI) / 180) * radius,
       };
@@ -44,13 +41,12 @@ export default function Hero() {
   );
 
   const startSubTimeline = useCallback(() => {
-    if (!isPageRevealDone()) return; // UPGRADE: PageReveal owns the post-headline reveal
+    if (!isPageRevealDone()) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         defaults: { ease: "power3.out" },
-        onComplete: () => play("reveal"),
       });
 
       tl.add("eyebrow-line")
@@ -81,16 +77,14 @@ export default function Hero() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [play]);
+  }, []);
 
-  // UPGRADE: post-reveal micro-animations — registered only after PageReveal finishes
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return; // UPGRADE: honor reduced motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let microCtx: gsap.Context | null = null;
-    const dispose = onPageRevealComplete(() => { // UPGRADE: hook lives-state motion off the reveal event
+    const dispose = onPageRevealComplete(() => {
       if (!sectionRef.current) return;
       microCtx = gsap.context(() => {
-        // UPGRADE: eyebrow line breathing shimmer (low amplitude, long duration)
         gsap.to(".hero-eyebrow-line", {
           opacity: 0.7,
           x: 1,
@@ -100,7 +94,6 @@ export default function Hero() {
           yoyo: true,
           repeat: -1,
         });
-        // UPGRADE: tag chips subtle scale breathing, randomized phase
         gsap.to(".hero-tags > span", {
           scale: 1.03,
           duration: 5.5,
@@ -114,8 +107,8 @@ export default function Hero() {
     });
 
     return () => {
-      dispose(); // UPGRADE: remove event subscription
-      microCtx?.revert(); // UPGRADE: kill micro-animations on unmount
+      dispose();
+      microCtx?.revert();
     };
   }, []);
 
@@ -123,17 +116,14 @@ export default function Hero() {
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: "top 80%",
-      onEnter: () => play("shimmer"),
       once: true,
     });
     return () => trigger.kill();
-  }, [play]);
+  }, []);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    // UPGRADE: defer ambient motion (particles, scroll-dot, parallax) until PageReveal completes
-    // so it doesn't compete with the staged entrance sequence
     const dispose = onPageRevealComplete(() => {
       const ctx = gsap.context(() => {
         gsap.to(".scroll-dot", {
@@ -149,7 +139,7 @@ export default function Hero() {
 
         const particles = particlesRef.current?.children;
         if (particles) {
-          gsap.utils.toArray(particles).forEach((el: any, i: number) => {
+          (gsap.utils.toArray(particles) as Element[]).forEach((el, i) => {
             const data = particleData[i];
             gsap.set(el, {
               x: (data.startX / 100) * window.innerWidth,
@@ -172,8 +162,8 @@ export default function Hero() {
         const container = sectionRef.current?.querySelector(".hero-content");
         if (container) {
           gsap.to(container, {
-            y: -80,
-            opacity: 0.3,
+            y: -50,
+            opacity: 0.4,
             ease: "none",
             scrollTrigger: {
               trigger: "#hero",
@@ -184,11 +174,8 @@ export default function Hero() {
             },
           });
         }
-
-
       }, sectionRef);
 
-      // UPGRADE: store ctx in a closure so cleanup can revert it
       ambientCtxRef.current = ctx;
     });
 
@@ -197,7 +184,7 @@ export default function Hero() {
       ambientCtxRef.current?.revert();
       ambientCtxRef.current = null;
     };
-  }, [play, particleData]);
+  }, [particleData]);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -215,8 +202,8 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    cameraToX.current?.(normalizedX * 2);
-    cameraToY.current?.(-normalizedY * 2);
+    cameraToX.current?.(normalizedX * 1.5);
+    cameraToY.current?.(-normalizedY * 1.5);
   }, [normalizedX, normalizedY]);
 
   return (
@@ -241,8 +228,8 @@ export default function Hero() {
             style={{
               width: p.size,
               height: p.size,
-              backgroundColor: p.color,
-              boxShadow: `0 0 ${p.size * 2}px ${p.color}, 0 0 ${p.size * 4}px ${p.color}`,
+              backgroundColor: PARTICLE_COLOR,
+              boxShadow: `0 0 ${p.size * 1.5}px rgba(201, 168, 76, 0.4)`,
               willChange: "transform",
             }}
           />
@@ -268,15 +255,15 @@ export default function Hero() {
             <div
               className="hero-eyebrow-line w-32 h-px mt-3 mb-1"
               style={{
-                background: "var(--gradient-neon)",
-                boxShadow: "var(--neon-shadow-sm)",
+                background: "var(--gradient-accent)",
+                boxShadow: "0 0 4px rgba(201, 168, 76, 0.15)",
                 opacity: 0,
               }}
             />
 
             <h1
               id="hero-heading"
-              className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05]"
+              className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]"
               style={{ color: "var(--color-text-primary)" }}
             >
               <ScrambleText
@@ -300,7 +287,6 @@ export default function Hero() {
               className="hero-sub mt-6 max-w-xl text-base md:text-lg font-light leading-relaxed"
               style={{ color: "var(--color-text-secondary)", opacity: 0 }}
             >
-              {/* UPGRADE: brand-reinforcing sub-copy — replaces placeholder */}
               Currently building: agentic trading systems, RAG copilots on
               GCP, and AI-first data platforms.
             </p>
@@ -329,10 +315,8 @@ export default function Hero() {
             <div className="hero-cta flex flex-wrap gap-4 mt-8 neon-border rounded-2xl p-1">
               <a
                 href="#pipeline"
-                onMouseEnter={() => play("click")}
                 onClick={(e: MouseEvent<HTMLAnchorElement>) => {
                   e.preventDefault();
-                  play("whoosh");
                   document
                     .querySelector("#pipeline")
                     ?.scrollIntoView({ behavior: "smooth" });
@@ -371,36 +355,6 @@ export default function Hero() {
               >
                 Discuss a system
               </a>
-
-              <a
-                href="/resume.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Download resume (opens in new tab)"
-                className="glass glass-hover inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium"
-                style={{
-                  color: "var(--color-text-muted)",
-                  opacity: 0,
-                  fontSize: "0.8rem",
-                }}
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                Resume
-              </a>
             </div>
           </div>
         </div>
@@ -415,7 +369,7 @@ export default function Hero() {
           className="font-mono text-[10px] tracking-[0.3em] uppercase"
           style={{
             color: "var(--color-accent)",
-            textShadow: "0 0 8px var(--color-accent)",
+            textShadow: "0 0 6px rgba(201, 168, 76, 0.3)",
           }}
         >
           scroll
@@ -426,15 +380,14 @@ export default function Hero() {
           style={{
             background:
               "linear-gradient(to bottom, var(--color-accent), transparent)",
-            boxShadow: "0 0 6px var(--color-accent)",
+            boxShadow: "0 0 4px rgba(201, 168, 76, 0.2)",
           }}
         >
           <div
             className="scroll-dot absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full"
             style={{
               background: "var(--color-accent)",
-              boxShadow:
-                "0 0 6px var(--color-accent), 0 0 12px var(--color-accent)",
+              boxShadow: "0 0 4px rgba(201, 168, 76, 0.2)",
             }}
           />
         </div>
