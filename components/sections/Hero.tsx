@@ -16,7 +16,7 @@ if (typeof window !== "undefined") {
   (window as unknown as { gsap: typeof gsap }).gsap = gsap;
 }
 
-const PARTICLE_COUNT = 18;
+const PARTICLE_COUNT = 8;
 const PARTICLE_COLOR = "rgba(201, 168, 76, 0.6)";
 
 export default function Hero() {
@@ -27,7 +27,7 @@ export default function Hero() {
   const splineRef = useRef<HTMLDivElement>(null);
   const cameraToX = useRef<((v: number) => void) | null>(null);
   const cameraToY = useRef<((v: number) => void) | null>(null);
-  const ambientCtxRef = useRef<gsap.Context | null>(null);
+  const mainCtxRef = useRef<gsap.Context | null>(null);
   const { normalizedX, normalizedY } = useMousePosition();
 
   useCursorGlow(contentRef);
@@ -71,7 +71,7 @@ export default function Hero() {
       tl.call(() => {
         gsap.to(".hero-cta-primary", {
           boxShadow: "0 0 30px var(--color-glow), 0 0 60px var(--color-glow)",
-          duration: 1.5,
+          duration: 2.5,
           repeat: -1,
           yoyo: true,
           ease: "sine.inOut",
@@ -157,8 +157,8 @@ export default function Hero() {
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top top",
-            end: "+=450",
-            scrub: 1,
+            end: "+=300",
+            scrub: 0.8,
             pin: sectionRef.current,
             pinSpacing: true,
             anticipatePin: 1,
@@ -168,18 +168,17 @@ export default function Hero() {
 
         pinTl
           .to(".scroll-indicator", { opacity: 0, duration: 0.15 }, 0)
-          .to(contentRef.current, { y: -90, opacity: 0, ease: "none", duration: 1 }, 0)
-          .to(splineRef.current, { scale: 1.15, opacity: 0.15, ease: "none", duration: 1 }, 0)
-          .to(particlesRef.current, { y: 40, opacity: 0.2, ease: "none", duration: 1 }, 0);
+          .to(contentRef.current, { y: -60, opacity: 0, ease: "none", duration: 0.8 }, 0)
+          .to(splineRef.current, { scale: 1.1, opacity: 0.15, ease: "none", duration: 0.8 }, 0)
+          .to(particlesRef.current, { y: 20, opacity: 0.2, ease: "none", duration: 0.8 }, 0);
       }, sectionRef);
 
-      ambientCtxRef.current = ctx;
+      mainCtxRef.current = ctx;
     });
 
     return () => {
       dispose();
-      ambientCtxRef.current?.revert();
-      ambientCtxRef.current = null;
+      mainCtxRef.current?.revert();
     };
   }, [particleData]);
 
@@ -199,8 +198,12 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    cameraToX.current?.(normalizedX * 1.5);
-    cameraToY.current?.(-normalizedY * 1.5);
+    if (prefersReducedMotion()) return;
+    const throttleTimeout = setTimeout(() => {
+      cameraToX.current?.(normalizedX * 1.0);
+      cameraToY.current?.(-normalizedY * 1.0);
+    }, 16);
+    return () => clearTimeout(throttleTimeout);
   }, [normalizedX, normalizedY]);
 
   return (
