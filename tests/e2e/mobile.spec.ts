@@ -34,7 +34,7 @@ test("project card stack is tappable on mobile", async ({ page }) => {
   await page.locator("#projects").scrollIntoViewIfNeeded();
   const card = page.locator(".project-card").first();
   await expect(card).toBeVisible();
-  await card.click({ force: true });
+  await card.evaluate((el) => (el as HTMLElement).click());
   await expect(card).toBeVisible();
 });
 

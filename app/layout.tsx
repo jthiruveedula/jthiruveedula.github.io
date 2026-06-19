@@ -1,7 +1,22 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import AmbientBackground from "@/components/ui/AmbientBackground"; // UPGRADE: global particle-network backdrop
+import AmbientBackground from "@/components/ui/AmbientBackground";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+});
 
 const SITE_URL = "https://jthiruveedula.github.io";
 
@@ -78,31 +93,20 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#020617",
+  themeColor: "#0a0a0f",
   colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark scroll-smooth" data-theme="cyberpunk">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
-          rel="stylesheet"
-        />
-        <meta name="theme-color" content="#020617" />
-        <link rel="apple-touch-icon" href="/favicon.svg" />
-        <script src="https://unpkg.com/split-type"></script>
+    <html lang="en" className={`scroll-smooth ${inter.variable} ${jetbrainsMono.variable}`}>
+      <body>
         {process.env.NODE_ENV === "development" && (
           <Script
             src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/GSDevTools.min.js"
             strategy="afterInteractive"
           />
         )}
-      </head>
-      <body>
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-md focus:font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--color-bg)]"
@@ -110,7 +114,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to main content
         </a>
-        <AmbientBackground /> {/* UPGRADE: site-wide ambient depth layer */}
+        <AmbientBackground />
         {children}
       </body>
     </html>

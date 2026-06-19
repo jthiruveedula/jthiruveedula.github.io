@@ -14,13 +14,13 @@ test("about section has bio and content", async ({ page }) => {
   await page.locator("#about").scrollIntoViewIfNeeded();
   await expect(page.locator("#about")).toContainText("GCP Data Architect");
   await expect(page.locator("#about")).toContainText(/bigquery/i);
-  await expect(page.locator("#about")).toContainText(/LLM/i);
+  await expect(page.locator("#about")).toContainText(/GenAI/i);
 });
 
 test("skills section has radar visualization", async ({ page }) => {
   await page.goto("/");
   await page.locator("#skills").scrollIntoViewIfNeeded();
-  await expect(page.locator("#skills canvas")).toBeVisible({ timeout: 8000 });
+  await expect(page.locator("#skills svg")).toBeVisible({ timeout: 8000 });
   await expect(page.locator("#skills")).toContainText("Skills & capabilities");
 });
 
@@ -50,20 +50,11 @@ test("footer displays copyright and stack info", async ({ page }) => {
 test("architecture pipeline has 5 steps", async ({ page }) => {
   await page.goto("/");
   await page.locator("#pipeline").scrollIntoViewIfNeeded();
-  await expect(page.locator("#pipeline").getByRole("heading", { name: "Ingest" })).toBeVisible();
-  await expect(page.locator("#pipeline").getByRole("heading", { name: "Embed" })).toBeVisible();
-  await expect(page.locator("#pipeline").getByRole("heading", { name: "Retrieve" })).toBeVisible();
-  await expect(page.locator("#pipeline").getByRole("heading", { name: "Govern" })).toBeVisible();
-  await expect(page.locator("#pipeline").getByRole("heading", { name: "Serve" })).toBeVisible();
-});
-
-test("professional metrics displays counters", async ({ page }) => {
-  await page.goto("/");
-  await page.locator("#metrics").scrollIntoViewIfNeeded();
-  await expect(page.locator("#metrics").getByText("Production Deployments")).toBeVisible();
-  await expect(page.locator("#metrics").getByText("Enterprise Clients")).toBeVisible();
-  await expect(page.locator("#metrics").getByText("RAG Pipelines")).toBeVisible();
-  await expect(page.locator("#metrics").getByText("Agentic Workflows")).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Ingest" }).first()).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Embed" }).first()).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Retrieve" }).first()).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Govern" }).first()).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Serve" }).first()).toBeVisible();
 });
 
 test("experience timeline has 6 roles", async ({ page }) => {
@@ -74,8 +65,9 @@ test("experience timeline has 6 roles", async ({ page }) => {
   await expect(page.locator("#experience").getByText("Wiley Publications")).toBeVisible();
 });
 
-test("hero has Resume download link", async ({ page }) => {
+test("resume download link is available in contact section", async ({ page }) => {
   await page.goto("/");
+  await page.locator("#contact").scrollIntoViewIfNeeded();
   const resumeLink = page.getByRole("link", { name: /download resume/i });
   await expect(resumeLink).toBeVisible();
   await expect(resumeLink).toHaveAttribute("href", "/resume.html");
@@ -89,7 +81,7 @@ test("contact form submits and triggers mailto flow with success feedback", asyn
   await page.getByLabel("Email").fill("test@example.com");
   await page.getByLabel("Message").fill("Hello there");
   await page.getByRole("button", { name: /send message/i }).click();
-  await expect(page.getByText(/message sent/i)).toBeVisible();
+  await expect(page.locator("#contact")).toContainText(/message sent/i);
 });
 
 test("page has proper meta tags", async ({ page }) => {

@@ -1,6 +1,5 @@
 "use client";
 
-// UPGRADE: PageReveal wrapper for Hero entrance sequence.
 // Runs a 4-stage GSAP timeline:
 //   1) Neon grid + vignette fade in (0.5s)
 //   2) Eyebrow line draws (synced with Hero headline ScrambleText)
@@ -10,18 +9,17 @@
 
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 import gsap from "gsap";
+import { EASE, prefersReducedMotion } from "@/lib/motion";
 
 const REVEAL_DONE_FLAG = "__pageRevealDone" as const;
 const REVEAL_COMPLETE_EVENT = "pagereveal:complete" as const;
 
 export function isPageRevealDone(): boolean {
-  // UPGRADE: page-reveal completion flag
   if (typeof window === "undefined") return true;
   return Boolean((window as unknown as Record<string, unknown>)[REVEAL_DONE_FLAG]);
 }
 
 export function onPageRevealComplete(handler: () => void): () => void {
-  // UPGRADE: subscribe to page-reveal completion event
   if (typeof window === "undefined") return () => {};
   if (isPageRevealDone()) {
     handler();
@@ -33,7 +31,6 @@ export function onPageRevealComplete(handler: () => void): () => void {
 }
 
 function markRevealDone(): void {
-  // UPGRADE: mark reveal complete + dispatch event
   (window as unknown as Record<string, unknown>)[REVEAL_DONE_FLAG] = true;
   window.dispatchEvent(new CustomEvent(REVEAL_COMPLETE_EVENT));
 }
@@ -52,9 +49,8 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
     const root = wrapperRef.current;
     if (!root) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = prefersReducedMotion();
 
-    // UPGRADE: resolve Hero sub-targets inside the wrapper
     const eyebrow = root.querySelector<HTMLElement>(".hero-eyebrow-line");
     const sub = root.querySelector<HTMLElement>(".hero-sub");
     const tags = root.querySelector<HTMLElement>(".hero-tags");
@@ -63,7 +59,6 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
     const grid = gridRef.current;
 
     if (reduced) {
-      // UPGRADE: static fallback — show everything, skip animation
       gsap.set([sub, tags, ...Array.from(ctas), scroll].filter(Boolean), {
         opacity: 1,
         clearProps: "transform,filter",
@@ -74,7 +69,6 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
       return;
     }
 
-    // UPGRADE: pre-hide elements so they don't flash before timeline runs
     if (eyebrow) gsap.set(eyebrow, { scaleX: 0, transformOrigin: "left center", opacity: 1 });
     if (sub) gsap.set(sub, { opacity: 0, y: 14, filter: "blur(6px)" });
     if (tags) gsap.set(tags, { opacity: 0, y: 8 });
@@ -84,8 +78,7 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
-        defaults: { ease: "power2.out" },
-        // UPGRADE: signal completion so Hero can defer/hand off cleanly
+        defaults: { ease: EASE.soft },
         onComplete: () => markRevealDone(),
       });
       tlRef.current = tl;
@@ -93,7 +86,7 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
       // Stage 1 — grid + vignette fade in (0.4s)
       tl.add("grid", 0).to(
         grid,
-        { autoAlpha: 0.55, duration: 0.4, ease: "power2.out" },
+        { autoAlpha: 0.55, duration: 0.4, ease: EASE.soft },
         "grid"
       );
 
@@ -102,7 +95,7 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
       //  resolves around 1.27s after mount; we sync the rest to that.)
       tl.to(
         eyebrow,
-        { scaleX: 1, duration: 0.55, ease: "power2.out" },
+        { scaleX: 1, duration: 0.55, ease: EASE.soft },
         "grid+=0.2"
       );
 
@@ -126,7 +119,7 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
           scale: 1,
           duration: 0.4,
           stagger: 0.08,
-          ease: "back.out(1.2)",
+          ease: EASE.snap,
         },
         "settle+=0.25"
       );
@@ -143,7 +136,6 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
         "settle+=0.75"
       );
 
-      // UPGRADE: preserve Hero's pulsing CTA glow now that startSubTimeline is skipped
       tl.call(() => {
         const primary = root.querySelector<HTMLElement>(".hero-cta-primary");
         if (primary) {
@@ -158,7 +150,6 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
       }, [], "settle+=0.9");
     }, wrapperRef);
 
-    // UPGRADE: safety guard — if anything stalls, finish after 6s
     const maxGuard = window.setTimeout(() => {
       tlRef.current?.kill();
       markRevealDone();
@@ -172,7 +163,6 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
   }, []);
 
   return (
-    // UPGRADE: wrapper that hosts the reveal overlay + provides selector scope
     <div ref={wrapperRef} className={`relative ${className}`}>
       {children}
       <div
@@ -180,7 +170,6 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none z-[2]"
         style={{
-          // UPGRADE: subtle neon grid + vignette using theme tokens
           backgroundImage: [
             "linear-gradient(var(--color-accent-muted) 1px, transparent 1px)",
             "linear-gradient(90deg, var(--color-accent-muted) 1px, transparent 1px)",

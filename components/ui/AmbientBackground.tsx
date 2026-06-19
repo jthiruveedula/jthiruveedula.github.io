@@ -1,51 +1,42 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { prefersReducedMotion } from "@/lib/motion";
 
-interface Particle { // UPGRADE: ambient particle shape
+interface Particle {
   x: number;
   y: number;
   vx: number;
   vy: number;
   r: number;
-  color: string;
   phase: number;
 }
 
-interface Palette { // UPGRADE: theme-derived color set
-  accents: string[];
-  line: string;
-}
-
 const SMALL_BREAKPOINT = 768;
-const LARGE_COUNT = 80;
-const SMALL_COUNT = 40;
+const LARGE_COUNT = 70;
+const SMALL_COUNT = 35;
 const MAX_LINK_DIST = 130;
 const DPR_CAP = 2;
 
-function readPalette(): Palette { // UPGRADE: sample current theme via CSS variables
-  if (typeof window === "undefined") {
-    return { accents: ["#00f0ff", "#ff00e5", "#b026ff"], line: "rgba(0,240,255,0.18)" };
-  }
-  const styles = getComputedStyle(document.documentElement);
-  const raw = [
-    styles.getPropertyValue("--color-accent").trim(),
-    styles.getPropertyValue("--color-accent-secondary").trim(),
-    styles.getPropertyValue("--color-accent-tertiary").trim(),
-  ].filter(Boolean);
-  return { accents: raw.length ? raw : ["#00f0ff"], line: "rgba(0,240,255,0.18)" };
+function readAccent(): string {
+  if (typeof window === "undefined") return "#c9a84c";
+  return (
+    getComputedStyle(document.documentElement)
+      .getPropertyValue("--color-accent")
+      .trim() || "#c9a84c"
+  );
 }
 
-function hexToRgba(hex: string, alpha: number): string { // UPGRADE: convert hex to rgba for low-alpha stroke/fill
+function hexToRgba(hex: string, alpha: number): string {
   const m = hex.replace("#", "");
-  if (m.length !== 6) return `rgba(0,240,255,${alpha})`;
+  if (m.length !== 6) return `rgba(201,168,76,${alpha})`;
   const r = parseInt(m.slice(0, 2), 16);
   const g = parseInt(m.slice(2, 4), 16);
   const b = parseInt(m.slice(4, 6), 16);
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-export default function AmbientBackground() { // UPGRADE: global particle-network backdrop
+export default function AmbientBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -54,9 +45,9 @@ export default function AmbientBackground() { // UPGRADE: global particle-networ
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion = prefersReducedMotion();
+    const accent = readAccent();
 
-    let palette = readPalette();
     let width = 0;
     let height = 0;
     let dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
@@ -64,18 +55,16 @@ export default function AmbientBackground() { // UPGRADE: global particle-networ
     let rafId = 0;
     let lastTime = performance.now();
 
-    const seedParticles = (count: number) => { // UPGRADE: initial particle field
+    const seedParticles = (count: number) => {
       particles = new Array(count).fill(0).map(() => {
-        const speed = 0.08 + Math.random() * 0.18; // sub-pixel drift
+        const speed = 0.06 + Math.random() * 0.14;
         const angle = Math.random() * Math.PI * 2;
-        const color = palette.accents[Math.floor(Math.random() * palette.accents.length)];
         return {
           x: Math.random() * width,
           y: Math.random() * height,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
-          r: 0.8 + Math.random() * 1.6,
-          color,
+          r: 0.6 + Math.random() * 1.2,
           phase: Math.random() * Math.PI * 2,
         };
       });
@@ -94,24 +83,23 @@ export default function AmbientBackground() { // UPGRADE: global particle-networ
       seedParticles(count);
     };
 
-    const drawStatic = () => { // UPGRADE: single-frame fallback for reduced-motion
+    const drawStatic = () => {
       ctx.clearRect(0, 0, width, height);
       for (const p of particles) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = hexToRgba(p.color, 0.55);
+        ctx.fillStyle = hexToRgba(accent, 0.4);
         ctx.fill();
       }
     };
 
-    const drawFrame = (now: number) => { // UPGRADE: per-frame update + render
-      const dt = Math.min((now - lastTime) / 16.67, 2); // normalize to ~60fps tick, clamp large gaps
+    const drawFrame = (now: number) => {
+      const dt = Math.min((now - lastTime) / 16.67, 2);
       lastTime = now;
 
       ctx.clearRect(0, 0, width, height);
 
-      // Connections: faint lines between nearby particles
-      ctx.lineWidth = 0.6;
+      ctx.lineWidth = 0.5;
       for (let i = 0; i < particles.length; i++) {
         const a = particles[i];
         for (let j = i + 1; j < particles.length; j++) {
@@ -121,8 +109,8 @@ export default function AmbientBackground() { // UPGRADE: global particle-networ
           const distSq = dx * dx + dy * dy;
           if (distSq < MAX_LINK_DIST * MAX_LINK_DIST) {
             const dist = Math.sqrt(distSq);
-            const alpha = (1 - dist / MAX_LINK_DIST) * 0.22;
-            ctx.strokeStyle = palette.line.replace(/[\d.]+\)$/g, `${alpha.toFixed(3)})`);
+            const alpha = (1 - dist / MAX_LINK_DIST) * 0.15;
+            ctx.strokeStyle = hexToRgba(accent, alpha);
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
@@ -131,49 +119,38 @@ export default function AmbientBackground() { // UPGRADE: global particle-networ
         }
       }
 
-      // Particles: update position, wrap edges, draw
       for (const p of particles) {
-        // Mild direction drift via small random acceleration
-        p.vx += (Math.random() - 0.5) * 0.01;
-        p.vy += (Math.random() - 0.5) * 0.01;
-        // Clamp speed for a calm network
+        p.vx += (Math.random() - 0.5) * 0.008;
+        p.vy += (Math.random() - 0.5) * 0.008;
         const sp = Math.hypot(p.vx, p.vy);
-        if (sp > 0.35) { p.vx *= 0.35 / sp; p.vy *= 0.35 / sp; }
-
+        if (sp > 0.28) {
+          p.vx *= 0.28 / sp;
+          p.vy *= 0.28 / sp;
+        }
         p.x += p.vx * dt;
         p.y += p.vy * dt;
-
-        // Wrap around edges for a continuous field
         if (p.x < -4) p.x = width + 4;
         else if (p.x > width + 4) p.x = -4;
         if (p.y < -4) p.y = height + 4;
         else if (p.y > height + 4) p.y = -4;
-
-        p.phase += 0.015;
-        const alpha = 0.45 + Math.sin(p.phase) * 0.15;
+        p.phase += 0.012;
+        const alpha = 0.35 + Math.sin(p.phase) * 0.12;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = hexToRgba(p.color, alpha);
+        ctx.fillStyle = hexToRgba(accent, alpha);
         ctx.fill();
       }
 
       rafId = requestAnimationFrame(drawFrame);
     };
 
-    const onVisibility = () => { // UPGRADE: pause RAF when tab is hidden
+    const onVisibility = () => {
       if (document.hidden) {
         if (rafId) cancelAnimationFrame(rafId);
         rafId = 0;
       } else if (!rafId && !reduceMotion) {
         lastTime = performance.now();
         rafId = requestAnimationFrame(drawFrame);
-      }
-    };
-
-    const onThemeChange = () => { // UPGRADE: re-sample colors when data-theme changes
-      palette = readPalette();
-      for (const p of particles) {
-        p.color = palette.accents[Math.floor(Math.random() * palette.accents.length)];
       }
     };
 
@@ -188,13 +165,10 @@ export default function AmbientBackground() { // UPGRADE: global particle-networ
 
     window.addEventListener("resize", onResize);
     document.addEventListener("visibilitychange", onVisibility);
-    const themeObserver = new MutationObserver(onThemeChange);
-    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
     return () => {
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVisibility);
-      themeObserver.disconnect();
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
@@ -204,7 +178,7 @@ export default function AmbientBackground() { // UPGRADE: global particle-networ
       ref={canvasRef}
       aria-hidden="true"
       className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 0, opacity: 0.5 }} // UPGRADE: sits behind main content (z-10) and AmbientOrbs layer
+      style={{ zIndex: 0, opacity: 0.35 }}
     />
   );
 }

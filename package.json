@@ -2,10 +2,12 @@
   "name": "jthiruveedula-portfolio",
   "version": "3.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:chrome": "playwright test --project=chromium",
@@ -16,22 +18,20 @@
     "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
-    "@types/three": "^0.184.1",
-    "echarts": "^6.1.0",
-    "echarts-for-react": "^3.0.6",
     "gsap": "^3.15.0",
     "next": "^15.2.4",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "three": "^0.184.0"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
     "@playwright/test": "^1.52.0",
     "@tailwindcss/postcss": "^4.1.4",
     "@types/node": "^22.14.1",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
-    "eslint": "^10.5.0",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.9",
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3"
   }

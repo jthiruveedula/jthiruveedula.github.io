@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { EASE, prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -25,13 +26,16 @@ export default function AnimatedCounter({
 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const onCompleteRef = useRef(onComplete);
-  onCompleteRef.current = onComplete;
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (prefersReducedMotion()) {
       el.textContent = `${prefix}${end}${suffix}`;
       return;
     }
@@ -43,7 +47,7 @@ export default function AnimatedCounter({
         {
           textContent: end,
           duration,
-          ease: "power2.out",
+          ease: EASE.soft,
           snap: { textContent: 1 },
           onComplete: () => onCompleteRef.current?.(),
           scrollTrigger: {
@@ -56,7 +60,7 @@ export default function AnimatedCounter({
     });
 
     return () => ctx.revert();
-  }, [end, duration]);
+  }, [end, duration, prefix, suffix]);
 
   return (
     <span ref={ref} className={className}>

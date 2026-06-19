@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { EASE, prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,13 +34,16 @@ export default function ScrambleText({
 }: ScrambleTextProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const onCompleteRef = useRef(onComplete);
-  onCompleteRef.current = onComplete;
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (prefersReducedMotion()) {
       el.textContent = text;
       return;
     }
@@ -75,7 +79,7 @@ export default function ScrambleText({
         gsap.to(obj, {
           progress: 1,
           duration,
-          ease: "power3.out",
+          ease: EASE.cinematic,
           delay: i * stagger,
           onUpdate: () => {
             if (obj.progress < 0.8) {

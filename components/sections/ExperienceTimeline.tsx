@@ -5,17 +5,9 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { experience } from "@/lib/data";
-import { createHover3DTilt } from "@/lib/gsap-helpers";
-import { useSound } from "@/hooks/useSound";
+import { EASE, DUR, STAGGER, prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
-
-const highlightAccents: Record<string, string> = {
-  Production: "#34d399",
-  Enterprise: "#6366f1",
-  Pipeline: "#06b6d4",
-  "Real-time": "#fbbf24",
-};
 
 const highlightIcons: Record<string, React.ReactNode> = {
   Production: (
@@ -45,15 +37,15 @@ function extractStartYear(period: string): string {
   return match ? match[1] : "";
 }
 
-function TimelineDot({ year, highlight }: { year: string; highlight: string }) {
-  const accent = highlightAccents[highlight] || "var(--color-accent)";
+function TimelineDot({ year }: { year: string }) {
+  const accent = "var(--color-accent)";
   return (
     <>
       <div
         className="absolute left-4 md:left-1/2 md:-translate-x-1/2 w-3 h-3 rounded-full -translate-y-0.5 z-10"
         style={{
           backgroundColor: accent,
-          boxShadow: `0 0 8px ${accent}, 0 0 16px ${accent}80`,
+          boxShadow: "0 0 4px rgba(201, 168, 76, 0.3)",
         }}
         aria-hidden="true"
       />
@@ -65,8 +57,8 @@ function TimelineDot({ year, highlight }: { year: string; highlight: string }) {
           className="font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded"
           style={{
             backgroundColor: "var(--color-bg)",
-            border: `1px solid ${accent}40`,
-            color: accent,
+            border: "1px solid var(--color-glass-border)",
+            color: "var(--color-accent)",
           }}
         >
           {year}
@@ -90,7 +82,7 @@ function Particle({ delay }: { delay: number }) {
       className="absolute left-4 md:left-1/2 md:-translate-x-1/2 w-1.5 h-1.5 rounded-full pointer-events-none"
       style={{
         backgroundColor: "var(--color-accent)",
-        boxShadow: "0 0 6px var(--color-accent), 0 0 12px var(--color-accent-muted)",
+        boxShadow: "0 0 4px rgba(201, 168, 76, 0.3)",
         animation: `timelineParticle 5s linear ${delay}s infinite`,
       }}
       aria-hidden="true"
@@ -101,112 +93,83 @@ function Particle({ delay }: { delay: number }) {
 export default function ExperienceTimeline() {
   const sectionRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
-  const orbsRef = useRef<HTMLDivElement>(null);
-  const { play } = useSound();
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+    const section = sectionRef.current;
+    if (!section) return;
+    if (prefersReducedMotion()) return;
 
     const ctx = gsap.context(() => {
       const line = timelineRef.current;
-      if (line) {
-        gsap.fromTo(
-          line,
-          { scaleY: 0, transformOrigin: "top center" },
-          {
-            scaleY: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: "#experience",
-              start: "top 60%",
-              end: "bottom 40%",
-              scrub: 1,
-              invalidateOnRefresh: true,
-            },
-          }
-        );
-      }
+      const cards = gsap.utils.toArray<HTMLElement>(".timeline-card");
 
-      gsap.from(".timeline-card", {
-        opacity: 0,
-        y: 60,
-        rotationX: -5,
-        transformPerspective: 600,
-        stagger: 0.12,
-        duration: 0.8,
-        ease: "power3.out",
+      cards.forEach((card, i) => {
+        const isLeft = i % 2 === 0;
+        gsap.set(card, { opacity: 0, x: isLeft ? -60 : 60 });
+      });
+
+      const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: "#experience",
-          start: "top 70%",
+          trigger: section,
+          start: "top 55%",
+          end: "bottom 50%",
+          scrub: 1,
           invalidateOnRefresh: true,
-          onEnter: () => play("transition"),
+          onLeaveBack: () => tl.progress(0),
         },
       });
 
-      gsap.utils.toArray<HTMLElement>(".timeline-ripple").forEach((el) => {
-        gsap.to(el, {
-          width: 60,
-          height: 60,
-          marginLeft: -29,
-          marginTop: -29,
-          opacity: 0,
-          duration: 1.6,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: el.closest(".timeline-card") as HTMLElement,
-            start: "top 80%",
-          },
-        });
-      });
-
-      gsap.utils.toArray<HTMLElement>(".timeline-company").forEach((el) => {
-        const split = new SplitText(el, { type: "chars" });
-        gsap.from(split.chars, {
-          opacity: 0,
-          y: 5,
-          stagger: 0.03,
-          duration: 0.4,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: el.closest(".timeline-card") as HTMLElement,
-            start: "top 80%",
-          },
-        });
-      });
-
-      if (orbsRef.current) {
-        const orbs = orbsRef.current.querySelectorAll<HTMLElement>(".parallax-orb");
-        orbs.forEach((orb, i) => {
-          gsap.to(orb, {
-            yPercent: i % 2 === 0 ? -30 : 30,
-            xPercent: i % 2 === 0 ? 15 : -15,
-            ease: "none",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 1.5,
-              invalidateOnRefresh: true,
-            },
-          });
-        });
+      if (line) {
+        tl.fromTo(line, { scaleY: 0, transformOrigin: "top center" }, { scaleY: 1, ease: "none", duration: cards.length }, 0);
       }
-    }, sectionRef);
 
-    const cards = sectionRef.current?.querySelectorAll<HTMLElement>(".timeline-card");
-    const cleanups: (() => void)[] = [];
-    if (cards) {
-      cards.forEach((card) => {
-        cleanups.push(createHover3DTilt(card, { scale: 1.02, maxTilt: 3 }));
+      cards.forEach((card, i) => {
+        const pos = i;
+
+        tl.to(card, { opacity: 1, x: 0, duration: 0.5, ease: EASE.cinematic }, pos);
+
+        const companyEl = card.querySelector(".timeline-company");
+        if (companyEl) {
+          const split = new SplitText(companyEl, { type: "chars" });
+          tl.from(split.chars, { opacity: 0, y: 5, stagger: STAGGER.tight, duration: DUR.micro, ease: EASE.soft }, pos + 0.2);
+        }
+
+        const title = card.querySelector(".timeline-title");
+        if (title) tl.from(title, { opacity: 0, y: 10, duration: DUR.base, ease: EASE.soft }, pos + 0.25);
+
+        const period = card.querySelector(".timeline-period");
+        if (period) tl.from(period, { opacity: 0, duration: DUR.micro, ease: EASE.soft }, pos + 0.3);
+
+        const subtitle = card.querySelector(".timeline-subtitle");
+        if (subtitle) tl.from(subtitle, { opacity: 0, y: 10, duration: DUR.base, ease: EASE.soft }, pos + 0.35);
+
+        const details = card.querySelectorAll(".timeline-detail");
+        if (details.length) tl.from(details, { opacity: 0, x: 15, stagger: STAGGER.tight, duration: DUR.micro, ease: EASE.soft }, pos + 0.4);
+
+        const tags = card.querySelectorAll(".timeline-tag");
+        if (tags.length) tl.from(tags, { opacity: 0, scale: 0.8, stagger: STAGGER.tight, duration: DUR.micro, ease: EASE.snap }, pos + 0.5);
+
+        const ripples = card.querySelectorAll(".timeline-ripple");
+        ripples.forEach((ripple, ri) => {
+          tl.to(ripple, { width: 60, height: 60, marginLeft: -29, marginTop: -29, opacity: 0, duration: DUR.base, ease: EASE.cinematic }, pos + 0.1 + ri * 0.1);
+        });
+
+        const highlight = card.querySelector(".timeline-highlight");
+        if (highlight) tl.from(highlight, { opacity: 0, scale: 0.5, duration: DUR.micro, ease: EASE.snap }, pos + 0.15);
+
+        const sweep = card.querySelector(".timeline-sweep");
+        if (sweep) {
+          tl.set(sweep, { opacity: 1, x: "-100%" }, pos + 0.1)
+            .to(sweep, { x: "200%", duration: DUR.hero, ease: EASE.soft }, pos + 0.1)
+            .set(sweep, { opacity: 0 }, pos + 0.1 + DUR.hero);
+        }
       });
-    }
+    }, sectionRef);
 
     return () => {
       ctx.revert();
-      cleanups.forEach((fn) => fn());
     };
-  }, [play]);
+  }, []);
 
   return (
     <section
@@ -215,38 +178,14 @@ export default function ExperienceTimeline() {
       aria-label="Experience Timeline"
       className="relative py-20 overflow-hidden"
     >
-      <div ref={orbsRef} className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div
-          className="parallax-orb absolute -top-32 -right-32 w-[28rem] h-[28rem] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(0, 240, 255, 0.18) 0%, rgba(0, 240, 255, 0) 70%)",
-            filter: "blur(20px)",
-          }}
-        />
-        <div
-          className="parallax-orb absolute top-1/2 -left-40 w-[24rem] h-[24rem] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(99, 102, 241, 0.14) 0%, rgba(99, 102, 241, 0) 70%)",
-            filter: "blur(24px)",
-          }}
-        />
-        <div
-          className="parallax-orb absolute -bottom-40 right-1/3 w-[20rem] h-[20rem] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, rgba(168, 85, 247, 0) 70%)",
-            filter: "blur(22px)",
-          }}
-        />
-      </div>
-
       <div className="max-w-6xl mx-auto px-4 md:px-6 relative z-[1]">
         <div className="mb-12">
           <p className="section-eyebrow">Career Timeline</p>
-          <h2 className="text-2xl md:text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>
+          <h2 className="text-xl md:text-2xl font-semibold tracking-tight" style={{ color: "var(--color-text-primary)" }}>
             Engineering <span style={{ color: "var(--color-accent)" }}>/</span> the Data Supply Chain
           </h2>
           <p className="text-sm mt-2 max-w-2xl" style={{ color: "var(--color-text-secondary)" }}>
-            From industrial automation to enterprise AI — spanning startups, financial services, publishing, and cloud-scale data platforms.
+            From industrial automation to enterprise AI.
           </p>
         </div>
 
@@ -257,7 +196,7 @@ export default function ExperienceTimeline() {
             style={{
               backgroundColor: "var(--color-glass-border)",
               transformOrigin: "top center",
-              boxShadow: "0 0 4px var(--color-accent)",
+              boxShadow: "0 0 3px rgba(201, 168, 76, 0.2)",
             }}
             aria-hidden="true"
           >
@@ -272,7 +211,7 @@ export default function ExperienceTimeline() {
           <div className="space-y-10 md:space-y-14">
             {experience.map((role, idx) => {
               const isLeft = idx % 2 === 0;
-              const accent = highlightAccents[role.highlight] || "var(--color-accent)";
+              const accent = "var(--color-accent)";
               const year = extractStartYear(role.period);
               return (
                 <div
@@ -283,51 +222,23 @@ export default function ExperienceTimeline() {
                 >
                   <div className="hidden md:block md:w-1/2" />
 
-                  <TimelineDot year={year} highlight={role.highlight} />
+                  <TimelineDot year={year} />
 
                   <div className={`md:w-1/2 ${isLeft ? "md:pr-10" : "md:pl-10"}`}>
                     <div
-                      className="glass rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                      className="glass glass-hover rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:-translate-y-1"
                       style={{ backgroundColor: "var(--color-surface)" }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.boxShadow = `var(--neon-shadow-md)`;
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.boxShadow = "";
-                      }}
                     >
                       <div
                         className="absolute left-0 top-0 bottom-0 w-[3px]"
-                        style={{ background: `linear-gradient(to bottom, ${accent}, ${accent}00)` }}
+                        style={{ background: `linear-gradient(to bottom, ${accent}, transparent)` }}
                         aria-hidden="true"
                       />
                       <div
-                        className="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-700"
+                        className="timeline-sweep absolute inset-0 pointer-events-none opacity-0"
                         style={{
                           background:
-                            "linear-gradient(105deg, transparent 40%, rgba(0, 240, 255, 0.06) 45%, transparent 50%)",
-                          transform: "translateX(-100%)",
-                        }}
-                        ref={(el) => {
-                          if (!el) return;
-                          const card = el.closest(".timeline-card");
-                          if (!card) return;
-                          ScrollTrigger.create({
-                            trigger: card as HTMLElement,
-                            start: "top 80%",
-                            once: true,
-                            onEnter: () => {
-                              gsap.to(el, {
-                                x: "200%",
-                                duration: 1.2,
-                                ease: "power2.inOut",
-                                onComplete: () => {
-                                  el.style.opacity = "0";
-                                },
-                              });
-                              el.style.opacity = "1";
-                            },
-                          });
+                            "linear-gradient(105deg, transparent 40%, rgba(201, 168, 76, 0.04) 45%, transparent 50%)",
                         }}
                         aria-hidden="true"
                       />
@@ -341,11 +252,11 @@ export default function ExperienceTimeline() {
                           </p>
                           {role.highlight && (
                             <span
-                              className="flex items-center gap-1 text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded flex-shrink-0"
+                              className="timeline-highlight flex items-center gap-1 text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded flex-shrink-0"
                               style={{
-                                backgroundColor: `${accent}1a`,
-                                color: accent,
-                                border: `1px solid ${accent}40`,
+                                backgroundColor: "var(--color-accent-muted)",
+                                color: "var(--color-accent)",
+                                border: "1px solid var(--color-glass-border)",
                               }}
                             >
                               {highlightIcons[role.highlight]}
@@ -354,19 +265,19 @@ export default function ExperienceTimeline() {
                           )}
                         </div>
                         <p
-                          className="text-base font-bold mt-0.5"
+                          className="timeline-title text-base font-semibold mt-0.5"
                           style={{ color: "var(--color-text-primary)" }}
                         >
                           {role.title}
                         </p>
                         <p
-                          className="text-xs font-mono mt-1"
+                          className="timeline-period text-xs font-mono mt-1"
                           style={{ color: "var(--color-text-muted)" }}
                         >
                           {role.period}
                         </p>
                         <p
-                          className="text-sm mt-2"
+                          className="timeline-subtitle text-sm mt-2"
                           style={{ color: "var(--color-text-secondary)" }}
                         >
                           {role.subtitle}
@@ -375,7 +286,7 @@ export default function ExperienceTimeline() {
                           {role.details.map((detail, di) => (
                             <li
                               key={di}
-                              className="flex items-start gap-2 text-xs"
+                              className="timeline-detail flex items-start gap-2 text-xs"
                               style={{ color: "var(--color-text-muted)" }}
                             >
                               <span
@@ -390,7 +301,7 @@ export default function ExperienceTimeline() {
                           {role.tags.map((tag, ti) => (
                             <span
                               key={ti}
-                              className="text-[10px] font-mono px-2 py-0.5 rounded-full"
+                              className="timeline-tag text-[10px] font-mono px-2 py-0.5 rounded-full"
                               style={{
                                 backgroundColor: "var(--color-accent-muted)",
                                 color: "var(--color-accent)",
