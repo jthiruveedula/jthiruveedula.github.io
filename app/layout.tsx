@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
+import AmbientBackground from "@/components/ui/AmbientBackground"; // UPGRADE: global particle-network backdrop
 
 const SITE_URL = "https://jthiruveedula.github.io";
 
@@ -109,6 +110,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to main content
         </a>
+        <AmbientBackground /> {/* UPGRADE: site-wide ambient depth layer */}
         {children}
       </body>
     </html>
