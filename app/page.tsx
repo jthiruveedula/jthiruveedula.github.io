@@ -15,6 +15,7 @@ import FilmGrainOverlay from "@/components/ui/FilmGrainOverlay";
 import AmbientOrbs from "@/components/ui/AmbientOrbs";
 import ThreeBackground from "@/components/ui/ThreeBackground";
 import SoundControl from "@/components/ui/SoundControl";
+import PageReveal from "@/components/ui/PageReveal";
 import Hero from "@/components/sections/Hero";
 import ProfessionalMetrics from "@/components/sections/ProfessionalMetrics";
 import About from "@/components/sections/About";
@@ -71,7 +72,10 @@ function SmoothScroll() {
         <SoundControl />
         <Navbar />
         <main id="main" tabIndex={-1} className="relative z-10 min-h-screen pt-14">
-          <Hero />
+          {/* UPGRADE: PageReveal wrapper drives Hero entrance sequence */}
+          <PageReveal>
+            <Hero />
+          </PageReveal>
           <ArchPipeline />
           <ProfessionalMetrics />
           <About />
