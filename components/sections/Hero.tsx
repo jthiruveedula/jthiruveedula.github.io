@@ -289,9 +289,9 @@ export default function Hero() {
               className="hero-sub mt-6 max-w-xl text-base md:text-lg font-light leading-relaxed"
               style={{ color: "var(--color-text-secondary)", opacity: 0 }}
             >
-              Private LLM applications, enterprise-grade RAG pipelines, and
-              governed agentic workflows on GCP — built for teams that need
-              performance, security, and operational clarity.
+              {/* UPGRADE: brand-reinforcing sub-copy — replaces placeholder */}
+              Currently building: agentic trading systems, RAG copilots on
+              GCP, and AI-first data platforms.
             </p>
 
             <div className="hero-tags flex flex-wrap gap-2 mt-4" style={{ opacity: 0 }}>
