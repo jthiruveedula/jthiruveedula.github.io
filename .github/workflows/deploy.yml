@@ -76,6 +76,8 @@ jobs:
       - name: Tag release
         if: steps.deploy_vars.outputs.deploy_mode == 'deploy'
         run: |
+          git config --global user.email "deploy-bot@jthiruveedula.github.io"
+          git config --global user.name "Deploy Bot"
           SHORT_SHA="${GITHUB_SHA::7}"
           if git rev-parse "v0.0.0-$SHORT_SHA" >/dev/null 2>&1; then
             echo "Tag v0.0.0-$SHORT_SHA already exists, skipping"
