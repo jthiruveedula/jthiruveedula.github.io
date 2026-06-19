@@ -1,11 +1,12 @@
-// app/api/resume/route.ts
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
+
+export const dynamic = "force-static";
+export const revalidate = 3600;
 
 export async function GET() {
   try {
-    const fs = require("fs");
-    const path = require("path");
-    
     const resumePath = path.join(process.cwd(), "Downloads", "Employment", "resume.html");
     
     if (!fs.existsSync(resumePath)) {
@@ -262,7 +263,7 @@ ${resumeContent}
         "Cache-Control": "public, max-age=3600, immutable",
       },
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to load resume" },
       { status: 500 }

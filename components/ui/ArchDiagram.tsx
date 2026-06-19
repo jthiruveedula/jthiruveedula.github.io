@@ -19,13 +19,13 @@ interface ArchNode {
 }
 
 const NODES: ArchNode[] = [
-  { id: "sources", label: "Sources", icon: "layers", x: 70, y: 70, desc: "APIs · Streams · Batch · Drive" },
-  { id: "ingest", label: "Ingest", icon: "download", x: 210, y: 70, desc: "Pub/Sub · Dataflow" },
-  { id: "bigquery", label: "BigQuery", icon: "database", x: 380, y: 165, r: 24, desc: "Warehouse · Analytics Engine", central: true },
-  { id: "transform", label: "Transform", icon: "cycle", x: 210, y: 260, desc: "Airflow · Dataform · SQL" },
-  { id: "vertex", label: "Vertex AI", icon: "brain", x: 550, y: 165, desc: "Embeddings · Training" },
-  { id: "gemini", label: "Gemini", icon: "sparkles", x: 550, y: 70, desc: "LLM Inference · RAG" },
-  { id: "insights", label: "Insights", icon: "chart", x: 690, y: 220, desc: "Dashboards · Agents · APIs" },
+  { id: "sources", label: "Sources", icon: "layers", x: 80, y: 80, desc: "APIs · Streams · Batch · Drive" },
+  { id: "ingest", label: "Ingest", icon: "download", x: 230, y: 80, desc: "Pub/Sub · Dataflow" },
+  { id: "bigquery", label: "BigQuery", icon: "database", x: 400, y: 170, r: 28, desc: "Warehouse · Analytics Engine", central: true },
+  { id: "transform", label: "Transform", icon: "cycle", x: 230, y: 270, desc: "Airflow · Dataform · SQL" },
+  { id: "vertex", label: "Vertex AI", icon: "brain", x: 570, y: 170, desc: "Embeddings · Training" },
+  { id: "gemini", label: "Gemini", icon: "sparkles", x: 570, y: 80, desc: "LLM Inference · RAG" },
+  { id: "insights", label: "Insights", icon: "chart", x: 710, y: 230, desc: "Dashboards · Agents · APIs" },
 ];
 
 const CONNECTIONS = [
@@ -51,13 +51,13 @@ const ICON_PATHS: Record<string, React.ReactNode> = {
 };
 
 function buildPath(from: ArchNode, to: ArchNode): string {
-  const fx = from.x + (from.r || 16);
+  const fx = from.x + (from.r || 18);
   const fy = from.y;
-  const tx = to.x - (to.r || 16);
+  const tx = to.x - (to.r || 18);
   const ty = to.y;
   const dx = tx - fx;
   const midX = fx + dx * 0.5;
-  const curveOffset = Math.abs(ty - fy) > 40 ? (ty > fy ? 30 : -30) : 0;
+  const curveOffset = Math.abs(ty - fy) > 40 ? (ty > fy ? 35 : -35) : 0;
   return `M${fx},${fy} C${midX},${fy + curveOffset} ${midX},${ty - curveOffset} ${tx},${ty}`;
 }
 
@@ -101,13 +101,8 @@ export default function ArchDiagram() {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
-          start: "top center",
-          end: "+=400",
-          scrub: 0.8,
-          pin: section,
-          pinSpacing: true,
-          anticipatePin: 1,
-          onLeaveBack: () => tl.progress(0),
+          start: "top 80%",
+          once: true,
         },
       });
 
@@ -115,7 +110,7 @@ export default function ArchDiagram() {
         const node = svg.querySelector<SVGGElement>(`.arch-node[data-id="${id}"]`);
         const ripple = svg.querySelector<SVGCircleElement>(`.node-ripple[data-id="${id}"]`);
         if (!node) return;
-        const delay = i * 0.28;
+        const delay = i * 0.15;
 
         tl.to(node, {
           opacity: 1,
@@ -130,13 +125,13 @@ export default function ArchDiagram() {
             opacity: 0.5,
             duration: DUR.micro,
             ease: EASE.soft,
-          }, delay + 0.2)
+          }, delay + 0.15)
           .to(ripple, {
             scale: 4,
             opacity: 0,
             duration: DUR.base,
             ease: "power2.in",
-          }, delay + 0.5);
+          }, delay + 0.35);
         }
 
         if (i < CONNECTIONS.length) {
@@ -146,12 +141,12 @@ export default function ArchDiagram() {
           if (drawPath) {
             tl.to(drawPath, {
               strokeDashoffset: 0,
-              duration: DUR.pin,
+              duration: 0.6,
               ease: "power2.inOut",
-            }, delay + 0.4);
+            }, delay + 0.2);
           }
           if (cometPath) {
-            tl.to(cometPath, { opacity: 1, duration: DUR.micro }, delay + 0.9);
+            tl.to(cometPath, { opacity: 1, duration: DUR.micro }, delay + 0.5);
           }
         }
       });
@@ -159,6 +154,7 @@ export default function ArchDiagram() {
       tl.call(() => {
         if (ambientStarted) return;
         ambientStarted = true;
+
         cometPaths.forEach((path, i) => {
           const len = path.getTotalLength();
           const segmentLen = 28;
@@ -204,7 +200,7 @@ export default function ArchDiagram() {
             localTweens.push(tween);
           }
         }
-      }, [], "+=0.5");
+      }, [], "+=0.3");
     }, section);
 
     return () => {
@@ -228,9 +224,9 @@ export default function ArchDiagram() {
     <div ref={sectionRef} className="arch-diagram relative">
       <svg
         ref={svgRef}
-        viewBox="0 0 760 320"
+        viewBox="0 0 780 320"
         className="w-full h-auto"
-        style={{ filter: "drop-shadow(0 0 6px rgba(201,168,76,0.15))" }}
+        style={{ filter: "drop-shadow(0 0 8px rgba(201,168,76,0.12))" }}
       >
         <defs>
           <filter id="arch-glow" x="-50%" y="-50%" width="200%" height="200%">
@@ -253,11 +249,11 @@ export default function ArchDiagram() {
             <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0.15" />
           </linearGradient>
           <radialGradient id="node-fill" cx="50%" cy="40%" r="60%">
-            <stop offset="0%" stopColor="rgba(201,168,76,0.08)" />
+            <stop offset="0%" stopColor="rgba(201,168,76,0.1)" />
             <stop offset="100%" stopColor="var(--color-surface)" />
           </radialGradient>
           <radialGradient id="node-fill-central" cx="50%" cy="40%" r="60%">
-            <stop offset="0%" stopColor="rgba(201,168,76,0.15)" />
+            <stop offset="0%" stopColor="rgba(201,168,76,0.2)" />
             <stop offset="100%" stopColor="var(--color-surface)" />
           </radialGradient>
         </defs>
@@ -276,8 +272,8 @@ export default function ArchDiagram() {
                 d={d}
                 fill="none"
                 stroke="var(--color-accent)"
-                strokeWidth={isHighlighted ? 1.5 : 1}
-                strokeOpacity={isDimmed ? 0.1 : 0.2}
+                strokeWidth={isHighlighted ? 1.5 : 0.8}
+                strokeOpacity={isDimmed ? 0.08 : 0.18}
                 strokeDasharray={dashed ? "4 6" : undefined}
                 strokeLinecap="round"
               />
@@ -287,8 +283,8 @@ export default function ArchDiagram() {
                 d={d}
                 fill="none"
                 stroke="url(#conn-gradient)"
-                strokeWidth={isHighlighted ? 2 : 1.5}
-                strokeOpacity={isDimmed ? 0.1 : 0.6}
+                strokeWidth={isHighlighted ? 2.5 : 1.5}
+                strokeOpacity={isDimmed ? 0.08 : 0.6}
                 strokeLinecap="round"
                 filter="url(#arch-glow)"
               />
@@ -298,7 +294,7 @@ export default function ArchDiagram() {
                 d={d}
                 fill="none"
                 stroke="var(--color-accent)"
-                strokeWidth={2.5}
+                strokeWidth={3}
                 strokeLinecap="round"
                 filter="url(#arch-glow-strong)"
                 opacity={0}
@@ -308,7 +304,7 @@ export default function ArchDiagram() {
         })}
 
         {NODES.map((node) => {
-          const r = node.r || 17;
+          const r = node.r || 18;
           const isHovered = hovered === node.id;
           const isDimmed = hovered && !isHovered && !highlightedConns?.has(`${node.id}`) && !CONNECTIONS.some(c => (c.from === node.id || c.to === node.id) && highlightedConns?.has(`${c.from}-${c.to}`));
           return (
@@ -319,7 +315,7 @@ export default function ArchDiagram() {
               style={{ transformBox: "fill-box", transformOrigin: "center", cursor: "pointer" }}
               onMouseEnter={() => setHovered(node.id)}
               onMouseLeave={() => setHovered(null)}
-              opacity={isDimmed ? 0.3 : 1}
+              opacity={isDimmed ? 0.25 : 1}
             >
               <circle
                 className="node-ripple"
@@ -336,11 +332,21 @@ export default function ArchDiagram() {
               <circle
                 cx={node.x}
                 cy={node.y}
-                r={r + 5}
+                r={r + 6}
                 fill="none"
                 stroke="var(--color-accent)"
                 strokeWidth={0.4}
-                opacity={isHovered ? 0.4 : 0.15}
+                opacity={isHovered ? 0.5 : 0.12}
+                style={{ transition: "opacity 0.3s" }}
+              />
+              <circle
+                cx={node.x}
+                cy={node.y}
+                r={r + 3}
+                fill="none"
+                stroke="var(--color-accent)"
+                strokeWidth={0.3}
+                opacity={isHovered ? 0.3 : 0.08}
                 style={{ transition: "opacity 0.3s" }}
               />
               <circle
@@ -349,38 +355,38 @@ export default function ArchDiagram() {
                 r={r}
                 fill={node.central ? "url(#node-fill-central)" : "url(#node-fill)"}
                 stroke="var(--color-accent)"
-                strokeWidth={node.central ? 1.8 : 1.2}
+                strokeWidth={node.central ? 2 : 1.2}
                 filter={isHovered ? "url(#arch-glow-strong)" : "url(#arch-glow)"}
                 style={{ transition: "stroke-width 0.3s" }}
               />
               <g
-                transform={`translate(${node.x - 8}, ${node.y - 8})`}
+                transform={`translate(${node.x - 9}, ${node.y - 9})`}
                 style={{ color: "var(--color-accent)" }}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   {ICON_PATHS[node.icon]}
                 </svg>
               </g>
               <text
                 x={node.x}
-                y={node.y + r + 12}
+                y={node.y + r + 14}
                 textAnchor="middle"
                 fill="var(--color-text-secondary)"
-                fontSize="6.5"
+                fontSize="7"
                 fontWeight="500"
                 fontFamily="var(--font-mono)"
                 letterSpacing="0.3"
-                opacity={isHovered ? 1 : 0.7}
+                opacity={isHovered ? 1 : 0.65}
                 style={{ transition: "opacity 0.3s" }}
               >
                 {node.label}
               </text>
               {isHovered && (
                 <foreignObject
-                  x={node.x - 55}
-                  y={node.y - r - 28}
-                  width="110"
-                  height="20"
+                  x={node.x - 60}
+                  y={node.y - r - 32}
+                  width="120"
+                  height="22"
                   style={{ pointerEvents: "none" }}
                 >
                   <div
@@ -388,7 +394,7 @@ export default function ArchDiagram() {
                       background: "var(--color-surface)",
                       border: "1px solid var(--color-accent)",
                       borderRadius: "4px",
-                      padding: "2px 8px",
+                      padding: "3px 10px",
                       fontSize: "8px",
                       textAlign: "center",
                       color: "var(--color-accent)",
@@ -396,7 +402,7 @@ export default function ArchDiagram() {
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
-                      boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
                     }}
                   >
                     {node.desc}

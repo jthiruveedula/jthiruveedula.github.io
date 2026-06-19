@@ -305,7 +305,6 @@ export default function SkillConstellation({ activeCategory, onCategoryClick, cl
           cat.skills.map((skill, si) => {
             const sp = skillPos(ci, si, cat.skills.length);
             const r = 2.5 + (skill.level / 100) * 4;
-            const showLabel = hoveredSkill === skill.name || catActive(ci);
             return (
               <g
                 key={skill.name}
@@ -326,18 +325,30 @@ export default function SkillConstellation({ activeCategory, onCategoryClick, cl
                   onMouseLeave={() => setHoveredSkill(null)}
                   style={{ transition: "fill-opacity 0.3s" }}
                 />
-                {showLabel && (
-                  <text
-                    x={sp.x}
-                    y={sp.y - r - 5}
-                    textAnchor="middle"
-                    fontSize={8}
-                    fontFamily="var(--font-mono)"
-                    fill="var(--color-accent)"
-                    opacity={0.8}
-                  >
-                    {skill.name}
-                  </text>
+                {hoveredSkill === skill.name && (
+                  <g>
+                    <rect
+                      x={sp.x - (skill.name.length * 2.4) - 4}
+                      y={sp.y - r - 18}
+                      width={skill.name.length * 4.8 + 8}
+                      height={14}
+                      rx={3}
+                      fill="var(--color-surface)"
+                      stroke="var(--color-accent)"
+                      strokeWidth={0.5}
+                      strokeOpacity={0.4}
+                    />
+                    <text
+                      x={sp.x}
+                      y={sp.y - r - 9}
+                      textAnchor="middle"
+                      fontSize={8}
+                      fontFamily="var(--font-mono)"
+                      fill="var(--color-accent)"
+                    >
+                      {skill.name}
+                    </text>
+                  </g>
                 )}
               </g>
             );
