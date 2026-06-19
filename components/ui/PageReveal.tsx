@@ -9,6 +9,7 @@
 
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 import gsap from "gsap";
+import { EASE, prefersReducedMotion } from "@/lib/motion";
 
 const REVEAL_DONE_FLAG = "__pageRevealDone" as const;
 const REVEAL_COMPLETE_EVENT = "pagereveal:complete" as const;
@@ -48,7 +49,7 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
     const root = wrapperRef.current;
     if (!root) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = prefersReducedMotion();
 
     const eyebrow = root.querySelector<HTMLElement>(".hero-eyebrow-line");
     const sub = root.querySelector<HTMLElement>(".hero-sub");
@@ -77,7 +78,7 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
-        defaults: { ease: "power2.out" },
+        defaults: { ease: EASE.soft },
         onComplete: () => markRevealDone(),
       });
       tlRef.current = tl;
@@ -85,7 +86,7 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
       // Stage 1 — grid + vignette fade in (0.4s)
       tl.add("grid", 0).to(
         grid,
-        { autoAlpha: 0.55, duration: 0.4, ease: "power2.out" },
+        { autoAlpha: 0.55, duration: 0.4, ease: EASE.soft },
         "grid"
       );
 
@@ -94,7 +95,7 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
       //  resolves around 1.27s after mount; we sync the rest to that.)
       tl.to(
         eyebrow,
-        { scaleX: 1, duration: 0.55, ease: "power2.out" },
+        { scaleX: 1, duration: 0.55, ease: EASE.soft },
         "grid+=0.2"
       );
 
@@ -118,7 +119,7 @@ export default function PageReveal({ children, className = "" }: PageRevealProps
           scale: 1,
           duration: 0.4,
           stagger: 0.08,
-          ease: "back.out(1.2)",
+          ease: EASE.snap,
         },
         "settle+=0.25"
       );

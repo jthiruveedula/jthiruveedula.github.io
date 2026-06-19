@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { archPipeline } from "@/lib/data";
 import { createHover3DTilt } from "@/lib/gsap-helpers";
+import { EASE, DUR, prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -50,31 +51,34 @@ function PipelineConnector({
   const packetRefs = useRef<Array<SVGCircleElement | null>>([]);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      const path = pathRef.current;
-      if (path) {
-        path.style.strokeDasharray = "none";
-        path.style.strokeDashoffset = "0";
-      }
+    const path = pathRef.current;
+    const svg = svgRef.current;
+    if (!path || !svg) return;
+
+    if (prefersReducedMotion()) {
+      path.style.strokeDasharray = "none";
+      path.style.strokeDashoffset = "0";
       packetRefs.current.forEach((p) => { if (p) p.setAttribute("opacity", "0"); });
       return;
     }
 
-    const path = pathRef.current;
-    const svg = svgRef.current;
-    if (!path || !svg) return;
     const len = path.getTotalLength();
     path.style.strokeDasharray = `${len}`;
     path.style.strokeDashoffset = `${len}`;
     packetRefs.current.forEach((p) => { if (p) p.setAttribute("opacity", "0"); });
 
+    let drawn = false;
+    const tweens: gsap.core.Tween[] = [];
+
     const onDraw = (e: Event) => {
       const detail = (e as CustomEvent<{ index: number }>).detail;
       if (detail?.index !== index) return;
+      if (drawn) return;
+      drawn = true;
       gsap.to(path, {
         strokeDashoffset: 0,
-        duration: 0.45,
-        ease: "power2.out",
+        duration: DUR.base,
+        ease: EASE.soft,
       });
       packetRefs.current.forEach((p, pi) => {
         if (!p) return;
@@ -92,18 +96,27 @@ function PipelineConnector({
             p.setAttribute("cy", String(pt.y));
           },
         });
-        (svg as unknown as { __tweens?: gsap.core.Tween[] }).__tweens = (
-          svg as unknown as { __tweens?: gsap.core.Tween[] }
-        ).__tweens || [];
-        (svg as unknown as { __tweens: gsap.core.Tween[] }).__tweens.push(tween);
+        tweens.push(tween);
       });
     };
+
+    const onReset = (e: Event) => {
+      const detail = (e as CustomEvent<{ index: number }>).detail;
+      if (detail?.index !== index) return;
+      drawn = false;
+      tweens.forEach((t) => t.kill());
+      tweens.length = 0;
+      gsap.set(path, { strokeDashoffset: len });
+      packetRefs.current.forEach((p) => { if (p) gsap.set(p, { opacity: 0 }); });
+    };
+
     window.addEventListener("pipeline:connector-draw", onDraw as EventListener);
+    window.addEventListener("pipeline:connector-reset", onReset as EventListener);
 
     return () => {
       window.removeEventListener("pipeline:connector-draw", onDraw as EventListener);
-      const tweens = (svg as unknown as { __tweens?: gsap.core.Tween[] }).__tweens;
-      tweens?.forEach((t) => t.kill());
+      window.removeEventListener("pipeline:connector-reset", onReset as EventListener);
+      tweens.forEach((t) => t.kill());
     };
   }, [index]);
 
@@ -171,7 +184,7 @@ function StepCard({
   useEffect(() => {
     const el = cardRef.current;
     if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
     const cleanup = createHover3DTilt(el, { scale: 1.03, maxTilt: 3 });
     return () => { cleanup(); };
   }, []);
@@ -272,17 +285,11 @@ export default function ArchPipeline() {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
-    if (typeof window === "undefined") return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const localTweens: gsap.core.Tween[] = [];
-
-    if (reduced) {
+    if (prefersReducedMotion()) {
       gsap.set(".pipeline-card", { opacity: 1, scale: 1, clearProps: "filter" });
-      window.dispatchEvent(new CustomEvent("pipeline:connector-draw", { detail: { index: 0 } }));
-      window.dispatchEvent(new CustomEvent("pipeline:connector-draw", { detail: { index: 1 } }));
-      window.dispatchEvent(new CustomEvent("pipeline:connector-draw", { detail: { index: 2 } }));
-      window.dispatchEvent(new CustomEvent("pipeline:connector-draw", { detail: { index: 3 } }));
+      for (let i = 0; i < 4; i++) {
+        window.dispatchEvent(new CustomEvent("pipeline:connector-draw", { detail: { index: i } }));
+      }
       return;
     }
 
@@ -290,54 +297,43 @@ export default function ArchPipeline() {
 
     const ctx = gsap.context(() => {
       const cards = gsap.utils.toArray<HTMLElement>(".pipeline-card");
-      const masterTl = gsap.timeline({
+      const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: "top 70%",
-          once: true,
+          end: "+=500",
+          scrub: 1,
+          pin: section,
+          pinSpacing: true,
+          anticipatePin: 1,
+          onLeaveBack: () => {
+            tl.progress(0);
+            for (let i = 0; i < cards.length - 1; i++) {
+              window.dispatchEvent(new CustomEvent("pipeline:connector-reset", { detail: { index: i } }));
+            }
+          },
         },
       });
 
       cards.forEach((card, i) => {
-        masterTl.to(
-          card,
-          {
-            opacity: 1,
-            scale: 1,
-            filter: "blur(0px)",
-            duration: 0.45,
-            ease: "power2.out",
-            onStart: () => {
-              gsap.fromTo(
-                card,
-                { boxShadow: "0 0 0 0 color-mix(in srgb, var(--color-accent) 0%, transparent)" },
-                {
-                  boxShadow: "0 0 24px 0 color-mix(in srgb, var(--color-accent) 45%, transparent)",
-                  duration: 0.6,
-                  yoyo: true,
-                  repeat: 1,
-                  ease: "power2.out",
-                }
-              );
-            },
-          },
-          i * 0.4
-        );
+        const pos = i;
+        tl.to(card, {
+          opacity: 1,
+          scale: 1,
+          filter: "blur(0px)",
+          boxShadow: "0 0 16px rgba(201, 168, 76, 0.12)",
+          duration: 0.5,
+          ease: EASE.soft,
+        }, pos);
         if (i < cards.length - 1) {
-          masterTl.call(() => {
-            window.dispatchEvent(
-              new CustomEvent("pipeline:connector-draw", { detail: { index: i } })
-            );
-          }, [], i * 0.4 + 0.3);
+          tl.call(() => {
+            window.dispatchEvent(new CustomEvent("pipeline:connector-draw", { detail: { index: i } }));
+          }, [], pos + 0.35);
         }
       });
     }, section);
 
-    return () => {
-      ctx.revert();
-      localTweens.forEach((t) => t.kill());
-      localTweens.length = 0;
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
@@ -352,10 +348,10 @@ export default function ArchPipeline() {
         <div className="mb-16 max-w-3xl mx-auto text-center">
           <p className="section-eyebrow">Architecture Pipeline</p>
           <h2 className="text-xl md:text-2xl font-semibold tracking-tight" style={{ color: "var(--color-text-primary)" }}>
-            From Raw Data to <span style={{ color: "var(--color-accent)" }}>/</span> Production Intelligence
+            From raw data to <span style={{ color: "var(--color-accent)" }}>production intelligence</span>
           </h2>
           <p className="mt-2 text-sm font-light" style={{ color: "var(--color-text-secondary)" }}>
-            Five-stage pipeline from ingestion to production serving with enterprise governance.
+            Five stages. Governed end-to-end.
           </p>
         </div>
 

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { siteConfig } from "@/lib/data";
+import { EASE, prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,14 +35,14 @@ export default function Contact() {
   };
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
     const ctx = gsap.context(() => {
       gsap.from(".contact-form > *", {
         opacity: 0,
         y: 20,
         stagger: 0.08,
         duration: 0.6,
-        ease: "power3.out",
+        ease: EASE.cinematic,
         scrollTrigger: {
           trigger: "#contact",
           start: "top 75%",
@@ -53,7 +54,7 @@ export default function Contact() {
         y: 20,
         stagger: 0.1,
         duration: 0.6,
-        ease: "power3.out",
+        ease: EASE.cinematic,
         scrollTrigger: {
           trigger: "#contact",
           start: "top 75%",
@@ -78,7 +79,7 @@ export default function Contact() {
         <div className="grid md:grid-cols-2 gap-12">
           <div>
             {submitted ? (
-              <div className="rounded-2xl border p-8 text-center animate-in fade-in duration-300" style={{ borderColor: "var(--color-accent)", backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)" }}>
+              <div className="rounded-2xl border p-8 text-center" style={{ borderColor: "var(--color-accent)", backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)" }}>
                 <svg className="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--color-accent)", filter: "drop-shadow(0 0 8px var(--color-accent))" }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>

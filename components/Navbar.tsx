@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useScrollSection } from "@/hooks/useScrollSection";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { EASE } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,28 +17,21 @@ const navLinks = [
 ];
 
 const sectionIds = navLinks.map((l) => l.href.slice(1));
-
-const TOP_EDGE_PX = 48;
-const HIDE_BAR_THRESHOLD = 80;
-const HIDE_IDENTITY_THRESHOLD = 200;
-const TRANSITION = "transform 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 280ms ease, background-color 200ms ease, box-shadow 200ms ease";
+const NAME_EXPAND_THRESHOLD = 120;
+const TRANSITION = "height 300ms cubic-bezier(0.22, 1, 0.36, 1), background-color 200ms ease, box-shadow 200ms ease";
 
 export default function Navbar() {
   const active = useScrollSection(sectionIds);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
-  const [scrollDirection, setScrollDirection] = useState<"up" | "down">("up");
-  const [isNearTopEdge, setIsNearTopEdge] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
   const navRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLSpanElement>(null);
+  const nameWrapRef = useRef<HTMLSpanElement>(null);
   const navItemsRef = useRef<HTMLDivElement>(null);
-  const identityRef = useRef<HTMLDivElement>(null);
-  const nameRevealRef = useRef<HTMLSpanElement>(null);
-  const barRef = useRef<HTMLDivElement>(null);
-  const wasVisibleRef = useRef(true);
+  const dividerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -51,9 +45,7 @@ export default function Navbar() {
   useEffect(() => {
     if (!mobileOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setMobileOpen(false);
-      }
+      if (e.key === "Escape") setMobileOpen(false);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -69,121 +61,91 @@ export default function Navbar() {
 
   useEffect(() => {
     let frame = 0;
-    let lastY = window.scrollY;
-
     const tick = () => {
       frame = 0;
-      const y = window.scrollY;
-      const dir: "up" | "down" = y > lastY ? "down" : y < lastY ? "up" : scrollDirection;
-      lastY = y;
-      if (y !== scrollY) setScrollY(y);
-      if (dir !== scrollDirection) setScrollDirection(dir);
+      setScrollY(window.scrollY);
     };
-
     const onScroll = () => {
       if (frame) return;
       frame = requestAnimationFrame(tick);
     };
-
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [scrollY, scrollDirection]);
-
-  useEffect(() => {
-    let frame = 0;
-    let lastY = -1;
-    const tick = () => {
-      frame = 0;
-      if (lastY === -1) return;
-      setIsNearTopEdge(lastY <= TOP_EDGE_PX);
-    };
-    const onMove = (e: PointerEvent) => {
-      lastY = e.clientY;
-      if (frame) return;
-      frame = requestAnimationFrame(tick);
-    };
-    window.addEventListener("pointermove", onMove, { passive: true });
-    return () => {
-      window.removeEventListener("pointermove", onMove);
-      if (frame) cancelAnimationFrame(frame);
-    };
   }, []);
-
-  const isBarVisible = scrollY <= HIDE_BAR_THRESHOLD || scrollDirection === "up" || isNearTopEdge || mobileOpen;
-  const isIdentityVisible = scrollY <= HIDE_IDENTITY_THRESHOLD;
-  const isCompact = scrollY > HIDE_BAR_THRESHOLD;
-  const barParallaxY = Math.min(scrollY * 0.015, 3);
-  const identityParallaxY = Math.min(scrollY * 0.05, 8);
-
-  useEffect(() => {
-    if (reducedMotion) return;
-    if (wasVisibleRef.current === isBarVisible) return;
-    wasVisibleRef.current = isBarVisible;
-    if (!isBarVisible) return;
-    const tween = gsap.fromTo(
-      barRef.current,
-      { boxShadow: "0 0 0 0 color-mix(in srgb, var(--color-accent) 0%, transparent)" },
-      {
-        boxShadow: "0 0 18px 0 color-mix(in srgb, var(--color-accent) 45%, transparent)",
-        duration: 0.5,
-        ease: "power2.out",
-        yoyo: true,
-        repeat: 1,
-      }
-    );
-    return () => { tween.kill(); };
-  }, [isBarVisible, reducedMotion]);
 
   useEffect(() => {
     const nav = navRef.current;
     if (!nav) return;
-
-    const intensity = Math.max(75, 98 - scrollY / 15);
-    const glowOpacity = Math.max(0.08, 0.35 - scrollY / 500);
+    const intensity = Math.max(80, 96 - scrollY / 12);
+    const glowOpacity = Math.max(0.06, 0.3 - scrollY / 600);
     nav.style.backgroundColor = `color-mix(in srgb, var(--color-bg) ${intensity}%, transparent)`;
     nav.style.boxShadow = hovered
-      ? `0 1px 0 color-mix(in srgb, var(--color-accent) ${Math.min(glowOpacity * 2.2, 0.85) * 100}%, transparent), 0 0 ${14 + glowOpacity * 28}px color-mix(in srgb, var(--color-accent) ${Math.min(glowOpacity * 1.8, 0.7) * 100}%, transparent), var(--shadow-soft-sm)`
-      : `0 1px 0 color-mix(in srgb, var(--color-accent) ${glowOpacity * 100}%, transparent), 0 0 ${10 + glowOpacity * 20}px color-mix(in srgb, var(--color-accent) ${glowOpacity * 60}%, transparent)`;
+      ? `0 1px 0 color-mix(in srgb, var(--color-accent) ${Math.min(glowOpacity * 2.2, 0.8) * 100}%, transparent), 0 0 ${14 + glowOpacity * 28}px color-mix(in srgb, var(--color-accent) ${Math.min(glowOpacity * 1.8, 0.6) * 100}%, transparent), var(--shadow-soft-sm)`
+      : `0 1px 0 color-mix(in srgb, var(--color-accent) ${glowOpacity * 100}%, transparent), 0 0 ${8 + glowOpacity * 16}px color-mix(in srgb, var(--color-accent) ${glowOpacity * 50}%, transparent)`;
   }, [scrollY, hovered]);
 
+  const isNameExpanded = scrollY <= NAME_EXPAND_THRESHOLD;
+  const isCompact = scrollY > NAME_EXPAND_THRESHOLD;
+
   useEffect(() => {
-    const el = nameRevealRef.current;
-    if (!el) return;
     if (reducedMotion) {
-      gsap.set(el, { width: "auto" });
+      if (nameWrapRef.current) gsap.set(nameWrapRef.current, { width: "auto", opacity: 1 });
       return;
     }
     const ctx = gsap.context(() => {
-      gsap.set(el, { width: "auto" });
+      gsap.from(".nav-item-btn", {
+        y: -16,
+        opacity: 0,
+        stagger: 0.06,
+        duration: 0.5,
+        ease: EASE.cinematic,
+        delay: 0.3,
+      });
+      const logoTl = gsap.timeline({ delay: 0.15 });
+      logoTl.from(logoRef.current, { opacity: 0, y: -8, duration: 0.4, ease: EASE.soft });
+      logoTl.from(dividerRef.current, { scaleY: 0, opacity: 0, duration: 0.4, ease: EASE.soft }, "-=0.2");
+      logoTl.from(nameWrapRef.current, { width: 0, opacity: 0, duration: 0.7, ease: EASE.cinematic }, "-=0.25");
     });
     return () => ctx.revert();
   }, [reducedMotion]);
 
   useEffect(() => {
-    if (!navItemsRef.current) return;
-    const ctx = gsap.context(() => {
-      gsap.from(".nav-item-btn", {
-        y: -20,
-        opacity: 0,
-        stagger: 0.05,
-        duration: 0.5,
-        ease: "power3.out",
-        delay: 0.2,
-      });
-    }, navItemsRef);
-    return () => ctx.revert();
-  }, []);
+    if (reducedMotion) return;
+    const el = nameWrapRef.current;
+    if (!el) return;
+    const tween = gsap.to(el, {
+      width: isNameExpanded ? "auto" : 0,
+      opacity: isNameExpanded ? 1 : 0,
+      duration: 0.5,
+      ease: EASE.cinematic,
+      overwrite: true,
+    });
+    return () => { tween.kill(); };
+  }, [isNameExpanded, reducedMotion]);
 
   useEffect(() => {
-    if (!logoRef.current) return;
     if (reducedMotion) return;
+    if (!logoRef.current) return;
     const tl = gsap.to(logoRef.current, {
-      textShadow: "0 0 12px var(--color-accent), 0 0 24px var(--color-accent), 0 0 36px var(--color-accent), 0 0 48px var(--color-accent)",
-      duration: 2,
+      textShadow: "0 0 10px var(--color-accent), 0 0 20px var(--color-accent), 0 0 30px var(--color-accent)",
+      duration: 2.5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+    return () => { tl.kill(); };
+  }, [reducedMotion]);
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    if (!dividerRef.current) return;
+    const tl = gsap.to(dividerRef.current, {
+      opacity: 0.3,
+      duration: 1.8,
       repeat: -1,
       yoyo: true,
       ease: "sine.inOut",
@@ -197,13 +159,6 @@ export default function Navbar() {
     el?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const navStyle: React.CSSProperties = {
-    transform: isBarVisible ? `translateY(${barParallaxY}px)` : "translateY(-110%)",
-    opacity: isBarVisible ? 1 : 0,
-    pointerEvents: isBarVisible ? "auto" : "none",
-    transition: reducedMotion ? "none" : TRANSITION,
-  };
-
   return (
     <>
       <nav
@@ -212,47 +167,64 @@ export default function Navbar() {
         onMouseLeave={() => setHovered(false)}
         className="fixed top-0 left-0 right-0 z-50 border-b backdrop-blur-xl"
         style={{
-          ...navStyle,
           borderColor: "var(--color-glass-border)",
-          backgroundColor: "color-mix(in srgb, var(--color-bg) 80%, transparent)",
-          boxShadow: "0 1px 0 color-mix(in srgb, var(--color-accent) 35%, transparent), var(--shadow-soft-sm)",
+          backgroundColor: "color-mix(in srgb, var(--color-bg) 85%, transparent)",
+          boxShadow: "0 1px 0 color-mix(in srgb, var(--color-accent) 30%, transparent), var(--shadow-soft-sm)",
+          transition: reducedMotion ? "none" : TRANSITION,
         }}
         aria-label="Primary"
       >
-        <div
-          ref={barRef}
-          className="container mx-auto px-4 md:px-6"
-        >
+        <div className="container mx-auto px-4 md:px-6">
           <div
             className="flex items-center justify-between"
-            style={{ height: isCompact ? 40 : 56, transition: reducedMotion ? "none" : "height 240ms cubic-bezier(0.22, 1, 0.36, 1)" }}
+            style={{ height: isCompact ? 44 : 60, transition: reducedMotion ? "none" : "height 300ms cubic-bezier(0.22, 1, 0.36, 1)" }}
           >
             <a
               href="#hero"
               onClick={(e) => { e.preventDefault(); handleNavClick("#hero"); }}
-              className="flex items-center gap-2 group"
+              className="flex items-center gap-0 group"
               aria-label="Home"
             >
               <span
                 ref={logoRef}
-                className="font-mono text-base font-bold transition-colors flex items-center text-[color:var(--color-accent)] hover:text-[color:var(--color-accent-hover)]"
+                className="font-mono text-base font-bold flex items-center text-[color:var(--color-accent)] hover:text-[color:var(--color-accent-hover)] transition-colors"
                 style={{
-                  textShadow: "0 0 7px var(--color-accent), 0 0 10px var(--color-accent), 0 0 21px var(--color-accent)",
+                  textShadow: "0 0 6px var(--color-accent), 0 0 12px var(--color-accent)",
                 }}
               >
-                <span>JT</span>
-                <span className="inline-block w-[2px] h-[1em] ml-1 align-text-bottom animate-pulse" style={{ backgroundColor: "var(--color-accent)" }} />
-                <span
-                  ref={nameRevealRef}
-                  className="inline-block overflow-hidden align-middle whitespace-nowrap"
-                  style={{ width: 0, verticalAlign: "middle" }}
-                >
+                <span className="relative">
+                  JT
                   <span
-                    className="inline-block pl-2 font-mono text-base font-bold"
-                    style={{ color: "var(--color-accent)", textShadow: "0 0 7px var(--color-accent), 0 0 10px var(--color-accent)" }}
-                  >
-                    <span style={{ opacity: 0.6 }}>Jagadeesh</span>
-                    <span className="text-[var(--color-accent-secondary)]" style={{ color: "var(--color-accent-secondary)" }}> Thiruveedula</span>
+                    className="absolute -bottom-0.5 left-0 right-0 h-px opacity-30"
+                    style={{ background: "linear-gradient(90deg, transparent, var(--color-accent), transparent)" }}
+                  />
+                </span>
+                <span
+                  ref={dividerRef}
+                  className="inline-block w-[2px] h-[1.1em] mx-1.5 rounded-full"
+                  style={{
+                    backgroundColor: "var(--color-accent)",
+                    boxShadow: "0 0 4px var(--color-accent)",
+                    transformOrigin: "center",
+                    opacity: 0.6,
+                  }}
+                />
+                <span
+                  ref={nameWrapRef}
+                  className="inline-block overflow-hidden whitespace-nowrap align-middle"
+                  style={{ width: isNameExpanded ? "auto" : 0, opacity: isNameExpanded ? 1 : 0, verticalAlign: "middle" }}
+                >
+                  <span className="inline-block pr-1 font-mono text-sm font-semibold relative">
+                    <span style={{ color: "var(--color-text-primary)", opacity: 0.85 }}>Jagadeesh</span>
+                    <span style={{ color: "var(--color-accent-secondary)" }}> Thiruveedula</span>
+                    <span
+                      className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none"
+                      style={{
+                        background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%)",
+                        backgroundSize: "200% 100%",
+                        animation: reducedMotion ? "none" : "navShimmer 4s ease-in-out infinite",
+                      }}
+                    />
                   </span>
                 </span>
               </span>
@@ -263,13 +235,16 @@ export default function Navbar() {
                 <button
                   key={link.href}
                   onClick={() => handleNavClick(link.href)}
-                  className={`nav-item-btn relative px-3 py-1.5 text-xs font-semibold rounded-md transition-colors duration-200 hover:[text-shadow:0_0_10px_var(--color-accent),0_0_20px_var(--color-accent),0_0_30px_var(--color-accent)] ${active === link.href.slice(1) ? "text-[color:var(--color-accent)] [text-shadow:0_0_8px_var(--color-accent)]" : "text-[color:var(--color-text-secondary)] [text-shadow:none] hover:text-[color:var(--color-text-primary)]"}`}
-                  onMouseEnter={(e) => { gsap.to(e.currentTarget, { scale: 1.05, duration: 0.2, ease: "power2.out" }); }}
-                  onMouseLeave={(e) => { gsap.to(e.currentTarget, { scale: 1, duration: 0.2, ease: "power2.out" }); }}
+                  className={`nav-item-btn relative px-3 py-1.5 text-xs font-semibold rounded-md transition-colors duration-200 hover:[text-shadow:0_0_8px_var(--color-accent),0_0_16px_var(--color-accent)] ${active === link.href.slice(1) ? "text-[color:var(--color-accent)] [text-shadow:0_0_6px_var(--color-accent)]" : "text-[color:var(--color-text-secondary)] [text-shadow:none] hover:text-[color:var(--color-text-primary)]"}`}
+                  onMouseEnter={(e) => { if (!reducedMotion) gsap.to(e.currentTarget, { scale: 1.05, duration: 0.2, ease: EASE.soft }); }}
+                  onMouseLeave={(e) => { if (!reducedMotion) gsap.to(e.currentTarget, { scale: 1, duration: 0.2, ease: EASE.soft }); }}
                 >
                   {link.label}
                   {active === link.href.slice(1) && (
-                    <span className="absolute bottom-0 left-3 right-3 h-px" style={{ backgroundColor: "var(--color-accent)" }} />
+                    <span
+                      className="absolute bottom-0 left-3 right-3 h-px"
+                      style={{ backgroundColor: "var(--color-accent)", boxShadow: "0 0 4px var(--color-accent)" }}
+                    />
                   )}
                 </button>
               ))}
@@ -277,7 +252,7 @@ export default function Navbar() {
                 href="https://www.linkedin.com/in/jagadeesh-thiruveedula/"
                 target="_blank"
                 rel="noopener"
-                className="nav-item-btn ml-3 px-3.5 py-1.5 rounded-full border text-[11px] font-mono font-semibold transition-all duration-200 border-[color:var(--color-glass-border-hover)] hover:border-[color:var(--color-accent)] hover:bg-[color:var(--color-accent-muted)]"
+                className="nav-item-btn ml-3 px-3.5 py-1.5 rounded-full border text-[11px] font-mono font-semibold transition-all duration-200 border-[color:var(--color-glass-border)] hover:border-[color:var(--color-accent)] hover:bg-[color:var(--color-accent-muted)]"
                 style={{ color: "var(--color-accent)" }}
               >
                 LinkedIn ↗
@@ -297,71 +272,34 @@ export default function Navbar() {
         </div>
 
         <div
-          className="nav-underline absolute left-0 right-0 pointer-events-none"
+          className="absolute left-0 right-0 pointer-events-none"
           style={{
             bottom: 0,
             height: 1,
-            background: "linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--color-accent) 65%, transparent) 50%, transparent 100%)",
+            background: "linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--color-accent) 60%, transparent) 50%, transparent 100%)",
             boxShadow: hovered
-              ? "0 0 10px color-mix(in srgb, var(--color-accent) 70%, transparent), 0 0 18px color-mix(in srgb, var(--color-accent) 35%, transparent)"
-              : "0 0 6px color-mix(in srgb, var(--color-accent) 35%, transparent)",
-            opacity: hovered ? 1 : 0.7,
+              ? "0 0 8px color-mix(in srgb, var(--color-accent) 60%, transparent), 0 0 16px color-mix(in srgb, var(--color-accent) 30%, transparent)"
+              : "0 0 4px color-mix(in srgb, var(--color-accent) 30%, transparent)",
+            opacity: hovered ? 1 : 0.6,
             transition: reducedMotion ? "none" : "opacity 240ms ease, box-shadow 240ms ease",
           }}
         />
 
         <div
-          className="nav-light-bleed absolute left-0 right-0 pointer-events-none"
+          className="absolute left-0 right-0 pointer-events-none"
           style={{
             top: "100%",
-            height: 24,
-            background: "linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 12%, transparent) 0%, transparent 100%)",
-            opacity: isBarVisible ? 1 : 0,
+            height: 20,
+            background: "linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 10%, transparent) 0%, transparent 100%)",
+            opacity: 1,
             transition: reducedMotion ? "none" : "opacity 320ms ease",
           }}
         />
-
-        <div
-          ref={identityRef}
-          className="overflow-hidden border-t pointer-events-none"
-          style={{
-            borderColor: "var(--color-glass-border)",
-            maxHeight: isIdentityVisible ? 40 : 0,
-            opacity: isIdentityVisible ? 1 : 0,
-            transform: `translateY(-${identityParallaxY}px)`,
-            transition: reducedMotion ? "none" : "max-height 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease, transform 200ms ease",
-          }}
-          aria-hidden={!isIdentityVisible}
-        >
-          <div className="container mx-auto px-4 md:px-6 py-2 flex items-center justify-center gap-3">
-            <span
-              className="font-mono text-[11px] md:text-xs font-semibold tracking-tight whitespace-nowrap"
-              style={{
-                color: "var(--color-text-primary)",
-                textShadow: "0 0 8px var(--color-accent-muted)",
-                opacity: isCompact ? 0.6 : 1,
-                transition: reducedMotion ? "none" : "opacity 240ms ease",
-              }}
-            >
-              Jagadeesh Thiruveedula
-            </span>
-            <span
-              className="hidden sm:inline-block w-1 h-1 rounded-full"
-              style={{ backgroundColor: "var(--color-accent)", boxShadow: "0 0 6px var(--color-accent)" }}
-            />
-            <span
-              className="font-mono text-[9px] md:text-[10px] tracking-[0.28em] uppercase whitespace-nowrap"
-              style={{ color: "var(--color-accent)" }}
-            >
-              Data Architect
-            </span>
-          </div>
-        </div>
       </nav>
 
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-50 backdrop-blur-2xl md:hidden"
+          className="fixed inset-0 z-[60] backdrop-blur-2xl md:hidden"
           style={{ backgroundColor: "color-mix(in srgb, var(--color-bg) 95%, transparent)" }}
           onClick={(e) => { if (e.target === e.currentTarget) setMobileOpen(false); }}
         >
@@ -399,6 +337,13 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
+      <style jsx>{`
+        @keyframes navShimmer {
+          0%, 100% { background-position: 200% 0; }
+          50% { background-position: -200% 0; }
+        }
+      `}</style>
     </>
   );
 }

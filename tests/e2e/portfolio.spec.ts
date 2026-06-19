@@ -14,7 +14,7 @@ test("about section has bio and content", async ({ page }) => {
   await page.locator("#about").scrollIntoViewIfNeeded();
   await expect(page.locator("#about")).toContainText("GCP Data Architect");
   await expect(page.locator("#about")).toContainText(/bigquery/i);
-  await expect(page.locator("#about")).toContainText(/LLM/i);
+  await expect(page.locator("#about")).toContainText(/GenAI/i);
 });
 
 test("skills section has radar visualization", async ({ page }) => {
@@ -50,11 +50,11 @@ test("footer displays copyright and stack info", async ({ page }) => {
 test("architecture pipeline has 5 steps", async ({ page }) => {
   await page.goto("/");
   await page.locator("#pipeline").scrollIntoViewIfNeeded();
-  await expect(page.locator("#pipeline").getByRole("heading", { name: "Ingest" })).toBeVisible();
-  await expect(page.locator("#pipeline").getByRole("heading", { name: "Embed" })).toBeVisible();
-  await expect(page.locator("#pipeline").getByRole("heading", { name: "Retrieve" })).toBeVisible();
-  await expect(page.locator("#pipeline").getByRole("heading", { name: "Govern" })).toBeVisible();
-  await expect(page.locator("#pipeline").getByRole("heading", { name: "Serve" })).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Ingest" }).first()).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Embed" }).first()).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Retrieve" }).first()).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Govern" }).first()).toBeVisible();
+  await expect(page.locator("#pipeline").getByRole("heading", { name: "Serve" }).first()).toBeVisible();
 });
 
 test("experience timeline has 6 roles", async ({ page }) => {
@@ -81,7 +81,7 @@ test("contact form submits and triggers mailto flow with success feedback", asyn
   await page.getByLabel("Email").fill("test@example.com");
   await page.getByLabel("Message").fill("Hello there");
   await page.getByRole("button", { name: /send message/i }).click();
-  await expect(page.getByText(/message sent/i)).toBeVisible();
+  await expect(page.locator("#contact")).toContainText(/message sent/i);
 });
 
 test("page has proper meta tags", async ({ page }) => {

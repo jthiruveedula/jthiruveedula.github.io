@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { siteConfig } from "@/lib/data";
+import ArchDiagram from "@/components/ui/ArchDiagram";
+import { EASE, DUR, prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,26 +22,6 @@ const STATS: Stat[] = [
   { value: null, prefix: "GCP", suffix: "", label: "Data Platforms" },
   { value: 60, prefix: "", suffix: "%", label: "Latency Cut" },
 ];
-
-const ARCH_NODES = [
-  { id: "sources", label: "Data Sources", x: 50, y: 30 },
-  { id: "ingestion", label: "Ingestion", x: 160, y: 30 },
-  { id: "bigquery", label: "BigQuery", x: 270, y: 30 },
-  { id: "transform", label: "Transform", x: 160, y: 90 },
-  { id: "aiml", label: "AI / ML", x: 270, y: 90 },
-  { id: "insights", label: "Insights", x: 380, y: 60 },
-];
-
-const CONNECTIONS = [
-  { from: "sources", to: "ingestion" },
-  { from: "ingestion", to: "bigquery" },
-  { from: "bigquery", to: "transform" },
-  { from: "transform", to: "aiml" },
-  { from: "aiml", to: "insights" },
-  { from: "bigquery", to: "insights" },
-];
-
-const REVEAL_ORDER = ["sources", "ingestion", "bigquery", "transform", "aiml", "insights"];
 
 const SCRAMBLE_CHARS = "!<>-_\\/[]{}—=+*^?#ABCDEFGHIJKMNOPQRSTUVWXYZ0123456789";
 
@@ -72,17 +54,14 @@ function scrambleTo(el: HTMLElement, final: string, duration = 0.6): void {
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
   const numRefs = useRef<Array<HTMLDivElement | null>>([]);
   const labelRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const connRefs = useRef<Array<SVGPathElement | null>>([]);
-  const packetRefs = useRef<Array<SVGCircleElement | null>>([]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const section = sectionRef.current;
     if (!section) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = prefersReducedMotion();
 
     if (reduced) {
       STATS.forEach((stat, i) => {
@@ -96,19 +75,8 @@ export default function About() {
         const labelEl = labelRefs.current[i];
         if (labelEl) labelEl.textContent = stat.label;
       });
-      connRefs.current.forEach((p) => {
-        if (p) {
-          p.style.strokeDasharray = "none";
-          p.style.strokeDashoffset = "0";
-        }
-      });
-      packetRefs.current.forEach((p) => {
-        if (p) p.setAttribute("opacity", "0");
-      });
       return;
     }
-
-    const localTweens: gsap.core.Tween[] = [];
 
     gsap.set(".about-eyebrow", { opacity: 0, y: 20 });
     gsap.set(".bio-char", { opacity: 0 });
@@ -123,12 +91,12 @@ export default function About() {
         },
       });
 
-      masterTl.fromTo(".about-eyebrow", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0);
+      masterTl.fromTo(".about-eyebrow", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: DUR.base, ease: EASE.soft }, 0);
       masterTl.fromTo(".bio-char", { opacity: 0 }, { opacity: 1, duration: 0.04, stagger: 0.008, ease: "none" }, 0.1);
-      masterTl.fromTo(".bg-flow-line", { opacity: 0, x: -60 }, { opacity: 1, x: 0, stagger: 0.06, duration: 1, ease: "power2.out" }, 0.2);
+      masterTl.fromTo(".bg-flow-line", { opacity: 0, x: -60 }, { opacity: 1, x: 0, stagger: 0.06, duration: DUR.hero, ease: EASE.soft }, 0.2);
 
       masterTl.add("cards", 0.3);
-      masterTl.fromTo(".about-stat", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", stagger: 0.1 }, "cards");
+      masterTl.fromTo(".about-stat", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: DUR.base, ease: EASE.soft, stagger: 0.1 }, "cards");
 
       masterTl.add("countup", "cards+=0.3");
       STATS.forEach((stat, i) => {
@@ -143,8 +111,8 @@ export default function About() {
         const obj = { v: 0 };
         masterTl.to(obj, {
           v: target,
-          duration: 1.1,
-          ease: "power2.out",
+          duration: DUR.hero,
+          ease: EASE.soft,
           onUpdate: () => {
             numEl.textContent = `${stat.prefix}${Math.floor(obj.v)}${stat.suffix}`;
           },
@@ -154,99 +122,11 @@ export default function About() {
           },
         }, "countup");
       });
-
-      masterTl.add("conns", "countup+=0.2");
-      connRefs.current.forEach((p) => {
-        if (!p) return;
-        const len = p.getTotalLength();
-        p.style.strokeDasharray = `${len}`;
-        p.style.strokeDashoffset = `${len}`;
-      });
-      masterTl.to(".arch-conn", {
-        strokeDashoffset: 0,
-        duration: 1.2,
-        stagger: 0.12,
-        ease: "power2.inOut",
-      }, "conns");
-
-      masterTl.add("nodes", "conns+=0.4");
-      REVEAL_ORDER.forEach((id, i) => {
-        const node = section.querySelector<SVGGElement>(`.arch-node[data-id="${id}"]`);
-        if (!node) return;
-        masterTl.to(node, {
-          scale: 1.12,
-          duration: 0.3,
-          ease: "power2.out",
-        }, `nodes+=${i * 0.16}`);
-        masterTl.to(node, {
-          scale: 1,
-          duration: 0.4,
-          ease: "power2.in",
-        }, `nodes+=${i * 0.16 + 0.3}`);
-      });
-
-      masterTl.call(() => {
-        packetRefs.current.forEach((p) => {
-          if (p) p.setAttribute("opacity", "0.7");
-        });
-        connRefs.current.forEach((path, i) => {
-          const packet = packetRefs.current[i];
-          if (!path || !packet) return;
-          const len = path.getTotalLength();
-          const obj = { t: 0 };
-          const tween = gsap.to(obj, {
-            t: 1,
-            duration: 2.8 + (i * 0.35),
-            repeat: -1,
-            ease: "none",
-            delay: i * 0.4,
-            onUpdate: () => {
-              const pt = path.getPointAtLength(obj.t * len);
-              packet.setAttribute("cx", String(pt.x));
-              packet.setAttribute("cy", String(pt.y));
-            },
-          });
-          localTweens.push(tween);
-        });
-      }, [], "nodes+=0.9");
-
-      masterTl.call(() => {
-        const insights = section.querySelector<SVGGElement>('.arch-node[data-id="insights"]');
-        if (!insights) return;
-        const tween = gsap.to(insights, {
-          scale: 1.04,
-          duration: 2.8,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-        });
-        localTweens.push(tween);
-      }, [], "nodes+=1.4");
     }, section);
 
     return () => {
       ctx.revert();
-      localTweens.forEach((t) => t.kill());
-      localTweens.length = 0;
     };
-  }, []);
-
-  useEffect(() => {
-    const listener = (e: MouseEvent) => {
-      if (!svgRef.current) return;
-      const tooltips = svgRef.current.querySelectorAll(".node-tooltip");
-      tooltips.forEach((tt) => {
-        const node = tt.closest("g");
-        if (!node) return;
-        const nRect = node.getBoundingClientRect();
-        const cx = nRect.left + nRect.width / 2;
-        const cy = nRect.top + nRect.height / 2;
-        const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
-        (tt as SVGElement).style.opacity = dist < 50 ? "1" : "0";
-      });
-    };
-    window.addEventListener("mousemove", listener);
-    return () => window.removeEventListener("mousemove", listener);
   }, []);
 
   const buildCharSpans = (text: string) =>
@@ -351,152 +231,9 @@ export default function About() {
         </div>
 
         <div className="arch-diagram mt-14 max-w-4xl mx-auto">
-          <svg
-            ref={svgRef}
-            viewBox="0 0 430 120"
-            className="w-full h-auto"
-            style={{ filter: "drop-shadow(0 0 4px rgba(201, 168, 76, 0.3))" }}
-          >
-            {CONNECTIONS.map(({ from, to }, i) => {
-              const fn = ARCH_NODES.find((n) => n.id === from)!;
-              const tn = ARCH_NODES.find((n) => n.id === to)!;
-              const midX = (fn.x + tn.x) / 2;
-              const midY = (fn.y + tn.y) / 2;
-              const d =
-                from === "bigquery" && to === "insights"
-                  ? `M${fn.x + 20},${fn.y + 20} Q${midX},${midY + 10} ${tn.x},${tn.y - 10}`
-                  : `M${fn.x + 20},${fn.y + 20} Q${midX},${midY - 20} ${tn.x},${tn.y - 10}`;
-              return (
-                <path
-                  key={`${from}-${to}`}
-                  ref={(el) => { connRefs.current[i] = el; }}
-                  className="arch-conn"
-                  d={d}
-                  fill="none"
-                  stroke="var(--color-accent)"
-                  strokeWidth="1"
-                  opacity="0.5"
-                  strokeLinecap="round"
-                />
-              );
-            })}
-
-            {CONNECTIONS.map(({ from, to }, i) => (
-              <circle
-                key={`packet-${from}-${to}`}
-                ref={(el) => { packetRefs.current[i] = el; }}
-                className="arch-packet"
-                r="2.2"
-                fill="var(--color-accent)"
-                opacity="0"
-                filter="url(#nodeGlow)"
-                aria-hidden="true"
-              />
-            ))}
-            {ARCH_NODES.map((node) => (
-              <g
-                key={node.id}
-                className="arch-node"
-                data-id={node.id}
-                style={{ transformBox: "fill-box", transformOrigin: "center" }}
-              >
-                <circle
-                  cx={node.x}
-                  cy={node.y}
-                  r="14"
-                  fill="var(--color-surface)"
-                  stroke="var(--color-accent)"
-                  strokeWidth="1.2"
-                  style={{ filter: "url(#nodeGlow)" }}
-                />
-                <circle
-                  cx={node.x}
-                  cy={node.y}
-                  r="18"
-                  fill="none"
-                  stroke="var(--color-accent)"
-                  strokeWidth="0.5"
-                  opacity="0.3"
-                  style={{
-                    transformOrigin: `${node.x}px ${node.y}px`,
-                    animation: "nodePulse 2.5s ease-in-out infinite",
-                  }}
-                />
-                <text
-                  x={node.x}
-                  y={node.y + 30}
-                  textAnchor="middle"
-                  fill="var(--color-accent)"
-                  fontSize="5.5"
-                  fontWeight="600"
-                  fontFamily="monospace"
-                  letterSpacing="0.5"
-                >
-                  {node.label}
-                </text>
-                <foreignObject
-                  className="node-tooltip"
-                  x={node.x - 36}
-                  y={node.y + 34}
-                  width="72"
-                  height="18"
-                  style={{ opacity: 0, transition: "opacity 0.2s", pointerEvents: "none" }}
-                >
-                  <div
-                    style={{
-                      background: "var(--color-surface)",
-                      border: "1px solid var(--color-accent)",
-                      borderRadius: "4px",
-                      padding: "1px 6px",
-                      fontSize: "9px",
-                      textAlign: "center",
-                      color: "var(--color-accent)",
-                      fontFamily: "monospace",
-                    }}
-                  >
-                    {node.label}
-                  </div>
-                </foreignObject>
-              </g>
-            ))}
-            <defs>
-              <filter id="nodeGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-          </svg>
+          <ArchDiagram />
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes nodePulse {
-          0%, 100% { r: 18; opacity: 0.2; }
-          50% { r: 24; opacity: 0.08; }
-        }
-        @keyframes pulseGlow {
-          0%, 100% {
-            box-shadow: 0 0 20px var(--color-accent), 0 0 60px var(--color-accent),
-                        inset 0 0 20px var(--color-accent-muted);
-          }
-          50% {
-            box-shadow: 0 0 35px var(--color-accent), 0 0 80px var(--color-accent),
-                        inset 0 0 30px var(--color-accent-muted);
-          }
-        }
-        .animate-pulse-glow {
-          animation: pulseGlow 3s ease-in-out infinite;
-        }
-        .arch-node circle:first-of-type {
-          transition: r 0.25s ease;
-        }
-        .arch-node:hover circle:first-of-type {
-          r: 17;
-        }
-      `}</style>
     </section>
   );
 }

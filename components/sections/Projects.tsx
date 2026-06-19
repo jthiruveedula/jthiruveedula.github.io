@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { projects, filterCategories } from "@/lib/data";
 import { useCursorGlow } from "@/hooks/useCursorGlow";
+import { EASE, DUR, STAGGER, prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -28,15 +29,15 @@ function ProjectCard({ project }: { project: typeof projects[0]; index?: number 
       y: -6,
       scale: 1.01,
       boxShadow: "var(--shadow-soft-md)",
-      duration: 0.35,
-      ease: "power2.out",
+      duration: DUR.base,
+      ease: EASE.soft,
     });
     if (metricRef.current) {
       gsap.to(metricRef.current, {
         scale: 1.08,
         textShadow: "0 0 8px rgba(201, 168, 76, 0.3)",
-        duration: 0.3,
-        ease: "power2.out",
+        duration: DUR.micro,
+        ease: EASE.soft,
       });
     }
   };
@@ -47,15 +48,15 @@ function ProjectCard({ project }: { project: typeof projects[0]; index?: number 
       y: 0,
       scale: 1,
       boxShadow: "none",
-      duration: 0.35,
-      ease: "power2.out",
+      duration: DUR.base,
+      ease: EASE.soft,
     });
     if (metricRef.current) {
       gsap.to(metricRef.current, {
         scale: 1,
         textShadow: "0 0 6px rgba(201, 168, 76, 0.25)",
-        duration: 0.3,
-        ease: "power2.out",
+        duration: DUR.micro,
+        ease: EASE.soft,
       });
     }
   };
@@ -207,19 +208,19 @@ export default function Projects() {
 
   useEffect(() => {
     const cards = gridRef.current?.querySelectorAll(".project-card");
-    if (!cards || cards.length === 0 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!cards || cards.length === 0 || prefersReducedMotion()) return;
     const ctx = gsap.context(() => {
       gsap.fromTo(
         cards,
-        { opacity: 0, y: 50, scale: 0.92, filter: "blur(8px)" },
+        { opacity: 0, y: 80, scale: 0.92, filter: "blur(12px)" },
         {
           opacity: 1,
           y: 0,
           scale: 1,
           filter: "blur(0px)",
-          stagger: 0.1,
-          duration: 0.7,
-          ease: "back.out(1.4)",
+          stagger: STAGGER.cards,
+          duration: DUR.hero,
+          ease: EASE.glide,
           scrollTrigger: {
             trigger: "#projects",
             start: "top 80%",
@@ -232,13 +233,13 @@ export default function Projects() {
   }, [filtered.length]);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
     const cards = gridRef.current?.querySelectorAll(".project-card");
     if (!cards || cards.length === 0) return;
     gsap.fromTo(
       cards,
       { opacity: 0, y: 30, scale: 0.94, filter: "blur(6px)" },
-      { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.5, stagger: 0.05, ease: "power3.out" }
+      { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: DUR.base, stagger: STAGGER.tight, ease: EASE.cinematic }
     );
   }, [activeFilter]);
 
@@ -260,7 +261,7 @@ export default function Projects() {
               Selected projects.
             </h2>
             <p className="mt-2 text-sm font-light" style={{ color: "var(--color-text-secondary)" }}>
-              Production AI and data systems I&apos;ve architected and shipped.
+              Production systems shipped.
             </p>
           </div>
           <div className="font-mono text-[10px] tracking-wider uppercase" style={{ color: "var(--color-text-muted)" }}>

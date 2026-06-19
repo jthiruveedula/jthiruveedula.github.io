@@ -7,6 +7,8 @@ import SplineContainer from "@/components/ui/SplineContainer";
 import ScrambleText from "@/components/ui/ScrambleText";
 import { isPageRevealDone, onPageRevealComplete } from "@/components/ui/PageReveal";
 import { useMousePosition } from "@/hooks/useMousePosition";
+import { useCursorGlow } from "@/hooks/useCursorGlow";
+import { EASE, DUR, STAGGER, prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -22,10 +24,13 @@ export default function Hero() {
   const contentRef = useRef<HTMLDivElement>(null);
   const contentInnerRef = useRef<HTMLDivElement>(null);
   const particlesRef = useRef<HTMLDivElement>(null);
+  const splineRef = useRef<HTMLDivElement>(null);
   const cameraToX = useRef<((v: number) => void) | null>(null);
   const cameraToY = useRef<((v: number) => void) | null>(null);
   const ambientCtxRef = useRef<gsap.Context | null>(null);
   const { normalizedX, normalizedY } = useMousePosition();
+
+  useCursorGlow(contentRef);
 
   const [particleData] = useState<Array<{ id: number; size: number; startX: number; startY: number }>>(() =>
     Array.from({ length: PARTICLE_COUNT }, (_, i) => {
@@ -42,28 +47,26 @@ export default function Hero() {
 
   const startSubTimeline = useCallback(() => {
     if (!isPageRevealDone()) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
-        defaults: { ease: "power3.out" },
+        defaults: { ease: EASE.cinematic },
       });
 
       tl.add("eyebrow-line")
         .fromTo(
           ".hero-eyebrow-line",
           { scaleX: 0, transformOrigin: "left center" },
-          { scaleX: 1, duration: 0.6, ease: "power4.inOut" },
+          { scaleX: 1, duration: DUR.base, ease: "power4.inOut" },
           "eyebrow-line"
         )
         .add("subtitle", "-=0.3")
         .fromTo(".hero-sub", { opacity: 0, y: 20, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.7 }, "subtitle")
-        .add("tags", "-=0.3")
-        .fromTo(".hero-tags", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.05 }, "tags")
         .add("cta", "-=0.2")
-        .fromTo(".hero-cta a", { opacity: 0, y: 12, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.1, ease: "back.out(1.4)" }, "cta")
+        .fromTo(".hero-cta a", { opacity: 0, y: 12, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: DUR.base, stagger: STAGGER.cards, ease: EASE.snap }, "cta")
         .add("scroll", "-=0.1")
-        .fromTo(".scroll-indicator", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5 }, "scroll");
+        .fromTo(".scroll-indicator", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: DUR.base }, "scroll");
 
       tl.call(() => {
         gsap.to(".hero-cta-primary", {
@@ -80,7 +83,7 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
     let microCtx: gsap.Context | null = null;
     const dispose = onPageRevealComplete(() => {
       if (!sectionRef.current) return;
@@ -93,15 +96,6 @@ export default function Hero() {
           ease: "sine.inOut",
           yoyo: true,
           repeat: -1,
-        });
-        gsap.to(".hero-tags > span", {
-          scale: 1.03,
-          duration: 5.5,
-          ease: "sine.inOut",
-          yoyo: true,
-          repeat: -1,
-          stagger: { each: 0.6, from: "random" },
-          transformOrigin: "center center",
         });
       }, sectionRef);
     });
@@ -122,7 +116,7 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
 
     const dispose = onPageRevealComplete(() => {
       const ctx = gsap.context(() => {
@@ -159,21 +153,24 @@ export default function Hero() {
           });
         }
 
-        const container = sectionRef.current?.querySelector(".hero-content");
-        if (container) {
-          gsap.to(container, {
-            y: -50,
-            opacity: 0.4,
-            ease: "none",
-            scrollTrigger: {
-              trigger: "#hero",
-              start: "top top",
-              end: "bottom top",
-              scrub: 1.5,
-              invalidateOnRefresh: true,
-            },
-          });
-        }
+        const pinTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "+=450",
+            scrub: 1,
+            pin: sectionRef.current,
+            pinSpacing: true,
+            anticipatePin: 1,
+            onLeaveBack: () => pinTl.progress(0),
+          },
+        });
+
+        pinTl
+          .to(".scroll-indicator", { opacity: 0, duration: 0.15 }, 0)
+          .to(contentRef.current, { y: -90, opacity: 0, ease: "none", duration: 1 }, 0)
+          .to(splineRef.current, { scale: 1.15, opacity: 0.15, ease: "none", duration: 1 }, 0)
+          .to(particlesRef.current, { y: 40, opacity: 0.2, ease: "none", duration: 1 }, 0);
       }, sectionRef);
 
       ambientCtxRef.current = ctx;
@@ -187,16 +184,16 @@ export default function Hero() {
   }, [particleData]);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
     if (!contentRef.current) return;
     if (!cameraToX.current) {
       cameraToX.current = gsap.quickTo(contentRef.current, "rotateY", {
         duration: 0.8,
-        ease: "power2.out",
+        ease: EASE.soft,
       });
       cameraToY.current = gsap.quickTo(contentRef.current, "rotateX", {
         duration: 0.8,
-        ease: "power2.out",
+        ease: EASE.soft,
       });
     }
   }, []);
@@ -214,7 +211,9 @@ export default function Hero() {
       className="relative min-h-svh flex items-center overflow-hidden isolate"
       style={{ backgroundColor: "transparent" }}
     >
-      <SplineContainer className="opacity-40" intensity={20} />
+      <div ref={splineRef} className="absolute inset-0 z-[1]">
+        <SplineContainer className="opacity-40" intensity={20} />
+      </div>
 
       <div
         ref={particlesRef}
@@ -238,7 +237,7 @@ export default function Hero() {
 
       <div
         ref={contentRef}
-        className="container relative z-10 mx-auto px-4 md:px-6 py-24"
+        className="container cursor-glow relative z-10 mx-auto px-4 md:px-6 py-24"
         style={{ perspective: "800px" }}
       >
         <div ref={contentInnerRef} className="hero-content">
@@ -287,30 +286,8 @@ export default function Hero() {
               className="hero-sub mt-6 max-w-xl text-base md:text-lg font-light leading-relaxed"
               style={{ color: "var(--color-text-secondary)", opacity: 0 }}
             >
-              Currently building: agentic trading systems, RAG copilots on
-              GCP, and AI-first data platforms.
+              Enterprise GenAI systems on Google Cloud.
             </p>
-
-            <div className="hero-tags flex flex-wrap gap-2 mt-4" style={{ opacity: 0 }}>
-              {[
-                "GCP-native",
-                "Vertex AI",
-                "Token-efficient",
-                "Governed workflows",
-              ].map((tag) => (
-                <span
-                  key={tag}
-                  className="font-mono text-[10px] px-2.5 py-1 rounded-full"
-                  style={{
-                    background: "var(--color-surface)",
-                    border: "1px solid var(--color-glass-border)",
-                    color: "var(--color-text-muted)",
-                  }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
 
             <div className="hero-cta flex flex-wrap gap-4 mt-8 neon-border rounded-2xl p-1">
               <a

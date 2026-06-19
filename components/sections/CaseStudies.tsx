@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { caseStudies } from "@/lib/data";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
+import { EASE, DUR, STAGGER, prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,7 +13,7 @@ export default function CaseStudies() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
     const ctx = gsap.context(() => {
       const studies = document.querySelectorAll(".case-study");
 
@@ -28,26 +29,32 @@ export default function CaseStudies() {
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: studyEl,
-            start: "top 80%",
+            start: "top 70%",
+            end: "+=350",
+            scrub: 1,
+            pin: studyEl,
+            pinSpacing: true,
+            anticipatePin: 1,
+            onLeaveBack: () => tl.progress(0),
           },
         });
 
-        tl.from(heading, { opacity: 0, x: -30, duration: 0.6, ease: "power3.out" })
-          .from(subtitle, { opacity: 0, x: -20, duration: 0.4, ease: "power3.out" }, "-=0.3")
-          .from(contentSections, { opacity: 0, y: 20, stagger: 0.08, duration: 0.5, ease: "power3.out" }, "-=0.2");
+        tl.fromTo(heading, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: EASE.cinematic })
+          .fromTo(subtitle, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3, ease: EASE.cinematic }, 0.15)
+          .fromTo(contentSections, { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: STAGGER.cards, duration: DUR.base, ease: EASE.cinematic }, 0.3);
 
         if (metrics.length) {
-          tl.from(metrics, {
-            opacity: 0,
-            scale: 0,
-            filter: "blur(8px)",
-            stagger: 0.08,
-            duration: 0.6,
-            ease: "back.out(2)",
-          }, "-=0.1");
+          tl.fromTo(metrics, { opacity: 0, scale: 0, filter: "blur(8px)" }, {
+            opacity: 1,
+            scale: 1,
+            filter: "blur(0px)",
+            stagger: STAGGER.cards,
+            duration: DUR.base,
+            ease: EASE.snap,
+          }, 0.6);
         }
 
-        tl.from(techStack, { opacity: 0, y: 10, duration: 0.4, ease: "power3.out" }, "-=0.2");
+        tl.fromTo(techStack, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: DUR.micro, ease: EASE.soft }, 0.8);
 
         if (accentBar) {
           ScrollTrigger.create({
@@ -72,7 +79,7 @@ export default function CaseStudies() {
           <p className="section-eyebrow" style={{ color: "var(--color-accent)" }}>Case Studies</p>
           <h2 className="text-xl md:text-2xl font-semibold tracking-tight" style={{ color: "var(--color-text-primary)" }}>Deep dives.</h2>
           <p className="mt-2 text-sm font-light" style={{ color: "var(--color-text-secondary)" }}>
-            Architecture decisions, challenges, and measurable outcomes.
+            Architecture decisions. Measurable outcomes.
           </p>
         </div>
 

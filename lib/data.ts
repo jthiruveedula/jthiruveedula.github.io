@@ -62,8 +62,7 @@ export const siteConfig = {
   github: "https://github.com/jthiruveedula",
   linkedin: "https://www.linkedin.com/in/jagadeesh-thiruveedula/",
   bio: [
-    "I design and build enterprise-scale data systems and private LLM applications on Google Cloud — from BigQuery warehouses to production RAG pipelines.",
-    "I work across the full stack: Airflow pipelines, SQL optimization, agentic workflows, prompt engineering, and quantitative trading systems.",
+    "I architect enterprise-scale data systems and production GenAI on Google Cloud — warehouses, RAG pipelines, agentic workflows, and governed AI delivery.",
   ],
 };
 

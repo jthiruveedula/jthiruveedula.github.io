@@ -1,10 +1,11 @@
 import gsap from "gsap";
+import { EASE, DUR } from "@/lib/motion";
 
 export function createHover3DTilt(
   element: HTMLElement,
   options?: { scale?: number; maxTilt?: number; duration?: number }
 ) {
-  const { scale = 1.03, maxTilt = 5, duration = 0.4 } = options || {};
+  const { scale = 1.03, maxTilt = 5, duration = DUR.base } = options || {};
 
   const handleMouseMove = (e: MouseEvent) => {
     const rect = element.getBoundingClientRect();
@@ -16,8 +17,8 @@ export function createHover3DTilt(
       rotationY: x * maxTilt * 2,
       scale,
       transformPerspective: 800,
-      duration: duration,
-      ease: "power2.out",
+      duration,
+      ease: EASE.soft,
       overwrite: "auto",
     });
   };
@@ -28,7 +29,7 @@ export function createHover3DTilt(
       rotationY: 0,
       scale: 1,
       duration: 0.5,
-      ease: "power3.out",
+      ease: EASE.cinematic,
       overwrite: "auto",
     });
   };

@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { experience } from "@/lib/data";
+import { EASE, DUR, STAGGER, prefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -94,73 +95,74 @@ export default function ExperienceTimeline() {
   const timelineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+    const section = sectionRef.current;
+    if (!section) return;
+    if (prefersReducedMotion()) return;
 
     const ctx = gsap.context(() => {
       const line = timelineRef.current;
-      if (line) {
-        gsap.fromTo(
-          line,
-          { scaleY: 0, transformOrigin: "top center" },
-          {
-            scaleY: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: "#experience",
-              start: "top 60%",
-              end: "bottom 40%",
-              scrub: 1,
-              invalidateOnRefresh: true,
-            },
-          }
-        );
-      }
+      const cards = gsap.utils.toArray<HTMLElement>(".timeline-card");
 
-      gsap.from(".timeline-card", {
-        opacity: 0,
-        y: 60,
-        rotationX: -5,
-        transformPerspective: 600,
-        stagger: 0.12,
-        duration: 0.8,
-        ease: "power3.out",
+      cards.forEach((card, i) => {
+        const isLeft = i % 2 === 0;
+        gsap.set(card, { opacity: 0, x: isLeft ? -60 : 60 });
+      });
+
+      const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: "#experience",
-          start: "top 70%",
+          trigger: section,
+          start: "top 55%",
+          end: "bottom 50%",
+          scrub: 1,
           invalidateOnRefresh: true,
+          onLeaveBack: () => tl.progress(0),
         },
       });
 
-      gsap.utils.toArray<HTMLElement>(".timeline-ripple").forEach((el) => {
-        gsap.to(el, {
-          width: 60,
-          height: 60,
-          marginLeft: -29,
-          marginTop: -29,
-          opacity: 0,
-          duration: 1.6,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: el.closest(".timeline-card") as HTMLElement,
-            start: "top 80%",
-          },
-        });
-      });
+      if (line) {
+        tl.fromTo(line, { scaleY: 0, transformOrigin: "top center" }, { scaleY: 1, ease: "none", duration: cards.length }, 0);
+      }
 
-      gsap.utils.toArray<HTMLElement>(".timeline-company").forEach((el) => {
-        const split = new SplitText(el, { type: "chars" });
-        gsap.from(split.chars, {
-          opacity: 0,
-          y: 5,
-          stagger: 0.03,
-          duration: 0.4,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: el.closest(".timeline-card") as HTMLElement,
-            start: "top 80%",
-          },
+      cards.forEach((card, i) => {
+        const pos = i;
+
+        tl.to(card, { opacity: 1, x: 0, duration: 0.5, ease: EASE.cinematic }, pos);
+
+        const companyEl = card.querySelector(".timeline-company");
+        if (companyEl) {
+          const split = new SplitText(companyEl, { type: "chars" });
+          tl.from(split.chars, { opacity: 0, y: 5, stagger: STAGGER.tight, duration: DUR.micro, ease: EASE.soft }, pos + 0.2);
+        }
+
+        const title = card.querySelector(".timeline-title");
+        if (title) tl.from(title, { opacity: 0, y: 10, duration: DUR.base, ease: EASE.soft }, pos + 0.25);
+
+        const period = card.querySelector(".timeline-period");
+        if (period) tl.from(period, { opacity: 0, duration: DUR.micro, ease: EASE.soft }, pos + 0.3);
+
+        const subtitle = card.querySelector(".timeline-subtitle");
+        if (subtitle) tl.from(subtitle, { opacity: 0, y: 10, duration: DUR.base, ease: EASE.soft }, pos + 0.35);
+
+        const details = card.querySelectorAll(".timeline-detail");
+        if (details.length) tl.from(details, { opacity: 0, x: 15, stagger: STAGGER.tight, duration: DUR.micro, ease: EASE.soft }, pos + 0.4);
+
+        const tags = card.querySelectorAll(".timeline-tag");
+        if (tags.length) tl.from(tags, { opacity: 0, scale: 0.8, stagger: STAGGER.tight, duration: DUR.micro, ease: EASE.snap }, pos + 0.5);
+
+        const ripples = card.querySelectorAll(".timeline-ripple");
+        ripples.forEach((ripple, ri) => {
+          tl.to(ripple, { width: 60, height: 60, marginLeft: -29, marginTop: -29, opacity: 0, duration: DUR.base, ease: EASE.cinematic }, pos + 0.1 + ri * 0.1);
         });
+
+        const highlight = card.querySelector(".timeline-highlight");
+        if (highlight) tl.from(highlight, { opacity: 0, scale: 0.5, duration: DUR.micro, ease: EASE.snap }, pos + 0.15);
+
+        const sweep = card.querySelector(".timeline-sweep");
+        if (sweep) {
+          tl.set(sweep, { opacity: 1, x: "-100%" }, pos + 0.1)
+            .to(sweep, { x: "200%", duration: DUR.hero, ease: EASE.soft }, pos + 0.1)
+            .set(sweep, { opacity: 0 }, pos + 0.1 + DUR.hero);
+        }
       });
     }, sectionRef);
 
@@ -183,7 +185,7 @@ export default function ExperienceTimeline() {
             Engineering <span style={{ color: "var(--color-accent)" }}>/</span> the Data Supply Chain
           </h2>
           <p className="text-sm mt-2 max-w-2xl" style={{ color: "var(--color-text-secondary)" }}>
-            From industrial automation to enterprise AI — spanning startups, financial services, publishing, and cloud-scale data platforms.
+            From industrial automation to enterprise AI.
           </p>
         </div>
 
@@ -233,32 +235,10 @@ export default function ExperienceTimeline() {
                         aria-hidden="true"
                       />
                       <div
-                        className="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-700"
+                        className="timeline-sweep absolute inset-0 pointer-events-none opacity-0"
                         style={{
                           background:
                             "linear-gradient(105deg, transparent 40%, rgba(201, 168, 76, 0.04) 45%, transparent 50%)",
-                          transform: "translateX(-100%)",
-                        }}
-                        ref={(el) => {
-                          if (!el) return;
-                          const card = el.closest(".timeline-card");
-                          if (!card) return;
-                          ScrollTrigger.create({
-                            trigger: card as HTMLElement,
-                            start: "top 80%",
-                            once: true,
-                            onEnter: () => {
-                              gsap.to(el, {
-                                x: "200%",
-                                duration: 1.2,
-                                ease: "power2.inOut",
-                                onComplete: () => {
-                                  el.style.opacity = "0";
-                                },
-                              });
-                              el.style.opacity = "1";
-                            },
-                          });
                         }}
                         aria-hidden="true"
                       />
@@ -272,7 +252,7 @@ export default function ExperienceTimeline() {
                           </p>
                           {role.highlight && (
                             <span
-                              className="flex items-center gap-1 text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded flex-shrink-0"
+                              className="timeline-highlight flex items-center gap-1 text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded flex-shrink-0"
                               style={{
                                 backgroundColor: "var(--color-accent-muted)",
                                 color: "var(--color-accent)",
@@ -285,19 +265,19 @@ export default function ExperienceTimeline() {
                           )}
                         </div>
                         <p
-                          className="text-base font-semibold mt-0.5"
+                          className="timeline-title text-base font-semibold mt-0.5"
                           style={{ color: "var(--color-text-primary)" }}
                         >
                           {role.title}
                         </p>
                         <p
-                          className="text-xs font-mono mt-1"
+                          className="timeline-period text-xs font-mono mt-1"
                           style={{ color: "var(--color-text-muted)" }}
                         >
                           {role.period}
                         </p>
                         <p
-                          className="text-sm mt-2"
+                          className="timeline-subtitle text-sm mt-2"
                           style={{ color: "var(--color-text-secondary)" }}
                         >
                           {role.subtitle}
@@ -306,7 +286,7 @@ export default function ExperienceTimeline() {
                           {role.details.map((detail, di) => (
                             <li
                               key={di}
-                              className="flex items-start gap-2 text-xs"
+                              className="timeline-detail flex items-start gap-2 text-xs"
                               style={{ color: "var(--color-text-muted)" }}
                             >
                               <span
@@ -321,7 +301,7 @@ export default function ExperienceTimeline() {
                           {role.tags.map((tag, ti) => (
                             <span
                               key={ti}
-                              className="text-[10px] font-mono px-2 py-0.5 rounded-full"
+                              className="timeline-tag text-[10px] font-mono px-2 py-0.5 rounded-full"
                               style={{
                                 backgroundColor: "var(--color-accent-muted)",
                                 color: "var(--color-accent)",
