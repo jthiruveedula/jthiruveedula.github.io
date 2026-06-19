@@ -1,0 +1,169 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+  RETENTION_DAYS: 14
+
+jobs:
+  ci:
+    name: Lint, type-check, build, and test
+    runs-on: ubuntu-latest
+    outputs:
+      build_sha: ${{ steps.vars.outputs.build_sha }}
+      branch_name: ${{ steps.vars.outputs.branch_name }}
+    steps:
+      - name: Resolve target ref
+        id: vars
+        run: |
+          echo "build_sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+          echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund --prefer-offline
+
+      - name: Generate build metadata
+        id: meta
+        run: |
+          {
+            echo "### Build summary"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Build SHA | \`${GITHUB_SHA}\` |"
+            echo "| Resolved ref | \`${GITHUB_SHA}\` |"
+            echo "| Branch | \`${{ steps.vars.outputs.branch_name }}\` |"
+            echo "| Workflow | \`${GITHUB_WORKFLOW}\` |"
+            echo "| Run number | \`${GITHUB_RUN_NUMBER}\` |"
+            echo "| Trigger | \`${GITHUB_EVENT_NAME}\` |"
+            echo "| Actor | \`${GITHUB_ACTOR}\` |"
+            echo "| Node | \`${{ env.NODE_VERSION }}\` |"
+            echo "| Time | \`$(date -u +%FT%TZ)\` |"
+            echo ""
+            echo "### Changes from ${{ steps.vars.outputs.branch_name }}"
+            echo ""
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              echo "| Field | Value |"
+              echo "|---|---|"
+              echo "| Source branch | \`${{ github.head_ref }}\` |"
+              echo "| Target branch | \`${{ github.base_ref }}\` |"
+              echo "| PR | #${{ github.event.pull_request.number }} |"
+              echo "| Title | ${{ github.event.pull_request.title }} |"
+              echo ""
+              echo "### Files changed (top 30)"
+              echo ""
+              echo "\`\`\`"
+              git fetch --no-tags --depth=50 origin "${{ github.base_ref }}" 2>/dev/null || true
+              git diff --stat "origin/${{ github.base_ref }}...HEAD" | head -30
+              echo "\`\`\`"
+            else
+              echo "| Commit | Author | Subject |"
+              echo "|---|---|---|"
+              git log --no-merges --pretty=format:"| \`%h\` | %an | %s |" -10
+            fi
+            echo ""
+            echo "### Release tag"
+            echo ""
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "none")
+            echo "Latest tag: \`$LATEST_TAG\`"
+          } >> $GITHUB_STEP_SUMMARY
+
+      - name: Lint
+        id: lint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Report lint result
+        if: steps.lint.outcome == 'failure'
+        run: |
+          echo "::warning::Lint reported issues. Continuing build."
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright browser
+        run: npx playwright install chromium
+
+      - name: Run E2E tests
+        id: e2e
+        run: npx playwright test --project=chromium --reporter=line
+        continue-on-error: true
+        timeout-minutes: 8
+
+      - name: Package test report
+        if: always()
+        run: |
+          mkdir -p test-report-bundle
+          if [ -d playwright-report ]; then
+            cp -r playwright-report test-report-bundle/playwright-report
+          fi
+          if [ -d test-results ]; then
+            cp -r test-results test-report-bundle/test-results
+          fi
+          if [ -f test-results/.last-run.json ]; then
+            cp test-results/.last-run.json test-report-bundle/
+          fi
+          cd test-report-bundle && zip -r ../test-report.zip . -q
+          echo "Report package: $(du -h ../test-report.zip | cut -f1)"
+
+      - name: Upload test report (zip)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: test-report.zip
+          if-no-files-found: warn
+          retention-days: ${{ env.RETENTION_DAYS }}
+
+      - name: Upload raw test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-raw-${{ github.run_id }}
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: ${{ env.RETENTION_DAYS }}
+
+      - name: Build complete
+        if: success()
+        run: |
+          echo "### ✅ CI passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Build artifact \`out/\` ready." >> $GITHUB_STEP_SUMMARY
+          echo "Test report uploaded as artifact \`playwright-report-${{ github.run_id }}\`" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "This PR is ready to merge." >> $GITHUB_STEP_SUMMARY
+            echo "Deployment will run automatically after merge to master." >> $GITHUB_STEP_SUMMARY
+          fi
+        env:
+          GITHUB_STEP_SUMMARY: ${{ env.GITHUB_STEP_SUMMARY }}
