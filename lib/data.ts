@@ -69,7 +69,7 @@ export const siteConfig = {
   name: "Jagadeesh Thiruveedula",
   role: "Data Architect & Senior Data Engineer",
   tagline: "Private LLM applications, enterprise-grade RAG pipelines, and governed agentic workflows on GCP",
-  location: "Corinth, Texas (DFW)",
+  location: "Dallas, Texas",
   email: "jagadeesh.thiruveedula@gmail.com",
   github: "https://github.com/jthiruveedula",
   linkedin: "https://www.linkedin.com/in/jagadeesh-thiruveedula/",
