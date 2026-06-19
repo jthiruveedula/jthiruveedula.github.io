@@ -71,7 +71,7 @@ function SmoothScroll() {
         <AmbientOrbs />
         <SoundControl />
         <Navbar />
-        <main id="main" tabIndex={-1} className="relative z-10 min-h-screen pt-14">
+        <main id="main" tabIndex={-1} className="relative z-10 min-h-screen pt-24 md:pt-24">
           {/* UPGRADE: PageReveal wrapper drives Hero entrance sequence */}
           <PageReveal>
             <Hero />
