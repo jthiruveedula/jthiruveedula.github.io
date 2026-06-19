@@ -102,8 +102,8 @@ export default function ArchDiagram() {
         scrollTrigger: {
           trigger: section,
           start: "top center",
-          end: "+=600",
-          scrub: 1,
+          end: "+=400",
+          scrub: 0.8,
           pin: section,
           pinSpacing: true,
           anticipatePin: 1,

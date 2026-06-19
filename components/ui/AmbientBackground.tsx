@@ -102,7 +102,8 @@ export default function AmbientBackground() {
       ctx.lineWidth = 0.5;
       for (let i = 0; i < particles.length; i++) {
         const a = particles[i];
-        for (let j = i + 1; j < particles.length; j++) {
+        const maxConnections = Math.min(3, particles.length - 1);
+        for (let j = i + 1; j < Math.min(i + 1 + maxConnections, particles.length); j++) {
           const b = particles[j];
           const dx = a.x - b.x;
           const dy = a.y - b.y;

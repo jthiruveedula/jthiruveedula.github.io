@@ -13,8 +13,8 @@ export function createHover3DTilt(
     const y = (e.clientY - rect.top) / rect.height - 0.5;
 
     gsap.to(element, {
-      rotationX: -y * maxTilt * 2,
-      rotationY: x * maxTilt * 2,
+      rotationX: -y * maxTilt,
+      rotationY: x * maxTilt,
       scale,
       transformPerspective: 800,
       duration,
@@ -28,7 +28,7 @@ export function createHover3DTilt(
       rotationX: 0,
       rotationY: 0,
       scale: 1,
-      duration: 0.5,
+      duration: 0.3,
       ease: EASE.cinematic,
       overwrite: "auto",
     });
@@ -41,4 +41,42 @@ export function createHover3DTilt(
     element.removeEventListener("mousemove", handleMouseMove);
     element.removeEventListener("mouseleave", handleMouseLeave);
   };
+}
+
+export function batchTransform(
+  element: HTMLElement,
+  properties: Partial<
+    Pick<
+      gsap.TweenVars,
+      | "x"
+      | "y"
+      | "z"
+      | "rotation"
+      | "rotationX"
+      | "rotationY"
+      | "rotationZ"
+      | "scale"
+      | "scaleX"
+      | "scaleY"
+      | "skew"
+      | "skewX"
+      | "skewY"
+      | "opacity"
+    >
+  >,
+  duration?: number
+) {
+  return gsap.to(element, {
+    overwrite: "auto",
+    duration: duration || 0.3,
+    ease: EASE.soft,
+    ...properties,
+  });
+}
+
+export function createSharedTimeline(
+  trigger?: Element | string,
+  defaults?: gsap.TimelineVars
+) {
+  return gsap.timeline(defaults);
 }

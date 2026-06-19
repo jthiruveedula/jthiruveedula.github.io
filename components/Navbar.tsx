@@ -145,7 +145,7 @@ export default function Navbar() {
     if (!dividerRef.current) return;
     const tl = gsap.to(dividerRef.current, {
       opacity: 0.3,
-      duration: 1.8,
+      duration: 2.5,
       repeat: -1,
       yoyo: true,
       ease: "sine.inOut",
