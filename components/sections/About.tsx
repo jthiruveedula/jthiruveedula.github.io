@@ -96,6 +96,7 @@ export default function About() {
 
       masterTl.fromTo(".about-eyebrow", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: DUR.base, ease: EASE.soft }, 0);
 
+
       masterTl.fromTo(".about-heading-underline", { maxWidth: "0%" }, { maxWidth: "100%", duration: 1.0, ease: EASE.soft }, 0.3);
 
       masterTl.fromTo(".about-bio-line", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: DUR.base, ease: EASE.soft, stagger: 0.08 }, 0.4);
