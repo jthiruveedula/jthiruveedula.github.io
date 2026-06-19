@@ -5,7 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplineContainer from "@/components/ui/SplineContainer";
 import ScrambleText from "@/components/ui/ScrambleText";
-import { isPageRevealDone } from "@/components/ui/PageReveal"; // UPGRADE: defer to PageReveal timeline
+import { isPageRevealDone, onPageRevealComplete } from "@/components/ui/PageReveal"; // UPGRADE: defer to PageReveal timeline + subscribe to its completion
 import { useSound } from "@/hooks/useSound";
 import { useMousePosition } from "@/hooks/useMousePosition";
 
@@ -81,6 +81,41 @@ export default function Hero() {
 
     return () => ctx.revert();
   }, [play]);
+
+  // UPGRADE: post-reveal micro-animations — registered only after PageReveal finishes
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return; // UPGRADE: honor reduced motion
+    let microCtx: gsap.Context | null = null;
+    const dispose = onPageRevealComplete(() => { // UPGRADE: hook lives-state motion off the reveal event
+      if (!sectionRef.current) return;
+      microCtx = gsap.context(() => {
+        // UPGRADE: eyebrow line breathing shimmer (low amplitude, long duration)
+        gsap.to(".hero-eyebrow-line", {
+          opacity: 0.65,
+          x: 2,
+          duration: 4.2,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+        });
+        // UPGRADE: tag chips subtle scale breathing, randomized phase
+        gsap.to(".hero-tags > span", {
+          scale: 1.03,
+          duration: 5.5,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+          stagger: { each: 0.6, from: "random" },
+          transformOrigin: "center center",
+        });
+      }, sectionRef);
+    });
+
+    return () => {
+      dispose(); // UPGRADE: remove event subscription
+      microCtx?.revert(); // UPGRADE: kill micro-animations on unmount
+    };
+  }, []);
 
   useEffect(() => {
     const trigger = ScrollTrigger.create({
