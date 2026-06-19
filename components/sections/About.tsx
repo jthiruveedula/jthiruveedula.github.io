@@ -92,7 +92,7 @@ export default function About() {
       });
 
       masterTl.fromTo(".about-eyebrow", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: DUR.base, ease: EASE.soft }, 0);
-      masterTl.fromTo(".bio-char", { opacity: 0 }, { opacity: 1, duration: 0.04, stagger: 0.008, ease: "none" }, 0.1);
+      masterTl.fromTo(".bio-char", { opacity: 0 }, { opacity: 1, duration: 0.04, stagger: 0.04, ease: "none" }, 0.1);
       masterTl.fromTo(".bg-flow-line", { opacity: 0, x: -60 }, { opacity: 1, x: 0, stagger: 0.06, duration: DUR.hero, ease: EASE.soft }, 0.2);
 
       masterTl.add("cards", 0.3);

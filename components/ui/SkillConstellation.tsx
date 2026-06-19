@@ -110,8 +110,8 @@ export default function SkillConstellation({ activeCategory, onCategoryClick, cl
           .from("[data-core]", { scale: 0, transformOrigin: "center", duration: 0.5, ease: EASE.snap }, "-=0.15")
           .from("[data-cat-lines]", { strokeDashoffset: 0, stagger: 0.08, duration: 0.4, ease: EASE.soft }, "-=0.2")
           .from("[data-cat-node]", { scale: 0, transformOrigin: "center", stagger: 0.1, duration: 0.4, ease: EASE.snap }, "-=0.2")
-          .to("[data-skill-line]", { strokeDashoffset: 0, stagger: 0.015, duration: 0.2 }, "-=0.15")
-          .from("[data-skill-node]", { scale: 0, transformOrigin: "center", stagger: 0.012, duration: 0.3, ease: EASE.snap }, "-=0.1")
+          .to("[data-skill-line]", { strokeDashoffset: 0, stagger: 0.02, duration: 0.2 }, "-=0.15")
+          .from("[data-skill-node]", { scale: 0, transformOrigin: "center", stagger: 0.02, duration: 0.3, ease: EASE.snap }, "-=0.1")
           .from("[data-cat-label]", { opacity: 0, stagger: 0.06, duration: 0.3 }, "-=0.2")
           .add(() => {
             gsap.to("[data-cat-node] > circle", {
