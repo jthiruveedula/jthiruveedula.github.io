@@ -5,7 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplineContainer from "@/components/ui/SplineContainer";
 import ScrambleText from "@/components/ui/ScrambleText";
-import { isPageRevealDone } from "@/components/ui/PageReveal"; // UPGRADE: defer to PageReveal timeline
+import { isPageRevealDone, onPageRevealComplete } from "@/components/ui/PageReveal"; // UPGRADE: defer to PageReveal timeline + subscribe to its completion
 import { useSound } from "@/hooks/useSound";
 import { useMousePosition } from "@/hooks/useMousePosition";
 
@@ -25,6 +25,7 @@ export default function Hero() {
   const particlesRef = useRef<HTMLDivElement>(null);
   const cameraToX = useRef<((v: number) => void) | null>(null);
   const cameraToY = useRef<((v: number) => void) | null>(null);
+  const ambientCtxRef = useRef<gsap.Context | null>(null); // UPGRADE: holds the post-reveal ambient motion context
   const { play } = useSound();
   const { normalizedX, normalizedY } = useMousePosition();
 
@@ -82,6 +83,42 @@ export default function Hero() {
     return () => ctx.revert();
   }, [play]);
 
+  // UPGRADE: post-reveal micro-animations — registered only after PageReveal finishes
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return; // UPGRADE: honor reduced motion
+    let microCtx: gsap.Context | null = null;
+    const dispose = onPageRevealComplete(() => { // UPGRADE: hook lives-state motion off the reveal event
+      if (!sectionRef.current) return;
+      microCtx = gsap.context(() => {
+        // UPGRADE: eyebrow line breathing shimmer (low amplitude, long duration)
+        gsap.to(".hero-eyebrow-line", {
+          opacity: 0.7,
+          x: 1,
+          y: 1,
+          duration: 4.2,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+        });
+        // UPGRADE: tag chips subtle scale breathing, randomized phase
+        gsap.to(".hero-tags > span", {
+          scale: 1.03,
+          duration: 5.5,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+          stagger: { each: 0.6, from: "random" },
+          transformOrigin: "center center",
+        });
+      }, sectionRef);
+    });
+
+    return () => {
+      dispose(); // UPGRADE: remove event subscription
+      microCtx?.revert(); // UPGRADE: kill micro-animations on unmount
+    };
+  }, []);
+
   useEffect(() => {
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
@@ -95,61 +132,70 @@ export default function Hero() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const ctx = gsap.context(() => {
-      gsap.to(".scroll-dot", {
-        y: 36,
-        duration: 1.5,
-        repeat: -1,
-        yoyo: true,
-        ease: "power2.inOut",
-      });
+    // UPGRADE: defer ambient motion (particles, scroll-dot, parallax) until PageReveal completes
+    // so it doesn't compete with the staged entrance sequence
+    const dispose = onPageRevealComplete(() => {
+      const ctx = gsap.context(() => {
+        gsap.to(".scroll-dot", {
+          y: 36,
+          duration: 1.5,
+          repeat: -1,
+          yoyo: true,
+          ease: "power2.inOut",
+        });
 
-      const autoFloat = gsap.timeline({ repeat: -1, yoyo: true, ease: "sine.inOut" });
-      autoFloat.to(contentInnerRef.current, { y: -8, duration: 3 });
+        const autoFloat = gsap.timeline({ repeat: -1, yoyo: true, ease: "sine.inOut" });
+        autoFloat.to(contentInnerRef.current, { y: -8, duration: 3 });
 
-      const particles = particlesRef.current?.children;
-      if (particles) {
-        gsap.utils.toArray(particles).forEach((el: any, i: number) => {
-          const data = particleData[i];
-          gsap.set(el, {
-            x: (data.startX / 100) * window.innerWidth,
-            y: (data.startY / 100) * window.innerHeight,
-          });
-
-          const animateParticle = () => {
-            gsap.to(el, {
-              x: () => Math.random() * window.innerWidth * 0.7 + window.innerWidth * 0.15,
-              y: () => Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2,
-              duration: 3 + Math.random() * 4,
-              ease: "sine.inOut",
-              onComplete: animateParticle,
+        const particles = particlesRef.current?.children;
+        if (particles) {
+          gsap.utils.toArray(particles).forEach((el: any, i: number) => {
+            const data = particleData[i];
+            gsap.set(el, {
+              x: (data.startX / 100) * window.innerWidth,
+              y: (data.startY / 100) * window.innerHeight,
             });
-          };
-          animateParticle();
-        });
-      }
 
-      const container = sectionRef.current?.querySelector(".hero-content");
-      if (container) {
-        gsap.to(container, {
-          y: -80,
-          opacity: 0.3,
-          ease: "none",
-          scrollTrigger: {
-            trigger: "#hero",
-            start: "top top",
-            end: "bottom top",
-            scrub: 1.5,
-            invalidateOnRefresh: true,
-          },
-        });
-      }
+            const animateParticle = () => {
+              gsap.to(el, {
+                x: () => Math.random() * window.innerWidth * 0.7 + window.innerWidth * 0.15,
+                y: () => Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2,
+                duration: 3 + Math.random() * 4,
+                ease: "sine.inOut",
+                onComplete: animateParticle,
+              });
+            };
+            animateParticle();
+          });
+        }
+
+        const container = sectionRef.current?.querySelector(".hero-content");
+        if (container) {
+          gsap.to(container, {
+            y: -80,
+            opacity: 0.3,
+            ease: "none",
+            scrollTrigger: {
+              trigger: "#hero",
+              start: "top top",
+              end: "bottom top",
+              scrub: 1.5,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
 
 
-    }, sectionRef);
+      }, sectionRef);
+
+      // UPGRADE: store ctx in a closure so cleanup can revert it
+      ambientCtxRef.current = ctx;
+    });
 
     return () => {
-      ctx.revert();
+      dispose();
+      ambientCtxRef.current?.revert();
+      ambientCtxRef.current = null;
     };
   }, [play, particleData]);
 
@@ -254,9 +300,9 @@ export default function Hero() {
               className="hero-sub mt-6 max-w-xl text-base md:text-lg font-light leading-relaxed"
               style={{ color: "var(--color-text-secondary)", opacity: 0 }}
             >
-              Private LLM applications, enterprise-grade RAG pipelines, and
-              governed agentic workflows on GCP — built for teams that need
-              performance, security, and operational clarity.
+              {/* UPGRADE: brand-reinforcing sub-copy — replaces placeholder */}
+              Currently building: agentic trading systems, RAG copilots on
+              GCP, and AI-first data platforms.
             </p>
 
             <div className="hero-tags flex flex-wrap gap-2 mt-4" style={{ opacity: 0 }}>

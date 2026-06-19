@@ -53,8 +53,8 @@ export interface TeamRole {
 export interface PipelineStep {
   step: number;
   title: string;
-  subtitle: string;
-  description: string;
+  subline: string; // UPGRADE: ultra-short fragment shown on the card (1-2 short phrases)
+  details: string; // UPGRADE: longer copy used ONLY in hover/tap tooltip
   tags: string[];
   icon: string;
 }
@@ -69,7 +69,7 @@ export const siteConfig = {
   name: "Jagadeesh Thiruveedula",
   role: "Data Architect & Senior Data Engineer",
   tagline: "Private LLM applications, enterprise-grade RAG pipelines, and governed agentic workflows on GCP",
-  location: "Corinth, Texas (DFW)",
+  location: "Dallas, Texas",
   email: "jagadeesh.thiruveedula@gmail.com",
   github: "https://github.com/jthiruveedula",
   linkedin: "https://www.linkedin.com/in/jagadeesh-thiruveedula/",
@@ -466,40 +466,40 @@ export const archPipeline: PipelineStep[] = [
   {
     step: 1,
     title: "Ingest",
-    subtitle: "Structured + unstructured data acquisition with schema validation.",
-    description: "Acquire data from diverse sources with schema validation, quality checks, and automated retry logic.",
+    subline: "APIs · streams · batch", // UPGRADE: short fragment for default card view
+    details: "Pull from APIs, event streams, and batch sources. Schema validation, quality gates, and automated retry logic baked in.", // UPGRADE: tooltip-only copy
     tags: ["BigQuery", "GCS", "Composer"],
     icon: "database",
   },
   {
     step: 2,
     title: "Embed",
-    subtitle: "Semantic encoding via domain-tuned foundation models on Vertex AI.",
-    description: "Transform raw data into high-dimensional vectors using fine-tuned embedding models for domain-specific understanding.",
+    subline: "Domain-tuned vectors", // UPGRADE: short fragment for default card view
+    details: "Transform raw data into high-dimensional vectors using fine-tuned embedding models for domain-specific understanding.", // UPGRADE: tooltip-only copy
     tags: ["Vertex AI", "Gemini"],
     icon: "brain",
   },
   {
     step: 3,
     title: "Retrieve",
-    subtitle: "Hybrid dense + sparse retrieval with cross-encoder re-ranking.",
-    description: "Combine semantic and keyword search with cross-encoder re-ranking for maximum precision in result sets.",
+    subline: "Hybrid search + re-rank", // UPGRADE: short fragment for default card view
+    details: "Combine semantic and keyword search with cross-encoder re-ranking for maximum precision in result sets.", // UPGRADE: tooltip-only copy
     tags: ["Matching Engine", "pgvector"],
     icon: "code",
   },
   {
     step: 4,
     title: "Govern",
-    subtitle: "Lineage tracking, evaluation harness, and rollback capability.",
-    description: "Full data lineage, automated evaluation pipelines, and instant rollback for production confidence.",
+    subline: "Lineage · evals · rollback", // UPGRADE: short fragment for default card view
+    details: "Full data lineage, automated evaluation pipelines, and instant rollback for production confidence.", // UPGRADE: tooltip-only copy
     tags: ["IAM", "VPC-SC", "Dataplex"],
     icon: "trending-up",
   },
   {
     step: 5,
     title: "Serve",
-    subtitle: "Low-latency inference with policy-aware grounding and guardrails.",
-    description: "Production inference with policy-aware response generation, guardrails, and comprehensive observability.",
+    subline: "API · UI · agents", // UPGRADE: short fragment for default card view
+    details: "Low-latency inference with policy-aware grounding, guardrails, and full observability behind a stable API contract.", // UPGRADE: tooltip-only copy
     tags: ["Cloud Run", "CDN"],
     icon: "cloud",
   },
