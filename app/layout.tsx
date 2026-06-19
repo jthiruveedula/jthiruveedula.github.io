@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "Agentic Workflows",
     "Senior Data Engineer",
     "DFW",
-    "Corinth Texas",
+    "Dallas Texas",
     "LangChain",
     "Vector Search",
   ],

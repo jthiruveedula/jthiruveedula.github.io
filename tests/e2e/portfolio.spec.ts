@@ -34,7 +34,7 @@ test("projects section has filter and cards", async ({ page }) => {
 test("contact section has form and links", async ({ page }) => {
   await page.goto("/");
   await page.locator("#contact").scrollIntoViewIfNeeded();
-  await expect(page.locator("#contact").getByText("Corinth, Texas (DFW)").first()).toBeVisible();
+  await expect(page.locator("#contact").getByText("Dallas, Texas").first()).toBeVisible();
   await expect(page.getByRole("link", { name: /github/i }).first()).toBeVisible();
   await expect(page.getByRole("link", { name: /linkedin/i }).first()).toBeVisible();
 });
