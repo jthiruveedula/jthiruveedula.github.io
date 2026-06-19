@@ -9,6 +9,21 @@ import { useSound } from "@/hooks/useSound";
 
 gsap.registerPlugin(ScrollTrigger);
 
+interface Stat {
+  // UPGRADE: numeric=null skips CountUp (used for the "GCP" static label card)
+  value: number | null;
+  prefix: string;
+  suffix: string;
+  label: string;
+}
+
+const STATS: Stat[] = [
+  { value: 6, prefix: "", suffix: "+", label: "Production GenAI" },
+  { value: 12, prefix: "", suffix: "M+", label: "RAG Pipelines" },
+  { value: null, prefix: "GCP", suffix: "", label: "Data Platforms" },
+  { value: 60, prefix: "", suffix: "%", label: "Latency Cut" },
+];
+
 const ARCH_NODES = [
   { id: "sources", label: "Data Sources", x: 50, y: 30 },
   { id: "ingestion", label: "Ingestion", x: 160, y: 30 },
@@ -27,102 +42,241 @@ const CONNECTIONS = [
   { from: "bigquery", to: "insights" },
 ];
 
+// UPGRADE: visual order of node reveal pulse (left → right pipeline flow)
+const REVEAL_ORDER = ["sources", "ingestion", "bigquery", "transform", "aiml", "insights"];
+
+const SCRAMBLE_CHARS = "!<>-_\\/[]{}—=+*^?#ABCDEFGHIJKMNOPQRSTUVWXYZ0123456789";
+
+// UPGRADE: ScrambleText-style effect driven by rAF — used after CountUp to settle the label
+function scrambleTo(el: HTMLElement, final: string, duration = 0.6): void {
+  if (typeof window === "undefined") return;
+  const start = performance.now();
+  const len = final.length;
+  function frame(now: number) {
+    const elapsed = now - start;
+    const t = Math.min(elapsed / (duration * 1000), 1);
+    let out = "";
+    for (let i = 0; i < len; i++) {
+      if (final[i] === " ") {
+        out += " ";
+        continue;
+      }
+      // UPGRADE: each char settles at a staggered time (0.3 .. 1.0) for a left-to-right reveal
+      const settleAt = 0.3 + (i / Math.max(len - 1, 1)) * 0.7;
+      if (t < settleAt) {
+        out += SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+      } else {
+        out += final[i];
+      }
+    }
+    el.textContent = out;
+    if (t < 1) requestAnimationFrame(frame);
+    else el.textContent = final;
+  }
+  requestAnimationFrame(frame);
+}
+
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
   const { normalizedX, normalizedY } = useMousePosition();
   const { play } = useSound();
   const svgRef = useRef<SVGSVGElement>(null);
-  const bioTextRef = useRef<HTMLDivElement>(null);
+  // UPGRADE: typed refs for the per-card number div, label div, arc path, and packet circle
+  const numRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const labelRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const connRefs = useRef<Array<SVGPathElement | null>>([]);
+  const packetRefs = useRef<Array<SVGCircleElement | null>>([]);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (typeof window === "undefined") return;
+    const section = sectionRef.current;
+    if (!section) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduced) {
+      // UPGRADE: reduced-motion path — render final state synchronously, no motion
+      STATS.forEach((stat, i) => {
+        const numEl = numRefs.current[i];
+        if (numEl) {
+          const finalText = stat.value === null
+            ? stat.prefix
+            : `${stat.prefix}${stat.value}${stat.suffix}`;
+          numEl.textContent = finalText;
+        }
+        const labelEl = labelRefs.current[i];
+        if (labelEl) labelEl.textContent = stat.label;
+      });
+      connRefs.current.forEach((p) => {
+        if (p) {
+          p.style.strokeDasharray = "none";
+          p.style.strokeDashoffset = "0";
+        }
+      });
+      packetRefs.current.forEach((p) => {
+        if (p) p.setAttribute("opacity", "0");
+      });
+      return;
+    }
+
+    // UPGRADE: tweens spawned inside masterTl.call callbacks are not auto-collected by
+    // gsap.context(), so we track them locally and kill on cleanup.
+    const localTweens: gsap.core.Tween[] = [];
 
     const ctx = gsap.context(() => {
-      gsap.from(".about-eyebrow", {
-        opacity: 0,
-        y: 20,
-        duration: 0.6,
-        ease: "power3.out",
+      const masterTl = gsap.timeline({
         scrollTrigger: {
-          trigger: "#about",
+          trigger: section,
           start: "top 75%",
+          once: true,
           onEnter: () => play("shimmer"),
         },
       });
 
-      const charSpans = document.querySelectorAll(".bio-char");
-      gsap.from(charSpans, {
+      // Stage 0 — section content fades in
+      masterTl.from(".about-eyebrow", {
+        opacity: 0,
+        y: 20,
+        duration: 0.6,
+        ease: "power3.out",
+      }, 0);
+      masterTl.from(".bio-char", {
         opacity: 0,
         duration: 0.04,
         stagger: 0.008,
         ease: "none",
-        scrollTrigger: {
-          trigger: "#about",
-          start: "top 70%",
-        },
-      });
-
-      gsap.from(".arch-node", {
-        scale: 0,
-        opacity: 0,
-        transformOrigin: "center",
-        stagger: 0.08,
-        duration: 0.7,
-        ease: "back.out(1.7)",
-        scrollTrigger: {
-          trigger: ".arch-diagram",
-          start: "top 80%",
-        },
-      });
-
-      const connEls = document.querySelectorAll<SVGPathElement>(".arch-conn");
-      connEls.forEach((el) => {
-        const len = el.getTotalLength();
-        el.style.strokeDasharray = `${len}`;
-        el.style.strokeDashoffset = `${len}`;
-      });
-      gsap.to(".arch-conn", {
-        strokeDashoffset: 0,
-        duration: 1.5,
-        stagger: 0.15,
-        ease: "power2.inOut",
-        scrollTrigger: {
-          trigger: ".arch-diagram",
-          start: "top 75%",
-        },
-      });
-
-      gsap.from(".photo-frame", {
-        opacity: 0,
-        scale: 0.8,
-        duration: 0.8,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".photo-frame",
-          start: "top 85%",
-        },
-      });
-
-      gsap.from(".bg-flow-line", {
+      }, 0.1);
+      masterTl.from(".bg-flow-line", {
         x: -60,
         opacity: 0,
         stagger: 0.06,
         duration: 1,
         ease: "power2.out",
-        scrollTrigger: {
-          trigger: "#about",
-          start: "top 80%",
-        },
+      }, 0.2);
+
+      // Stage 1 — metric cards rise + fade in
+      masterTl.add("cards", 0.3);
+      masterTl.from(".about-stat", {
+        opacity: 0,
+        y: 24,
+        duration: 0.6,
+        ease: "power3.out",
+        stagger: 0.1,
+      }, "cards");
+
+      // Stage 2 — CountUp on the numeric stat values
+      masterTl.add("countup", "cards+=0.3");
+      STATS.forEach((stat, i) => {
+        const numEl = numRefs.current[i];
+        const labelEl = labelRefs.current[i];
+        if (!numEl || !labelEl) return;
+        if (stat.value === null) {
+          // UPGRADE: "GCP" — no CountUp, render final immediately
+          numEl.textContent = stat.prefix;
+          return;
+        }
+        const target = stat.value;
+        const obj = { v: 0 };
+        masterTl.to(obj, {
+          v: target,
+          duration: 1.5,
+          ease: "power2.out",
+          onUpdate: () => {
+            numEl.textContent = `${stat.prefix}${Math.floor(obj.v)}${stat.suffix}`;
+          },
+          onComplete: () => {
+            numEl.textContent = `${stat.prefix}${target}${stat.suffix}`;
+            // UPGRADE: post-CountUp — settle the label with a brief scramble
+            scrambleTo(labelEl, stat.label, 0.6);
+          },
+        }, "countup");
       });
-    }, sectionRef);
 
-    return () => ctx.revert();
-  }, []);
+      // Stage 3 — arch connections draw in via strokeDashoffset
+      masterTl.add("conns", "countup+=0.2");
+      connRefs.current.forEach((p) => {
+        if (!p) return;
+        const len = p.getTotalLength();
+        p.style.strokeDasharray = `${len}`;
+        p.style.strokeDashoffset = `${len}`;
+      });
+      masterTl.to(".arch-conn", {
+        strokeDashoffset: 0,
+        duration: 1.2,
+        stagger: 0.12,
+        ease: "power2.inOut",
+      }, "conns");
 
+      // Stage 4 — node pulse reveal L→R (sources → ingestion → bigquery → transform → aiml → insights)
+      masterTl.add("nodes", "conns+=0.4");
+      REVEAL_ORDER.forEach((id, i) => {
+        const node = section.querySelector<SVGGElement>(`.arch-node[data-id="${id}"]`);
+        if (!node) return;
+        masterTl.to(node, {
+          scale: 1.18,
+          duration: 0.4,
+          ease: "power2.out",
+        }, `nodes+=${i * 0.18}`);
+        masterTl.to(node, {
+          scale: 1,
+          duration: 0.5,
+          ease: "power2.in",
+        }, `nodes+=${i * 0.18 + 0.4}`);
+      });
+
+      // Stage 5 — start the looping data-packet motion along each arc
+      masterTl.call(() => {
+        packetRefs.current.forEach((p) => {
+          if (p) p.setAttribute("opacity", "0.9");
+        });
+        connRefs.current.forEach((path, i) => {
+          const packet = packetRefs.current[i];
+          if (!path || !packet) return;
+          const len = path.getTotalLength();
+          const obj = { t: 0 };
+          // UPGRADE: per-arc rAF-equivalent tween — staggered durations + delays for organic flow
+          const tween = gsap.to(obj, {
+            t: 1,
+            duration: 2.5 + (i * 0.35),
+            repeat: -1,
+            ease: "none",
+            delay: i * 0.4,
+            onUpdate: () => {
+              const pt = path.getPointAtLength(obj.t * len);
+              packet.setAttribute("cx", String(pt.x));
+              packet.setAttribute("cy", String(pt.y));
+            },
+          });
+          localTweens.push(tween);
+        });
+      }, [], "nodes+=1.0");
+
+      // Stage 6 — subtle infinite breathing glow on the final "Insights" node
+      masterTl.call(() => {
+        const insights = section.querySelector<SVGGElement>('.arch-node[data-id="insights"]');
+        if (!insights) return;
+        const tween = gsap.to(insights, {
+          scale: 1.05,
+          duration: 2.5,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
+        localTweens.push(tween);
+      }, [], "nodes+=1.5");
+    }, section);
+
+    return () => {
+      ctx.revert();
+      // UPGRADE: kill any infinite tweens that escaped the gsap.context (packets + insights)
+      localTweens.forEach((t) => t.kill());
+      localTweens.length = 0;
+    };
+  }, [play]);
+
+  // UPGRADE: mouse-based tooltip listener preserved (independent of motion paths)
   useEffect(() => {
     const listener = (e: MouseEvent) => {
       if (!svgRef.current) return;
-      const rect = svgRef.current.getBoundingClientRect();
       const tooltips = svgRef.current.querySelectorAll(".node-tooltip");
       tooltips.forEach((tt) => {
         const node = tt.closest("g");
@@ -191,7 +345,6 @@ export default function About() {
               GCP Data Architect.
             </h2>
             <div
-              ref={bioTextRef}
               className="space-y-3 text-sm leading-relaxed font-light"
               style={{ color: "var(--color-text-secondary)" }}
             >
@@ -203,12 +356,7 @@ export default function About() {
         </div>
 
         <div className="about-highlights mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl">
-          {[
-            { label: "Production GenAI", value: "6+", color: "var(--color-accent)" },
-            { label: "RAG Pipelines", value: "12M+", color: "var(--color-accent-secondary)" },
-            { label: "Data Platforms", value: "GCP", color: "var(--color-accent-tertiary)" },
-            { label: "Latency Cut", value: "60%", color: "var(--color-accent)" },
-          ].map((stat, i) => (
+          {STATS.map((stat, i) => (
             <div
               key={stat.label}
               className="about-stat rounded-xl border p-4 relative overflow-hidden"
@@ -220,16 +368,23 @@ export default function About() {
               <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
-                  background: `linear-gradient(135deg, ${stat.color}08, transparent)`,
+                  background: `linear-gradient(135deg, var(--color-accent) 8, transparent)`,
                 }}
               />
               <div
+                ref={(el) => { numRefs.current[i] = el; }}
                 className="text-2xl md:text-3xl font-black font-mono relative z-10"
-                style={{ color: stat.color }}
+                style={{
+                  color: stat.value === null
+                    ? "var(--color-accent-tertiary)"
+                    : "var(--color-accent)",
+                }}
               >
-                {stat.value}
+                {/* UPGRADE: initial render shows 0 (or static prefix for GCP); CountUp overrides */}
+                {stat.value === null ? stat.prefix : `0${stat.suffix}`}
               </div>
               <div
+                ref={(el) => { labelRefs.current[i] = el; }}
                 className="font-mono text-[10px] tracking-wider uppercase mt-1 relative z-10"
                 style={{ color: "var(--color-text-muted)" }}
               >
@@ -246,7 +401,7 @@ export default function About() {
             className="w-full h-auto"
             style={{ filter: "drop-shadow(0 0 8px var(--color-accent))" }}
           >
-            {CONNECTIONS.map(({ from, to }) => {
+            {CONNECTIONS.map(({ from, to }, i) => {
               const fn = ARCH_NODES.find((n) => n.id === from)!;
               const tn = ARCH_NODES.find((n) => n.id === to)!;
               const midX = (fn.x + tn.x) / 2;
@@ -258,6 +413,7 @@ export default function About() {
               return (
                 <path
                   key={`${from}-${to}`}
+                  ref={(el) => { connRefs.current[i] = el; }}
                   className="arch-conn"
                   d={d}
                   fill="none"
@@ -268,8 +424,26 @@ export default function About() {
                 />
               );
             })}
+            {/* UPGRADE: data packet circles that travel along each connection via rAF-equivalent tween */}
+            {CONNECTIONS.map(({ from, to }, i) => (
+              <circle
+                key={`packet-${from}-${to}`}
+                ref={(el) => { packetRefs.current[i] = el; }}
+                className="arch-packet"
+                r="2.2"
+                fill="var(--color-accent)"
+                opacity="0"
+                filter="url(#nodeGlow)"
+                aria-hidden="true"
+              />
+            ))}
             {ARCH_NODES.map((node) => (
-              <g key={node.id} className="arch-node">
+              <g
+                key={node.id}
+                className="arch-node"
+                data-id={node.id}
+                style={{ transformBox: "fill-box", transformOrigin: "center" }}
+              >
                 <circle
                   cx={node.x}
                   cy={node.y}
