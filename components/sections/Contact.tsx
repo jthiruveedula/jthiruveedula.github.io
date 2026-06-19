@@ -21,10 +21,22 @@ export default function Contact() {
     const message = String(formData.get("message") || "");
     const subject = encodeURIComponent(`Portfolio contact from ${name}`);
     const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
-    window.location.href = `mailto:${siteConfig.email}?subject=${subject}&body=${body}`;
-    play("success");
+    const mailtoUrl = `mailto:${siteConfig.email}?subject=${subject}&body=${body}`;
+    // UPGRADE: render success feedback first, then trigger mailto via a
+    // hidden anchor click so the current page (and React state) survives
+    // the handoff to the OS mail handler.
     setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 5000);
+    play("success");
+    if (typeof window !== "undefined") {
+      const a = document.createElement("a");
+      a.href = mailtoUrl;
+      a.rel = "noopener";
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      window.setTimeout(() => a.remove(), 0);
+    }
+    window.setTimeout(() => setSubmitted(false), 5000);
   };
 
   useEffect(() => {
