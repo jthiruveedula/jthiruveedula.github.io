@@ -138,35 +138,15 @@ export default function About() {
       });
 
       // Stage 0 — section content fades in
-      masterTl.from(".about-eyebrow", {
-        opacity: 0,
-        y: 20,
-        duration: 0.6,
-        ease: "power3.out",
-      }, 0);
-      masterTl.from(".bio-char", {
-        opacity: 0,
-        duration: 0.04,
-        stagger: 0.008,
-        ease: "none",
-      }, 0.1);
-      masterTl.from(".bg-flow-line", {
-        x: -60,
-        opacity: 0,
-        stagger: 0.06,
-        duration: 1,
-        ease: "power2.out",
-      }, 0.2);
+      // UPGRADE: fromTo with explicit end states — pre-hide via gsap.set above
+      // means .from() would record hidden state as end state and never reveal.
+      masterTl.fromTo(".about-eyebrow", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0);
+      masterTl.fromTo(".bio-char", { opacity: 0 }, { opacity: 1, duration: 0.04, stagger: 0.008, ease: "none" }, 0.1);
+      masterTl.fromTo(".bg-flow-line", { opacity: 0, x: -60 }, { opacity: 1, x: 0, stagger: 0.06, duration: 1, ease: "power2.out" }, 0.2);
 
       // Stage 1 — metric cards rise + fade in
       masterTl.add("cards", 0.3);
-      masterTl.from(".about-stat", {
-        opacity: 0,
-        y: 24,
-        duration: 0.6,
-        ease: "power3.out",
-        stagger: 0.1,
-      }, "cards");
+      masterTl.fromTo(".about-stat", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", stagger: 0.1 }, "cards");
 
       // Stage 2 — CountUp on the numeric stat values
       masterTl.add("countup", "cards+=0.3");
