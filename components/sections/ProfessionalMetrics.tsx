@@ -218,7 +218,8 @@ export default function ProfessionalMetrics() {
               Live Telemetry
             </p>
             <h3 className="text-lg md:text-xl font-bold mt-1" style={{ color: "var(--color-text-primary)" }}>
-              Last 30 minutes of inference
+              {/* UPGRADE: chart label — reads as a clear telemetry heading, not a personal brand statement */}
+              Live GenAI system telemetry
             </h3>
           </div>
           <div
