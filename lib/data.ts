@@ -13,6 +13,7 @@ export interface Project {
   solution: string;
   outcome: string[];
   githubUrl?: string;
+  demoUrl?: string;
 }
 
 export interface SkillCategory {

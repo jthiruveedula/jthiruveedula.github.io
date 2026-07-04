@@ -17,6 +17,7 @@ import ArchPipeline from "@/components/sections/ArchPipeline";
 import Projects from "@/components/sections/Projects";
 import CaseStudies from "@/components/sections/CaseStudies";
 import Services from "@/components/sections/Services";
+import Writing from "@/components/sections/Writing";
 import Contact from "@/components/sections/Contact";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
@@ -54,6 +55,7 @@ function SmoothScroll() {
           <Projects />
           <CaseStudies />
           <Services />
+          <Writing />
           <Contact />
         </main>
         <Footer />
