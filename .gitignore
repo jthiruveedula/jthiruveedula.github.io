@@ -67,6 +67,3 @@ playwright-report/
 .superpowers/
 graphify-out*/
 session-*.md
-
-# Legacy / unused
-data/
