@@ -1,0 +1,256 @@
+import { lazy, Suspense, useEffect, useMemo, useRef, type PointerEvent as ReactPointerEvent } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
+import { portfolio } from '@/data/portfolio'
+import { ERA_COLORS } from '@/data/types'
+import { useInView, useIsMobile, useReducedMotion, useWebGLSupport } from '@/lib/hooks'
+
+// The three.js chunk is heavy — lazy-load the scene so the headline paints first.
+const HeroScene = lazy(() => import('@/scenes/HeroScene'))
+
+gsap.registerPlugin(useGSAP, ScrollTrigger)
+
+/** Headline microcopy; era words pick up the same color code as the 3D clusters. */
+const H1_WORDS = ['Building', 'at', 'Scale', '—', 'From', 'Legacy', 'to', 'Cloud', 'to', 'AI']
+const H1_ERA_WORDS: Record<string, string> = {
+  Legacy: ERA_COLORS.legacy,
+  Cloud: ERA_COLORS.cloud,
+  AI: ERA_COLORS.ai,
+}
+
+/** 2D fallback when WebGL is unavailable: three era node groups + migration links. */
+function FallbackNodes() {
+  return (
+    <svg
+      viewBox="0 0 800 400"
+      preserveAspectRatio="xMidYMid slice"
+      className="h-full w-full opacity-60"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g stroke="#1e2a45" strokeWidth="1">
+        <path d="M150 200 C 280 120, 380 120, 400 190" fill="none" />
+        <path d="M400 190 C 480 260, 560 240, 650 180" fill="none" />
+      </g>
+      {/* legacy grid */}
+      <g fill={ERA_COLORS.legacy}>
+        {[0, 1, 2].map((r) =>
+          [0, 1, 2].map((c) => (
+            <rect key={`l-${r}-${c}`} x={110 + c * 26} y={160 + r * 26} width="12" height="12" opacity="0.7" />
+          )),
+        )}
+      </g>
+      {/* cloud swarm */}
+      <g fill={ERA_COLORS.cloud}>
+        {[
+          [380, 170, 5],
+          [405, 195, 7],
+          [430, 175, 4],
+          [395, 220, 5],
+          [365, 200, 4],
+          [425, 215, 3],
+        ].map(([cx, cy, r]) => (
+          <circle key={`c-${cx}-${cy}`} cx={cx} cy={cy} r={r} opacity="0.75" className="animate-pulse-slow" />
+        ))}
+      </g>
+      {/* AI constellation */}
+      <g fill={ERA_COLORS.ai} stroke={ERA_COLORS.ai} strokeOpacity="0.35">
+        <line x1="620" y1="150" x2="665" y2="185" />
+        <line x1="665" y1="185" x2="640" y2="225" />
+        <line x1="665" y1="185" x2="700" y2="160" />
+        {[
+          [620, 150, 5],
+          [665, 185, 7],
+          [640, 225, 4],
+          [700, 160, 4],
+        ].map(([cx, cy, r]) => (
+          <circle key={`a-${cx}-${cy}`} cx={cx} cy={cy} r={r} opacity="0.85" className="animate-pulse-slow" />
+        ))}
+      </g>
+    </svg>
+  )
+}
+
+export default function Hero() {
+  const reducedMotion = useReducedMotion()
+  const webgl = useWebGLSupport()
+  const isMobile = useIsMobile()
+  const [sectionRef, inView] = useInView<HTMLElement>()
+
+  /** Normalized pointer, read by the 3D scene every frame (no React re-renders). */
+  const pointerRef = useRef({ x: 0, y: 0 })
+  /** Intro convergence progress for the mindscape — tweened by GSAP below. */
+  const introRef = useRef({ p: reducedMotion ? 1 : 0 })
+  /** Scroll progress through the hero — scrubbed by ScrollTrigger, read per frame. */
+  const emphasisRef = useRef({ e: 0 })
+
+  useEffect(() => {
+    if (reducedMotion) introRef.current.p = 1
+  }, [reducedMotion])
+
+  const { profile } = portfolio
+
+  const hudLine = useMemo(() => {
+    const role = profile.title.split('|')[0]?.trim() || 'Data & AI Architect'
+    const years = portfolio.headlineMetrics.find((m) => m.label === 'Years across data & AI')?.value
+    return years ? `${role} · ${years} yrs` : role
+  }, [profile.title])
+
+  const summaryLead = useMemo(() => {
+    const [first] = profile.summary.split(/(?<=\.)\s/)
+    return first || profile.summary
+  }, [profile.summary])
+
+  useGSAP(
+    () => {
+      // Scroll shifts cluster emphasis legacy → AI while the hero scrolls out.
+      if (!reducedMotion) {
+        gsap.to(emphasisRef.current, {
+          e: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 1,
+          },
+        })
+      }
+
+      if (reducedMotion) return
+
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out', duration: 0.8 } })
+
+      // 3D intro: scattered burst → data mindscape (read by HeroScene's frame loop).
+      tl.to(introRef.current, { p: 1, duration: 2.4, ease: 'power2.inOut' }, 0)
+
+      // Word-by-word headline reveal (manual span split — no SplitText plugin).
+      tl.from('[data-hero-reveal]', { y: 24, autoAlpha: 0, stagger: 0.06 }, 0.2)
+      tl.from('[data-hero-word]', { y: 24, autoAlpha: 0, stagger: 0.05, duration: 0.7 }, 0.35)
+
+      // Idle scroll-hint chevron bob.
+      gsap.to('[data-hero-cue]', { y: 6, duration: 1.1, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 2.2 })
+    },
+    { scope: sectionRef, dependencies: [reducedMotion], revertOnUpdate: true },
+  )
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLElement>) => {
+    if (reducedMotion) return
+    pointerRef.current.x = (event.clientX / window.innerWidth) * 2 - 1
+    pointerRef.current.y = (event.clientY / window.innerHeight) * 2 - 1
+  }
+
+  return (
+    <section
+      ref={sectionRef}
+      id="hero"
+      aria-label="Introduction"
+      onPointerMove={handlePointerMove}
+      className="relative isolate flex min-h-dvh scroll-mt-24 items-center overflow-hidden bg-void"
+    >
+      {/* Layered era glows — ambient behind the canvas, primary backdrop without WebGL. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-20"
+        style={{
+          backgroundImage: [
+            `radial-gradient(38rem 24rem at 14% 62%, ${ERA_COLORS.legacy}17, transparent 65%)`,
+            `radial-gradient(46rem 28rem at 50% 42%, ${ERA_COLORS.cloud}1a, transparent 65%)`,
+            `radial-gradient(40rem 26rem at 86% 34%, ${ERA_COLORS.ai}1c, transparent 65%)`,
+          ].join(', '),
+        }}
+      />
+
+      {webgl ? (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+          <Suspense fallback={null}>
+            <HeroScene
+              active={inView}
+              reducedMotion={reducedMotion}
+              isMobile={isMobile}
+              pointerRef={pointerRef}
+              introRef={introRef}
+              emphasisRef={emphasisRef}
+            />
+          </Suspense>
+        </div>
+      ) : (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+          <FallbackNodes />
+        </div>
+      )}
+
+      {/* Legibility scrims: left panel behind the copy, bottom fade into the next section. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-[5] bg-gradient-to-r from-void/85 via-void/35 to-transparent"
+      />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-[5] h-40 bg-gradient-to-b from-transparent to-void" />
+
+      <div className="mx-auto w-full max-w-6xl px-6 py-28 sm:px-10">
+        <p data-hero-reveal className="hud-label flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
+          <span>{profile.name}</span>
+          <span aria-hidden="true" className="text-ink-faint">
+            /
+          </span>
+          <span>{hudLine}</span>
+        </p>
+
+        <h1 className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+          {H1_WORDS.map((word, i) => (
+            <span key={`${word}-${i}`} className="whitespace-pre-wrap">
+              {i > 0 && ' '}
+              <span
+                data-hero-word
+                className="inline-block"
+                style={word in H1_ERA_WORDS ? { color: H1_ERA_WORDS[word] } : undefined}
+              >
+                {word}
+              </span>
+            </span>
+          ))}
+        </h1>
+
+        <p data-hero-reveal className="mt-6 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg">
+          {summaryLead}
+        </p>
+
+        <div data-hero-reveal className="mt-9 flex flex-wrap items-center gap-4">
+          <a
+            href="#timeline"
+            className="inline-flex min-h-11 cursor-pointer items-center rounded-md bg-accent px-6 py-3 font-display text-sm font-semibold text-void transition-colors hover:bg-accent-soft"
+          >
+            Explore the story
+          </a>
+          <a
+            href="#contact"
+            className="inline-flex min-h-11 cursor-pointer items-center rounded-md border border-panel-edge px-6 py-3 font-display text-sm font-medium text-ink transition-colors hover:border-accent hover:text-accent"
+          >
+            Get in touch
+          </a>
+        </div>
+      </div>
+
+      {/* Scroll hint */}
+      <div aria-hidden="true" className="absolute bottom-6 left-1/2 -translate-x-1/2">
+        <div data-hero-reveal className="flex flex-col items-center gap-1 text-accent">
+          <span className="hud-label text-[10px]">scroll</span>
+          <svg
+            data-hero-cue
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-5 w-5"
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </div>
+      </div>
+    </section>
+  )
+}

@@ -1,0 +1,94 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Surfaces — deep-space navy, OLED-friendly */
+  --color-void: #050810;
+  --color-surface: #0b1120;
+  --color-panel: #111a2e;
+  --color-panel-edge: #1e2a45;
+
+  /* Ink */
+  --color-ink: #e6edf7;
+  --color-ink-muted: #8b98b3;
+  --color-ink-faint: #5b6780;
+
+  /* Era accents — the story's color code */
+  --color-legacy: #f59e0b; /* amber — legacy systems */
+  --color-cloud: #22d3ee; /* cyan — cloud modernization */
+  --color-ai: #a78bfa; /* violet — enterprise AI */
+  --color-accent: #22d3ee;
+  --color-accent-soft: #67e8f9;
+  --color-success: #34d399;
+
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+  --shadow-glow-cloud: 0 0 24px rgba(34, 211, 238, 0.25);
+  --shadow-glow-ai: 0 0 24px rgba(167, 139, 250, 0.25);
+  --shadow-glow-legacy: 0 0 24px rgba(245, 158, 11, 0.22);
+
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: #1e2a45 #050810;
+}
+
+body {
+  @apply bg-void text-ink font-body antialiased;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  @apply font-display;
+  text-wrap: balance;
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.35);
+  color: #f8fafc;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* HUD label utility — small mono caps used for data annotations */
+.hud-label {
+  @apply font-mono text-xs tracking-[0.2em] uppercase text-ink-muted;
+}
+
+/* Panel utility — glass surface used across sections */
+.glass-panel {
+  background: linear-gradient(160deg, rgba(17, 26, 46, 0.85), rgba(11, 17, 32, 0.75));
+  border: 1px solid rgba(30, 42, 69, 0.9);
+  backdrop-filter: blur(12px);
+}
+
+/* Skip link (a11y) */
+.skip-link {
+  @apply fixed top-2 left-2 z-[1000] -translate-y-20 rounded bg-accent px-4 py-2 font-mono text-sm text-void transition-transform;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

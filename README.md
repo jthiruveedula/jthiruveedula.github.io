@@ -1,234 +1,79 @@
-# Jagadeesh Thiruveedula — Portfolio
+# Jagadeesh Thiruveedula — Immersive Portfolio
 
-Single-page cyberpunk-themed portfolio for Jagadeesh Thiruveedula, GCP Data Architect and Senior Data Engineer specializing in private LLM applications, enterprise RAG, and agentic workflows on Google Cloud.
+An explorable data landscape, not a static resume. The site tells one story — **Legacy Systems → Cloud Modernization → Enterprise AI** — through interactive 3D scenes, scroll-driven data-flow animations, and metric visualizations drawn from real project outcomes (500+ TiB migrated, $2M+ saved, production GenAI systems).
 
 **Live:** [https://jthiruveedula.github.io](https://jthiruveedula.github.io)
-**Hosting:** GitHub Pages (user site, served from the `master` branch root)
+**Hosting:** GitHub Pages (user site), deployed from `master` via GitHub Actions
 
 ---
 
-## Stack & Versions
+## Stack
 
-| Layer            | Tool                         | Version     |
-| ---------------- | ---------------------------- | ----------- |
-| **Runtime**      | Node.js                      | 22 LTS      |
-| **Package Mgr**  | npm                          | 11.x        |
-| **Framework**    | Next.js (App Router, static export) | 15.5.19 |
-| **UI Library**   | React                        | 19.2.7      |
-| **DOM**          | react-dom                    | 19.2.7      |
-| **Markup**       | HTML5 (semantic)             | —           |
-| **Styling**      | Tailwind CSS                 | 4.3.1       |
-| **PostCSS**      | @tailwindcss/postcss         | 4.3.1       |
-| **Animation**    | GSAP                         | 3.15.0      |
-| **GSAP Plugin**  | ScrollTrigger (bundled)      | 3.15.0      |
-| **GSAP Plugin**  | ScrollSmoother (bundled)     | 3.15.0      |
-| **GSAP Plugin**  | SplitText (bundled)          | 3.15.0      |
-| **3D**           | three.js                     | 0.184.0     |
-| **Type Safety**  | TypeScript                   | 5.9.3       |
-| **Lint**         | ESLint                       | 10.5.0      |
-| **E2E Tests**    | @playwright/test             | 1.60.0      |
+| Layer     | Tool                                     |
+| --------- | ---------------------------------------- |
+| Build     | Vite 7 (static output to `out/`)         |
+| UI        | React 19 + TypeScript (strict)           |
+| 3D        | Three.js + @react-three/fiber + drei     |
+| Animation | GSAP 3 (ScrollTrigger) via `@gsap/react` |
+| Styling   | Tailwind CSS v4 (`@theme` design tokens) |
+| E2E       | Playwright (chromium + mobile projects)  |
 
-### Performance Optimizations
-
-**GSAP Performance Improvements (PR #60):**
-
-- **40-60% improvement** in particle system (AmbientBackground)
-- **50-65% improvement** in Hero section (particle count reduced from 18 to 8)
-- **35-45% improvement** in ArchDiagram (pin duration reduced)
-- **25-35% improvement** in About section (animation batching)
-- **30-40% improvement** in Skill Constellation (reduced stagger count)
-
-**Expected Results:**
-- **FPS increase** from 30-40 to 45-55+
-- **CPU usage reduction** of 40-50%
-- **Memory usage reduction** of 30-40%
-
-**Key Changes:**
-- Fixed O(n²) particle system in AmbientBackground
-- Consolidated GSAP contexts and reduced pin durations
-- Batch character animations in About section
-- Increase stagger values to reduce animation count
-- Preserve all cinematic storytelling elements
-
-All HTML5 output is statically prerendered by `next build` with `output: "export"`. No SSR runtime ships.
-
----
-
-## Local Development
+## Setup
 
 ```bash
-nvm use                 # picks up .nvmrc (Node 22)
 npm install
-npm run dev             # http://localhost:3000
+npm run dev        # http://localhost:3000
 ```
-
-Useful scripts:
-
-| Command                  | Description                                  |
-| ------------------------ | -------------------------------------------- |
-| `npm run dev`            | Dev server on port 3000                      |
-| `npm run build`          | Production static export to `./out`          |
-| `npm run lint`           | Run ESLint                                   |
-| `npm run test:e2e`       | Playwright end-to-end (chromium)             |
-| `npm run test:e2e:all`   | Playwright across chromium + mobile webkit   |
-| `npm run test:e2e:ui`    | Playwright interactive UI                    |
-| `npm run test:e2e:headed`| Playwright with visible browser              |
-| `npm run test:e2e:debug` | Playwright in debug mode                     |
-| `npm run test:e2e:report`| Open last HTML test report                   |
-
----
 
 ## Build & Deploy
 
-Production output:
-
 ```bash
-npm run build
+npm run build      # static site → out/
+npm run preview    # serve the production build on :4173
 ```
 
-The static site exports to `./out/`. Key generated files:
+Pushing to `master` triggers `.github/workflows/deploy.yml`, which builds and publishes `out/` to GitHub Pages. Every deploy is tagged `v0.0.0-<sha>` for one-click rollback via `workflow_dispatch` → `rollback_ref`.
 
-- `out/index.html` — home page
-- `out/sitemap.xml` — generated by `app/sitemap.ts`
-- `out/robots.txt` — generated by `app/robots.ts`
-- `out/manifest.json` — PWA manifest
-- `out/favicon.svg` — site icon
-- `out/resume.html` — printable resume
-
-### GitHub Pages
-
-`https://jthiruveedula.github.io` is a user site (repo name == username), so no `basePath` is required. `trailingSlash: true` is enabled so routes resolve correctly under GitHub Pages' static file serving.
-
-Deployment is fully automated via GitHub Actions:
-
-- **`.github/workflows/deploy.yml`** — On push to `master`: install → build → upload `./out` artifact → deploy to GitHub Pages.
-- **`.github/workflows/pr-preview.yml`** — On pull request: build and upload the artifact for download.
-- **`.github/workflows/ci.yml`** — On push/PR: lint, typecheck, build, and run Playwright tests.
-
----
-
-## Project Structure
+## Architecture
 
 ```
-.
-├── app/                      # Next.js App Router
-│   ├── layout.tsx            # Root layout, SEO metadata, fonts
-│   ├── page.tsx              # Home page composition
-│   ├── globals.css           # Tailwind directives + CSS variables
-│   ├── sitemap.ts            # MetadataRoute.Sitemap
-│   └── robots.ts             # MetadataRoute.Robots
-├── components/
-│   ├── Navbar.tsx
-│   ├── Footer.tsx
-│   ├── sections/             # Hero, About, Pipeline, Skills, Projects, Contact, …
-│   └── ui/                   # Reusable: ScrambleText, ThreeBackground, TokenStream, …
-├── hooks/                    # useSound, useMousePosition, useScrollSection
-├── lib/                      # data.ts, soundManager.ts, gsap-helpers.ts
-├── public/                   # favicon.svg, manifest.json, resume.html, images/
-├── tests/                    # Playwright specs (portfolio, mobile, accessibility, seo)
-├── .github/workflows/        # deploy.yml, pr-preview.yml, ci.yml
-├── next.config.ts
-├── playwright.config.ts
-├── tailwind.config.mjs
-├── postcss.config.mjs
-├── tsconfig.json
-├── eslint.config.js
-├── .nvmrc                    # Node 22
-└── .gitignore
+src/
+  components/          # One self-contained section per file (no props; each imports its own data)
+    Navigation.tsx       Hero.tsx          Timeline.tsx
+    SkillsConstellation.tsx  Projects.tsx  ProjectCard.tsx
+    Metrics.tsx          Contact.tsx
+  scenes/              # R3F scene graphs (hero mindscape, skills constellation)
+  data/
+    types.ts           # Contractual shapes (Era, Skill, Experience, FeaturedProject…)
+    portfolio.ts       # THE single content source — every section renders from this
+  lib/hooks.ts         # useReducedMotion / useWebGLSupport / useIsMobile / useInView
+  styles/globals.css   # Tailwind v4 @theme tokens (era colors, fonts, surfaces)
 ```
 
-### Performance Optimizations
+Sections below the hero are `React.lazy` code-split; Three.js, R3F, and GSAP ship as separate chunks (`manualChunks` in `vite.config.ts`).
 
-**GSAP Performance Improvements (PR #60):**
+## Design language
 
-- **lib/gsap-helpers.ts** — Added `batchTransform()` and `createSharedTimeline()` utilities
-- **components/ui/AmbientBackground.tsx** — Fixed O(n²) particle system (spatial partitioning)
-- **components/sections/Hero.tsx** — Reduced particle count from 18 to 8, consolidated GSAP contexts
-- **components/ui/ArchDiagram.tsx** — Reduced pin duration from 600px to 400px
-- **components/sections/About.tsx** — Increased character stagger from 0.008s to 0.04s
-- **components/Navbar.tsx** — Increased divider animation duration from 1.8s to 2.5s
-- **components/ui/SkillConstellation.tsx** — Increased stagger values for skill-line and skill-node animations
+- **Era color code** carried through every visual: amber `#f59e0b` = legacy, cyan `#22d3ee` = cloud, violet `#a78bfa` = AI.
+- Dark OLED base (`#050810`), Space Grotesk headings, Inter body, JetBrains Mono for data/HUD labels.
+- Every animation is field-related — migration particle streams, pipeline pulses, schema grids, count-up metrics — no decorative motion.
 
-**Expected Performance Gains:**
-- **40-60% improvement** in particle system performance
-- **50-65% improvement** in Hero section performance
-- **35-45% improvement** in ArchDiagram performance
-- **25-35% improvement** in About section performance
-- **30-40% improvement** in Skill Constellation performance
+## Performance & accessibility
 
-**Testing Results:**
-- **32/32 desktop tests passed** (Chromium)
-- **6/6 mobile tests passed** (Mobile)
-- **ESLint linting passed** (no errors)
-- **TypeScript type checking passed** (no errors)
+- Max two WebGL canvases (Hero, Skills); everything else is SVG/CSS/GSAP. Instanced geometry only, DPR clamped to 2, frameloops pause when offscreen.
+- `prefers-reduced-motion` → static frames and instant metric values. No WebGL → 2D fallbacks. Mobile → reduced particle counts.
+- All content exists as semantic HTML (canvases are `aria-hidden` enhancements): keyboard navigation, `aria-expanded` disclosures, skip link, 4.5:1 contrast on body text.
 
----
+## Customization (swap in your own data)
 
-## SEO
-
-Centralized in `app/layout.tsx`:
-
-- `<title>` template + description
-- Open Graph (`og:title`, `og:description`, `og:image`, `og:type`, `og:url`, `og:siteName`, `og:locale`)
-- Twitter Card (`summary_large_image`)
-- `theme-color`, `color-scheme`
-- `manifest` link + `icons` (favicon + apple-touch-icon)
-- `robots` and `googleBot`
-- `alternates.canonical` → `https://jthiruveedula.github.io`
-- `keywords`, `authors`, `creator`, `publisher`, `category`
-
-Generated routes:
-
-- `/sitemap.xml`
-- `/robots.txt`
-- `/manifest.json`
-
----
+1. Edit `src/data/portfolio.ts` — profile, skills (`domain`/`tier`/`years`), experience (`era`), featured projects (`vizType`), headline metrics (`numeric` + `prefix`/`suffix` drive count-up animations).
+2. Types in `src/data/types.ts` enforce the shape; sections re-render from data with no component changes.
+3. Colors/fonts: `@theme` block in `src/styles/globals.css`.
 
 ## Testing
 
-End-to-end tests use Playwright across chromium and mobile (iPhone 13 / WebKit) projects.
-
 ```bash
-npx playwright install         # one-time: chromium + webkit
-npm run test:e2e:all
+npm run typecheck
+npm run lint
+npm run test:e2e:chrome   # production build served via `npm run preview` automatically
 ```
-
-Spec files:
-
-- `tests/e2e/portfolio.spec.ts` — section rendering, links, SEO meta, resume, sitemap, robots
-- `tests/e2e/mobile.spec.ts` — mobile menu, Esc key, responsive sections, no h-scroll
-- `tests/e2e/accessibility.spec.ts` — labels, headings, focus, aria, contrast smoke
-- `tests/e2e/seo.spec.ts` — title, description, OG, Twitter, canonical, headings, sitemap, robots
-
-The Playwright config (`playwright.config.ts`) starts the dev server automatically and points baseURL at `http://127.0.0.1:3000`.
-
-CI runs the full matrix on every push and PR via `.github/workflows/ci.yml`.
-
-### Performance Testing
-
-**GSAP Performance Tests:**
-
-All performance optimizations are verified through comprehensive testing:
-
-- **32/32 desktop tests passed** (Chromium)
-- **6/6 mobile tests passed** (Mobile)
-- **ESLint linting passed** (no errors)
-- **TypeScript type checking passed** (no errors)
-
-**Performance Metrics:**
-- **FPS increase** from 30-40 to 45-55+
-- **CPU usage reduction** of 40-50%
-- **Memory usage reduction** of 30-40%
-
-All optimizations preserve the cinematic storytelling experience while achieving significant performance improvements.
-
----
-
-## Conventions
-
-- No code comments unless explicitly required.
-- Keep components focused; extract shared UI to `components/ui`.
-- Theme via CSS variables (`--color-*`, `--gradient-*`, `--neon-shadow-*`).
-- Static export only — no `getServerSideProps`, no API routes, no SSR runtime.
-- Verify changes with `npm run lint` + `npm run test:e2e:all` before pushing.

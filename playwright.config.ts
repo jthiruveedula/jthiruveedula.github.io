@@ -1,45 +1,23 @@
-import { defineConfig, devices } from "@playwright/test";
-
-const isCI = !!process.env.CI;
+import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
-  testDir: "./tests/e2e",
-  timeout: 60_000,
-  fullyParallel: !isCI,
-  workers: isCI ? 1 : undefined,
-  retries: isCI ? 1 : 0,
-  reporter: isCI ? [["line"], ["html", { open: "never" }]] : "list",
+  testDir: './tests/e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  reporter: process.env.CI ? [['line'], ['html', { open: 'never' }]] : 'list',
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:3000",
-    headless: true,
-    actionTimeout: 10_000,
-    navigationTimeout: 20_000,
+    baseURL: 'http://localhost:4173',
+    trace: 'on-first-retry',
   },
   projects: [
-    {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
-      testIgnore: /mobile\.spec\.ts$/,
-    },
-    {
-      name: "mobile",
-      use: { ...devices["iPhone 13"] },
-      testMatch: /mobile\.spec\.ts$/,
-    },
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'mobile', use: { ...devices['Pixel 7'] } },
   ],
-  webServer: isCI
-    ? {
-        command: "npx serve out -l 3000 --no-clipboard --single",
-        url: "http://127.0.0.1:3000",
-        reuseExistingServer: !process.env.CI,
-        timeout: 30_000,
-        stdout: "ignore",
-        stderr: "pipe",
-      }
-    : {
-        command: "npm run dev",
-        url: "http://127.0.0.1:3000",
-        reuseExistingServer: true,
-        timeout: 120_000,
-      },
-});
+  webServer: {
+    command: 'npm run preview',
+    url: 'http://localhost:4173',
+    reuseExistingServer: !process.env.CI,
+    timeout: 60_000,
+  },
+})
