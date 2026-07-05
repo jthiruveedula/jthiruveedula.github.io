@@ -67,3 +67,6 @@ playwright-report/
 .superpowers/
 graphify-out*/
 session-*.md
+
+# Local tool state store (root-anchored — must not match src/data)
+/data/
