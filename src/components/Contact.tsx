@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -88,6 +88,20 @@ export default function Contact() {
     },
     [],
   )
+
+  const handleCardPointerMove = (e: ReactPointerEvent<HTMLAnchorElement>) => {
+    if (reduced) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    const mx = ((e.clientX - rect.left) / rect.width) * 100
+    const my = ((e.clientY - rect.top) / rect.height) * 100
+    e.currentTarget.style.setProperty('--mx', `${mx}%`)
+    e.currentTarget.style.setProperty('--my', `${my}%`)
+  }
+
+  const handleCardPointerLeave = (e: ReactPointerEvent<HTMLAnchorElement>) => {
+    e.currentTarget.style.setProperty('--mx', '50%')
+    e.currentTarget.style.setProperty('--my', '50%')
+  }
 
   const handleCopyEmail = () => {
     if (!profile.email) return
@@ -208,7 +222,9 @@ export default function Contact() {
               <a
                 href={channel.href}
                 {...(channel.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                className={`group flex h-full flex-col gap-3 rounded-xl border border-panel-edge bg-panel/60 p-5 backdrop-blur-md transition duration-300 hover:-translate-y-1 ${channel.hoverClass}`}
+                onPointerMove={handleCardPointerMove}
+                onPointerLeave={handleCardPointerLeave}
+                className={`tilt-card group flex h-full flex-col gap-3 rounded-xl border border-panel-edge bg-panel/60 p-5 backdrop-blur-md transition duration-300 hover:-translate-y-1 ${channel.hoverClass}`}
               >
                 <span className={`font-mono text-xs tracking-[0.2em] uppercase ${channel.accentText}`}>
                   {channel.label}
