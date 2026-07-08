@@ -343,7 +343,7 @@ export default function Navigation() {
                     {navIndex(i)}
                   </span>
                   <span
-                    className={`font-display text-4xl font-semibold transition-colors ${
+                    className={`press-feedback font-display text-4xl font-semibold transition-colors ${
                       activeId === item.id ? 'text-ink' : 'text-ink-muted group-hover:text-ink'
                     }`}
                   >

@@ -83,8 +83,8 @@ h4 {
 .tilt-card {
   --mx: 50%;
   --my: 50%;
-  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0);
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0) scale(var(--tilt-scale, 1));
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
   will-change: transform;
 }
 .tilt-card::after {
@@ -100,9 +100,17 @@ h4 {
 .tilt-card:hover::after {
   opacity: 1;
 }
+/* Tactile press feedback — works on both desktop click and mobile tap.
+   On coarse pointers we skip the tilt transform entirely so only scale applies. */
+.tilt-card:active {
+  --tilt-scale: 0.985;
+}
 @media (pointer: coarse) {
   .tilt-card {
-    transform: none !important;
+    transform: scale(var(--tilt-scale, 1));
+  }
+  .tilt-card:active {
+    --tilt-scale: 0.98;
   }
 }
 
@@ -380,6 +388,42 @@ h4 {
 }
 .skip-link:focus {
   transform: translateY(0);
+}
+
+/* Tactile press feedback for buttons, chips, and menu links that don't use tilt-card. */
+.press-feedback {
+  transition: transform 0.15s var(--ease-out), box-shadow 0.25s ease, border-color 0.25s ease, color 0.2s ease;
+}
+.press-feedback:active {
+  transform: scale(0.96);
+}
+
+/* Themed skeleton shimmer — HUD-style moving gradient that signals activity
+   without the generic browser defaults. */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(91, 103, 128, 0.18) 0%,
+    rgba(91, 103, 128, 0.32) 45%,
+    rgba(34, 211, 238, 0.18) 55%,
+    rgba(91, 103, 128, 0.18) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none;
+    background: rgba(91, 103, 128, 0.22);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

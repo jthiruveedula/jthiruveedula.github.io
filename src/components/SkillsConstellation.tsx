@@ -65,7 +65,7 @@ function SkillChip({
         onClick={() => onSelect(skill)}
         aria-haspopup="dialog"
         aria-expanded={active}
-        className={`inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-xs transition-colors ${
+        className={`press-feedback inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-xs transition-colors ${
           isCore ? 'border-panel-edge bg-panel text-ink' : 'border-panel-edge/60 text-ink-muted'
         } ${active ? 'ring-2 ring-offset-2 ring-offset-void' : ''}`}
         style={{
@@ -193,7 +193,7 @@ export default function SkillsConstellation() {
         <div
           ref={canvasRef}
           data-reveal
-          className="glass-panel relative mt-10 h-[420px] overflow-hidden rounded-2xl md:h-[540px]"
+          className="glass-panel relative mt-10 h-[320px] overflow-hidden rounded-2xl sm:h-[420px] md:h-[540px]"
         >
           {/* The 3D graph is a decorative enhancement — hidden from AT; the story
               panel below (when open) is real interactive content and stays exposed. */}
