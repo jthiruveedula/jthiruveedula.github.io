@@ -7,6 +7,33 @@ An explorable data landscape, not a static resume. The site tells one story — 
 
 ---
 
+## Portfolio content
+
+**Jagadeesh Thiruveedula** — Data & AI Architect, 11+ years, Fortune 500 enterprises. Legacy systems → cloud modernization → production GenAI. $2M+ cost savings delivered, 500+ TiB migrated, 1B+ daily events at 99.9% uptime, private LLM apps serving 50M+ documents at 95% grounded accuracy.
+
+### Featured projects
+
+| Project | Client | Era | Impact |
+| --- | --- | --- | --- |
+| GenAI COBOL → Cloud Code Translation | Definity | Legacy | 12 legacy workstreams triaged, 5 reusable transformation patterns codified |
+| Multi-Petabyte Hadoop/Teradata → GCP Migration | Charles Schwab | Cloud | $1M+ annual savings, 1B+ daily records with zero data loss, 25% efficiency gain, release cycles cut 50% |
+| HIPAA Real-Time Streaming & GenAI Accelerators | HCA Healthcare | Cloud | 50+ sources streaming in real time, 100% data accuracy, delivery timelines cut 50% |
+| AWS → GCP Cross-Cloud Migration | NRG Energy | Cloud | <30 min cutover downtime, reporting latency down 40%, 99.95% uptime SLA |
+| 500+ TiB Snowflake → BigQuery Modernization | John Wiley & Sons | AI | 500+ TiB migrated, zero data loss across 200+ ETL workflows, manual refactoring cut 40% via GenAI |
+| Private LLM Research Assistant & Agent Platform | John Wiley & Sons | AI | RAG over 50M+ documents at 95% grounded accuracy, 60% tier-1 ticket deflection, 3x analyst productivity |
+
+### Experience
+
+Forward-deployed Data & GenAI Architect roles progressing through Data & GenAI Architect → Cloud Data Architect → Lead Data Engineer → Senior Data Engineer → Data Engineer, spanning legacy mainframe/Hadoop/Teradata modernization, multi-cloud (GCP/AWS/Azure) migrations, and production RAG/agent systems.
+
+### Skills
+
+GCP (BigQuery, Dataflow, Cloud Composer, Dataproc, Vertex AI), AWS, Azure (ADF, Synapse, Fabric), Databricks/Delta Lake/Unity Catalog, legacy migrations (Snowflake, Teradata, Hadoop, Mainframe/COBOL, Couchbase), GenAI (GPT-4o, Claude Sonnet 4, Gemini 1.5 Pro, Llama 3, LoRA/QLoRA fine-tuning, guardrails, Responsible AI governance), RAG (Pinecone, Weaviate, pgvector, FAISS, Chroma, hybrid retrieval + reranking), agent frameworks (LangChain, LangGraph, CrewAI, DSPy, MCP, multi-agent orchestration, A2A), and LLMOps evaluation (RAGAS, LangSmith, Langfuse).
+
+To see the full detail (bio, all metrics, tech stacks per project), open `src/data/portfolio.ts` — it's the single source every section renders from.
+
+---
+
 ## Stack
 
 | Layer     | Tool                                     |
