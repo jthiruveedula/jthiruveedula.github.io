@@ -382,6 +382,34 @@ h4 {
   transform: translateY(0);
 }
 
+/* Themed skeleton shimmer — HUD-style moving gradient that signals activity
+   without the generic browser defaults. */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(91, 103, 128, 0.18) 0%,
+    rgba(91, 103, 128, 0.32) 45%,
+    rgba(34, 211, 238, 0.18) 55%,
+    rgba(91, 103, 128, 0.18) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none;
+    background: rgba(91, 103, 128, 0.22);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
