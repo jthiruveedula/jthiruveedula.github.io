@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import { ERA_COLORS, type Chapter, type Era, type Experience } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
+import Decrypt from '@/components/Decrypt'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -292,7 +293,7 @@ export default function Timeline() {
     >
       <div className="mx-auto w-full max-w-6xl px-6">
         <header className="tl-head max-w-3xl">
-          <p className="hud-label">02 · career trajectory</p>
+          <Decrypt as="p" className="hud-label" text="02 · career trajectory" />
           <h2 id="timeline-heading" className="mt-3 text-3xl font-bold text-ink md:text-5xl">
             <span className="text-legacy">Legacy</span>
             <span aria-hidden="true" className="mx-2 text-ink-faint md:mx-3">
@@ -330,9 +331,11 @@ export default function Timeline() {
                       aria-hidden="true"
                       className={`absolute top-1.5 left-5 z-10 h-4 w-4 -translate-x-1/2 rotate-45 border-2 bg-void md:top-0 md:left-1/2 ${era.marker}`}
                     />
-                    <p className="hud-label">
-                      chapter {String(chapterIndex + 1).padStart(2, '0')} · {chapterYears(roles.map((r) => r.role))}
-                    </p>
+                    <Decrypt
+                      as="p"
+                      className="hud-label"
+                      text={`chapter ${String(chapterIndex + 1).padStart(2, '0')} · ${chapterYears(roles.map((r) => r.role))}`}
+                    />
                     <h3 className={`mt-2 text-2xl font-bold md:text-3xl ${era.text}`}>{chapter.title}</h3>
                     <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ink-muted md:mx-auto">{chapter.blurb}</p>
                   </div>
