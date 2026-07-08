@@ -206,6 +206,39 @@ export default function Navigation() {
     { scope: headerRef, dependencies: [reduced], revertOnUpdate: true },
   )
 
+  /* ---- Magnetic hover: desktop nav links lean toward the pointer, springing back on leave.
+   * Fine-pointer + non-reduced-motion only; capped translate keeps hitboxes honest. */
+  useGSAP(
+    () => {
+      if (reduced || isMobile || !window.matchMedia('(pointer: fine)').matches) return
+      const links = headerRef.current?.querySelectorAll<HTMLElement>('nav[aria-label="Primary"] a[data-nav-item]')
+      if (!links?.length) return
+
+      const cleanups: Array<() => void> = []
+      links.forEach((link) => {
+        const moveX = gsap.quickTo(link, 'x', { duration: 0.25, ease: 'power3.out' })
+        const moveY = gsap.quickTo(link, 'y', { duration: 0.25, ease: 'power3.out' })
+        const onMove = (e: PointerEvent) => {
+          const rect = link.getBoundingClientRect()
+          moveX(gsap.utils.clamp(-6, 6, (e.clientX - (rect.left + rect.width / 2)) * 0.35))
+          moveY(gsap.utils.clamp(-6, 6, (e.clientY - (rect.top + rect.height / 2)) * 0.35))
+        }
+        const onLeave = () => {
+          moveX(0)
+          moveY(0)
+        }
+        link.addEventListener('pointermove', onMove)
+        link.addEventListener('pointerleave', onLeave)
+        cleanups.push(() => {
+          link.removeEventListener('pointermove', onMove)
+          link.removeEventListener('pointerleave', onLeave)
+        })
+      })
+      return () => cleanups.forEach((fn) => fn())
+    },
+    { scope: headerRef, dependencies: [reduced, isMobile], revertOnUpdate: true },
+  )
+
   /* ---- Mobile overlay timeline (built paused; play/reverse on toggle) ---- */
   useGSAP(
     () => {
@@ -433,7 +466,7 @@ export default function Navigation() {
                 <a
                   data-nav-item
                   href="/resume.html"
-                  className="border-accent/50 text-accent hover:bg-accent/10 ml-2 rounded border px-3 py-1.5 font-mono text-[0.8rem] tracking-wide transition-colors"
+                  className="border-accent/50 text-accent hover:bg-accent/10 ml-2 rounded border px-3 py-1.5 font-mono text-[0.8rem] tracking-wide transition-[background-color,box-shadow] duration-200 hover:shadow-[0_0_18px_rgba(34,211,238,0.35)] active:scale-95"
                 >
                   Resume
                 </a>
