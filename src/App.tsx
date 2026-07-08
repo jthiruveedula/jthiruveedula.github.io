@@ -3,6 +3,7 @@ import Navigation from '@/components/Navigation'
 import Hero from '@/components/Hero'
 import Atmosphere from '@/components/Atmosphere'
 import CustomCursor from '@/components/CustomCursor'
+import ScrollProgress from '@/components/ScrollProgress'
 
 const Timeline = lazy(() => import('@/components/Timeline'))
 const SkillsConstellation = lazy(() => import('@/components/SkillsConstellation'))
@@ -23,6 +24,7 @@ export default function App() {
     <>
       <Atmosphere />
       <CustomCursor />
+      <ScrollProgress />
       <a href="#main" className="skip-link">
         Skip to main content
       </a>

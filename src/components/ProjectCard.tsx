@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -293,6 +293,24 @@ export default function ProjectCard({ project, index, total }: ProjectCardProps)
   const [open, setOpen] = useState(false)
   const loopRef = useRef<gsap.core.Timeline | null>(null)
 
+  const handlePointerMove = (event: ReactPointerEvent<HTMLElement>) => {
+    if (reduced) return
+    const el = event.currentTarget
+    const rect = el.getBoundingClientRect()
+    const px = (event.clientX - rect.left) / rect.width
+    const py = (event.clientY - rect.top) / rect.height
+    el.style.setProperty('--mx', `${px * 100}%`)
+    el.style.setProperty('--my', `${py * 100}%`)
+    el.style.setProperty('--ry', `${(px - 0.5) * 6}deg`)
+    el.style.setProperty('--rx', `${(0.5 - py) * 6}deg`)
+  }
+
+  const handlePointerLeave = (event: ReactPointerEvent<HTMLElement>) => {
+    const el = event.currentTarget
+    el.style.setProperty('--rx', '0deg')
+    el.style.setProperty('--ry', '0deg')
+  }
+
   const meta = ERA_META[project.era]
   const accent = ERA_COLORS[project.era]
   const panelId = `project-details-${project.id}`
@@ -394,7 +412,9 @@ export default function ProjectCard({ project, index, total }: ProjectCardProps)
   return (
     <article
       ref={cardRef}
-      className={`glass-panel relative flex flex-col overflow-hidden rounded-2xl border-t-2 ${meta.topBorder} transition-shadow duration-300 ${meta.glow}`}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+      className={`glass-panel tilt-card relative flex flex-col overflow-hidden rounded-2xl border-t-2 ${meta.topBorder} transition-shadow duration-300 ${meta.glow}`}
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-25">
         <VizMotif type={project.vizType} accent={accent} />

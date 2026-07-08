@@ -79,6 +79,47 @@ h4 {
   backdrop-filter: blur(12px);
 }
 
+/* Cursor-tracked spotlight + tilt on interactive cards */
+.tilt-card {
+  --mx: 50%;
+  --my: 50%;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+.tilt-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(280px circle at var(--mx) var(--my), rgba(56, 189, 248, 0.12), transparent 65%);
+  transition: opacity 0.25s ease;
+}
+.tilt-card:hover::after {
+  opacity: 1;
+}
+@media (pointer: coarse) {
+  .tilt-card {
+    transform: none !important;
+  }
+}
+
+/* Top-of-page scroll progress indicator */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  transform-origin: left;
+  transform: scaleX(var(--scroll-progress, 0));
+  background: linear-gradient(90deg, var(--color-legacy, #f59e0b), var(--color-cloud, #22d3ee), var(--color-ai, #a78bfa));
+  z-index: 200;
+  pointer-events: none;
+}
+
 /* FUI corner brackets — decorative, never carry meaning */
 .glass-panel::before,
 .glass-panel::after {
