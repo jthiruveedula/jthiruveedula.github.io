@@ -24,6 +24,11 @@ function decimalsFor(n: number): number {
   return Number.isInteger(n) ? 0 : 1
 }
 
+/** Gauge dial geometry — radius chosen so the ring reads clearly at 40px. */
+const GAUGE_RADIUS = 15
+const GAUGE_CIRCUMFERENCE = 2 * Math.PI * GAUGE_RADIUS
+const GAUGE_TICKS = 12
+
 function MetricTile({ metric }: { metric: Metric }) {
   const color = ERA_COLORS[eraFor(metric.label)]
   const numeric = metric.numeric
@@ -32,17 +37,52 @@ function MetricTile({ metric }: { metric: Metric }) {
     <li
       className="metric-tile glass-panel relative overflow-hidden rounded-xl p-5 transition-colors duration-300 hover:border-panel-edge md:p-6"
     >
-      {/* Accent hairline + telemetry dot */}
+      {/* Accent hairline */}
       <span
         aria-hidden="true"
         className="absolute inset-x-4 top-0 h-px opacity-70"
         style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
       />
-      <span
+
+      {/* Telemetry gauge — ring fill mirrors the count-up progress as it plays, ticks static */}
+      <svg
         aria-hidden="true"
-        className="absolute top-4 right-4 h-1.5 w-1.5 rounded-full"
-        style={{ background: color, boxShadow: `0 0 10px ${color}` }}
-      />
+        viewBox="0 0 40 40"
+        className="absolute top-3 right-3 h-9 w-9 md:h-10 md:w-10"
+        style={{ transform: 'rotate(-90deg)' }}
+      >
+        {Array.from({ length: GAUGE_TICKS }, (_, i) => {
+          const angle = (i / GAUGE_TICKS) * 360
+          return (
+            <line
+              key={i}
+              x1={20}
+              y1={2.5}
+              x2={20}
+              y2={4.5}
+              stroke="currentColor"
+              strokeWidth={0.75}
+              className="text-ink-faint"
+              transform={`rotate(${angle} 20 20)`}
+            />
+          )
+        })}
+        <circle cx={20} cy={20} r={GAUGE_RADIUS} fill="none" stroke="currentColor" strokeWidth={1.5} className="text-panel-edge/70" />
+        <circle
+          className="metric-gauge-arc"
+          data-circumference={GAUGE_CIRCUMFERENCE}
+          cx={20}
+          cy={20}
+          r={GAUGE_RADIUS}
+          fill="none"
+          stroke={color}
+          strokeWidth={1.5}
+          strokeLinecap="round"
+          strokeDasharray={GAUGE_CIRCUMFERENCE}
+          strokeDashoffset={GAUGE_CIRCUMFERENCE}
+          style={{ filter: `drop-shadow(0 0 4px ${color})` }}
+        />
+      </svg>
 
       <p className="font-display text-3xl font-semibold tracking-tight tabular-nums md:text-4xl">
         {/* Screen readers get the canonical value; the animated digits are decorative. */}
@@ -81,11 +121,15 @@ export default function Metrics() {
   useGSAP(
     () => {
       const numbers = gsap.utils.toArray<HTMLElement>('.metric-number')
+      const gauges = gsap.utils.toArray<SVGCircleElement>('.metric-gauge-arc')
 
       if (reducedMotion) {
-        // If motion preference flips mid-flight, pin every counter to its final value.
+        // If motion preference flips mid-flight, pin every counter and gauge to their final state.
         numbers.forEach((el) => {
           if (el.dataset.final) el.textContent = el.dataset.final
+        })
+        gauges.forEach((gauge) => {
+          gauge.style.strokeDashoffset = '0'
         })
         return
       }
@@ -120,6 +164,8 @@ export default function Metrics() {
         const target = Number(el.dataset.target)
         const decimals = Number(el.dataset.decimals) || 0
         if (!Number.isFinite(target)) return
+        const gauge = gauges[i]
+        const circumference = gauge ? Number(gauge.dataset.circumference) : 0
         const proxy = { value: 0 }
         el.textContent = proxy.value.toFixed(decimals)
         tl.to(
@@ -130,6 +176,9 @@ export default function Metrics() {
             ease: 'power2.out',
             onUpdate: () => {
               el.textContent = proxy.value.toFixed(decimals)
+              if (gauge && target !== 0) {
+                gauge.style.strokeDashoffset = String(circumference * (1 - proxy.value / target))
+              }
             },
           },
           0.25 + i * 0.08,

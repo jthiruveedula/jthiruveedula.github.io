@@ -70,3 +70,4 @@ session-*.md
 
 # Local tool state store (root-anchored — must not match src/data)
 /data/
+docs/ROADMAP.md
