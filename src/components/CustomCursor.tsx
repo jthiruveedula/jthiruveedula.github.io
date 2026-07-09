@@ -4,18 +4,28 @@ import { useReducedMotion, useIsMobile } from '@/lib/hooks'
 const MAGNET_SELECTOR = 'a, button, [role="button"], input, summary, [data-magnetic]'
 const MAGNET_STRENGTH = 0.35
 
+/** Read a contextual cursor label from the hovered element. */
+function cursorLabelFor(el: HTMLElement | null): string | null {
+  if (!el) return null
+  const labeled = el.closest<HTMLElement>('[data-cursor-label]')
+  return labeled?.dataset.cursorLabel ?? null
+}
+
 // FUI custom cursor — a HUD dot + trailing ring that magnetizes toward
-// interactive targets, stretches with velocity, and pulses a ripple on
-// click. Desktop + fine-pointer only; reduced-motion disables it entirely
-// (native cursor stays). Decorative, aria-hidden, never blocks clicks.
+// interactive targets, stretches with velocity, pulses a ripple on click,
+// and displays contextual labels for links/buttons. Desktop + fine-pointer
+// only; reduced-motion disables it entirely (native cursor stays).
+// Decorative, aria-hidden, never blocks clicks.
 export default function CustomCursor() {
   const reduced = useReducedMotion()
   const isMobile = useIsMobile()
   const dotRef = useRef<HTMLDivElement>(null)
   const ringRef = useRef<HTMLDivElement>(null)
+  const labelRef = useRef<HTMLSpanElement>(null)
   const rippleLayerRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(false)
   const [hovering, setHovering] = useState(false)
+  const [label, setLabel] = useState<string | null>(null)
 
   useEffect(() => {
     if (reduced || isMobile) return
@@ -51,6 +61,7 @@ export default function CustomCursor() {
       const magnet = findMagnet(target)
       const interactive = Boolean(target?.closest('a, button, [role="button"], input, summary'))
       setHovering(interactive)
+      setLabel(cursorLabelFor(target))
       magnetized = magnet?.el ?? null
       targetX = magnet ? magnet.cx : mouseX
       targetY = magnet ? magnet.cy : mouseY
@@ -73,6 +84,10 @@ export default function CustomCursor() {
       const ring = ringRef.current
       if (ring) {
         ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) rotate(${angle}deg) scaleX(${stretch})`
+      }
+      const labelEl = labelRef.current
+      if (labelEl) {
+        labelEl.style.transform = `translate3d(${ringX}px, ${ringY + 28}px, 0)`
       }
       prevRingX = ringX
       prevRingY = ringY
@@ -101,7 +116,6 @@ export default function CustomCursor() {
       window.removeEventListener('pointerdown', onDown)
       document.removeEventListener('mouseleave', onLeave)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduced, isMobile])
 
   if (reduced || isMobile) return null
@@ -110,6 +124,12 @@ export default function CustomCursor() {
     <div className={`cursor-fui ${active ? 'cursor-fui--active' : ''}`} aria-hidden="true">
       <div ref={dotRef} className="cursor-fui__dot" />
       <div ref={ringRef} className={`cursor-fui__ring ${hovering ? 'cursor-fui__ring--hover' : ''}`} />
+      <span
+        ref={labelRef}
+        className={`cursor-fui__label ${label ? 'cursor-fui__label--visible' : ''}`}
+      >
+        {label}
+      </span>
       <div ref={rippleLayerRef} className="cursor-fui__ripple-layer" />
     </div>
   )

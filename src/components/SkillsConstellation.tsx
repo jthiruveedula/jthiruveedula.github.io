@@ -8,6 +8,7 @@ import type { Skill, SkillDomain } from '@/data/types'
 import { ERA_COLORS } from '@/data/types'
 import { useInView, useIsMobile, useReducedMotion, useWebGLSupport } from '@/lib/hooks'
 import { getSkillStory } from '@/lib/skillStory'
+import SplitText from '@/components/SplitText'
 import ConstellationScene, { DOMAIN_COLORS } from '@/scenes/ConstellationScene'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
@@ -132,18 +133,21 @@ export default function SkillsConstellation() {
   useGSAP(
     () => {
       if (reducedMotion || !sectionRef.current) return
-      gsap.from('[data-reveal]', {
-        autoAlpha: 0,
-        y: 24,
-        duration: 0.7,
-        ease: 'power2.out',
-        stagger: 0.05,
+      const tl = gsap.timeline({
+        defaults: { ease: 'power2.out' },
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 75%',
           once: true,
         },
       })
+      tl.from('[data-reveal]', { autoAlpha: 0, y: 24, duration: 0.7, stagger: 0.05 }, 0)
+      tl.from(
+        '.skills-head .split-word',
+        { yPercent: 110, autoAlpha: 0, duration: 0.8, stagger: 0.05, ease: 'power3.out' },
+        0.1,
+      )
+      tl.from('.skills-sub', { y: 20, autoAlpha: 0, duration: 0.6 }, 0.35)
     },
     { scope: sectionRef, dependencies: [reducedMotion], revertOnUpdate: true },
   )
@@ -176,10 +180,12 @@ export default function SkillsConstellation() {
       aria-label="Skills constellation"
       className="relative mx-auto max-w-6xl scroll-mt-24 px-4 py-24 sm:px-6 md:py-32"
     >
-      <header data-reveal className="max-w-3xl">
+      <header data-reveal className="skills-head max-w-3xl">
         <p className="hud-label">02 · capability map</p>
-        <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">Skills constellation</h2>
-        <p className="mt-4 text-ink-muted">
+        <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
+          <SplitText as="span">Skills constellation</SplitText>
+        </h2>
+        <p className="skills-sub mt-4 text-ink-muted">
           {totalSkills} skills across {groups.length} domains, from legacy warehouses to
           production GenAI. Core skills shine as named stars; the rest orbit their domain. Click a
           hub or legend chip to focus a domain — click any skill (star, node, or chip) to zoom in

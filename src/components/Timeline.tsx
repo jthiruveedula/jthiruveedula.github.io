@@ -6,6 +6,7 @@ import { portfolio } from '@/data/portfolio'
 import { ERA_COLORS, type Chapter, type Era, type Experience } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
 import Decrypt from '@/components/Decrypt'
+import SplitText from '@/components/SplitText'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -212,16 +213,28 @@ export default function Timeline() {
     () => {
       if (reducedMotion) return
 
-      // Section header rises in once its top clears the lower viewport.
+      // Section header: staggered word reveal on the headline, then subcopy fades up.
       gsap.fromTo(
-        '.tl-head',
-        { autoAlpha: 0, y: 32 },
+        '.tl-head .split-word',
+        { yPercent: 110, autoAlpha: 0 },
         {
+          yPercent: 0,
           autoAlpha: 1,
-          y: 0,
           duration: 0.8,
+          ease: 'power3.out',
+          stagger: 0.05,
+          scrollTrigger: { trigger: '.tl-head', start: 'top 82%', toggleActions: 'play none none none reverse' },
+        },
+      )
+      gsap.fromTo(
+        '.tl-sub',
+        { y: 24, autoAlpha: 0 },
+        {
+          y: 0,
+          autoAlpha: 1,
+          duration: 0.7,
           ease: 'power2.out',
-          scrollTrigger: { trigger: '.tl-head', start: 'top 82%', toggleActions: 'play none none reverse' },
+          scrollTrigger: { trigger: '.tl-head', start: 'top 78%', toggleActions: 'play none none none reverse' },
         },
       )
 
@@ -295,17 +308,15 @@ export default function Timeline() {
         <header className="tl-head max-w-3xl">
           <Decrypt as="p" className="hud-label" text="02 · career trajectory" />
           <h2 id="timeline-heading" className="mt-3 text-3xl font-bold text-ink md:text-5xl">
-            <span className="text-legacy">Legacy</span>
-            <span aria-hidden="true" className="mx-2 text-ink-faint md:mx-3">
-              →
-            </span>
-            <span className="text-cloud">Cloud</span>
-            <span aria-hidden="true" className="mx-2 text-ink-faint md:mx-3">
-              →
-            </span>
-            <span className="text-ai">Enterprise AI</span>
+            <SplitText
+              as="span"
+              accent={['Legacy', 'Cloud', 'AI']}
+              accentInnerClassName="split-word inline-block text-legacy"
+            >
+              Legacy → Cloud → Enterprise AI
+            </SplitText>
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-ink-muted md:text-lg">
+          <p className="tl-sub mt-4 text-base leading-relaxed text-ink-muted md:text-lg">
             Eleven years, seven roles, three eras — mainframe ETL fluency compounding into cloud-scale migrations,
             then into production GenAI. Follow the spine.
           </p>

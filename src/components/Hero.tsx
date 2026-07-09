@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import { ERA_COLORS } from '@/data/types'
 import { useInView, useIsMobile, useReducedMotion, useWebGLSupport } from '@/lib/hooks'
+import MotionButton from '@/components/MotionButton'
 
 // The three.js chunk is heavy — lazy-load the scene so the headline paints first.
 const HeroScene = lazy(() => import('@/scenes/HeroScene'))
@@ -84,6 +85,7 @@ export default function Hero() {
   const introRef = useRef({ p: reducedMotion ? 1 : 0 })
   /** Scroll progress through the hero — scrubbed by ScrollTrigger, read per frame. */
   const emphasisRef = useRef({ e: 0 })
+  const sceneWrapRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (reducedMotion) introRef.current.p = 1
@@ -106,6 +108,7 @@ export default function Hero() {
     () => {
       // Scroll shifts cluster emphasis legacy → AI while the hero scrolls out.
       if (!reducedMotion) {
+        // Scroll shifts cluster emphasis legacy → AI while the hero scrolls out.
         gsap.to(emphasisRef.current, {
           e: 1,
           ease: 'none',
@@ -116,6 +119,27 @@ export default function Hero() {
             scrub: 1,
           },
         })
+
+        // The 3D canvas gently recedes + fades as the visitor leaves the hero.
+        const wrap = sceneWrapRef.current
+        if (wrap) {
+          gsap.fromTo(
+            wrap,
+            { opacity: 1, scale: 1, y: 0 },
+            {
+              opacity: 0.25,
+              scale: 0.92,
+              y: -40,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1,
+              },
+            },
+          )
+        }
       }
 
       if (reducedMotion) return
@@ -125,9 +149,9 @@ export default function Hero() {
       // 3D intro: scattered burst → data mindscape (read by HeroScene's frame loop).
       tl.to(introRef.current, { p: 1, duration: 2.4, ease: 'power2.inOut' }, 0)
 
-      // Word-by-word headline reveal (manual span split — no SplitText plugin).
-      tl.from('[data-hero-reveal]', { y: 24, autoAlpha: 0, stagger: 0.06 }, 0.2)
-      tl.from('[data-hero-word]', { y: 24, autoAlpha: 0, stagger: 0.05, duration: 0.7 }, 0.35)
+      // Word-by-word headline reveal via lightweight split-word spans.
+      tl.from('.split-word', { yPercent: 110, autoAlpha: 0, stagger: 0.05, duration: 0.8, ease: 'power3.out' }, 0.35)
+      tl.from('[data-hero-reveal]', { y: 24, autoAlpha: 0, stagger: 0.06 }, 0.55)
 
       // Idle scroll-hint chevron bob.
       gsap.to('[data-hero-cue]', { y: 6, duration: 1.1, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 2.2 })
@@ -163,7 +187,7 @@ export default function Hero() {
       />
 
       {webgl ? (
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div ref={sceneWrapRef} aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 will-change-transform">
           <Suspense fallback={null}>
             <HeroScene
               active={inView}
@@ -200,15 +224,14 @@ export default function Hero() {
 
         <h1 className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-6xl lg:text-7xl">
           {H1_WORDS.map((word, i) => (
-            <span key={`${word}-${i}`} className="whitespace-pre-wrap">
-              {i > 0 && ' '}
+            <span key={`${word}-${i}`} className="inline-block overflow-hidden align-bottom">
               <span
-                data-hero-word
-                className="inline-block"
+                className="split-word inline-block"
                 style={word in H1_ERA_WORDS ? { color: H1_ERA_WORDS[word] } : undefined}
               >
                 {word}
               </span>
+              {i < H1_WORDS.length - 1 && '\u00A0'}
             </span>
           ))}
         </h1>
@@ -218,18 +241,22 @@ export default function Hero() {
         </p>
 
         <div data-hero-reveal className="mt-9 flex flex-wrap items-center gap-4">
-          <a
+          <MotionButton
+            as="a"
             href="#timeline"
+            cursorLabel="Explore"
             className="inline-flex min-h-11 cursor-pointer items-center rounded-md bg-accent px-6 py-3 font-display text-sm font-semibold text-void transition-colors hover:bg-accent-soft"
           >
             Explore the story
-          </a>
-          <a
+          </MotionButton>
+          <MotionButton
+            as="a"
             href="#contact"
+            cursorLabel="Contact"
             className="inline-flex min-h-11 cursor-pointer items-center rounded-md border border-panel-edge px-6 py-3 font-display text-sm font-medium text-ink transition-colors hover:border-accent hover:text-accent"
           >
             Get in touch
-          </a>
+          </MotionButton>
         </div>
       </div>
 

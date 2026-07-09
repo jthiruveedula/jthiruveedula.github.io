@@ -257,6 +257,10 @@ function Mindscape({
     const grow = 0.25 + 0.75 * e
     // Compress cluster spread on narrow viewports so all three eras stay on screen.
     const xScale = Math.max(0.35, Math.min(1, state.viewport.width / 22))
+    // Scroll emphasis pushes clusters apart and accelerates the migration flow.
+    const emphasis = Math.min(Math.max(emphasisRef.current.e, 0), 1)
+    const spread = 1 + emphasis * 0.7
+    const flowBoost = 1 + emphasis * 1.2
     const { kind, base, radius, theta0, speed, phase, size, flowT, scatter } = data
     const { matrix, position, quaternion, scale, color } = scratch
     let flowDirty = false
@@ -272,6 +276,7 @@ function Mindscape({
       switch (kind[i]) {
         case KIND_LEGACY:
           // Rigid grid with the faintest sway + pulse — old, but still alive.
+          x *= spread
           y += Math.sin(time * speed[i] + ph) * 0.04
           s *= 0.9 + 0.1 * Math.sin(time * speed[i] * 2 + ph)
           break
@@ -287,7 +292,7 @@ function Mindscape({
         case KIND_AI: {
           // Breathing shell + twinkle; base holds the unit direction.
           const shell = radius[i] + Math.sin(time * 0.4 + ph) * 0.12
-          x = AI_CENTER.x + base[j] * shell
+          x = AI_CENTER.x * spread + base[j] * shell
           y = AI_CENTER.y + base[j + 1] * shell
           z = AI_CENTER.z + base[j + 2] * shell
           s *= 0.75 + 0.25 * Math.sin(time * speed[i] + ph)
@@ -295,8 +300,8 @@ function Mindscape({
         }
         default: {
           // Migration flow: loop along the arc, recoloring through the eras.
-          const t = (flowT[i] + time * speed[i]) % 1
-          x = -CLUSTER_X + t * CLUSTER_X * 2
+          const t = (flowT[i] + time * speed[i] * flowBoost) % 1
+          x = -CLUSTER_X * spread + t * CLUSTER_X * 2 * spread
           y = Math.sin(t * Math.PI) * 1.5 - 0.2 + Math.sin(time * 1.2 + ph) * 0.15
           z = -0.9 + Math.sin(t * 8 + ph) * 0.5
           if (!reducedMotion) {
@@ -323,15 +328,17 @@ function Mindscape({
     // Scroll emphasis pans attention legacy → AI; pointer adds damped parallax.
     const group = groupRef.current
     if (group) {
-      const emphasis = Math.min(Math.max(emphasisRef.current.e, 0), 1)
       const pointer = pointerRef.current
-      const targetX = (0.5 - emphasis) * 3 * xScale
-      const targetRotY = pointer.x * 0.12 + (emphasis - 0.5) * 0.12
-      const targetRotX = -pointer.y * 0.07 + emphasis * 0.05
+      const targetX = (0.5 - emphasis) * 3.5 * xScale
+      const targetRotY = pointer.x * 0.12 + (emphasis - 0.5) * 0.18
+      const targetRotX = -pointer.y * 0.07 + emphasis * 0.06
+      const targetZ = -emphasis * 2.2
       if (reducedMotion) {
         group.position.x = targetX
+        group.position.z = targetZ
       } else {
         group.position.x = THREE.MathUtils.damp(group.position.x, targetX, 2.5, delta)
+        group.position.z = THREE.MathUtils.damp(group.position.z, targetZ, 2.5, delta)
         group.rotation.y = THREE.MathUtils.damp(group.rotation.y, targetRotY, 2.5, delta)
         group.rotation.x = THREE.MathUtils.damp(group.rotation.x, targetRotX, 2.5, delta)
       }

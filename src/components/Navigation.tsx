@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
+import { useLenis } from '@/components/SmoothScroll'
 import { useIsMobile, useReducedMotion } from '@/lib/hooks'
 
 gsap.registerPlugin(useGSAP)
@@ -40,6 +41,7 @@ function navIndex(i: number): string {
 export default function Navigation() {
   const reduced = useReducedMotion()
   const isMobile = useIsMobile()
+  const lenis = useLenis()
 
   const headerRef = useRef<HTMLElement | null>(null)
   const barRef = useRef<HTMLDivElement | null>(null)
@@ -155,9 +157,8 @@ export default function Navigation() {
       }
 
       const update = () => {
-        const doc = document.documentElement
-        const max = doc.scrollHeight - window.innerHeight
-        const y = Math.max(window.scrollY, 0)
+        const y = lenis ? Math.max(lenis.scroll, 0) : Math.max(window.scrollY, 0)
+        const max = lenis ? lenis.limit : document.documentElement.scrollHeight - window.innerHeight
         const progress = max > 0 ? Math.min(y / max, 1) : 0
         if (glideBeam) glideBeam(progress)
         else gsap.set(beam, { scaleX: progress })
@@ -183,15 +184,20 @@ export default function Navigation() {
       }
 
       update()
+      if (lenis) {
+        lenis.on('scroll', update)
+        return () => {
+          window.clearTimeout(settleTimer)
+          lenis.off('scroll', update)
+        }
+      }
       window.addEventListener('scroll', update, { passive: true })
-      window.addEventListener('resize', update)
       return () => {
         window.clearTimeout(settleTimer)
         window.removeEventListener('scroll', update)
-        window.removeEventListener('resize', update)
       }
     },
-    { scope: headerRef, dependencies: [reduced], revertOnUpdate: true },
+    { scope: headerRef, dependencies: [reduced, lenis], revertOnUpdate: true },
   )
 
   /* ---- Entrance: bar drops in, HUD items cascade ---- */
