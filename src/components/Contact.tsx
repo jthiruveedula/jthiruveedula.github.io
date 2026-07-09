@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import { ERA_COLORS } from '@/data/types'
 import { useInView, useReducedMotion } from '@/lib/hooks'
+import MotionButton from '@/components/MotionButton'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -89,7 +90,7 @@ export default function Contact() {
     [],
   )
 
-  const handleCardPointerMove = (e: ReactPointerEvent<HTMLAnchorElement>) => {
+  const handleCardPointerMove = (e: ReactPointerEvent<HTMLElement>) => {
     if (reduced) return
     const rect = e.currentTarget.getBoundingClientRect()
     const mx = ((e.clientX - rect.left) / rect.width) * 100
@@ -98,7 +99,7 @@ export default function Contact() {
     e.currentTarget.style.setProperty('--my', `${my}%`)
   }
 
-  const handleCardPointerLeave = (e: ReactPointerEvent<HTMLAnchorElement>) => {
+  const handleCardPointerLeave = (e: ReactPointerEvent<HTMLElement>) => {
     e.currentTarget.style.setProperty('--mx', '50%')
     e.currentTarget.style.setProperty('--my', '50%')
   }
@@ -219,9 +220,11 @@ export default function Contact() {
         <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {channels.map((channel) => (
             <li key={channel.id} className="contact-card">
-              <a
+              <MotionButton
+                as="a"
                 href={channel.href}
-                {...(channel.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                external={channel.external}
+                cursorLabel={channel.label}
                 onPointerMove={handleCardPointerMove}
                 onPointerLeave={handleCardPointerLeave}
                 className={`tilt-card group flex h-full flex-col gap-3 rounded-xl border border-panel-edge bg-panel/60 p-5 backdrop-blur-md transition duration-300 hover:-translate-y-1 ${channel.hoverClass}`}
@@ -237,7 +240,7 @@ export default function Contact() {
                   </span>
                   {channel.external && <span className="sr-only">(opens in a new tab)</span>}
                 </span>
-              </a>
+              </MotionButton>
             </li>
           ))}
         </ul>

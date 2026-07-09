@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import { ERA_COLORS, type Era, type Metric } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
+import SplitText from '@/components/SplitText'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -153,6 +154,12 @@ export default function Metrics() {
         0,
       )
       tl.fromTo(
+        '.impact-head .split-word',
+        { yPercent: 110, autoAlpha: 0 },
+        { yPercent: 0, autoAlpha: 1, duration: 0.8, stagger: 0.05, ease: 'power3.out' },
+        0.1,
+      )
+      tl.fromTo(
         tiles,
         { autoAlpha: 0, y: 36 },
         { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.08 },
@@ -218,7 +225,7 @@ export default function Metrics() {
           id="impact-heading"
           className="impact-head mt-3 text-3xl font-semibold text-ink md:text-4xl"
         >
-          Impact, measured
+          <SplitText as="span">Impact, measured</SplitText>
         </h2>
         <p className="impact-head mt-3 max-w-xl text-sm leading-relaxed text-ink-muted md:text-base">
           Eleven years across legacy, cloud, and enterprise AI — reduced to the numbers that

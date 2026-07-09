@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -285,12 +285,12 @@ interface ProjectCardProps {
   project: FeaturedProject
   index: number
   total: number
+  onExpand?: (project: FeaturedProject, cardEl: HTMLElement) => void
 }
 
-export default function ProjectCard({ project, index, total }: ProjectCardProps) {
+export default function ProjectCard({ project, index, total, onExpand }: ProjectCardProps) {
   const [cardRef, inView] = useInView<HTMLElement>()
   const reduced = useReducedMotion()
-  const [open, setOpen] = useState(false)
   const loopRef = useRef<gsap.core.Timeline | null>(null)
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLElement>) => {
@@ -313,7 +313,6 @@ export default function ProjectCard({ project, index, total }: ProjectCardProps)
 
   const meta = ERA_META[project.era]
   const accent = ERA_COLORS[project.era]
-  const panelId = `project-details-${project.id}`
   const frontMetrics = project.metrics.slice(0, 2)
   const frontTech = project.tech.slice(0, 5)
   const moreTech = project.tech.length - frontTech.length
@@ -481,16 +480,17 @@ export default function ProjectCard({ project, index, total }: ProjectCardProps)
 
         <button
           type="button"
-          aria-expanded={open}
-          aria-controls={panelId}
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => {
+            const el = cardRef.current
+            if (el && onExpand) onExpand(project, el)
+          }}
           className={`mt-6 inline-flex min-h-11 cursor-pointer items-center gap-2 self-start font-mono text-xs uppercase tracking-[0.18em] ${meta.text}`}
         >
-          {open ? 'Collapse' : 'View transformation'}
+          View transformation
           <svg
             aria-hidden="true"
             viewBox="0 0 16 16"
-            className={`h-3.5 w-3.5 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+            className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
             fill="none"
             stroke="currentColor"
             strokeWidth="1.8"
@@ -502,64 +502,6 @@ export default function ProjectCard({ project, index, total }: ProjectCardProps)
         </button>
       </div>
 
-      {/* Expandable details — grid-template-rows trick; content stays in DOM. */}
-      <div
-        id={panelId}
-        aria-hidden={!open}
-        className="relative grid transition-[grid-template-rows] duration-300 ease-out"
-        style={{ gridTemplateRows: open ? '1fr' : '0fr' }}
-      >
-        <div className="overflow-hidden">
-          <div className="border-t border-panel-edge/70 px-6 pb-6 pt-5 md:px-7">
-            <p className="text-sm leading-relaxed text-ink-muted">{project.description}</p>
-
-            {(project.before || project.after) && (
-              <div className="mt-5 grid items-stretch gap-4 md:grid-cols-[1fr_auto_1fr]">
-                {project.before && (
-                  <div className="rounded-lg border-l-2 border-legacy/70 bg-surface/50 p-4">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-legacy">Before</p>
-                    <p className="mt-2 text-xs leading-relaxed text-ink-muted md:text-sm">{project.before}</p>
-                  </div>
-                )}
-                <div aria-hidden="true" className="flex items-center justify-center py-1">
-                  <svg viewBox="0 0 64 20" className="h-5 w-16 rotate-90 md:rotate-0">
-                    <line x1="4" y1="10" x2="52" y2="10" stroke={FAINT} strokeWidth="1.5" strokeDasharray="3 4" />
-                    <path d="M52 4l8 6-8 6" fill="none" stroke={FAINT} strokeWidth="1.5" strokeLinejoin="round" />
-                    <circle className="viz-flow" data-dx="44" data-dur="1.4" cx="6" cy="10" r="3" fill={accent} opacity="0.6" />
-                  </svg>
-                </div>
-                {project.after && (
-                  <div className={`rounded-lg border-l-2 bg-surface/50 p-4 ${meta.afterBorder}`}>
-                    <p className={`font-mono text-[10px] uppercase tracking-[0.2em] ${meta.text}`}>After</p>
-                    <p className="mt-2 text-xs leading-relaxed text-ink-muted md:text-sm">{project.after}</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
-              {project.metrics.map((m) => (
-                <div key={m.label} className="flex flex-col-reverse">
-                  <dt className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-faint">{m.label}</dt>
-                  <dd className="font-display text-lg font-semibold text-ink">{m.value}</dd>
-                </div>
-              ))}
-            </dl>
-
-            <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-faint">Full stack</p>
-            <ul aria-label="Full technology stack" className="mt-2 flex flex-wrap gap-2">
-              {project.tech.map((t) => (
-                <li
-                  key={t}
-                  className="rounded-full border border-panel-edge bg-surface/70 px-3 py-1 font-mono text-[11px] text-ink-muted"
-                >
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
     </article>
   )
 }

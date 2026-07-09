@@ -1,12 +1,16 @@
-import { useRef } from 'react'
+import { useRef, useState, useCallback } from 'react'
 import gsap from 'gsap'
+import { Flip } from 'gsap/Flip'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
+import type { FeaturedProject } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
 import ProjectCard from '@/components/ProjectCard'
+import ProjectCaseStudy from '@/components/ProjectCaseStudy'
+import SplitText from '@/components/SplitText'
 
-gsap.registerPlugin(useGSAP, ScrollTrigger)
+gsap.registerPlugin(useGSAP, ScrollTrigger, Flip)
 
 const ERA_LEGEND = [
   { era: 'legacy', label: 'Legacy', dot: 'bg-legacy' },
@@ -18,22 +22,41 @@ export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null)
   const reduced = useReducedMotion()
   const projects = portfolio.featuredProjects
+  const [expandedProject, setExpandedProject] = useState<FeaturedProject | null>(null)
+  const [flipState, setFlipState] = useState<Flip.FlipState | null>(null)
+
+  const handleExpand = useCallback((project: FeaturedProject, cardEl: HTMLElement) => {
+    if (reduced) {
+      setExpandedProject(project)
+      return
+    }
+    const state = Flip.getState(cardEl)
+    setFlipState(state)
+    setExpandedProject(project)
+  }, [reduced])
+
+  const handleClose = useCallback(() => {
+    setExpandedProject(null)
+    setFlipState(null)
+  }, [])
 
   useGSAP(
     () => {
       if (reduced) return
-      gsap.from('.projects-reveal', {
-        autoAlpha: 0,
-        y: 28,
-        duration: 0.7,
-        ease: 'power3.out',
-        stagger: 0.1,
+      const tl = gsap.timeline({
+        defaults: { ease: 'power3.out' },
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 78%',
           once: true,
         },
       })
+      tl.from('.projects-reveal', { autoAlpha: 0, y: 28, duration: 0.7, stagger: 0.1 }, 0)
+      tl.from(
+        '.projects-head .split-word',
+        { yPercent: 110, autoAlpha: 0, duration: 0.8, stagger: 0.05, ease: 'power3.out' },
+        0.1,
+      )
     },
     { scope: sectionRef, dependencies: [reduced], revertOnUpdate: true },
   )
@@ -52,10 +75,10 @@ export default function Projects() {
       </div>
 
       <div className="relative mx-auto w-full max-w-6xl px-6">
-        <header className="max-w-3xl">
+        <header className="projects-head max-w-3xl">
           <p className="projects-reveal hud-label">04 · featured work</p>
           <h2 className="projects-reveal mt-4 text-3xl font-semibold text-ink md:text-5xl">
-            Featured Transformations
+            <SplitText as="span">Featured Transformations</SplitText>
           </h2>
           <p className="projects-reveal mt-5 text-base leading-relaxed text-ink-muted md:text-lg">
             Six flagship engagements across three eras — every one shipped to production, every
@@ -81,10 +104,19 @@ export default function Projects() {
               project={project}
               index={index}
               total={projects.length}
+              onExpand={handleExpand}
             />
           ))}
         </div>
       </div>
+
+      {expandedProject && (
+        <ProjectCaseStudy
+          project={expandedProject}
+          flipState={flipState ?? undefined}
+          onClose={handleClose}
+        />
+      )}
     </section>
   )
 }

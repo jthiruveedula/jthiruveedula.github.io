@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type JSX } from 'react'
+import { createElement, useEffect, useRef, useState, type JSX, type ReactElement } from 'react'
 import { useReducedMotion } from '@/lib/hooks'
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789·/'
@@ -61,10 +61,10 @@ export default function Decrypt({
     return () => observer.disconnect()
   }, [reduced, text])
 
-  const Comp = Tag as any
-  return (
-    <Comp ref={ref} className={className} aria-label={text}>
-      <span aria-hidden="true">{display}</span>
-    </Comp>
-  )
+  const Comp = Tag as keyof JSX.IntrinsicElements
+  return createElement(
+    Comp,
+    { ref, className, 'aria-label': text },
+    <span aria-hidden="true">{display}</span>,
+  ) as ReactElement
 }

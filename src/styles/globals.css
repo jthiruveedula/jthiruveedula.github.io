@@ -42,6 +42,21 @@ html {
   scrollbar-color: #1e2a45 #050810;
 }
 
+/* Lenis smooth-scroll hooks: disable native scroll-behavior while Lenis is active. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+html.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+html.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+html.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
 body {
   @apply bg-void text-ink font-body antialiased;
   overflow-x: hidden;
@@ -285,6 +300,29 @@ h4 {
   margin: -23px;
   opacity: 1;
   border-color: var(--color-accent);
+}
+.cursor-fui__label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate3d(0, 0, 0);
+  margin-top: 14px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(11, 17, 32, 0.85);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  font-family: var(--font-mono, monospace);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-soft);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  will-change: transform;
+}
+.cursor-fui__label--visible {
+  opacity: 1;
 }
 .cursor-fui__ripple-layer {
   position: absolute;

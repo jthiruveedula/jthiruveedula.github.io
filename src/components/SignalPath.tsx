@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLenis } from '@/components/SmoothScroll'
 import { useReducedMotion } from '@/lib/hooks'
 
 const STOPS: { id: string; label: string }[] = [
@@ -15,8 +16,10 @@ const STOPS: { id: string; label: string }[] = [
 // the legacy → cloud → AI arc — the same journey the résumé content tells.
 // Tick marks map to section boundaries; nearest tick's label fades in.
 // Reduced-motion: rail + static ticks only, no traveling pulse.
+// Syncs to Lenis when available so the pulse tracks the smoothed scroll.
 export default function SignalPath() {
   const reduced = useReducedMotion()
+  const lenis = useLenis()
   const pulseRef = useRef<HTMLDivElement>(null)
   const [ticks, setTicks] = useState<{ id: string; label: string; top: number }[]>([])
   const [activeLabel, setActiveLabel] = useState<string | null>(null)
@@ -39,12 +42,12 @@ export default function SignalPath() {
   }, [])
 
   useEffect(() => {
-    let raf = 0
     const update = () => {
-      raf = 0
       const doc = document.documentElement
-      const max = doc.scrollHeight - doc.clientHeight
-      const progress = max > 0 ? Math.min(1, Math.max(0, doc.scrollTop / max)) : 0
+      const progress = lenis ? lenis.progress : (() => {
+        const max = doc.scrollHeight - doc.clientHeight
+        return max > 0 ? Math.min(1, Math.max(0, doc.scrollTop / max)) : 0
+      })()
       const pulse = pulseRef.current
       if (pulse) {
         pulse.style.setProperty('--signal-progress', String(progress))
@@ -63,6 +66,17 @@ export default function SignalPath() {
       }
       setActiveLabel(nearestId)
     }
+
+    if (lenis) {
+      lenis.on('scroll', update)
+      update()
+      return () => {
+        lenis.off('scroll', update)
+      }
+    }
+
+    // Fallback for reduced-motion / no Lenis.
+    let raf = 0
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update)
     }
@@ -74,7 +88,7 @@ export default function SignalPath() {
       window.removeEventListener('resize', onScroll)
       if (raf) cancelAnimationFrame(raf)
     }
-  }, [])
+  }, [lenis])
 
   return (
     <div className="signal-path" aria-hidden="true">
