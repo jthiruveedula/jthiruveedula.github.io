@@ -348,6 +348,14 @@ h4 {
     opacity: 0;
   }
 }
+@keyframes scan {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(420%);
+  }
+}
 @media (pointer: fine) {
   html:has(.cursor-fui--active) {
     cursor: none;
