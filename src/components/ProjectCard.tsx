@@ -413,10 +413,21 @@ export default function ProjectCard({ project, index, total, onExpand }: Project
       ref={cardRef}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      className={`glass-panel tilt-card relative flex flex-col overflow-hidden rounded-2xl border-t-2 ${meta.topBorder} transition-shadow duration-300 ${meta.glow}`}
+      className={`glass-panel tilt-card group relative flex flex-col overflow-hidden rounded-2xl border-t-2 ${meta.topBorder} transition-shadow duration-300 ${meta.glow}`}
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-25">
         <VizMotif type={project.vizType} accent={accent} />
+      </div>
+
+      {/* Signature: a scan line sweeps the card on hover (motion-safe). */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 z-10 h-px overflow-hidden"
+      >
+        <span
+          className="block h-full w-1/3 -translate-x-full opacity-0 transition-opacity duration-300 motion-safe:group-hover:opacity-100 motion-safe:group-hover:animate-[scan_1.1s_ease-in-out]"
+          style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+        />
       </div>
 
       <div className="relative flex flex-1 flex-col p-6 md:p-7">
