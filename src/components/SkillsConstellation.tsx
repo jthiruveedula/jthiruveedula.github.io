@@ -10,6 +10,7 @@ import { useInView, useIsMobile, useReducedMotion, useWebGLSupport } from '@/lib
 import { getSkillStory } from '@/lib/skillStory'
 import SplitText from '@/components/SplitText'
 import ConstellationScene, { DOMAIN_COLORS } from '@/scenes/ConstellationScene'
+import Decrypt from '@/components/Decrypt'
 import SectionSweep from '@/components/SectionSweep'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
@@ -182,7 +183,7 @@ export default function SkillsConstellation() {
       className="relative mx-auto max-w-6xl scroll-mt-24 px-4 py-24 sm:px-6 md:py-32"
     >
       <header data-reveal className="skills-head max-w-3xl">
-        <p className="hud-label section-kicker">04 · capability map</p>
+        <Decrypt as="p" className="hud-label section-kicker" text="04 · capability map" />
         <SectionSweep />
         <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
           <SplitText as="span">Skills constellation</SplitText>

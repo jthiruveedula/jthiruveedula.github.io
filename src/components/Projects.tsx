@@ -9,6 +9,7 @@ import { useReducedMotion } from '@/lib/hooks'
 import ProjectCard from '@/components/ProjectCard'
 import ProjectCaseStudy from '@/components/ProjectCaseStudy'
 import SplitText from '@/components/SplitText'
+import Decrypt from '@/components/Decrypt'
 import SectionSweep from '@/components/SectionSweep'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, Flip)
@@ -77,7 +78,7 @@ export default function Projects() {
 
       <div className="relative mx-auto w-full max-w-6xl px-6">
         <header className="projects-head max-w-3xl">
-          <p className="projects-reveal hud-label section-kicker">05 · featured work</p>
+          <Decrypt as="p" className="projects-reveal hud-label section-kicker" text="05 · featured work" />
           <SectionSweep />
           <h2 className="projects-reveal mt-4 text-3xl font-semibold text-ink md:text-5xl">
             <SplitText as="span">Featured Transformations</SplitText>
