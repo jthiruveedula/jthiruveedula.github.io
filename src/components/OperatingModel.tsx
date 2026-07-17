@@ -63,6 +63,7 @@ const COLOR: Record<Pillar['era'], string> = {
 export default function OperatingModel() {
   const reducedMotion = useReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
+  const spineFillRef = useRef<HTMLSpanElement>(null)
 
   useGSAP(
     () => {
@@ -71,6 +72,9 @@ export default function OperatingModel() {
 
       if (reducedMotion) {
         gsap.set([...heads, ...cards], { autoAlpha: 1, y: 0 })
+        const nodes = gsap.utils.toArray<HTMLElement>('[data-om-node]')
+        gsap.set(spineFillRef.current, { height: '100%' })
+        nodes.forEach((node, i) => gsap.set(node, { backgroundColor: COLOR[PILLARS[i].era], scale: 1.3 }))
         return
       }
 
@@ -86,6 +90,28 @@ export default function OperatingModel() {
         0.1,
       )
       tl.fromTo(cards, { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.1 }, 0.2)
+
+      // Signature: the operating spine draws down and each node ignites in turn.
+      const nodes = gsap.utils.toArray<HTMLElement>('[data-om-node]')
+      tl.fromTo(
+        spineFillRef.current,
+        { height: '0%' },
+        { height: '100%', duration: 1.2, ease: 'power2.out' },
+        0.2,
+      )
+      nodes.forEach((node, i) => {
+        tl.to(
+          node,
+          {
+            backgroundColor: COLOR[PILLARS[i].era],
+            scale: 1.4,
+            boxShadow: `0 0 14px ${COLOR[PILLARS[i].era]}`,
+            duration: 0.45,
+            ease: 'back.out(2)',
+          },
+          0.25 + i * 0.24,
+        )
+      })
     },
     { scope: sectionRef, dependencies: [reducedMotion], revertOnUpdate: true },
   )
@@ -123,13 +149,38 @@ export default function OperatingModel() {
           every engagement.
         </p>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-2">
-          {PILLARS.map((pillar) => (
-            <article
-              key={pillar.verb}
-              className="om-card glass-panel tilt-card relative flex flex-col gap-3 overflow-hidden rounded-2xl border-t-2 bg-panel/60 p-6 backdrop-blur-md transition duration-300 hover:-translate-y-1"
-              style={{ borderTopColor: COLOR[pillar.era] }}
-            >
+        <div className="relative mt-12">
+          {/* Operating spine — the loop made visible. Draws as pillars reveal. */}
+          <div
+            aria-hidden="true"
+            className="absolute left-2 top-1 bottom-1 w-px -translate-x-1/2 md:left-3"
+          >
+            <span className="absolute inset-0 rounded-full bg-panel-edge" />
+            <span
+              ref={spineFillRef}
+              className="absolute inset-x-0 top-0 h-0 origin-top rounded-full"
+              style={{
+                background:
+                  'linear-gradient(to bottom, #f59e0b 0%, #22d3ee 48%, #a78bfa 74%, #22d3ee 100%)',
+              }}
+            />
+            {PILLARS.map((pillar, i) => (
+              <span
+                key={pillar.verb}
+                data-om-node={i}
+                className="absolute left-1/2 h-2.5 w-2.5 -translate-x-1/2 rounded-full border border-panel-edge bg-void transition-transform"
+                style={{ top: `${((i + 0.5) / PILLARS.length) * 100}%` }}
+              />
+            ))}
+          </div>
+
+          <div className="grid gap-4 pl-8 md:grid-cols-2 md:pl-12">
+            {PILLARS.map((pillar) => (
+              <article
+                key={pillar.verb}
+                className="om-card glass-panel tilt-card relative flex flex-col gap-3 overflow-hidden rounded-2xl border-t-2 bg-panel/60 p-6 backdrop-blur-md transition duration-300 hover:-translate-y-1"
+                style={{ borderTopColor: COLOR[pillar.era] }}
+              >
               {/* Era hairline */}
               <span
                 aria-hidden="true"
@@ -159,6 +210,7 @@ export default function OperatingModel() {
               </p>
             </article>
           ))}
+          </div>
         </div>
       </div>
     </section>
