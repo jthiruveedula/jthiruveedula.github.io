@@ -355,7 +355,7 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
           ))}
         </h1>
 
-        <p data-hero-reveal className="mt-6 mx-auto max-w-2xl text-center text-base leading-relaxed text-ink-muted sm:text-lg">
+        <p data-hero-reveal className="mt-6 mx-auto max-w-2xl text-center text-base leading-relaxed text-ink-muted bg-void/20 backdrop-blur-sm rounded-xl px-6 py-3 sm:text-lg">
           {summaryLead}
         </p>
 
