@@ -145,6 +145,29 @@ h4 {
     --tilt-scale: 0.98;
   }
 }
+/* Hover elevation — lifts every tilt-card slightly for a tactile rise. */
+.tilt-card:hover {
+  --tilt-scale: 1.02;
+}
+/* Cursor-tracked depth parallax — background motif drifts opposite the pointer
+   while the foreground content leans into it, giving cards real 3D depth.
+   --px/--py are unitless (-0.5..0.5) set by the card's pointer handler. */
+.project-viz {
+  transform: translate3d(calc(var(--px, 0) * -16px), calc(var(--py, 0) * -16px), 0);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+.project-content {
+  transform: translate3d(calc(var(--px, 0) * 7px), calc(var(--py, 0) * 7px), 0);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .project-viz,
+  .project-content {
+    transform: none;
+  }
+}
 
 /* Top-of-page scroll progress indicator */
 .scroll-progress {
