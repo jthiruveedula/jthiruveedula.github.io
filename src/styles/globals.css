@@ -187,6 +187,20 @@ h4 {
   .scroll-cue__ring { animation: none; }
 }
 
+/* Hero headline aura — slow breathing light behind the copy */
+@keyframes hero-aura {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.08); }
+}
+.hero-aura {
+  background: radial-gradient(closest-side, rgba(34, 211, 238, 0.18), transparent 72%);
+  filter: blur(26px);
+  animation: hero-aura 6.5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-aura { animation: none; opacity: 0.45; }
+}
+
 /* Signal Path — narrative spine: legacy -> cloud -> AI, traced top to bottom */
 .signal-path {
   position: fixed;
