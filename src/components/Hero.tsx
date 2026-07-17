@@ -87,6 +87,10 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
   /** Scroll progress through the hero — scrubbed by ScrollTrigger, read per frame. */
   const emphasisRef = useRef({ e: 0 })
   const sceneWrapRef = useRef<HTMLDivElement>(null)
+  /** Hero copy block — gets a subtle cursor-reactive 3D tilt (HyperFrames signature). */
+  const copyRef = useRef<HTMLDivElement>(null)
+  /** Spring-backed tilt setters, created inside useGSAP and reused by the pointer handler. */
+  const tiltRef = useRef<{ x: (v: number) => void; y: (v: number) => void } | null>(null)
 
   useEffect(() => {
     if (reducedMotion) introRef.current.p = 1
@@ -147,7 +151,13 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
 
       // Hide entrance elements immediately (pre-paint) so nothing flashes behind the
       // loading intro; the reveal is played once the intro hands off control.
-      gsap.set(words, { yPercent: 110, autoAlpha: 0 })
+      gsap.set(words, {
+        yPercent: 120,
+        autoAlpha: 0,
+        rotateX: -88,
+        transformOrigin: '50% 100%',
+        filter: 'blur(10px)',
+      })
       gsap.set(reveals, { y: 24, autoAlpha: 0 })
 
       // Scroll shifts cluster emphasis legacy → AI while the hero scrolls out.
@@ -186,6 +196,14 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
         }
       }
 
+      // Cursor-reactive 3D tilt on the hero copy — spring-backed, subtle (max ~4deg).
+      if (copyRef.current) {
+        tiltRef.current = {
+          x: gsap.quickTo(copyRef.current, 'rotationY', { duration: 0.6, ease: 'power3' }),
+          y: gsap.quickTo(copyRef.current, 'rotationX', { duration: 0.6, ease: 'power3' }),
+        }
+      }
+
       // Entrance choreography — runs once the loading intro signals completion.
       const playIntro = () => {
         if (reducedMotion) return
@@ -194,8 +212,20 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
         // 3D intro: scattered burst → data mindscape (read by HeroScene's frame loop).
         tl.to(introRef.current, { p: 1, duration: 2.4, ease: 'power2.inOut' }, 0)
 
-        // Word-by-word headline reveal via lightweight split-word spans.
-        tl.to(words, { yPercent: 0, autoAlpha: 1, stagger: 0.05, duration: 0.8, ease: 'power3.out' }, 0.35)
+        // Word-by-word headline reveal — 3D flip-up from a clipped horizon + de-blur.
+        tl.to(
+          words,
+          {
+            yPercent: 0,
+            autoAlpha: 1,
+            rotateX: 0,
+            filter: 'blur(0px)',
+            stagger: 0.07,
+            duration: 1.0,
+            ease: 'power4.out',
+          },
+          0.35,
+        )
         tl.to(reveals, { y: 0, autoAlpha: 1, stagger: 0.06 }, 0.55)
 
         // Cinematic count-up on the proof ribbon — evidence over adjectives.
@@ -233,6 +263,10 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
     if (reducedMotion) return
     pointerRef.current.x = (event.clientX / window.innerWidth) * 2 - 1
     pointerRef.current.y = (event.clientY / window.innerHeight) * 2 - 1
+    if (tiltRef.current) {
+      tiltRef.current.x(pointerRef.current.x * 4)
+      tiltRef.current.y(-pointerRef.current.y * 4)
+    }
   }
 
   return (
@@ -284,7 +318,13 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
       />
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-[5] h-40 bg-gradient-to-b from-transparent to-void" />
 
-      <div className="mx-auto w-full max-w-6xl px-6 py-28 sm:px-10">
+      <div
+        ref={copyRef}
+        style={{ transformStyle: 'preserve-3d', perspective: '1000px' }}
+        className="relative mx-auto w-full max-w-6xl px-6 py-28 sm:px-10"
+      >
+        {/* Breathing aura behind the headline — gives the copy a living, lit feel. */}
+        <div aria-hidden="true" className="hero-aura pointer-events-none absolute -top-6 left-0 -z-10 h-72 w-full" />
         <p data-hero-reveal className="hud-label flex flex-wrap items-center gap-x-3 gap-y-1">
           <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
           <span>{profile.name}</span>
@@ -294,7 +334,10 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
           <span>{hudLine}</span>
         </p>
 
-        <h1 className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+        <h1
+          style={{ perspective: 900 }}
+          className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-6xl lg:text-7xl"
+        >
           {H1_WORDS.map((word, i) => (
             <span key={`${word}-${i}`} className="inline-block overflow-hidden align-bottom">
               <span
