@@ -303,12 +303,16 @@ export default function ProjectCard({ project, index, total, onExpand }: Project
     el.style.setProperty('--my', `${py * 100}%`)
     el.style.setProperty('--ry', `${(px - 0.5) * 6}deg`)
     el.style.setProperty('--rx', `${(0.5 - py) * 6}deg`)
+    el.style.setProperty('--px', `${px - 0.5}`)
+    el.style.setProperty('--py', `${py - 0.5}`)
   }
 
   const handlePointerLeave = (event: ReactPointerEvent<HTMLElement>) => {
     const el = event.currentTarget
     el.style.setProperty('--rx', '0deg')
     el.style.setProperty('--ry', '0deg')
+    el.style.setProperty('--px', '0')
+    el.style.setProperty('--py', '0')
   }
 
   const meta = ERA_META[project.era]
@@ -415,7 +419,7 @@ export default function ProjectCard({ project, index, total, onExpand }: Project
       onPointerLeave={handlePointerLeave}
       className={`glass-panel tilt-card group relative flex flex-col overflow-hidden rounded-2xl border-t-2 ${meta.topBorder} transition-shadow duration-300 ${meta.glow}`}
     >
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-25">
+      <div aria-hidden="true" className="project-viz pointer-events-none absolute inset-0 opacity-25">
         <VizMotif type={project.vizType} accent={accent} />
       </div>
 
@@ -430,7 +434,7 @@ export default function ProjectCard({ project, index, total, onExpand }: Project
         />
       </div>
 
-      <div className="relative flex flex-1 flex-col p-6 md:p-7">
+      <div className="project-content relative flex flex-1 flex-col p-6 md:p-7">
         <div className="flex flex-wrap items-center gap-3">
           <span
             className={`inline-flex items-center rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] ${meta.chip}`}
