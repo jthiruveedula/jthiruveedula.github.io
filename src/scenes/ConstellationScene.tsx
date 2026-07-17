@@ -131,12 +131,19 @@ function Cluster({
   const orbitRef = useRef<THREE.InstancedMesh>(null)
   const orbitGroupRef = useRef<THREE.Group>(null)
   const [hubHover, setHubHover] = useState(false)
-  useCursor(hubHover)
+  const [hoveredNode, setHoveredNode] = useState<{ type: 'tier1' | 'orbit'; index: number } | null>(null)
+  const hoverT = useRef(0)
+  const lastHover = useRef<{ type: 'tier1' | 'orbit'; index: number } | null>(null)
+  const glowRef = useRef<THREE.MeshBasicMaterial>(null)
+  const m = useMemo(() => new THREE.Matrix4(), [])
+  const s = useMemo(() => new THREE.Vector3(), [])
+  useCursor(hubHover || hoveredNode !== null)
+
+  const baseScale = (type: 'tier1' | 'orbit', node: SkillNode) =>
+    type === 'tier1' ? 1 : node.skill.tier === 2 ? 1 : 0.68
 
   // Write static instance matrices once per layout.
   useLayoutEffect(() => {
-    const m = new THREE.Matrix4()
-    const s = new THREE.Vector3()
     const tier1Mesh = tier1Ref.current
     if (tier1Mesh) {
       cluster.tier1.forEach((node, i) => {
@@ -158,10 +165,37 @@ function Cluster({
   }, [cluster])
 
   // Tier-2/3 points slowly orbit their domain hub (paused while focused so labels hold still).
+  // Hovered node eases up in scale + drives an additive glow halo (the literal "light on hover").
   useFrame((_, delta) => {
     if (!animate || focused) return
     const g = orbitGroupRef.current
     if (g) g.rotation.y += delta * cluster.orbitSpeed
+
+    const target = hoveredNode ? 1 : 0
+    hoverT.current += (target - hoverT.current) * Math.min(1, delta * 12)
+    const t = hoverT.current
+
+    const applyScale = (type: 'tier1' | 'orbit', index: number, scale: number) => {
+      const mesh = type === 'tier1' ? tier1Ref.current : orbitRef.current
+      const nodesArr = type === 'tier1' ? cluster.tier1 : cluster.orbit
+      const node = nodesArr[index]
+      if (!mesh || !node) return
+      m.compose(node.local, IDENTITY_QUAT, s.setScalar(scale))
+      mesh.setMatrixAt(index, m)
+      mesh.instanceMatrix.needsUpdate = true
+    }
+
+    if (hoveredNode) {
+      const node = (hoveredNode.type === 'tier1' ? cluster.tier1 : cluster.orbit)[hoveredNode.index]
+      if (node) applyScale(hoveredNode.type, hoveredNode.index, baseScale(hoveredNode.type, node) * (1 + t * 1.1))
+    }
+    if (lastHover.current && (!hoveredNode || hoveredNode.type !== lastHover.current.type || hoveredNode.index !== lastHover.current.index)) {
+      const prev = lastHover.current
+      const node = (prev.type === 'tier1' ? cluster.tier1 : cluster.orbit)[prev.index]
+      if (node) applyScale(prev.type, prev.index, baseScale(prev.type, node))
+      lastHover.current = hoveredNode
+    }
+    if (glowRef.current) glowRef.current.opacity = (hoveredNode ? 0.6 : 0) * t
   })
 
   const linePositions = useMemo(() => {
@@ -173,15 +207,19 @@ function Cluster({
   }, [cluster])
 
   const makeOverHandler =
-    (nodes: SkillNode[]) =>
+    (nodes: SkillNode[], type: 'tier1' | 'orbit') =>
     (e: ThreeEvent<PointerEvent>) => {
       e.stopPropagation()
       if (e.instanceId === undefined) return
       const node = nodes[e.instanceId]
-      if (node) onHover({ skill: node.skill, point: e.point.clone() })
+      if (node) {
+        setHoveredNode({ type, index: e.instanceId })
+        onHover({ skill: node.skill, point: e.point.clone() })
+      }
     }
   const handleOut = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
+    setHoveredNode(null)
     onHover(null)
   }
   const makeClickHandler =
@@ -259,7 +297,7 @@ function Cluster({
       <instancedMesh
         ref={tier1Ref}
         args={[undefined, undefined, cluster.tier1.length]}
-        onPointerOver={makeOverHandler(cluster.tier1)}
+        onPointerOver={makeOverHandler(cluster.tier1, 'tier1')}
         onPointerOut={handleOut}
         onClick={makeClickHandler(cluster.tier1)}
       >
@@ -290,13 +328,28 @@ function Cluster({
           )
         })}
 
+      {/* Hover glow — tracks the hovered tier-1 node (fades via glowRef opacity) */}
+      {hoveredNode?.type === 'tier1' && cluster.tier1[hoveredNode.index] && (
+        <mesh position={cluster.tier1[hoveredNode.index].local}>
+          <sphereGeometry args={[0.13, 16, 16]} />
+          <meshBasicMaterial
+            ref={glowRef}
+            color={cluster.color}
+            transparent
+            opacity={0}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+          />
+        </mesh>
+      )}
+
       {/* Tier-2/3: unlabeled orbiting points — labels appear on hover or domain focus */}
       <group ref={orbitGroupRef}>
         {cluster.orbit.length > 0 && (
           <instancedMesh
             ref={orbitRef}
             args={[undefined, undefined, cluster.orbit.length]}
-            onPointerOver={makeOverHandler(cluster.orbit)}
+            onPointerOver={makeOverHandler(cluster.orbit, 'orbit')}
             onPointerOut={handleOut}
             onClick={makeClickHandler(cluster.orbit)}
           >
@@ -329,6 +382,21 @@ function Cluster({
               </Text>
             </Billboard>
           ))}
+
+        {/* Hover glow — tracks the hovered orbit node (rendered inside the rotating group) */}
+        {hoveredNode?.type === 'orbit' && cluster.orbit[hoveredNode.index] && (
+          <mesh position={cluster.orbit[hoveredNode.index].local}>
+            <sphereGeometry args={[0.1, 16, 16]} />
+            <meshBasicMaterial
+              ref={glowRef}
+              color={cluster.color}
+              transparent
+              opacity={0}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
+            />
+          </mesh>
+        )}
       </group>
 
       {/* Selection marker: pulsing ring on the skill the visitor is reading about */}
