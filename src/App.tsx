@@ -2,6 +2,7 @@ import { lazy, Suspense, useState } from 'react'
 import Navigation from '@/components/Navigation'
 import Hero from '@/components/Hero'
 import Atmosphere from '@/components/Atmosphere'
+import EraWash from '@/components/EraWash'
 import CustomCursor from '@/components/CustomCursor'
 import ScrollProgress from '@/components/ScrollProgress'
 import SignalPath from '@/components/SignalPath'
@@ -23,6 +24,7 @@ export default function App() {
     <SmoothScroll>
       <LoadingIntro onComplete={() => setIntroDone(true)} />
       <Atmosphere />
+      <EraWash />
       <CustomCursor />
       <ScrollProgress />
       <SignalPath />
