@@ -143,6 +143,12 @@ h4 {
   pointer-events: none;
 }
 
+/* Proof marquee — continuous evidence band below the hero */
+@keyframes proof-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
 /* Signal Path — narrative spine: legacy -> cloud -> AI, traced top to bottom */
 .signal-path {
   position: fixed;
