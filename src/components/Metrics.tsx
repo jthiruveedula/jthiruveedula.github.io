@@ -220,7 +220,7 @@ export default function Metrics() {
       />
 
       <div className="mx-auto max-w-6xl">
-        <p className="impact-head hud-label">06 · impact telemetry</p>
+        <p className="impact-head hud-label section-kicker">06 · impact telemetry</p>
         <h2
           id="impact-heading"
           className="impact-head mt-3 text-3xl font-semibold text-ink md:text-4xl"

@@ -306,7 +306,7 @@ export default function Timeline() {
     >
       <div className="mx-auto w-full max-w-6xl px-6">
         <header className="tl-head max-w-3xl">
-          <Decrypt as="p" className="hud-label" text="02 · career trajectory" />
+          <Decrypt as="p" className="hud-label section-kicker" text="02 · career trajectory" />
           <h2 id="timeline-heading" className="mt-3 text-3xl font-bold text-ink md:text-5xl">
             <SplitText
               as="span"
