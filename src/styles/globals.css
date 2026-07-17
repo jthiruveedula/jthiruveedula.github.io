@@ -454,6 +454,42 @@ h4 {
   transform: translateY(0);
 }
 
+/* Origin badge — marks the start of the story on the hero's right edge, beside
+   the vertical timeline rail. Rendered ABSOLUTE inside the hero's relative
+   container (.origin-container) so it can never snap to the viewport corner. */
+.origin-container {
+  position: absolute; /* fill the hero (which is position: relative) so the label
+                         anchors to the hero's top-right, never the viewport corner */
+  inset: 0; /* top/right/bottom/left: 0 → spans the whole hero section */
+  pointer-events: none; /* decorative — never intercepts clicks */
+  z-index: 2; /* above the background/era-wash, below the navbar (z-50) */
+}
+
+.origin-label {
+  position: absolute; /* anchors to .origin-container, NOT <body>/viewport */
+  top: 1.5rem; /* safe inset from the top edge */
+  right: 1.5rem; /* safe inset from the right edge (clears the scrollbar) */
+  z-index: 2; /* below the navbar (z-50), above the background */
+  padding: 0.35rem 0.75rem; /* breathing room so the text isn't cramped */
+  background: rgba(11, 17, 32, 0.72); /* dark glass so it reads on the gradient */
+  border: 1px solid rgba(30, 42, 69, 0.9);
+  border-radius: 9999px; /* pill shape */
+  font-family: var(--font-mono, monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #e6edf7;
+  backdrop-filter: blur(8px); /* matches the site's glass language */
+}
+
+/* Mobile: nudge slightly inward so it never clips on narrow screens. */
+@media (max-width: 768px) {
+  .origin-label {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+}
+
 /* Tactile press feedback for buttons, chips, and menu links that don't use tilt-card. */
 .press-feedback {
   transition: transform 0.15s var(--ease-out), box-shadow 0.25s ease, border-color 0.25s ease, color 0.2s ease;

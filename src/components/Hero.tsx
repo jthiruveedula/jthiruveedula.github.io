@@ -300,6 +300,13 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
           </svg>
         </div>
       </div>
+
+      {/* Origin badge — marks the story's start, anchored to the hero (not the
+          viewport) so it can never snap to the page corner. Sits near the
+          right-side timeline rail. Decorative; the rail itself is the real marker. */}
+      <div className="origin-container" aria-hidden="true">
+        <span className="origin-label">ORIGIN</span>
+      </div>
     </section>
   )
 }
