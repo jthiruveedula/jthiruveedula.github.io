@@ -90,6 +90,12 @@ Sections below the hero are `React.lazy` code-split; Three.js, R3F, and GSAP shi
 - Max two WebGL canvases (Hero, Skills); everything else is SVG/CSS/GSAP. Instanced geometry only, DPR clamped to 2, frameloops pause when offscreen.
 - `prefers-reduced-motion` → static frames and instant metric values. No WebGL → 2D fallbacks. Mobile → reduced particle counts.
 - All content exists as semantic HTML (canvases are `aria-hidden` enhancements): keyboard navigation, `aria-expanded` disclosures, skip link, 4.5:1 contrast on body text.
+- First paint is not gated by the loading intro: the hero renders underneath the overlay and its word-reveal plays once the intro hands off (no flash, no word-jump). Brand webfonts load non-render-blocking via a `preload`→`stylesheet` swap, with a `<noscript>` fallback.
+
+## SEO & social
+
+- `public/robots.txt` and `public/sitemap.xml` are published to the site root for crawler discovery.
+- `public/og-image.svg` (1200×630) backs the OpenGraph + Twitter `summary_large_image` cards declared in `index.html` (`og:image`, `og:image:width/height`, `og:locale`, `twitter:image`, `link[rel="me"]`).
 
 ## Customization (swap in your own data)
 

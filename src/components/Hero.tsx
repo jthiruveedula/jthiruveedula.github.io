@@ -73,7 +73,7 @@ function FallbackNodes() {
   )
 }
 
-export default function Hero() {
+export default function Hero({ introDone = false }: { introDone?: boolean }) {
   const reducedMotion = useReducedMotion()
   const webgl = useWebGLSupport()
   const isMobile = useIsMobile()
@@ -106,9 +106,24 @@ export default function Hero() {
 
   useGSAP(
     () => {
+      const words = gsap.utils.toArray<HTMLElement>('.split-word')
+      const reveals = gsap.utils.toArray<HTMLElement>('[data-hero-reveal]')
+      const cue = gsap.utils.toArray<HTMLElement>('[data-hero-cue]')
+
+      if (reducedMotion) {
+        // No entrance choreography — content is already in its final, readable state.
+        introRef.current.p = 1
+        return
+      }
+
+      // Hide entrance elements immediately (pre-paint) so nothing flashes behind the
+      // loading intro; the reveal is played once the intro hands off control.
+      gsap.set(words, { yPercent: 110, autoAlpha: 0 })
+      gsap.set(reveals, { y: 24, autoAlpha: 0 })
+
       // Scroll shifts cluster emphasis legacy → AI while the hero scrolls out.
+      // Independent of the intro, so it works whether or not motion is reduced.
       if (!reducedMotion) {
-        // Scroll shifts cluster emphasis legacy → AI while the hero scrolls out.
         gsap.to(emphasisRef.current, {
           e: 1,
           ease: 'none',
@@ -142,21 +157,25 @@ export default function Hero() {
         }
       }
 
-      if (reducedMotion) return
+      // Entrance choreography — runs once the loading intro signals completion.
+      const playIntro = () => {
+        if (reducedMotion) return
+        const tl = gsap.timeline({ defaults: { ease: 'power2.out', duration: 0.8 } })
 
-      const tl = gsap.timeline({ defaults: { ease: 'power2.out', duration: 0.8 } })
+        // 3D intro: scattered burst → data mindscape (read by HeroScene's frame loop).
+        tl.to(introRef.current, { p: 1, duration: 2.4, ease: 'power2.inOut' }, 0)
 
-      // 3D intro: scattered burst → data mindscape (read by HeroScene's frame loop).
-      tl.to(introRef.current, { p: 1, duration: 2.4, ease: 'power2.inOut' }, 0)
+        // Word-by-word headline reveal via lightweight split-word spans.
+        tl.to(words, { yPercent: 0, autoAlpha: 1, stagger: 0.05, duration: 0.8, ease: 'power3.out' }, 0.35)
+        tl.to(reveals, { y: 0, autoAlpha: 1, stagger: 0.06 }, 0.55)
 
-      // Word-by-word headline reveal via lightweight split-word spans.
-      tl.from('.split-word', { yPercent: 110, autoAlpha: 0, stagger: 0.05, duration: 0.8, ease: 'power3.out' }, 0.35)
-      tl.from('[data-hero-reveal]', { y: 24, autoAlpha: 0, stagger: 0.06 }, 0.55)
+        // Idle scroll-hint chevron bob.
+        gsap.to(cue, { y: 6, duration: 1.1, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 2.2 })
+      }
 
-      // Idle scroll-hint chevron bob.
-      gsap.to('[data-hero-cue]', { y: 6, duration: 1.1, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 2.2 })
+      if (introDone) playIntro()
     },
-    { scope: sectionRef, dependencies: [reducedMotion], revertOnUpdate: true },
+    { scope: sectionRef, dependencies: [reducedMotion, introDone], revertOnUpdate: true },
   )
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLElement>) => {

@@ -48,9 +48,9 @@ export default function LoadingIntro({ onComplete }: LoadingIntroProps) {
       },
     })
 
-    tl.to(path, { strokeDashoffset: 0, duration: 1.1 }, 0)
-      .from(text, { yPercent: 120, autoAlpha: 0, duration: 0.7 }, 0.55)
-      .to(text, { opacity: 0, y: -16, duration: 0.35 }, 1.5)
+    tl.to(path, { strokeDashoffset: 0, duration: 0.9 }, 0)
+      .from(text, { yPercent: 120, autoAlpha: 0, duration: 0.6 }, 0.45)
+      .to(text, { opacity: 0, y: -16, duration: 0.3 }, 1.2)
 
     const skip = () => {
       if (skippedRef.current) return
@@ -73,7 +73,7 @@ export default function LoadingIntro({ onComplete }: LoadingIntroProps) {
       }
     }
 
-    const timer = window.setTimeout(skip, 2200)
+    const timer = window.setTimeout(skip, 1600)
     container.addEventListener('click', skip)
     window.addEventListener('keydown', onKey)
 
