@@ -104,39 +104,6 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
     return years ? `${role} · ${years} yrs` : role
   }, [profile.title])
 
-  const summaryLead = useMemo(
-    () =>
-      'I architect, build, and ship production data & AI systems — then make them defensible with evaluation, guardrails, and governance. Eleven years across Fortune 500 migrations, streaming, and enterprise GenAI.',
-    [],
-  )
-
-  /** Hard-proof ribbon — the first-screen authority the brief demands (3–5s). */
-  const proofStats = useMemo(() => {
-    const need = [
-      'Cost savings delivered',
-      'Cloud migrations orchestrated',
-      'Documents in production RAG',
-      'Grounded RAG accuracy',
-    ]
-    return need
-      .map((label) => portfolio.headlineMetrics.find((m) => m.label === label))
-      .filter((m): m is NonNullable<typeof m> => Boolean(m))
-      .map((m) => {
-        const numeric = m.numeric ?? 0
-        const prefix = m.prefix ?? ''
-        const suffix = m.suffix ?? ''
-        const decimals = Number.isInteger(numeric) ? 0 : 1
-        return {
-          label: m.label,
-          target: numeric,
-          prefix,
-          suffix,
-          decimals,
-          display: `${prefix}${numeric}${suffix}`,
-        }
-      })
-  }, [])
-
   useGSAP(
     () => {
       const words = gsap.utils.toArray<HTMLElement>('.split-word')
@@ -227,28 +194,6 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
           0.35,
         )
         tl.to(reveals, { y: 0, autoAlpha: 1, stagger: 0.06 }, 0.55)
-
-        // Cinematic count-up on the proof ribbon — evidence over adjectives.
-        gsap.utils.toArray<HTMLElement>('.hero-stat-value').forEach((el, i) => {
-          const target = Number(el.dataset.target)
-          const decimals = Number(el.dataset.decimals) || 0
-          const prefix = el.dataset.prefix ?? ''
-          const suffix = el.dataset.suffix ?? ''
-          const proxy = { v: 0 }
-          el.textContent = `${prefix}${(0).toFixed(decimals)}${suffix}`
-          tl.to(
-            proxy,
-            {
-              v: target,
-              duration: 1.3,
-              ease: 'power2.out',
-              onUpdate: () => {
-                el.textContent = `${prefix}${proxy.v.toFixed(decimals)}${suffix}`
-              },
-            },
-            0.7 + i * 0.08,
-          )
-        })
 
         // Idle scroll-hint chevron bob.
         gsap.to(cue, { y: 6, duration: 1.1, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 2.2 })
@@ -355,11 +300,7 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
           ))}
         </h1>
 
-        <p data-hero-reveal className="mt-6 mx-auto max-w-2xl text-center text-base leading-relaxed text-ink-muted bg-void/20 backdrop-blur-sm rounded-xl px-6 py-3 sm:text-lg">
-          {summaryLead}
-        </p>
-
-        <div data-hero-reveal className="mt-9 flex flex-wrap items-center justify-center gap-4">
+        <div data-hero-reveal className="mt-12 flex flex-wrap items-center justify-center gap-4">
           <MotionButton
             as="a"
             href="#timeline"
@@ -377,28 +318,6 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
             Get in touch
           </MotionButton>
         </div>
-
-        <dl data-hero-reveal className="mt-10 mx-auto grid max-w-3xl grid-cols-2 gap-x-6 gap-y-4 border-t border-panel-edge/70 pt-6 sm:grid-cols-4">
-          {proofStats.map((stat) => (
-            <div
-              key={stat.label}
-              className="flex flex-col gap-1 transition-transform duration-300 hover:-translate-y-0.5"
-            >
-              <dt className="order-2 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-ink-faint">
-                {stat.label}
-              </dt>
-              <dd
-                className="hero-stat-value order-1 font-display text-2xl font-semibold text-ink tabular-nums sm:text-3xl"
-                data-target={stat.target}
-                data-decimals={stat.decimals}
-                data-prefix={stat.prefix}
-                data-suffix={stat.suffix}
-              >
-                {stat.display}
-              </dd>
-            </div>
-          ))}
-        </dl>
       </div>
 
       {/* Scroll hint */}
