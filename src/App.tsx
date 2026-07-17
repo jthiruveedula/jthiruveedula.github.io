@@ -30,9 +30,9 @@ export default function App() {
       <a href="#main" className="skip-link">
         Skip to main content
       </a>
-      <Navigation />
-      <main id="main" className={introDone ? '' : 'invisible'}>
-        <Hero />
+        <Navigation />
+        <main id="main">
+          <Hero introDone={introDone} />
         <Suspense fallback={<SectionSkeleton variant="timeline" label="timeline" />}>
           <Timeline />
         </Suspense>

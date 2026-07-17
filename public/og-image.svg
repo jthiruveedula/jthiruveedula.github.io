@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Jagadeesh Thiruveedula — Senior Data & AI Architect">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#050810" />
+      <stop offset="1" stop-color="#0b1120" />
+    </linearGradient>
+    <radialGradient id="legacyGlow" cx="0.14" cy="0.66" r="0.5">
+      <stop offset="0" stop-color="#f59e0b" stop-opacity="0.22" />
+      <stop offset="1" stop-color="#f59e0b" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="cloudGlow" cx="0.5" cy="0.42" r="0.5">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.24" />
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="aiGlow" cx="0.86" cy="0.34" r="0.5">
+      <stop offset="0" stop-color="#a78bfa" stop-opacity="0.24" />
+      <stop offset="1" stop-color="#a78bfa" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f59e0b" />
+      <stop offset="0.5" stop-color="#22d3ee" />
+      <stop offset="1" stop-color="#a78bfa" />
+    </linearGradient>
+    <linearGradient id="name" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f59e0b" />
+      <stop offset="0.5" stop-color="#22d3ee" />
+      <stop offset="1" stop-color="#a78bfa" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#legacyGlow)" />
+  <rect width="1200" height="630" fill="url(#cloudGlow)" />
+  <rect width="1200" height="630" fill="url(#aiGlow)" />
+
+  <!-- diamond mark -->
+  <g transform="translate(96 112)" fill="none" stroke="#22d3ee" stroke-width="3" stroke-linejoin="round">
+    <path d="M40 0 L80 40 L40 80 L0 40 Z" />
+  </g>
+
+  <text x="200" y="148" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="22" letter-spacing="6" fill="#8b98b3">DATA · AI ARCHITECT</text>
+
+  <text x="96" y="300" font-family="'Space Grotesk', system-ui, sans-serif" font-size="76" font-weight="700" fill="#e6edf7">Jagadeesh</text>
+  <text x="96" y="384" font-family="'Space Grotesk', system-ui, sans-serif" font-size="76" font-weight="700" fill="url(#name)">Thiruveedula</text>
+
+  <text x="98" y="452" font-family="'Inter', system-ui, sans-serif" font-size="30" fill="#8b98b3">Legacy Systems → Cloud Modernization → Enterprise AI</text>
+
+  <text x="98" y="520" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="22" fill="#5b6780">500+ TiB migrated · $2M+ saved · production GenAI</text>
+
+  <!-- tri-era beam -->
+  <rect x="96" y="560" width="1008" height="4" rx="2" fill="url(#beam)" />
+</svg>
