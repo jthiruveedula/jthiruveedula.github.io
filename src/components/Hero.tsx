@@ -206,7 +206,7 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
         }}
       />
 
-      {webgl ? (
+      {webgl && !reducedMotion ? (
         <div ref={sceneWrapRef} aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 will-change-transform">
           <Suspense fallback={null}>
             <ErrorBoundary label="hero-scene" fallback={<FallbackNodes />}>

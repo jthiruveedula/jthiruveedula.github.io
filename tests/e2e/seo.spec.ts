@@ -87,5 +87,9 @@ test.describe('first paint & loading intro', () => {
         { timeout: 4000 },
       )
       .toBeTruthy()
+
+    // Reduced motion must skip the WebGL scene entirely (no <canvas>), rendering the
+    // lightweight 2D fallback so the ~180KB three.js chunk never loads.
+    await expect(page.locator('#hero canvas')).toHaveCount(0)
   })
 })
