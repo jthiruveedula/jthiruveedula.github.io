@@ -1,17 +1,25 @@
 {
+  "id": "/",
   "name": "Jagadeesh Thiruveedula — Data Architect",
   "short_name": "JT Portfolio",
-  "description": "Data Architect and Senior Data Engineer specializing in GCP, BigQuery, Vertex AI, and production-grade generative AI systems.",
+  "description": "Senior Data Architect and AI engineer specializing in GCP, BigQuery, Vertex AI, and production-grade generative AI systems.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#020617",
-  "theme_color": "#020617",
+  "background_color": "#050810",
+  "theme_color": "#050810",
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ]
 }
