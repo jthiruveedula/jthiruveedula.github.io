@@ -356,20 +356,23 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
 
       {/* Scroll hint */}
       <div aria-hidden="true" className="absolute bottom-6 left-1/2 -translate-x-1/2">
-        <div data-hero-reveal className="flex flex-col items-center gap-1 text-accent">
-          <span className="hud-label text-[10px]">scroll</span>
-          <svg
-            data-hero-cue
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-5 w-5"
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
+        <div data-hero-reveal className="flex flex-col items-center gap-2 text-accent">
+          <span className="hud-label text-[10px] tracking-[0.3em]">scroll</span>
+          <span className="relative flex h-9 w-9 items-center justify-center">
+            <span className="scroll-cue__ring absolute inset-0 rounded-full border border-accent/60" />
+            <svg
+              data-hero-cue
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="scroll-cue__chevron h-5 w-5"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </span>
         </div>
       </div>
 

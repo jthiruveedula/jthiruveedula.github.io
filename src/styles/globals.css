@@ -166,6 +166,27 @@ h4 {
   to { transform: translateX(-50%); }
 }
 
+/* Hero scroll cue — gentle bob + ring pulse to invite the first scroll */
+@keyframes scroll-cue {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(5px); opacity: 1; }
+}
+@keyframes scroll-cue-ring {
+  0% { transform: scale(0.85); opacity: 0.7; }
+  70% { transform: scale(1.15); opacity: 0; }
+  100% { transform: scale(1.15); opacity: 0; }
+}
+.scroll-cue__chevron {
+  animation: scroll-cue 1.7s ease-in-out infinite;
+}
+.scroll-cue__ring {
+  animation: scroll-cue-ring 2.1s ease-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue__chevron,
+  .scroll-cue__ring { animation: none; }
+}
+
 /* Signal Path — narrative spine: legacy -> cloud -> AI, traced top to bottom */
 .signal-path {
   position: fixed;
