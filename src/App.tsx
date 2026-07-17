@@ -7,6 +7,7 @@ import CustomCursor from '@/components/CustomCursor'
 import ScrollProgress from '@/components/ScrollProgress'
 import SignalPath from '@/components/SignalPath'
 import SectionSkeleton from '@/components/SectionSkeleton'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import SmoothScroll from '@/components/SmoothScroll'
 import LoadingIntro from '@/components/LoadingIntro'
 import AudioToggle from '@/components/AudioToggle'
@@ -36,19 +37,29 @@ export default function App() {
         <main id="main">
           <Hero introDone={introDone} />
         <Suspense fallback={<SectionSkeleton variant="timeline" label="timeline" />}>
-          <Timeline />
+          <ErrorBoundary label="timeline">
+            <Timeline />
+          </ErrorBoundary>
         </Suspense>
         <Suspense fallback={<SectionSkeleton variant="skills" label="skills" />}>
-          <SkillsConstellation />
+          <ErrorBoundary label="skills">
+            <SkillsConstellation />
+          </ErrorBoundary>
         </Suspense>
         <Suspense fallback={<SectionSkeleton variant="projects" label="projects" />}>
-          <Projects />
+          <ErrorBoundary label="projects">
+            <Projects />
+          </ErrorBoundary>
         </Suspense>
         <Suspense fallback={<SectionSkeleton variant="metrics" label="impact" />}>
-          <Metrics />
+          <ErrorBoundary label="impact">
+            <Metrics />
+          </ErrorBoundary>
         </Suspense>
         <Suspense fallback={<SectionSkeleton variant="contact" label="contact" />}>
-          <Contact />
+          <ErrorBoundary label="contact">
+            <Contact />
+          </ErrorBoundary>
         </Suspense>
       </main>
     </SmoothScroll>
