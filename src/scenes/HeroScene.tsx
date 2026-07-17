@@ -202,6 +202,7 @@ function Mindscape({
   const meshRef = useRef<THREE.InstancedMesh>(null)
   const groupRef = useRef<THREE.Group>(null)
   const invalidate = useThree((state) => state.invalidate)
+  const orbitPhase = useRef(0)
 
   const data = useMemo(() => buildParticles(counts), [counts])
   const geometry = useMemo(() => new THREE.BoxGeometry(1, 1, 1), [])
@@ -325,18 +326,21 @@ function Mindscape({
     mesh.instanceMatrix.needsUpdate = true
     if (flowDirty && mesh.instanceColor) mesh.instanceColor.needsUpdate = true
 
+    // Slow auto-orbit drift — subtle continuous motion so the mindscape feels alive.
+    orbitPhase.current += delta * 0.08
+    const orbX = Math.sin(orbitPhase.current * 0.4) * 0.1
+    const orbZ = Math.sin(orbitPhase.current * 0.25) * 0.08
+    const orbRotY = Math.sin(orbitPhase.current) * 0.02
+    const orbRotX = Math.sin(orbitPhase.current * 0.7) * 0.008
+
     // Scroll emphasis pans attention legacy → AI; pointer adds damped parallax.
     const group = groupRef.current
     if (group) {
       const pointer = pointerRef.current
-      // Rest bias pulls the mindscape left so it sits BEHIND the left-anchored
-      // hero copy (legacy cluster fills the left, AI the right, centered on the
-      // headline) instead of drifting right of the content. Gentle further drift
-      // on scroll as attention moves legacy -> AI.
-      const targetX = (-emphasis * 1.4) * xScale
-      const targetRotY = pointer.x * 0.12 + (emphasis - 0.5) * 0.18
-      const targetRotX = -pointer.y * 0.07 + emphasis * 0.06
-      const targetZ = -emphasis * 2.2
+      const targetX = ((-emphasis * 1.4) * xScale) + orbX
+      const targetRotY = pointer.x * 0.12 + (emphasis - 0.5) * 0.18 + orbRotY
+      const targetRotX = -pointer.y * 0.07 + emphasis * 0.06 + orbRotX
+      const targetZ = -emphasis * 2.2 + orbZ
       if (reducedMotion) {
         group.position.x = targetX
         group.position.z = targetZ
