@@ -329,7 +329,9 @@ function Mindscape({
     const group = groupRef.current
     if (group) {
       const pointer = pointerRef.current
-      const targetX = (0.5 - emphasis) * 3.5 * xScale
+      // Centered at rest (emphasis ~0 at top of hero) so the mindscape sits
+      // between left and right behind the headline; gentle leftward drift on scroll.
+      const targetX = -emphasis * 1.4 * xScale
       const targetRotY = pointer.x * 0.12 + (emphasis - 0.5) * 0.18
       const targetRotX = -pointer.y * 0.07 + emphasis * 0.06
       const targetZ = -emphasis * 2.2
