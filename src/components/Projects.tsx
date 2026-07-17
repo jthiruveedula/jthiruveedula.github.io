@@ -11,6 +11,7 @@ import ProjectCaseStudy from '@/components/ProjectCaseStudy'
 import SplitText from '@/components/SplitText'
 import Decrypt from '@/components/Decrypt'
 import SectionSweep from '@/components/SectionSweep'
+import ClipReveal from '@/components/ClipReveal'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, Flip)
 
@@ -77,6 +78,7 @@ export default function Projects() {
       </div>
 
       <div className="relative mx-auto w-full max-w-6xl px-6">
+        <ClipReveal>
         <header className="projects-head max-w-3xl">
           <Decrypt as="p" className="projects-reveal hud-label section-kicker" text="05 · featured work" />
           <SectionSweep />
@@ -111,6 +113,7 @@ export default function Projects() {
             />
           ))}
         </div>
+        </ClipReveal>
       </div>
 
       {expandedProject && (

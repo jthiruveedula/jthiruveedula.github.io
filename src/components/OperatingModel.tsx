@@ -7,6 +7,7 @@ import { useReducedMotion } from '@/lib/hooks'
 import SplitText from '@/components/SplitText'
 import Decrypt from '@/components/Decrypt'
 import SectionSweep from '@/components/SectionSweep'
+import ClipReveal from '@/components/ClipReveal'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -135,6 +136,7 @@ export default function OperatingModel() {
       />
 
       <div className="mx-auto max-w-6xl">
+        <ClipReveal>
         <p data-om-head className="hud-label section-kicker">
           <Decrypt as="span" text="03 · operating model" />
         </p>
@@ -214,6 +216,7 @@ export default function OperatingModel() {
           ))}
           </div>
         </div>
+        </ClipReveal>
       </div>
     </section>
   )

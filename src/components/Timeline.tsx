@@ -8,6 +8,7 @@ import { useReducedMotion } from '@/lib/hooks'
 import Decrypt from '@/components/Decrypt'
 import SplitText from '@/components/SplitText'
 import SectionSweep from '@/components/SectionSweep'
+import ClipReveal from '@/components/ClipReveal'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -305,6 +306,7 @@ export default function Timeline() {
       aria-labelledby="timeline-heading"
       className="relative scroll-mt-24 py-24 md:py-32"
     >
+      <ClipReveal>
       <div className="mx-auto w-full max-w-6xl px-6">
         <header className="tl-head max-w-3xl">
           <Decrypt as="p" className="hud-label section-kicker" text="02 · career trajectory" />
@@ -364,6 +366,7 @@ export default function Timeline() {
           </ol>
         </div>
       </div>
+      </ClipReveal>
     </section>
   )
 }

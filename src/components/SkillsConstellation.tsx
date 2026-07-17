@@ -12,6 +12,7 @@ import SplitText from '@/components/SplitText'
 import ConstellationScene, { DOMAIN_COLORS } from '@/scenes/ConstellationScene'
 import Decrypt from '@/components/Decrypt'
 import SectionSweep from '@/components/SectionSweep'
+import ClipReveal from '@/components/ClipReveal'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -182,6 +183,7 @@ export default function SkillsConstellation() {
       aria-label="Skills constellation"
       className="relative mx-auto max-w-6xl scroll-mt-24 px-4 py-24 sm:px-6 md:py-32"
     >
+      <ClipReveal>
       <header data-reveal className="skills-head max-w-3xl">
         <Decrypt as="p" className="hud-label section-kicker" text="04 · capability map" />
         <SectionSweep />
@@ -397,6 +399,7 @@ export default function SkillsConstellation() {
           )
         })}
       </div>
+      </ClipReveal>
     </section>
   )
 }
