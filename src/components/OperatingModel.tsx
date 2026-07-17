@@ -134,7 +134,7 @@ export default function OperatingModel() {
       />
 
       <div className="mx-auto max-w-6xl">
-        <p data-om-head className="hud-label">
+        <p data-om-head className="hud-label section-kicker">
           <Decrypt as="span" text="03 · operating model" />
         </p>
         <h2

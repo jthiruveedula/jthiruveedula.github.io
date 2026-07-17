@@ -86,6 +86,23 @@ h4 {
   @apply font-mono text-xs tracking-[0.2em] uppercase text-ink-muted;
 }
 
+/* Section kicker — FUI chapter marker with era-accent bar */
+.section-kicker {
+  position: relative;
+  padding-left: 1.25rem;
+}
+.section-kicker::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 0.8rem;
+  background: var(--kicker-accent, var(--color-cloud));
+  box-shadow: 0 0 10px var(--kicker-accent, var(--color-cloud));
+}
+
 /* Panel utility — glass surface used across sections */
 .glass-panel {
   position: relative;
