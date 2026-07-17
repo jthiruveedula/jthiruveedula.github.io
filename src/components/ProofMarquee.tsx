@@ -16,6 +16,12 @@ const TOKENS = [
   '99.9% UPTIME',
 ]
 
+const MARQUEE_COLORS = [
+  'var(--color-legacy)',
+  'var(--color-cloud)',
+  'var(--color-ai)',
+]
+
 export default function ProofMarquee() {
   const reduced = useReducedMotion()
   const loop = useMemo(() => [...TOKENS, ...TOKENS], [])
@@ -34,11 +40,11 @@ export default function ProofMarquee() {
         }
       >
         {loop.map((token, i) => (
-          <span key={i} className="flex items-center gap-10">
-            <span className="hud-label text-[var(--color-ink-muted)] tracking-[0.18em]">
+          <span key={i} className="flex items-center gap-10" style={{ color: MARQUEE_COLORS[i % 3] }}>
+            <span className="hud-label tracking-[0.18em]">
               {token}
             </span>
-            <span className="inline-block h-1.5 w-1.5 rotate-45 bg-[var(--color-cloud)]/70" />
+            <span className="inline-block h-1.5 w-1.5 rotate-45 opacity-70" style={{ background: MARQUEE_COLORS[i % 3] }} />
           </span>
         ))}
       </div>
