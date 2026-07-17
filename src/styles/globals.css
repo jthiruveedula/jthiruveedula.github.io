@@ -103,6 +103,29 @@ h4 {
   box-shadow: 0 0 10px var(--kicker-accent, var(--color-cloud));
 }
 
+/* Section entrance sweep — FUI line draws across on scroll-in */
+.section-sweep {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+.section-sweep__bar {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--kicker-accent, var(--color-cloud)) 50%,
+    transparent
+  );
+  box-shadow: 0 0 12px var(--kicker-accent, var(--color-cloud));
+}
+
 /* Panel utility — glass surface used across sections */
 .glass-panel {
   position: relative;
