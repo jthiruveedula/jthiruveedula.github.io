@@ -181,7 +181,7 @@ export default function SkillsConstellation() {
       className="relative mx-auto max-w-6xl scroll-mt-24 px-4 py-24 sm:px-6 md:py-32"
     >
       <header data-reveal className="skills-head max-w-3xl">
-        <p className="hud-label">02 · capability map</p>
+        <p className="hud-label">04 · capability map</p>
         <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
           <SplitText as="span">Skills constellation</SplitText>
         </h2>

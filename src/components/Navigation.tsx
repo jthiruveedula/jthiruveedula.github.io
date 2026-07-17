@@ -27,6 +27,7 @@ interface NavItem {
 const NAV_ITEMS: readonly NavItem[] = [
   { id: 'timeline', label: 'Journey', indexClass: 'text-legacy' },
   { id: 'skills', label: 'Skills', indexClass: 'text-cloud' },
+  { id: 'approach', label: 'Approach', indexClass: 'text-ai' },
   { id: 'projects', label: 'Projects', indexClass: 'text-cloud' },
   { id: 'impact', label: 'Impact', indexClass: 'text-ai' },
   { id: 'contact', label: 'Contact', indexClass: 'text-ai' },

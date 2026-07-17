@@ -8,7 +8,7 @@ import type { ReactElement, ReactNode } from 'react'
  * Shimmer bands move across the HUD surfaces to signal activity.
  */
 
-type SkeletonVariant = 'timeline' | 'skills' | 'projects' | 'metrics' | 'contact'
+type SkeletonVariant = 'timeline' | 'skills' | 'approach' | 'projects' | 'metrics' | 'contact'
 
 function Shimmer({ className }: { className?: string }) {
   return (
@@ -155,6 +155,27 @@ function MetricsSkeleton() {
   )
 }
 
+function ApproachSkeleton() {
+  return (
+    <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
+      <HeaderBlock />
+      <div className="mt-12 grid gap-4 md:grid-cols-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <GlassCard key={i} className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Shimmer className="h-4 w-8" />
+              <Shimmer className="h-7 w-28" />
+            </div>
+            <Shimmer className="h-4 w-full" />
+            <Shimmer className="h-4 w-5/6" />
+            <Shimmer className="mt-auto h-3 w-2/3" />
+          </GlassCard>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function ContactSkeleton() {
   return (
     <div className="relative mx-auto flex min-h-[70vh] max-w-5xl flex-col justify-center px-6 pt-28 pb-20 md:pt-36">
@@ -178,6 +199,7 @@ function ContactSkeleton() {
 const VARIANTS: Record<SkeletonVariant, () => ReactElement> = {
   timeline: TimelineSkeleton,
   skills: SkillsSkeleton,
+  approach: ApproachSkeleton,
   projects: ProjectsSkeleton,
   metrics: MetricsSkeleton,
   contact: ContactSkeleton,

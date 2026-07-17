@@ -14,6 +14,7 @@ import AudioToggle from '@/components/AudioToggle'
 
 const Timeline = lazy(() => import('@/components/Timeline'))
 const SkillsConstellation = lazy(() => import('@/components/SkillsConstellation'))
+const OperatingModel = lazy(() => import('@/components/OperatingModel'))
 const Projects = lazy(() => import('@/components/Projects'))
 const Metrics = lazy(() => import('@/components/Metrics'))
 const Contact = lazy(() => import('@/components/Contact'))
@@ -44,6 +45,11 @@ export default function App() {
         <Suspense fallback={<SectionSkeleton variant="skills" label="skills" />}>
           <ErrorBoundary label="skills">
             <SkillsConstellation />
+          </ErrorBoundary>
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton variant="approach" label="approach" />}>
+          <ErrorBoundary label="approach">
+            <OperatingModel />
           </ErrorBoundary>
         </Suspense>
         <Suspense fallback={<SectionSkeleton variant="projects" label="projects" />}>
