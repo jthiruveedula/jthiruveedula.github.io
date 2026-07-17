@@ -76,7 +76,7 @@ export default function Projects() {
 
       <div className="relative mx-auto w-full max-w-6xl px-6">
         <header className="projects-head max-w-3xl">
-          <p className="projects-reveal hud-label">04 · featured work</p>
+          <p className="projects-reveal hud-label">05 · featured work</p>
           <h2 className="projects-reveal mt-4 text-3xl font-semibold text-ink md:text-5xl">
             <SplitText as="span">Featured Transformations</SplitText>
           </h2>

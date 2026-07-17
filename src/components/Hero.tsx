@@ -14,7 +14,7 @@ const HeroScene = lazy(() => import('@/scenes/HeroScene'))
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
 /** Headline microcopy; era words pick up the same color code as the 3D clusters. */
-const H1_WORDS = ['Building', 'at', 'Scale', '—', 'From', 'Legacy', 'to', 'Cloud', 'to', 'AI']
+const H1_WORDS = ['Architecting', 'what', 'lasts', '—', 'From', 'Legacy', 'to', 'Cloud', 'to', 'AI']
 const H1_ERA_WORDS: Record<string, string> = {
   Legacy: ERA_COLORS.legacy,
   Cloud: ERA_COLORS.cloud,
@@ -100,10 +100,25 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
     return years ? `${role} · ${years} yrs` : role
   }, [profile.title])
 
-  const summaryLead = useMemo(() => {
-    const [first] = profile.summary.split(/(?<=\.)\s/)
-    return first || profile.summary
-  }, [profile.summary])
+  const summaryLead = useMemo(
+    () =>
+      'I architect, build, and ship production data & AI systems — then make them defensible with evaluation, guardrails, and governance. Eleven years across Fortune 500 migrations, streaming, and enterprise GenAI.',
+    [],
+  )
+
+  /** Hard-proof ribbon — the first-screen authority the brief demands (3–5s). */
+  const proofStats = useMemo(() => {
+    const need = [
+      'Cost savings delivered',
+      'Cloud migrations orchestrated',
+      'Documents in production RAG',
+      'Grounded RAG accuracy',
+    ]
+    return need
+      .map((label) => portfolio.headlineMetrics.find((m) => m.label === label))
+      .filter((m): m is NonNullable<typeof m> => Boolean(m))
+      .map((m) => ({ label: m.label, value: m.value }))
+  }, [])
 
   useGSAP(
     () => {
@@ -280,6 +295,15 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
             Get in touch
           </MotionButton>
         </div>
+
+        <dl data-hero-reveal className="mt-10 grid max-w-3xl grid-cols-2 gap-x-6 gap-y-4 border-t border-panel-edge/70 pt-6 sm:grid-cols-4">
+          {proofStats.map((stat) => (
+            <div key={stat.label} className="flex flex-col gap-1">
+              <dt className="order-2 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-ink-faint">{stat.label}</dt>
+              <dd className="order-1 font-display text-2xl font-semibold text-ink sm:text-3xl">{stat.value}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
 
       {/* Scroll hint */}
