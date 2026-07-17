@@ -117,7 +117,20 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
     return need
       .map((label) => portfolio.headlineMetrics.find((m) => m.label === label))
       .filter((m): m is NonNullable<typeof m> => Boolean(m))
-      .map((m) => ({ label: m.label, value: m.value }))
+      .map((m) => {
+        const numeric = m.numeric ?? 0
+        const prefix = m.prefix ?? ''
+        const suffix = m.suffix ?? ''
+        const decimals = Number.isInteger(numeric) ? 0 : 1
+        return {
+          label: m.label,
+          target: numeric,
+          prefix,
+          suffix,
+          decimals,
+          display: `${prefix}${numeric}${suffix}`,
+        }
+      })
   }, [])
 
   useGSAP(
@@ -184,6 +197,28 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
         // Word-by-word headline reveal via lightweight split-word spans.
         tl.to(words, { yPercent: 0, autoAlpha: 1, stagger: 0.05, duration: 0.8, ease: 'power3.out' }, 0.35)
         tl.to(reveals, { y: 0, autoAlpha: 1, stagger: 0.06 }, 0.55)
+
+        // Cinematic count-up on the proof ribbon — evidence over adjectives.
+        gsap.utils.toArray<HTMLElement>('.hero-stat-value').forEach((el, i) => {
+          const target = Number(el.dataset.target)
+          const decimals = Number(el.dataset.decimals) || 0
+          const prefix = el.dataset.prefix ?? ''
+          const suffix = el.dataset.suffix ?? ''
+          const proxy = { v: 0 }
+          el.textContent = `${prefix}${(0).toFixed(decimals)}${suffix}`
+          tl.to(
+            proxy,
+            {
+              v: target,
+              duration: 1.3,
+              ease: 'power2.out',
+              onUpdate: () => {
+                el.textContent = `${prefix}${proxy.v.toFixed(decimals)}${suffix}`
+              },
+            },
+            0.7 + i * 0.08,
+          )
+        })
 
         // Idle scroll-hint chevron bob.
         gsap.to(cue, { y: 6, duration: 1.1, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 2.2 })
@@ -298,9 +333,22 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
 
         <dl data-hero-reveal className="mt-10 grid max-w-3xl grid-cols-2 gap-x-6 gap-y-4 border-t border-panel-edge/70 pt-6 sm:grid-cols-4">
           {proofStats.map((stat) => (
-            <div key={stat.label} className="flex flex-col gap-1">
-              <dt className="order-2 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-ink-faint">{stat.label}</dt>
-              <dd className="order-1 font-display text-2xl font-semibold text-ink sm:text-3xl">{stat.value}</dd>
+            <div
+              key={stat.label}
+              className="flex flex-col gap-1 transition-transform duration-300 hover:-translate-y-0.5"
+            >
+              <dt className="order-2 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-ink-faint">
+                {stat.label}
+              </dt>
+              <dd
+                className="hero-stat-value order-1 font-display text-2xl font-semibold text-ink tabular-nums sm:text-3xl"
+                data-target={stat.target}
+                data-decimals={stat.decimals}
+                data-prefix={stat.prefix}
+                data-suffix={stat.suffix}
+              >
+                {stat.display}
+              </dd>
             </div>
           ))}
         </dl>
