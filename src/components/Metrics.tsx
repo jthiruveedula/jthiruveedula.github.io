@@ -6,6 +6,7 @@ import { portfolio } from '@/data/portfolio'
 import { ERA_COLORS, type Era, type Metric } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
 import SplitText from '@/components/SplitText'
+import SectionSweep from '@/components/SectionSweep'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -221,6 +222,7 @@ export default function Metrics() {
 
       <div className="mx-auto max-w-6xl">
         <p className="impact-head hud-label section-kicker">06 · impact telemetry</p>
+        <SectionSweep />
         <h2
           id="impact-heading"
           className="impact-head mt-3 text-3xl font-semibold text-ink md:text-4xl"

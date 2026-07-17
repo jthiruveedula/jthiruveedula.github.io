@@ -6,6 +6,7 @@ import { ERA_COLORS, type Era } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
 import SplitText from '@/components/SplitText'
 import Decrypt from '@/components/Decrypt'
+import SectionSweep from '@/components/SectionSweep'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -137,6 +138,7 @@ export default function OperatingModel() {
         <p data-om-head className="hud-label section-kicker">
           <Decrypt as="span" text="03 · operating model" />
         </p>
+        <SectionSweep />
         <h2
           id="approach-heading"
           data-om-head
