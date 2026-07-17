@@ -520,6 +520,28 @@ h4 {
     radial-gradient(650px circle at 30% 85%, color-mix(in srgb, var(--color-ai) 10%, transparent), transparent 60%);
   animation: aurora-drift 24s ease-in-out infinite alternate;
 }
+.atmosphere__particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.7;
+}
+/* Cinematic vignette — Higgsfield "vignette" effect: darkens the frame edges
+   so the eye lands on the content lane. Edges are empty margins, so text
+   contrast is untouched. */
+.atmosphere__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 120% at 50% 50%,
+    transparent 55%,
+    rgba(5, 8, 16, 0.45) 82%,
+    rgba(5, 8, 16, 0.85) 100%
+  );
+}
 @keyframes aurora-drift {
   0% {
     transform: translateY(0) scale(1);
