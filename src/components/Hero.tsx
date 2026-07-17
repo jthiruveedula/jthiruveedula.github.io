@@ -314,7 +314,7 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
       {/* Legibility scrims: left panel behind the copy, bottom fade into the next section. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-[5] bg-gradient-to-r from-void/85 via-void/35 to-transparent"
+        className="absolute inset-0 -z-[5] bg-gradient-to-r from-void/80 via-void/22 to-void/45"
       />
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-[5] h-40 bg-gradient-to-b from-transparent to-void" />
 
