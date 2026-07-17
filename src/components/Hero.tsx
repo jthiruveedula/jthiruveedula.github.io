@@ -311,10 +311,14 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
         </div>
       )}
 
-      {/* Legibility scrims: left panel behind the copy, bottom fade into the next section. */}
+      {/* Symmetric legibility scrim — darkens edges evenly so content + mindscape both read across the full width. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-[5] bg-gradient-to-r from-void/60 via-void/18 to-void/42"
+        className="absolute inset-0 -z-[5]"
+        style={{
+          background:
+            'radial-gradient(ellipse 62% 55% at 50% 50%, transparent 32%, rgba(5,8,16,0.42) 72%, rgba(5,8,16,0.82) 100%)',
+        }}
       />
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-[5] h-40 bg-gradient-to-b from-transparent to-void" />
 
@@ -325,7 +329,7 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
       >
         {/* Breathing aura behind the headline — gives the copy a living, lit feel. */}
         <div aria-hidden="true" className="hero-aura pointer-events-none absolute -top-6 left-0 -z-10 h-72 w-full" />
-        <p data-hero-reveal className="hud-label flex flex-wrap items-center gap-x-3 gap-y-1">
+        <p data-hero-reveal className="hud-label flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
           <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
           <span>{profile.name}</span>
           <span aria-hidden="true" className="text-ink-faint">
@@ -336,7 +340,7 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
 
         <h1
           style={{ perspective: 900 }}
-          className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-6xl lg:text-7xl"
+          className="mt-6 mx-auto max-w-5xl text-center font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-6xl lg:text-7xl"
         >
           {H1_WORDS.map((word, i) => (
             <span key={`${word}-${i}`} className="inline-block overflow-hidden align-bottom">
@@ -351,11 +355,11 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
           ))}
         </h1>
 
-        <p data-hero-reveal className="mt-6 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg">
+        <p data-hero-reveal className="mt-6 mx-auto max-w-2xl text-center text-base leading-relaxed text-ink-muted sm:text-lg">
           {summaryLead}
         </p>
 
-        <div data-hero-reveal className="mt-9 flex flex-wrap items-center gap-4">
+        <div data-hero-reveal className="mt-9 flex flex-wrap items-center justify-center gap-4">
           <MotionButton
             as="a"
             href="#timeline"
@@ -374,7 +378,7 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
           </MotionButton>
         </div>
 
-        <dl data-hero-reveal className="mt-10 grid max-w-3xl grid-cols-2 gap-x-6 gap-y-4 border-t border-panel-edge/70 pt-6 sm:grid-cols-4">
+        <dl data-hero-reveal className="mt-10 mx-auto grid max-w-3xl grid-cols-2 gap-x-6 gap-y-4 border-t border-panel-edge/70 pt-6 sm:grid-cols-4">
           {proofStats.map((stat) => (
             <div
               key={stat.label}

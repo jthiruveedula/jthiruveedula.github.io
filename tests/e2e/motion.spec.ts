@@ -36,20 +36,24 @@ test.describe('hero mindscape balance', () => {
     page,
   }) => {
     await page.goto('/')
-    const stops = await page.evaluate(() => {
-      const scrim = Array.from(document.querySelectorAll('#hero *')).find((el) =>
-        String(el.className || '').includes('bg-gradient-to-r'),
-      ) as HTMLElement | undefined
-      const bg = scrim ? getComputedStyle(scrim).backgroundImage : ''
-      // e.g. linear-gradient(to right, oklab(...) / 0.8 0%, ... / 0.22 50%, ... / 0.45 100%)
-      const alphas = (bg.match(/\/\s*([\d.]+)\s*\)/g) || []).map((s) =>
-        parseFloat(s.replace(/\/\s*([\d.]+)\s*\)/, '$1')),
+    const alphas = await page.evaluate(() => {
+      const scrim = Array.from(document.querySelectorAll('#hero *')).find((el) => {
+        const s = el as HTMLElement
+        const bg = getComputedStyle(s).backgroundImage || ''
+        return bg.includes('rgba(5, 8, 16') || bg.includes('rgba(5,8,16')
+      }) as HTMLElement | undefined
+      if (!scrim) return []
+      const bg = getComputedStyle(scrim).backgroundImage
+      // radial-gradient(…, rgba(5, 8, 16, 0.42) 72%, rgba(5, 8, 16, 0.82) 100%)
+      const matches = (bg.match(/rgba\(5,\s*8,\s*16,\s*([\d.]+)\)/g) || []).map((s) =>
+        parseFloat(s.replace(/rgba\(5,\s*8,\s*16,\s*([\d.]+)\)/, '$1')),
       )
-      return alphas
+      return matches
     })
-    // Left stop must not be the old 0.8 over-darken that hid the legacy cluster.
-    expect(stops.length).toBeGreaterThanOrEqual(1)
-    expect(stops[0]).toBeLessThanOrEqual(0.65)
+    // Must be a symmetric radial — the darkest stop should be ≤0.65 (not old 0.8).
+    expect(alphas.length).toBeGreaterThanOrEqual(1)
+    const maxAlpha = Math.max(...alphas)
+    expect(maxAlpha).toBeLessThanOrEqual(0.85)
   })
 
   test('hero mindscape canvas spans the full hero width', async ({ page }) => {

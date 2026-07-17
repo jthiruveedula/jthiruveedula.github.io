@@ -333,7 +333,7 @@ function Mindscape({
       // hero copy (legacy cluster fills the left, AI the right, centered on the
       // headline) instead of drifting right of the content. Gentle further drift
       // on scroll as attention moves legacy -> AI.
-      const targetX = (-2.4 - emphasis * 1.4) * xScale
+      const targetX = (-emphasis * 1.4) * xScale
       const targetRotY = pointer.x * 0.12 + (emphasis - 0.5) * 0.18
       const targetRotX = -pointer.y * 0.07 + emphasis * 0.06
       const targetZ = -emphasis * 2.2
