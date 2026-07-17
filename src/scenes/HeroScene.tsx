@@ -329,9 +329,11 @@ function Mindscape({
     const group = groupRef.current
     if (group) {
       const pointer = pointerRef.current
-      // Centered at rest (emphasis ~0 at top of hero) so the mindscape sits
-      // between left and right behind the headline; gentle leftward drift on scroll.
-      const targetX = -emphasis * 1.4 * xScale
+      // Rest bias pulls the mindscape left so it sits BEHIND the left-anchored
+      // hero copy (legacy cluster fills the left, AI the right, centered on the
+      // headline) instead of drifting right of the content. Gentle further drift
+      // on scroll as attention moves legacy -> AI.
+      const targetX = (-2.4 - emphasis * 1.4) * xScale
       const targetRotY = pointer.x * 0.12 + (emphasis - 0.5) * 0.18
       const targetRotX = -pointer.y * 0.07 + emphasis * 0.06
       const targetZ = -emphasis * 2.2
