@@ -6,6 +6,7 @@ import { portfolio } from '@/data/portfolio'
 import { ERA_COLORS } from '@/data/types'
 import { useInView, useIsMobile, useReducedMotion, useWebGLSupport } from '@/lib/hooks'
 import MotionButton from '@/components/MotionButton'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 // The three.js chunk is heavy — lazy-load the scene so the headline paints first.
 const HeroScene = lazy(() => import('@/scenes/HeroScene'))
@@ -208,14 +209,16 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
       {webgl ? (
         <div ref={sceneWrapRef} aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 will-change-transform">
           <Suspense fallback={null}>
-            <HeroScene
-              active={inView}
-              reducedMotion={reducedMotion}
-              isMobile={isMobile}
-              pointerRef={pointerRef}
-              introRef={introRef}
-              emphasisRef={emphasisRef}
-            />
+            <ErrorBoundary label="hero-scene" fallback={<FallbackNodes />}>
+              <HeroScene
+                active={inView}
+                reducedMotion={reducedMotion}
+                isMobile={isMobile}
+                pointerRef={pointerRef}
+                introRef={introRef}
+                emphasisRef={emphasisRef}
+              />
+            </ErrorBoundary>
           </Suspense>
         </div>
       ) : (
