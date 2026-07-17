@@ -8,6 +8,7 @@ import { useReducedMotion } from '@/lib/hooks'
 import SplitText from '@/components/SplitText'
 import Decrypt from '@/components/Decrypt'
 import SectionSweep from '@/components/SectionSweep'
+import ClipReveal from '@/components/ClipReveal'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -222,6 +223,7 @@ export default function Metrics() {
       />
 
       <div className="mx-auto max-w-6xl">
+        <ClipReveal>
         <Decrypt as="p" className="impact-head hud-label section-kicker" text="06 · impact telemetry" />
         <SectionSweep />
         <h2
@@ -254,6 +256,7 @@ export default function Metrics() {
             ))}
           </ul>
         </div>
+        </ClipReveal>
       </div>
     </section>
   )
