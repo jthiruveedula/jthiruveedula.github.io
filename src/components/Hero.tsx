@@ -161,6 +161,26 @@ export default function Hero({ introDone = false }: { introDone?: boolean }) {
             },
           )
         }
+
+        // Hero copy exits upward as the scene recedes — HUD, headline, CTAs dissolve.
+        const heroCopy = copyRef.current
+        if (heroCopy) {
+          gsap.fromTo(
+            heroCopy,
+            { opacity: 1, y: 0 },
+            {
+              opacity: 0.2,
+              y: -60,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1,
+              },
+            },
+          )
+        }
       }
 
       // Cursor-reactive 3D tilt on the hero copy — spring-backed, subtle (max ~4deg).
