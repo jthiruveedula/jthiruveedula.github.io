@@ -55,6 +55,7 @@ export default function Projects() {
         },
       })
       tl.from('.projects-reveal', { autoAlpha: 0, y: 28, duration: 0.7, stagger: 0.1 }, 0)
+      tl.from('[data-projects-grid] > *', { autoAlpha: 0, y: 32, duration: 0.7, stagger: 0.08 }, 0.2)
       tl.from(
         '.projects-head .split-word',
         { yPercent: 110, autoAlpha: 0, duration: 0.8, stagger: 0.05, ease: 'power3.out' },
@@ -102,7 +103,7 @@ export default function Projects() {
           </div>
         </header>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-2">
+        <div data-projects-grid className="mt-14 grid gap-6 md:grid-cols-2">
           {projects.map((project, index) => (
             <ProjectCard
               key={project.id}
