@@ -90,8 +90,18 @@ export default function SignalPath() {
     }
   }, [lenis])
 
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id)
+    if (!el) return
+    if (lenis) {
+      lenis.scrollTo(el, { offset: -72 })
+    } else {
+      el.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   return (
-    <div className="signal-path" aria-hidden="true">
+    <div className="signal-path">
       <div className="signal-path__rail" />
       {ticks.map((tick) => (
         <div
@@ -99,7 +109,14 @@ export default function SignalPath() {
           className={`signal-path__tick${activeLabel === tick.id ? ' signal-path__tick--active' : ''}`}
           style={{ top: `${tick.top * 100}%` }}
         >
-          <span className="signal-path__tick-label">{tick.label}</span>
+          <button
+            type="button"
+            onClick={() => scrollTo(tick.id)}
+            className="signal-path__tick-label"
+            aria-label={`Scroll to ${tick.label}`}
+          >
+            {tick.label}
+          </button>
         </div>
       ))}
       {!reduced && <div ref={pulseRef} className="signal-path__pulse" />}
