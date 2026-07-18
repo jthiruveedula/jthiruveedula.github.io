@@ -324,10 +324,20 @@ h4 {
   opacity: 0;
   transition: opacity 0.2s ease, transform 0.2s ease;
   pointer-events: none;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  line-height: 1;
 }
 .signal-path__tick--active .signal-path__tick-label {
   opacity: 0.85;
+  pointer-events: auto;
+  cursor: pointer;
   transform: translateY(-50%) translateX(0);
+}
+.signal-path__tick--active .signal-path__tick-label:hover {
+  opacity: 1;
+  color: var(--color-accent, #22d3ee);
 }
 @media (max-width: 640px) {
   .signal-path {
