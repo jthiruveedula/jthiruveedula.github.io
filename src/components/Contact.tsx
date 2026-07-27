@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -29,6 +29,15 @@ function handleFromUrl(url: string, prefix = ''): string {
   return prefix + url.replace(/^https?:\/\/(www\.)?[^/]+\//, '').replace(/\/+$/, '')
 }
 
+/**
+ * Inserts break opportunities before `@` and after `/` so a long handle wraps at a
+ * meaningful boundary. `break-all` alone splits mid-token — the email was rendering as
+ * "jagadeeshthiruveedula7 / 7@gmail.com", severing a digit pair.
+ */
+function withBreakHints(value: string): ReactNode[] {
+  return value.split(/(?=@)|(?<=\/)/).flatMap((part, i) => (i === 0 ? [part] : [<wbr key={i} />, part]))
+}
+
 const channels: Channel[] = []
 if (profile.email) {
   channels.push({
@@ -46,7 +55,9 @@ if (profile.linkedin) {
   channels.push({
     id: 'linkedin',
     label: 'LinkedIn',
-    value: handleFromUrl(profile.linkedin, 'in/'),
+    // The LinkedIn path already begins with `in/` — passing it as a prefix too rendered
+    // "in/in/jagadeesh-thiruveedula".
+    value: handleFromUrl(profile.linkedin),
     href: profile.linkedin,
     hint: 'Career history & endorsements',
     external: true,
@@ -232,7 +243,12 @@ export default function Contact() {
                 <span className={`font-mono text-xs tracking-[0.2em] uppercase ${channel.accentText}`}>
                   {channel.label}
                 </span>
-                <span className="font-mono text-sm break-all text-ink">{channel.value}</span>
+                {/* text-xs, not text-sm: in the 4-up grid the card's content box is
+                    ~186px, and "jagadeeshthiruveedula77" at 14px mono is wider than that
+                    — so the break hint was ignored and the browser split the digits. */}
+                <span className="font-mono text-xs text-ink [overflow-wrap:break-word]">
+                  {withBreakHints(channel.value)}
+                </span>
                 <span className="mt-auto text-xs text-ink-faint">
                   {channel.hint}{' '}
                   <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">
