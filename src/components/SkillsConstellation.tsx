@@ -8,6 +8,7 @@ import type { Skill, SkillDomain } from '@/data/types'
 import { ERA_COLORS } from '@/data/types'
 import { useInView, useIsMobile, useReducedMotion, useWebGLSupport } from '@/lib/hooks'
 import { getSkillStory } from '@/lib/skillStory'
+import { revealFrom } from '@/lib/motion'
 import SplitText from '@/components/SplitText'
 import ConstellationScene, { DOMAIN_COLORS } from '@/scenes/ConstellationScene'
 import Decrypt from '@/components/Decrypt'
@@ -141,16 +142,21 @@ export default function SkillsConstellation() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 75%',
-          once: true,
+          // Replayable rather than `once: true`. A consumed one-shot trigger cannot
+          // recover if the GSAP context is rebuilt, which is how this section's header
+          // ended up stranded at visibility:hidden — and because visibility inherits, it
+          // took the kicker and heading with it.
+          toggleActions: 'play none none none',
         },
       })
-      tl.from('[data-reveal]', { autoAlpha: 0, y: 24, duration: 0.7, stagger: 0.05 }, 0)
-      tl.from(
+      revealFrom(tl, '[data-reveal]', { y: 24, duration: 0.7, stagger: 0.05 }, 0)
+      revealFrom(
+        tl,
         '.skills-head .split-word',
-        { yPercent: 110, autoAlpha: 0, duration: 0.8, stagger: 0.05, ease: 'power3.out' },
+        { yPercent: 110, duration: 0.8, stagger: 0.05, ease: 'power3.out' },
         0.1,
       )
-      tl.from('.skills-sub', { y: 20, autoAlpha: 0, duration: 0.6 }, 0.35)
+      revealFrom(tl, '.skills-sub', { y: 20, duration: 0.6 }, 0.35)
     },
     { scope: sectionRef, dependencies: [reducedMotion], revertOnUpdate: true },
   )
@@ -160,13 +166,21 @@ export default function SkillsConstellation() {
     () => {
       const domain = lastToggled.current
       if (reducedMotion || !domain || !expanded[domain]) return
-      gsap.from(`#skills-list-${slugify(domain)} li[data-extra]`, {
-        autoAlpha: 0,
-        y: 8,
-        duration: 0.25,
-        ease: 'power2.out',
-        stagger: 0.015,
-      })
+      // fromTo with an explicit visible end state and cleared props: these chips are
+      // toggled repeatedly, so a `.from()` interrupted mid-flight could leave a skill
+      // permanently hidden inside an expanded domain.
+      gsap.fromTo(
+        `#skills-list-${slugify(domain)} li[data-extra]`,
+        { autoAlpha: 0, y: 8 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.25,
+          ease: 'power2.out',
+          stagger: 0.015,
+          clearProps: 'opacity,visibility',
+        },
+      )
     },
     { scope: sectionRef, dependencies: [expanded] },
   )

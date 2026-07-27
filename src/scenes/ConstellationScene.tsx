@@ -75,6 +75,8 @@ interface DomainCluster {
   /** Tier-2/3 skills — unlabeled points orbiting the hub (label on hover/focus). */
   orbit: SkillNode[]
   orbitSpeed: number
+  /** Label this hub below the node instead of above, so neighbours cannot collide. */
+  labelBelow: boolean
 }
 
 function buildClusters(skills: Skill[]): DomainCluster[] {
@@ -94,6 +96,13 @@ function buildClusters(skills: Skill[]): DomainCluster[] {
       color: DOMAIN_COLORS[domain],
       hub,
       hubSize: 0.11 + Math.sqrt(domainSkills.length) * 0.018,
+      // The fibonacci placement can seat two hubs close enough that their labels collide
+      // (DevOps & IaC sat on top of Governance & Quality; Data Engineering on Streaming &
+      // Realtime). Alternating a vertical *offset* was not enough separation at this
+      // zoom, so neighbours alternate which SIDE of the hub they label — one above, the
+      // next below. Adjacent indices then can never share a horizontal band, and the node
+      // layout itself is untouched.
+      labelBelow: i % 2 === 1,
       tier1: tier1Skills.map((skill, j) => ({
         skill,
         local: fibDir(j, tier1Skills.length).multiplyScalar(clusterRadius * (0.6 + rng() * 0.18)),
@@ -245,7 +254,14 @@ function Cluster({
 
   const nodeOpacity = focused ? 1 : dimmed ? 0.14 : 0.95
   const labelOpacity = dimmed ? 0.1 : 0.88
-  const showTier1Labels = focused || !isMobile
+  /**
+   * Detail on demand. Desktop used to label every tier-1 skill in all eight domains at
+   * once, which collided into unreadable mush — the graph advertised 154 skills while
+   * communicating none of them. Mobile already had the better rule; both now show only
+   * the eight domain labels at rest, and reveal a domain's skill names when it is hovered
+   * or focused. Legible map first, detail when asked for.
+   */
+  const showTier1Labels = focused || hubHover
 
   return (
     <group position={cluster.hub}>
@@ -274,7 +290,9 @@ function Cluster({
           depthWrite={false}
         />
       </mesh>
-      <Billboard position={[0, cluster.hubSize + 0.24, 0]}>
+      <Billboard
+        position={[0, cluster.labelBelow ? -(cluster.hubSize + 0.26) : cluster.hubSize + 0.26, 0]}
+      >
         <Text
           fontSize={isMobile ? 0.17 : 0.15}
           letterSpacing={0.12}
@@ -283,7 +301,7 @@ function Cluster({
           outlineWidth={0.007}
           outlineColor="#050810"
           outlineOpacity={dimmed ? 0.15 : 0.9}
-          anchorY="bottom"
+          anchorY={cluster.labelBelow ? 'top' : 'bottom'}
           maxWidth={2.6}
           textAlign="center"
         >
