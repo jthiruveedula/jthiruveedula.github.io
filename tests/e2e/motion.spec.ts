@@ -235,15 +235,18 @@ test.describe('scroll-reveal durability', () => {
     }
     await page.waitForTimeout(1200)
 
-    // Then partway back up — a fraction of the document, so it scales with the page.
-    const upSteps = await page.evaluate(() =>
-      Math.round((document.documentElement.scrollHeight * 0.45) / 500),
-    )
-    for (let i = 0; i < upSteps; i++) {
+    // Then all the way back to the very TOP. This is both the natural thing a visitor
+    // does and the precise reproducing condition: at scrollY 0 every reveal whose trigger
+    // sits below the viewport is "before start", and ScrollTrigger re-rendered their
+    // from-state on refresh — re-hiding already-revealed content with no pending tween to
+    // bring it back. Stopping partway up does NOT reproduce it, which is why an earlier
+    // version of this test passed while the live site was still broken.
+    const atTop = () => page.evaluate(() => window.scrollY <= 0)
+    for (let i = 0; i < 200 && !(await atTop()); i++) {
       await page.mouse.wheel(0, -500)
       await page.waitForTimeout(8)
     }
-    await page.waitForTimeout(1200)
+    await page.waitForTimeout(1400)
 
     const sections = ['timeline', 'skills', 'approach', 'projects', 'impact', 'contact']
     for (const id of sections) {

@@ -68,6 +68,11 @@ export function revealFrom(
       // Leave no inline opacity/visibility behind, so a later context revert has nothing
       // to restore the element to an invisible state with.
       clearProps: 'opacity,visibility',
+      // Do not write the from-state at render time. With it on, scrolling back to the very
+      // top of the page re-rendered the start state of every reveal whose trigger sits
+      // below the viewport — re-hiding already-revealed content with no pending tween to
+      // bring it back. That is what kept the Skills header disappearing at scrollY 0.
+      immediateRender: false,
     },
     position,
   )
