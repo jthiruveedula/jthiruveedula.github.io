@@ -5,7 +5,6 @@ import Atmosphere from '@/components/Atmosphere'
 import EraWash from '@/components/EraWash'
 import CustomCursor from '@/components/CustomCursor'
 import ScrollProgress from '@/components/ScrollProgress'
-import ProofMarquee from '@/components/ProofMarquee'
 import SignalPath from '@/components/SignalPath'
 import SectionSkeleton from '@/components/SectionSkeleton'
 import ErrorBoundary from '@/components/ErrorBoundary'
@@ -38,7 +37,6 @@ export default function App() {
         <Navigation />
         <main id="main">
           <ScrollWorld introDone={introDone} />
-          <ProofMarquee />
         <Suspense fallback={<SectionSkeleton variant="timeline" label="timeline" />}>
           <ErrorBoundary label="timeline">
             <Timeline />
