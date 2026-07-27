@@ -16,7 +16,7 @@ interface Pillar {
   verb: string
   era: Era | 'accent'
   blurb: string
-  proof: string
+  principle: string
 }
 
 /** The four moves that turn an estate into production — and into a decision. */
@@ -27,7 +27,7 @@ const PILLARS: readonly Pillar[] = [
     era: 'legacy',
     blurb:
       'Design resilient data estates and cloud foundations before product code is written — so the platform never has to be rebuilt.',
-    proof: '500+ TiB migrated · zero forced re-platforms',
+    principle: 'The rebuild you avoid is the cheapest thing you ever ship.',
   },
   {
     index: '02',
@@ -35,7 +35,7 @@ const PILLARS: readonly Pillar[] = [
     era: 'cloud',
     blurb:
       'Assemble streaming and platform systems that hold under real load, not demo load — observable, testable, and boring to operate.',
-    proof: '1B+ events streamed daily · 99.9% uptime',
+    principle: 'Demo load proves nothing. Real load, or it is not built.',
   },
   {
     index: '03',
@@ -43,7 +43,7 @@ const PILLARS: readonly Pillar[] = [
     era: 'ai',
     blurb:
       'Take GenAI from prototype to production with evaluation and guardrails engineered in, not bolted on after the incident.',
-    proof: '50M+ docs in RAG · 95% grounded answers',
+    principle: 'A model without evals is a prototype wearing a deadline.',
   },
   {
     index: '04',
@@ -51,7 +51,7 @@ const PILLARS: readonly Pillar[] = [
     era: 'accent',
     blurb:
       'Make the work legible to execs, peers, and operators — so the right decision actually gets made and survives contact.',
-    proof: '60% Tier-1 deflection · 11y data → decisions',
+    principle: 'Work nobody can explain does not survive the next budget cycle.',
   },
 ]
 
@@ -209,10 +209,17 @@ export default function OperatingModel() {
 
               <p className="text-sm leading-relaxed text-ink-muted">{pillar.blurb}</p>
 
-              {/* These are real metrics, not a caption — ink-faint on panel was too dim
-                  to read, so the proof line steps up to ink-muted. */}
-              <p className="mt-auto font-mono text-[0.7rem] uppercase tracking-[0.14em] text-ink-muted">
-                {pillar.proof}
+              {/* The principle each move exists to protect. This line used to recite
+                  metrics that already appear in Projects, the Timeline and Impact — the
+                  section's job is method, so it now carries the failure mode instead. */}
+              {/* Sentence case, not mono caps: the old line was a label-like metric list,
+                  this is a sentence, and caps at this length reads as shouting and wraps
+                  awkwardly. Era-tinted rule ties it to the card's move. */}
+              <p
+                className="mt-auto border-l-2 pl-3 text-[0.8rem] leading-snug text-ink-muted italic"
+                style={{ borderColor: `${COLOR[pillar.era]}66` }}
+              >
+                {pillar.principle}
               </p>
             </article>
           ))}

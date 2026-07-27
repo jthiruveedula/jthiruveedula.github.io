@@ -177,7 +177,9 @@ export const worldScenes: WorldScene[] = [
     accent: '#a78bfa',
     still: '/scenes/07-whole-system.jpg',
     stillMobile: '/scenes/07-whole-system@sm.jpg',
-    eyebrow: 'Dallas–Fort Worth, TX · Open to relocation',
+    // Location is already stated on station 1 and again in Contact; the closing beat does
+    // not need to be the third time.
+    eyebrow: 'The whole system · 2015 – present',
     title: 'I build the system, not the demo.',
     body:
       'Legacy untangled, platforms modernized, GenAI shipped into production with evals and governance intact. That is the whole eleven years in one sentence.',

@@ -300,17 +300,26 @@ export default function Contact() {
           </ul>
         </div>
 
+        {/* Copy affordance only — the address itself is already the primary card above, so
+            repeating it here printed the same email twice within one screen. */}
         {profile.email && (
           <div className="contact-meta mt-6">
             <button
               type="button"
               onClick={handleCopyEmail}
-              className="inline-flex items-center gap-3 rounded-full border border-panel-edge bg-surface px-4 py-2 transition duration-300 hover:border-cloud/50"
+              aria-label={`Copy email address ${profile.email}`}
+              className="inline-flex min-h-11 items-center gap-2.5 rounded-full border border-panel-edge bg-surface px-4 py-2 font-mono text-xs tracking-[0.15em] uppercase transition duration-300 hover:border-cloud/50"
             >
-              <span className="font-mono text-xs text-ink-muted">{profile.email}</span>
-              <span className="font-mono text-[10px] tracking-[0.2em] uppercase" aria-hidden="true">
-                {copied ? <span className="text-success">copied ✓</span> : <span className="text-cloud">copy</span>}
-              </span>
+              {copied ? (
+                <span className="text-success">copied ✓</span>
+              ) : (
+                <>
+                  <span className="text-cloud">copy address</span>
+                  <span aria-hidden="true" className="text-ink-faint">
+                    ⧉
+                  </span>
+                </>
+              )}
             </button>
             <span aria-live="polite" className="sr-only">
               {copied ? 'Email address copied to clipboard' : ''}
