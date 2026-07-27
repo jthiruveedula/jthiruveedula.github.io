@@ -206,4 +206,42 @@ test.describe('scroll-reveal durability', () => {
       expect(card.opacity).toBeGreaterThan(0.9)
     }
   })
+
+  test('no section heading is left stranded after scrolling the page twice', async ({ page }) => {
+    await page.goto('/')
+    await page.keyboard.press('Escape')
+
+    // Scroll all the way down with real wheel input, then partially back up. That exact
+    // sequence is what stranded one-shot `.from(autoAlpha: 0)` reveals — it took out
+    // every project card once, and the entire Skills header another time. Because
+    // `visibility` inherits, one stranded wrapper silently hides everything inside it, so
+    // the headings are the cheapest reliable canary for the whole class.
+    //
+    // Real wheel steps matter: an instant `scrollTo` jump skips the intermediate state and
+    // the bug does not reproduce, which made an earlier version of this test pass against
+    // known-broken code.
+    await page.mouse.move(700, 450)
+    for (let i = 0; i < 55; i++) {
+      await page.mouse.wheel(0, 400)
+      await page.waitForTimeout(8)
+    }
+    await page.waitForTimeout(1200)
+    for (let i = 0; i < 22; i++) {
+      await page.mouse.wheel(0, -400)
+      await page.waitForTimeout(8)
+    }
+    await page.waitForTimeout(1200)
+
+    const sections = ['timeline', 'skills', 'approach', 'projects', 'impact', 'contact']
+    for (const id of sections) {
+      const heading = page.locator(`#${id} h2`).first()
+      await expect(heading, `${id} heading should not be stranded`).toBeVisible({ timeout: 10000 })
+      const state = await heading.evaluate((el) => {
+        const style = getComputedStyle(el)
+        return { opacity: Number(style.opacity), visibility: style.visibility }
+      })
+      expect(state.visibility, `${id} heading visibility`).toBe('visible')
+      expect(state.opacity, `${id} heading opacity`).toBeGreaterThan(0.9)
+    }
+  })
 })

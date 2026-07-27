@@ -6,6 +6,7 @@ import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import type { FeaturedProject } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
+import { revealFrom } from '@/lib/motion'
 import ProjectCard from '@/components/ProjectCard'
 import ProjectCaseStudy from '@/components/ProjectCaseStudy'
 import SplitText from '@/components/SplitText'
@@ -51,19 +52,22 @@ export default function Projects() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 78%',
-          once: true,
+          // Replayable, so a rebuilt GSAP context can run the reveal again instead of
+          // sitting on a consumed trigger with the from-state still applied.
+          toggleActions: 'play none none none',
         },
       })
-      tl.from('.projects-reveal', { autoAlpha: 0, y: 28, duration: 0.7, stagger: 0.1 }, 0)
+      revealFrom(tl, '.projects-reveal', { y: 28, duration: 0.7, stagger: 0.1 }, 0)
       // The grid's children are NOT animated here. Each ProjectCard owns its own
       // entrance reveal (and drives its metric count-up from the same timeline), also
       // a `.from(autoAlpha: 0)`. Two `.from()` tweens on one node both render their
       // from-state immediately, so each captured the other's zeroed value as its END
       // state — which left all six cards stuck at opacity 0 / visibility hidden for
       // the rest of the session once both had fired.
-      tl.from(
+      revealFrom(
+        tl,
         '.projects-head .split-word',
-        { yPercent: 110, autoAlpha: 0, duration: 0.8, stagger: 0.05, ease: 'power3.out' },
+        { yPercent: 110, duration: 0.8, stagger: 0.05, ease: 'power3.out' },
         0.1,
       )
     },

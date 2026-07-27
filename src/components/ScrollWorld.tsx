@@ -372,7 +372,9 @@ function SceneCopy({ scene, index }: { scene: (typeof worldScenes)[number]; inde
                 </a>
                 <a
                   href={scene.cta.secondaryHref}
-                  className="font-mono text-xs text-ink-muted underline decoration-panel-edge underline-offset-4 transition-colors hover:text-accent"
+                  // min-h-11 so the secondary action is a real target too — as a bare
+                  // inline link it measured 16px tall next to a 44px primary button.
+                  className="inline-flex min-h-11 items-center font-mono text-xs text-ink-muted underline decoration-panel-edge underline-offset-4 transition-colors hover:text-accent"
                 >
                   {scene.cta.secondaryLabel}
                 </a>

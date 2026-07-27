@@ -330,9 +330,21 @@ export default function ProjectCard({ project, index, total, onExpand }: Project
       // Entrance reveal + count-up on the two front metrics, once.
       const reveal = gsap.timeline({
         defaults: { ease: 'power2.out' },
-        scrollTrigger: { trigger: card, start: 'top 88%', once: true },
+        // Replayable rather than one-shot: a consumed trigger plus a reverted context is
+        // what stranded all six cards at opacity 0 / visibility hidden.
+        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none none' },
       })
-      reveal.from(card, { autoAlpha: 0, y: 24, duration: 0.6, delay: (index % 2) * 0.08 })
+      reveal.fromTo(
+        card,
+        { autoAlpha: 0, y: 24 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.6,
+          delay: (index % 2) * 0.08,
+          clearProps: 'opacity,visibility',
+        },
+      )
 
       gsap.utils.toArray<HTMLElement>('.metric-count').forEach((el) => {
         const target = Number(el.dataset.target)

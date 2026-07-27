@@ -207,10 +207,18 @@ export default function Navigation() {
   useGSAP(
     () => {
       if (reduced) return
+      // fromTo with an explicit end state and cleared props. A `.from(autoAlpha: 0)` here
+      // means any interruption or context revert can strand the entire primary nav at
+      // visibility:hidden — the worst possible element on the page to lose.
       gsap
         .timeline({ defaults: { ease: 'power3.out' } })
-        .from(barRef.current, { yPercent: -120, duration: 0.7 })
-        .from('[data-nav-item]', { y: -14, autoAlpha: 0, duration: 0.45, stagger: 0.06 }, '-=0.35')
+        .fromTo(barRef.current, { yPercent: -120 }, { yPercent: 0, duration: 0.7 })
+        .fromTo(
+          '[data-nav-item]',
+          { y: -14, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: 0.45, stagger: 0.06, clearProps: 'opacity,visibility' },
+          '-=0.35',
+        )
     },
     { scope: headerRef, dependencies: [reduced], revertOnUpdate: true },
   )
