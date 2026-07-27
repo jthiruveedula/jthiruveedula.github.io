@@ -61,7 +61,15 @@ export interface FeaturedProject {
 export interface Chapter {
   id: Era
   title: string
+  /** The era's thesis — what the problem was and what capability it built. Metrics
+   *  belong on the role cards, not here. */
   blurb: string
+  /**
+   * What this era handed the next one. Rendered as a beat between chapters, and it is
+   * the section's whole argument: the eras are not a list of jobs, they compound. Omit
+   * on the final chapter — the present has nothing to hand forward yet.
+   */
+  carry?: string
 }
 
 export interface Profile {

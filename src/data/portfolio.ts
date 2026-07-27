@@ -1674,17 +1674,19 @@ export const portfolio: PortfolioData = {
       {
         "id": "legacy",
         "title": "Legacy Systems",
-        "blurb": "2015–2019 · Mainframe, Teradata, Oracle, and Talend. Built 20+ warehouse ETL pipelines processing 5M+ records/day for the CROMA warehouse, then unified Mainframe, Teradata, and NAS sources into a mortgage-recovery analytics platform — cutting defect rates 25% and pipeline dev time 35% with reusable frameworks. This is where the deep fluency in legacy systems began, the same fluency that later powered AI-driven COBOL translation."
+        "blurb": "Nobody starts at AI. Four years inside Mainframe, Teradata, Oracle and Talend — building warehouse pipelines, then building the frameworks that made them repeatable. The lasting output was not the pipelines. It was learning to read systems nobody else wanted to open.",
+        "carry": "That fluency is the reason COBOL translation was possible a decade later."
       },
       {
         "id": "cloud",
         "title": "Cloud Modernization",
-        "blurb": "2019–2024 · Multi-petabyte Hadoop/Teradata → GCP at Charles Schwab (1B+ daily records, zero data loss, $1M+ annual savings), 100+ TB HIPAA-governed migration and 50+ source real-time streaming at HCA Healthcare, and a <30 min downtime cross-cloud cutover at NRG Energy. $2M+ saved overall, 99.9% uptime at scale, and IaC frameworks adopted across 10+ enterprise programs."
+        "blurb": "Then the estates had to move. Petabytes lifted off Hadoop and Teradata onto GCP at brokerage, healthcare and energy scale — under HIPAA audit, with no tolerance for a lost row. The discipline that mattered was never speed. It was making a migration boring, reversible, and provable.",
+        "carry": "The evaluation and governance built for regulated data became the guardrails for LLMs."
       },
       {
         "id": "ai",
         "title": "Enterprise AI",
-        "blurb": "2024–present · GenAI-powered COBOL → cloud translation at Definity, then private LLM platforms at John Wiley & Sons: production RAG over 50M+ documents at 95% grounded accuracy, multi-turn agents deflecting 60% of tier-1 tickets at <2s p95, a 500+ TiB GenAI-accelerated Snowflake → BigQuery migration, and full LLMOps — evals, guardrails, and observability — inside the customer's VPC."
+        "blurb": "Now the same estates want GenAI. Production RAG and multi-agent systems running inside the customer's own VPC — where the model is never the hard part. Proving the answer is grounded, the data never left, and someone can audit it tomorrow: that is the work."
       }
     ]
   }

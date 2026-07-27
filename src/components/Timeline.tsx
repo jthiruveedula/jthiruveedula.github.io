@@ -266,6 +266,22 @@ export default function Timeline() {
         )
       })
 
+      // Carry-forward beats rise on approach, matching the chapter milestones.
+      gsap.utils.toArray<HTMLElement>('.tl-carry').forEach((el) => {
+        gsap.fromTo(
+          el,
+          { autoAlpha: 0, y: 20 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.6,
+            ease: 'power2.out',
+            clearProps: 'opacity,visibility',
+            scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' },
+          },
+        )
+      })
+
       // Nodes pop as the spine reaches them.
       gsap.utils.toArray<HTMLElement>('.tl-node').forEach((el) => {
         gsap.fromTo(
@@ -365,6 +381,32 @@ export default function Timeline() {
                       <RoleCard key={`${role.company}-${role.start}`} role={role} index={index} />
                     ))}
                   </ol>
+
+                  {/* Carry-forward beat: what this era handed the next one. This is the
+                      section's actual argument — the eras are not a list of jobs, they
+                      compound — so it gets its own moment on the spine between chapters,
+                      tinted from this era toward the one it feeds. */}
+                  {chapter.carry && (
+                    <div className="tl-carry relative mt-14 pl-14 md:mt-20 md:pl-0">
+                      <div className="md:mx-auto md:max-w-2xl md:text-center">
+                        <span
+                          aria-hidden="true"
+                          // Left-aligned on phones so it reads as part of the left spine;
+                          // centred from md up, where the spine runs down the middle.
+                          className="mb-4 block h-10 w-px md:mx-auto md:h-12"
+                          style={{
+                            background: `linear-gradient(to bottom, ${ERA_COLORS[chapter.id]}, ${
+                              ERA_COLORS[ERA_GROUPS[chapterIndex + 1]?.chapter.id ?? chapter.id]
+                            })`,
+                          }}
+                        />
+                        <p className="hud-label text-[10px] text-ink-faint">carries forward</p>
+                        <p className="mt-2 font-display text-base leading-snug text-ink/90 md:text-lg">
+                          {chapter.carry}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </li>
               )
             })}

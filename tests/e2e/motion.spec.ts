@@ -221,13 +221,26 @@ test.describe('scroll-reveal durability', () => {
     // the bug does not reproduce, which made an earlier version of this test pass against
     // known-broken code.
     await page.mouse.move(700, 450)
-    for (let i = 0; i < 55; i++) {
-      await page.mouse.wheel(0, 400)
+
+    // Wheel until actually at the bottom rather than a fixed step count — the page height
+    // changes as content is added, and a count that stops short leaves later sections
+    // un-revealed, which fails for the wrong reason.
+    const atBottom = () =>
+      page.evaluate(
+        () => window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4,
+      )
+    for (let i = 0; i < 200 && !(await atBottom()); i++) {
+      await page.mouse.wheel(0, 500)
       await page.waitForTimeout(8)
     }
     await page.waitForTimeout(1200)
-    for (let i = 0; i < 22; i++) {
-      await page.mouse.wheel(0, -400)
+
+    // Then partway back up — a fraction of the document, so it scales with the page.
+    const upSteps = await page.evaluate(() =>
+      Math.round((document.documentElement.scrollHeight * 0.45) / 500),
+    )
+    for (let i = 0; i < upSteps; i++) {
+      await page.mouse.wheel(0, -500)
       await page.waitForTimeout(8)
     }
     await page.waitForTimeout(1200)
