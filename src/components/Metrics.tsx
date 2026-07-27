@@ -224,7 +224,7 @@ export default function Metrics() {
 
       <div className="mx-auto max-w-6xl">
         <ClipReveal>
-        <Decrypt as="p" className="impact-head hud-label section-kicker" text="06 · impact telemetry" />
+        <Decrypt as="p" className="impact-head hud-label section-kicker" text="05 · impact telemetry" />
         <SectionSweep />
         <h2
           id="impact-heading"

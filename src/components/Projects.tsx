@@ -55,7 +55,12 @@ export default function Projects() {
         },
       })
       tl.from('.projects-reveal', { autoAlpha: 0, y: 28, duration: 0.7, stagger: 0.1 }, 0)
-      tl.from('[data-projects-grid] > *', { autoAlpha: 0, y: 32, duration: 0.7, stagger: 0.08 }, 0.2)
+      // The grid's children are NOT animated here. Each ProjectCard owns its own
+      // entrance reveal (and drives its metric count-up from the same timeline), also
+      // a `.from(autoAlpha: 0)`. Two `.from()` tweens on one node both render their
+      // from-state immediately, so each captured the other's zeroed value as its END
+      // state — which left all six cards stuck at opacity 0 / visibility hidden for
+      // the rest of the session once both had fired.
       tl.from(
         '.projects-head .split-word',
         { yPercent: 110, autoAlpha: 0, duration: 0.8, stagger: 0.05, ease: 'power3.out' },
@@ -81,7 +86,7 @@ export default function Projects() {
       <div className="relative mx-auto w-full max-w-6xl px-6">
         <ClipReveal>
         <header className="projects-head max-w-3xl">
-          <Decrypt as="p" className="projects-reveal hud-label section-kicker" text="05 · featured work" />
+          <Decrypt as="p" className="projects-reveal hud-label section-kicker" text="04 · featured work" />
           <SectionSweep />
           <h2 className="projects-reveal mt-4 text-3xl font-semibold text-ink md:text-5xl">
             <SplitText as="span">Featured Transformations</SplitText>

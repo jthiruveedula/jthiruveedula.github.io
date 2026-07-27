@@ -247,12 +247,16 @@ h4 {
   .hero-aura { animation: none; opacity: 0.45; }
 }
 
-/* Signal Path — narrative spine: legacy -> cloud -> AI, traced top to bottom */
+/* Signal Path — narrative spine: legacy -> cloud -> AI, traced top to bottom.
+   Inset below the fixed header and above the bottom edge: tick positions are raw
+   document fractions, so a section at offsetTop 0 lands at the rail's top. When the
+   rail started at y=0 that tick's label was sliced in half by the viewport edge and
+   sat behind the nav — the stray clipped word visible at the top-right. */
 .signal-path {
   position: fixed;
-  top: 0;
+  top: 88px;
   right: 6px;
-  height: 100dvh;
+  height: calc(100dvh - 148px);
   width: 2px;
   z-index: 190;
   pointer-events: none;
@@ -274,7 +278,9 @@ h4 {
   --signal-progress: 0;
   position: absolute;
   left: 50%;
-  top: calc(var(--signal-progress) * 100dvh);
+  /* Percentage of the rail, not the viewport — the rail is now inset, so 100dvh would
+     run the pulse past its bottom end. */
+  top: calc(var(--signal-progress) * 100%);
   width: 9px;
   height: 9px;
   margin-left: -3.5px;

@@ -209,7 +209,9 @@ export default function OperatingModel() {
 
               <p className="text-sm leading-relaxed text-ink-muted">{pillar.blurb}</p>
 
-              <p className="mt-auto font-mono text-[0.7rem] uppercase tracking-[0.14em] text-ink-faint">
+              {/* These are real metrics, not a caption — ink-faint on panel was too dim
+                  to read, so the proof line steps up to ink-muted. */}
+              <p className="mt-auto font-mono text-[0.7rem] uppercase tracking-[0.14em] text-ink-muted">
                 {pillar.proof}
               </p>
             </article>

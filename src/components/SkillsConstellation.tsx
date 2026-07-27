@@ -185,7 +185,7 @@ export default function SkillsConstellation() {
     >
       <ClipReveal>
       <header data-reveal className="skills-head max-w-3xl">
-        <Decrypt as="p" className="hud-label section-kicker" text="04 · capability map" />
+        <Decrypt as="p" className="hud-label section-kicker" text="02 · capability map" />
         <SectionSweep />
         <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
           <SplitText as="span">Skills constellation</SplitText>

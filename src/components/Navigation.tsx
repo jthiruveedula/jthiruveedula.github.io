@@ -121,7 +121,9 @@ export default function Navigation() {
       gsap.set(bar, { transformPerspective: 700, transformOrigin: 'top center' })
       gsap.set(beam, { scaleX: 0, transformOrigin: 'left center' })
       const glideBeam = reduced ? null : gsap.quickTo(beam, 'scaleX', { duration: 0.35, ease: 'power2.out' })
-      const tilt = reduced ? null : gsap.quickTo(bar, 'rotateX', { duration: 0.35, ease: 'power2.out' })
+      // `rotationX`, not `rotateX` — the latter is not a resettable GSAP property, so it
+      // logged "rotateX not eligible for reset" on every frame the bar was tweened.
+      const tilt = reduced ? null : gsap.quickTo(bar, 'rotationX', { duration: 0.35, ease: 'power2.out' })
       const lift = reduced ? null : gsap.quickTo(bar, 'y', { duration: 0.35, ease: 'power2.out' })
 
       let lastY = window.scrollY

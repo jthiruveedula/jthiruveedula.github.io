@@ -9,15 +9,27 @@ import type { Skill, SkillDomain } from '@/data/types'
 gsap.registerPlugin(useGSAP)
 
 /** Domain → accent hex, anchored on the era tokens in globals.css. */
+/**
+ * Domain colours, mapped onto the site's three era hues rather than eight arbitrary ones.
+ *
+ * Every other surface speaks amber (legacy) → cyan (cloud) → violet (AI). This graph
+ * previously introduced pink, lime, sky-blue and orange, which made the one section that
+ * should read as the summary of the whole story look like it came from a different site.
+ * Each domain now sits in the era it actually belongs to, separated by lightness within
+ * that hue — distinguishable in the graph, still inside the film's language.
+ */
 export const DOMAIN_COLORS: Record<SkillDomain, string> = {
+  // Legacy — amber
+  'Databases & Warehouses': '#f59e0b', // --color-legacy
+  Languages: '#fcd34d',
+  // Cloud — cyan
   'Cloud Data Platforms': '#22d3ee', // --color-cloud
+  'Data Engineering': '#67e8f9', // --color-accent-soft
+  'Streaming & Realtime': '#06b6d4',
+  // Enterprise AI — violet
   'GenAI & LLM': '#a78bfa', // --color-ai
-  'Data Engineering': '#34d399', // --color-success
-  'Streaming & Realtime': '#f59e0b', // --color-legacy
-  'Databases & Warehouses': '#60a5fa',
-  Languages: '#f472b6',
-  'DevOps & IaC': '#fb923c',
-  'Governance & Quality': '#a3e635',
+  'Governance & Quality': '#d8b4fe',
+  'DevOps & IaC': '#8b5cf6',
 }
 
 const TIER_WORDS: Record<Skill['tier'], string> = {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -29,6 +29,15 @@ function handleFromUrl(url: string, prefix = ''): string {
   return prefix + url.replace(/^https?:\/\/(www\.)?[^/]+\//, '').replace(/\/+$/, '')
 }
 
+/**
+ * Inserts break opportunities before `@` and after `/` so a long handle wraps at a
+ * meaningful boundary. `break-all` alone splits mid-token — the email was rendering as
+ * "jagadeeshthiruveedula7 / 7@gmail.com", severing a digit pair.
+ */
+function withBreakHints(value: string): ReactNode[] {
+  return value.split(/(?=@)|(?<=\/)/).flatMap((part, i) => (i === 0 ? [part] : [<wbr key={i} />, part]))
+}
+
 const channels: Channel[] = []
 if (profile.email) {
   channels.push({
@@ -46,7 +55,9 @@ if (profile.linkedin) {
   channels.push({
     id: 'linkedin',
     label: 'LinkedIn',
-    value: handleFromUrl(profile.linkedin, 'in/'),
+    // The LinkedIn path already begins with `in/` — passing it as a prefix too rendered
+    // "in/in/jagadeesh-thiruveedula".
+    value: handleFromUrl(profile.linkedin),
     href: profile.linkedin,
     hint: 'Career history & endorsements',
     external: true,
@@ -76,6 +87,10 @@ channels.push({
   accentText: 'text-accent',
   hoverClass: 'hover:border-accent/50 hover:shadow-glow-cloud focus-visible:border-accent/50',
 })
+
+/** Email leads; everything else is a reference link beside it. */
+const primaryChannel = channels.find((channel) => channel.id === 'email')
+const secondaryChannels = channels.filter((channel) => channel.id !== 'email')
 
 export default function Contact() {
   const reduced = useReducedMotion()
@@ -217,33 +232,73 @@ export default function Contact() {
           love to hear about it.
         </p>
 
-        <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {channels.map((channel) => (
-            <li key={channel.id} className="contact-card">
+        {/* One dominant action, then the rest as a quiet rail.
+            Four equal cards gave a recruiter four equal choices and therefore no
+            obvious next step — and it was the third equal-card grid in a row on the
+            way down the page. Email is the action; the others are references. */}
+        <div className="mt-12 grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-stretch">
+          {primaryChannel && (
+            <div className="contact-card">
               <MotionButton
                 as="a"
-                href={channel.href}
-                external={channel.external}
-                cursorLabel={channel.label}
+                href={primaryChannel.href}
+                external={primaryChannel.external}
+                cursorLabel={primaryChannel.label}
                 onPointerMove={handleCardPointerMove}
                 onPointerLeave={handleCardPointerLeave}
-                className={`tilt-card group flex h-full flex-col gap-3 rounded-xl border border-panel-edge bg-panel/60 p-5 backdrop-blur-md transition duration-300 hover:-translate-y-1 ${channel.hoverClass}`}
+                className="tilt-card group flex h-full flex-col justify-between gap-6 rounded-2xl border border-cloud/35 bg-panel/70 p-7 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-cloud/60 hover:shadow-glow-cloud focus-visible:border-cloud/60 md:p-8"
               >
-                <span className={`font-mono text-xs tracking-[0.2em] uppercase ${channel.accentText}`}>
-                  {channel.label}
+                <span className="font-mono text-xs tracking-[0.2em] text-cloud uppercase">
+                  {primaryChannel.hint}
                 </span>
-                <span className="font-mono text-sm break-all text-ink">{channel.value}</span>
-                <span className="mt-auto text-xs text-ink-faint">
-                  {channel.hint}{' '}
-                  <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">
+                <span className="font-display text-2xl font-semibold text-ink md:text-[2rem]">
+                  Start the conversation
+                </span>
+                <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="font-mono text-sm text-cloud [overflow-wrap:break-word]">
+                    {withBreakHints(primaryChannel.value)}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="inline-block text-cloud transition-transform duration-300 group-hover:translate-x-1"
+                  >
                     →
                   </span>
-                  {channel.external && <span className="sr-only">(opens in a new tab)</span>}
                 </span>
               </MotionButton>
-            </li>
-          ))}
-        </ul>
+            </div>
+          )}
+
+          <ul className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            {secondaryChannels.map((channel) => (
+              <li key={channel.id} className="contact-card">
+                <MotionButton
+                  as="a"
+                  href={channel.href}
+                  external={channel.external}
+                  cursorLabel={channel.label}
+                  className={`group flex h-full items-baseline justify-between gap-4 rounded-xl border border-panel-edge bg-panel/40 px-4 py-3.5 transition duration-300 hover:-translate-y-0.5 ${channel.hoverClass}`}
+                >
+                  <span className={`font-mono text-[11px] tracking-[0.2em] uppercase ${channel.accentText}`}>
+                    {channel.label}
+                  </span>
+                  <span className="flex items-baseline gap-2 text-right">
+                    <span className="font-mono text-[11px] text-ink-muted [overflow-wrap:break-word]">
+                      {withBreakHints(channel.value)}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="inline-block text-ink-faint transition-transform duration-300 group-hover:translate-x-0.5"
+                    >
+                      →
+                    </span>
+                  </span>
+                  {channel.external && <span className="sr-only">(opens in a new tab)</span>}
+                </MotionButton>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         {profile.email && (
           <div className="contact-meta mt-6">

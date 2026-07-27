@@ -25,20 +25,36 @@ export default function SignalPath() {
   const [activeLabel, setActiveLabel] = useState<string | null>(null)
 
   useEffect(() => {
+    const doc = document.documentElement
+    let lastSignature = ''
+
     const measure = () => {
-      const doc = document.documentElement
       const total = doc.scrollHeight - doc.clientHeight
       if (total <= 0) return
-      const next = STOPS.map((stop) => {
+      const found = STOPS.map((stop) => {
         const el = document.getElementById(stop.id)
-        const top = el ? el.offsetTop / doc.scrollHeight : 0
-        return { ...stop, top }
+        return { ...stop, el, top: el ? el.offsetTop / doc.scrollHeight : null }
       })
-      setTicks(next)
+      // Only publish once the positions actually differ from each other. Every section
+      // below the flight is a lazy chunk, so a single measure on mount resolved every
+      // `getElementById` to null and pinned all six ticks to 0% — six labels stacked in
+      // one spot at the top of the rail.
+      const signature = found.map((t) => (t.top === null ? 'x' : t.top.toFixed(4))).join('|')
+      if (signature === lastSignature) return
+      lastSignature = signature
+      setTicks(found.filter((t): t is typeof t & { top: number } => t.top !== null).map(({ id, label, top }) => ({ id, label, top })))
     }
+
     measure()
+    // Body resizes as the lazy sections mount, which is the signal that the section
+    // offsets are finally real.
+    const observer = new ResizeObserver(measure)
+    observer.observe(document.body)
     window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', measure)
+    }
   }, [])
 
   useEffect(() => {

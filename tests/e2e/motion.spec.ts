@@ -165,3 +165,45 @@ test.describe('scroll-world camera flight', () => {
     await expect(page.locator('#timeline')).toBeVisible({ timeout: 10000 })
   })
 })
+
+test.describe('scroll-reveal durability', () => {
+  test('project cards stay visible after the section has been scrolled past', async ({ page }) => {
+    await page.goto('/')
+    await page.keyboard.press('Escape')
+
+    // Projects is a lazy chunk — it has to mount before it can be measured.
+    await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }))
+    await expect(page.locator('#projects')).toBeAttached({ timeout: 10000 })
+
+    // Park on the projects section so its own reveal triggers fire...
+    await page.evaluate(() => {
+      const section = document.querySelector('#projects') as HTMLElement
+      window.scrollTo({ top: section.offsetTop - 100, behavior: 'instant' })
+    })
+    await expect(page.locator('#projects article').first()).toBeVisible({ timeout: 10000 })
+
+    // ...then scroll well past it and back, which is what used to strand every card at
+    // opacity 0 / visibility hidden: two `.from(autoAlpha: 0)` tweens on the same node
+    // each captured the other's zeroed value as their END state.
+    await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }))
+    await page.waitForTimeout(1200)
+    await page.evaluate(() => {
+      const section = document.querySelector('#projects') as HTMLElement
+      window.scrollTo({ top: section.offsetTop + 400, behavior: 'instant' })
+    })
+    await page.waitForTimeout(1200)
+
+    const cards = await page.locator('#projects article').evaluateAll((els) =>
+      els.map((el) => {
+        const style = getComputedStyle(el)
+        return { opacity: Number(style.opacity), visibility: style.visibility }
+      }),
+    )
+
+    expect(cards).toHaveLength(6)
+    for (const card of cards) {
+      expect(card.visibility).toBe('visible')
+      expect(card.opacity).toBeGreaterThan(0.9)
+    }
+  })
+})
