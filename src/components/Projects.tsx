@@ -4,7 +4,7 @@ import { Flip } from 'gsap/Flip'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
-import type { FeaturedProject } from '@/data/types'
+import { ERA_COLORS, type FeaturedProject } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
 import { revealFrom } from '@/lib/motion'
 import ProjectCard from '@/components/ProjectCard'
@@ -99,6 +99,33 @@ export default function Projects() {
             Six flagship engagements across three eras — every one shipped to production, every
             number measured against a business SLA.
           </p>
+          {/* The aggregate shift the six cards are instances of. Each card shows its own
+              from → to; this states what all of them add up to, so the grid reads as one
+              body of work rather than six unrelated engagements. Sources are the union of
+              the estates migrated; destinations the union of what they landed on. */}
+          <div className="projects-reveal mt-7 max-w-2xl rounded-xl border border-panel-edge/70 bg-panel/40 p-5">
+            <p className="font-mono text-[11px] leading-relaxed text-ink-faint line-through decoration-ink-faint/50">
+              Mainframe · Teradata · Hadoop · Snowflake · AWS
+            </p>
+            {/* Arrow leads, then the era gradient sweeps away from it. With the rule first
+                and the arrow trailing at the right edge, it read as an afterthought rather
+                than the operator between the two states. */}
+            <p aria-hidden="true" className="my-2 flex items-center gap-2.5">
+              <span className="font-mono text-sm leading-none" style={{ color: ERA_COLORS.cloud }}>
+                ↓
+              </span>
+              <span
+                className="h-px flex-1"
+                style={{
+                  background: `linear-gradient(90deg, ${ERA_COLORS.legacy}, ${ERA_COLORS.cloud}, ${ERA_COLORS.ai}, transparent)`,
+                }}
+              />
+            </p>
+            <p className="font-mono text-[11px] leading-relaxed font-medium text-ink">
+              BigQuery · Dataflow · Databricks · Kafka · Vertex AI · RAG
+            </p>
+          </div>
+
           <div className="projects-reveal mt-6 flex flex-wrap gap-x-6 gap-y-2">
             {ERA_LEGEND.map((item) => (
               <span

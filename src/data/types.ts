@@ -53,6 +53,14 @@ export interface FeaturedProject {
   description: string
   before?: string
   after?: string
+  /**
+   * The engagement compressed to its two states. The section is called "Featured
+   * Transformations", but a card that only lists the end state is not showing a
+   * transformation — it is showing a result. This is the scannable version of
+   * `before` → `after`, rendered on the card face so the change is visible without
+   * opening anything.
+   */
+  shift?: { from: string; to: string }
   metrics: Metric[]
   tech: string[]
   vizType: ProjectVizType

@@ -1323,6 +1323,7 @@ export const portfolio: PortfolioData = {
   "featuredProjects": [
     {
       "id": "definity-cobol-translation",
+      "shift": { "from": "Mainframe COBOL", "to": "BigQuery SQL + PySpark" },
       "name": "GenAI COBOL → Cloud Code Translation",
       "client": "Definity",
       "era": "legacy",
@@ -1357,6 +1358,7 @@ export const portfolio: PortfolioData = {
     },
     {
       "id": "schwab-hadoop-teradata-gcp",
+      "shift": { "from": "Hadoop + Teradata", "to": "GCP · BigQuery" },
       "name": "Multi-Petabyte Hadoop/Teradata → GCP Migration",
       "client": "Charles Schwab",
       "era": "cloud",
@@ -1404,6 +1406,7 @@ export const portfolio: PortfolioData = {
     },
     {
       "id": "hca-hipaa-streaming",
+      "shift": { "from": "Batch Talend ETL", "to": "Kafka + Pub/Sub, real time" },
       "name": "HIPAA Real-Time Streaming & GenAI Accelerators",
       "client": "HCA Healthcare",
       "era": "cloud",
@@ -1451,6 +1454,7 @@ export const portfolio: PortfolioData = {
     },
     {
       "id": "nrg-cross-cloud",
+      "shift": { "from": "AWS S3 + EMR", "to": "GCP Databricks" },
       "name": "AWS → GCP Cross-Cloud Migration",
       "client": "NRG Energy",
       "era": "cloud",
@@ -1491,6 +1495,7 @@ export const portfolio: PortfolioData = {
     },
     {
       "id": "wiley-snowflake-bigquery",
+      "shift": { "from": "Snowflake, 500+ TiB", "to": "BigQuery" },
       "name": "500+ TiB Snowflake → BigQuery Modernization",
       "client": "John Wiley & Sons",
       "era": "ai",
@@ -1538,6 +1543,7 @@ export const portfolio: PortfolioData = {
     },
     {
       "id": "wiley-private-llm-rag",
+      "shift": { "from": "Manual search, 50M+ docs", "to": "Grounded RAG + agents" },
       "name": "Private LLM Research Assistant & Agent Platform",
       "client": "John Wiley & Sons",
       "era": "ai",
