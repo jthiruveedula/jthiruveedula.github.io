@@ -24,12 +24,18 @@ env:
   KEEP_LAST_DEPLOYMENTS: 5
 
 jobs:
-  deploy:
-    name: Build & deploy to GitHub Pages
+  # Gate. Deploy previously ran on push to master with no dependency on any check, so a
+  # commit that broke lint, types, the build, or the E2E suite still shipped to
+  # production — observed in practice: a Deploy run went green while the CI run for the
+  # same commit was still in progress. Gating on the CI workflow alone would not fix it,
+  # because CI marks Lint and E2E `continue-on-error`, so a green CI does not mean the
+  # tests passed. This job re-runs the checks with failures fatal, and deploy needs it.
+  verify:
+    name: Verify (lint, type-check, build, E2E)
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      deploy_sha: ${{ steps.deploy_vars.outputs.deploy_sha }}
+      deploy_mode: ${{ steps.deploy_vars.outputs.deploy_mode }}
     steps:
       - name: Resolve deploy ref
         id: deploy_vars
@@ -41,6 +47,62 @@ jobs:
             echo "deploy_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
             echo "deploy_mode=deploy" >> $GITHUB_OUTPUT
           fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.deploy_vars.outputs.deploy_sha }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund --prefer-offline
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright browser
+        run: npx playwright install chromium
+
+      - name: Run E2E tests
+        run: npx playwright test --project=chromium --reporter=line
+        timeout-minutes: 10
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-verify-failure-${{ github.run_id }}
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 14
+
+  deploy:
+    name: Build & deploy to GitHub Pages
+    needs: [verify]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Carry resolved ref through from verify
+        id: deploy_vars
+        run: |
+          echo "deploy_sha=${{ needs.verify.outputs.deploy_sha }}" >> $GITHUB_OUTPUT
+          echo "deploy_mode=${{ needs.verify.outputs.deploy_mode }}" >> $GITHUB_OUTPUT
 
       - name: Checkout
         uses: actions/checkout@v4

@@ -22,6 +22,13 @@ export interface WorldScene {
   still: string
   stillMobile: string
   eyebrow: string
+  /**
+   * Opening station only: the dominant line, taking the place of `title` as the page's
+   * h1 with `title` demoted to a subhead beneath it. A recruiter scanning the first
+   * viewport is matching a role, so the role has to be the largest thing on it — the
+   * narrative line reads better once they have decided to keep going.
+   */
+  lead?: string
   title: string
   body: string
   metrics: Metric[]
@@ -49,7 +56,8 @@ export const worldScenes: WorldScene[] = [
     accent: '#22d3ee',
     still: '/scenes/01-ingress.jpg',
     stillMobile: '/scenes/01-ingress@sm.jpg',
-    eyebrow: 'Jagadeesh Thiruveedula · Data & AI Architect',
+    eyebrow: 'Jagadeesh Thiruveedula · Dallas–Fort Worth, TX',
+    lead: 'Data & AI Architect',
     title: 'Eleven years, one continuous system.',
     body:
       'Fortune 500 enterprises taken from legacy estates through cloud modernization into production GenAI — with the evaluation, guardrails, and governance that turn a demo into a system.',
@@ -60,6 +68,14 @@ export const worldScenes: WorldScene[] = [
       { label: 'System uptime', value: '99.9%' },
     ],
     tags: ['GCP', 'BigQuery', 'Vertex AI', 'RAG', 'Agents'],
+    // An interested visitor should be able to act on arrival rather than scrolling all
+    // seven stations to find out how. Rendered quietly so station 7 stays the finale.
+    cta: {
+      label: 'Get in touch',
+      href: 'mailto:jagadeeshthiruveedula77@gmail.com',
+      secondaryLabel: 'See the work',
+      secondaryHref: '#projects',
+    },
   },
   {
     id: 'legacy-substrate',
