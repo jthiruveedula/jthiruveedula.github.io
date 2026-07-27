@@ -208,6 +208,10 @@ test.describe('scroll-reveal durability', () => {
   })
 
   test('no section heading is left stranded after scrolling the page twice', async ({ page }) => {
+    // Genuinely slow by nature: it wheels a multi-viewport page end to end and back while
+    // other workers are rendering WebGL. Triple the budget rather than weaken what it
+    // asserts — this is the test guarding the bug that has recurred three times.
+    test.slow()
     await page.goto('/')
     await page.keyboard.press('Escape')
 
@@ -225,14 +229,27 @@ test.describe('scroll-reveal durability', () => {
     // Wheel until actually at the bottom rather than a fixed step count — the page height
     // changes as content is added, and a count that stops short leaves later sections
     // un-revealed, which fails for the wrong reason.
+    // Batch wheel steps between checks: one `evaluate` round trip per step made this loop
+    // slow enough to time out when the suite runs parallel WebGL pages.
+    const wheelUntil = async (
+      done: () => Promise<boolean>,
+      delta: number,
+      maxBatches = 60,
+    ) => {
+      for (let batch = 0; batch < maxBatches; batch += 1) {
+        if (await done()) return
+        for (let step = 0; step < 6; step += 1) {
+          await page.mouse.wheel(0, delta)
+          await page.waitForTimeout(6)
+        }
+      }
+    }
+
     const atBottom = () =>
       page.evaluate(
         () => window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4,
       )
-    for (let i = 0; i < 200 && !(await atBottom()); i++) {
-      await page.mouse.wheel(0, 500)
-      await page.waitForTimeout(8)
-    }
+    await wheelUntil(atBottom, 500)
     await page.waitForTimeout(1200)
 
     // Then all the way back to the very TOP. This is both the natural thing a visitor
@@ -242,10 +259,7 @@ test.describe('scroll-reveal durability', () => {
     // bring it back. Stopping partway up does NOT reproduce it, which is why an earlier
     // version of this test passed while the live site was still broken.
     const atTop = () => page.evaluate(() => window.scrollY <= 0)
-    for (let i = 0; i < 200 && !(await atTop()); i++) {
-      await page.mouse.wheel(0, -500)
-      await page.waitForTimeout(8)
-    }
+    await wheelUntil(atTop, -500)
     await page.waitForTimeout(1400)
 
     const sections = ['timeline', 'skills', 'approach', 'projects', 'impact', 'contact']
