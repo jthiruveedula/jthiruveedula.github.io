@@ -66,18 +66,47 @@ Pushing to `master` triggers `.github/workflows/deploy.yml`, which builds and pu
 ```
 src/
   components/          # One self-contained section per file (no props; each imports its own data)
-    Navigation.tsx       Hero.tsx          Timeline.tsx
+    Navigation.tsx       ScrollWorld.tsx   Timeline.tsx
     SkillsConstellation.tsx  Projects.tsx  ProjectCard.tsx
     Metrics.tsx          Contact.tsx
-  scenes/              # R3F scene graphs (hero mindscape, skills constellation)
+  scenes/              # R3F scene graphs (scroll-world flight, skills constellation)
+    WorldScene.tsx       ConstellationScene.tsx
   data/
     types.ts           # Contractual shapes (Era, Skill, Experience, FeaturedProject…)
     portfolio.ts       # THE single content source — every section renders from this
+    scenes.ts          # The 7 scroll-world stations (copy + metrics + still paths)
   lib/hooks.ts         # useReducedMotion / useWebGLSupport / useIsMobile / useInView
   styles/globals.css   # Tailwind v4 @theme tokens (era colors, fonts, surfaces)
+public/scenes/         # The 7 AI-generated station stills, 2048w + 1280w (`@sm`)
 ```
 
-Sections below the hero are `React.lazy` code-split; Three.js, R3F, and GSAP ship as separate chunks (`manualChunks` in `vite.config.ts`).
+Sections below the flight are `React.lazy` code-split; Three.js, R3F, and GSAP ship as separate chunks (`manualChunks` in `vite.config.ts`).
+
+## The scroll-world hero
+
+The top of the page is one continuous camera flight through seven stations of the résumé —
+legacy substrate → cloud migration → governed realtime → LLM translation → production RAG
+→ the whole system + CTA. Backdrops are AI-generated stills (Higgsfield); the camera is
+real Three.js.
+
+**Scroll drives a camera, not a timeline.** Station depth, scale, opacity, the dust field
+and every DOM overlay are pure functions of one scroll-progress value, so scrolling up
+retraces the flight exactly, there is nothing to snap at a station boundary, and no video
+is decoded on a phone. There is no GSAP pin either — the scene is `position: sticky` in a
+tall section, which keeps Lenis out of a fight with a pin-spacer and stops mobile URL-bar
+resizes from jumping the page (`100svh`, not `dvh`).
+
+- **Framing** covers on landscape, and *contains* on portrait: cropping a 16:9 still to a
+  tall phone would throw away three quarters of its width, so phones get the whole frame
+  anchored to the top band with the copy on clean void beneath it.
+- **Lazy stations** — only the stations within a scroll-window of the camera are mounted,
+  and leaving one disposes its GPU texture. A visitor downloads what they fly through.
+- **Degradation** — no WebGL or `prefers-reduced-motion` renders the same seven stations
+  as ordinary stacked sections with the stills as backdrops. The copy is real DOM in both
+  paths, so it stays crawlable and screen-reader navigable either way.
+
+Scene plan and generation prompts: [SCENE_PLAN.md](./SCENE_PLAN.md). Asset mapping,
+re-rolls and credit spend: [ASSET_MANIFEST.md](./ASSET_MANIFEST.md).
 
 ## Design language
 
@@ -87,10 +116,11 @@ Sections below the hero are `React.lazy` code-split; Three.js, R3F, and GSAP shi
 
 ## Performance & accessibility
 
-- Max two WebGL canvases (Hero, Skills); everything else is SVG/CSS/GSAP. Instanced geometry only, DPR clamped to 2, frameloops pause when offscreen.
-- `prefers-reduced-motion` → static frames and instant metric values. No WebGL → 2D fallbacks. Mobile → reduced particle counts.
+- Max two WebGL canvases (scroll-world, Skills); everything else is SVG/CSS/GSAP. Instanced geometry only, DPR clamped (1.75 desktop / 1.25 mobile — the flight is fill-rate bound), frameloops pause when offscreen.
+- The flight holds 60fps through a 2× CPU throttle on a mobile viewport and locks to a clean 30fps at 4×+ (p95 ≈ median, so it slows rather than stutters). Overlay writes are skipped for stations parked at zero, and the dust volume streams by translating two tiles instead of re-uploading a vertex buffer each frame.
+- `prefers-reduced-motion` → static stations and instant metric values. No WebGL → 2D fallbacks. Mobile → reduced particle counts and 1280w stills.
 - All content exists as semantic HTML (canvases are `aria-hidden` enhancements): keyboard navigation, `aria-expanded` disclosures, skip link, 4.5:1 contrast on body text.
-- First paint is not gated by the loading intro: the hero renders underneath the overlay and its word-reveal plays once the intro hands off (no flash, no word-jump). Brand webfonts load non-render-blocking via a `preload`→`stylesheet` swap, with a `<noscript>` fallback.
+- First paint is not gated by the loading intro: the opening station renders underneath the overlay and its copy staggers in once the intro hands off (no flash, no jump). Brand webfonts load non-render-blocking via a `preload`→`stylesheet` swap, with a `<noscript>` fallback.
 
 ## SEO & social
 
@@ -109,4 +139,10 @@ Sections below the hero are `React.lazy` code-split; Three.js, R3F, and GSAP shi
 npm run typecheck
 npm run lint
 npm run test:e2e:chrome   # production build served via `npm run preview` automatically
+npm run test:e2e:all      # chromium + mobile
 ```
+
+Playwright runs with `workers: 2`. Headless Chromium falls back to software GL, and
+several concurrent WebGL contexts uploading full-screen station textures starve each
+other enough to time tests out — that is a harness limit, not the page's (a real
+GPU-backed browser holds 60fps).

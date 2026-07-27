@@ -14,13 +14,11 @@ test.describe('scroll-driven era wash', () => {
     const top = await readWash(page)
     expect(top).toBeLessThan(0.2)
 
-    // Drive Lenis via wheel so the scrubbed ScrollTrigger updates.
-    await page.mouse.move(640, 400)
-    await page.mouse.wheel(0, 40000)
-    await page.waitForTimeout(900)
-
-    const bottom = await readWash(page)
-    expect(bottom).toBeGreaterThan(0.8)
+    // Jump to the document end and let Lenis settle. A fixed wheel delta is no longer
+    // enough to reach the bottom now that the scroll-world flight adds several
+    // viewports of scroll ahead of the rest of the page.
+    await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }))
+    await expect.poll(() => readWash(page), { timeout: 6000 }).toBeGreaterThan(0.8)
   })
 
   test('era wash is static under reduced motion', async ({ page }) => {
@@ -31,48 +29,139 @@ test.describe('scroll-driven era wash', () => {
   })
 })
 
-test.describe('hero mindscape balance', () => {
-  test('legibility scrim is balanced (left side not over-darkened) so the left cluster stays visible', async ({
-    page,
-  }) => {
+test.describe('scroll-world camera flight', () => {
+  /**
+   * Scrolls to a fraction of the flight and reads back each station's copy opacity,
+   * waiting until the value settles. A fixed frame count is not enough: the overlay is
+   * painted on the GSAP ticker, and under parallel test load a frame can slip, which
+   * would make this read mid-update rather than at rest.
+   */
+  const sampleAt = (page: import('@playwright/test').Page, fraction: number) =>
+    page.evaluate(async (f) => {
+      const section = document.querySelector('#hero') as HTMLElement
+      const span = section.offsetHeight - window.innerHeight
+      window.scrollTo({ top: section.offsetTop + span * f, behavior: 'instant' })
+
+      const read = () =>
+        [
+          Math.round(window.scrollY),
+          ...Array.from(document.querySelectorAll('[data-station]')).map((el) =>
+            Number(getComputedStyle(el).opacity).toFixed(3),
+          ),
+        ].join('|')
+
+      const frame = () => new Promise((r) => requestAnimationFrame(r))
+      // Lenis keeps easing for a while after a programmatic jump, so scroll position is
+      // part of the settle condition — otherwise this can read while the smoothed
+      // scroll is still moving and the sample never matches its counterpart.
+      let previous = ''
+      let stable = 0
+      for (let i = 0; i < 120; i += 1) {
+        await frame()
+        const current = read()
+        stable = current === previous ? stable + 1 : 0
+        previous = current
+        if (stable >= 3) break
+      }
+      return previous.split('|').slice(1)
+    }, fraction)
+
+  test('canvas fills the pinned viewport', async ({ page }) => {
     await page.goto('/')
-    const alphas = await page.evaluate(() => {
-      const scrim = Array.from(document.querySelectorAll('#hero *')).find((el) => {
-        const s = el as HTMLElement
-        const bg = getComputedStyle(s).backgroundImage || ''
-        return bg.includes('rgba(5, 8, 16') || bg.includes('rgba(5,8,16')
-      }) as HTMLElement | undefined
-      if (!scrim) return []
-      const bg = getComputedStyle(scrim).backgroundImage
-      // radial-gradient(…, rgba(5, 8, 16, 0.42) 72%, rgba(5, 8, 16, 0.82) 100%)
-      const matches = (bg.match(/rgba\(5,\s*8,\s*16,\s*([\d.]+)\)/g) || []).map((s) =>
-        parseFloat(s.replace(/rgba\(5,\s*8,\s*16,\s*([\d.]+)\)/, '$1')),
-      )
-      return matches
+    // The canvas mounts at an interim size and is resized by R3F's observer a frame
+    // or two later, so wait for it to settle before measuring.
+    await page.waitForFunction(
+      () => {
+        const canvas = document.querySelector('#hero canvas')
+        const sticky = document.querySelector('#hero .sticky')
+        if (!canvas || !sticky) return false
+        return canvas.getBoundingClientRect().width > sticky.getBoundingClientRect().width * 0.95
+      },
+      { timeout: 10000 },
+    )
+    const box = await page.evaluate(() => {
+      const sticky = document.querySelector('#hero .sticky')!.getBoundingClientRect()
+      const canvas = document.querySelector('#hero canvas')!.getBoundingClientRect()
+      return { stickyW: sticky.width, stickyH: sticky.height, canvasW: canvas.width, canvasH: canvas.height }
     })
-    // Must be a symmetric radial — the darkest stop should be ≤0.65 (not old 0.8).
-    expect(alphas.length).toBeGreaterThanOrEqual(1)
-    const maxAlpha = Math.max(...alphas)
-    expect(maxAlpha).toBeLessThanOrEqual(0.85)
+    expect(box.canvasW).toBeGreaterThan(box.stickyW * 0.95)
+    expect(box.canvasH).toBeGreaterThan(box.stickyH * 0.95)
   })
 
-  test('hero mindscape canvas spans the full hero width', async ({ page }) => {
+  test('every station is in the DOM so the copy stays crawlable', async ({ page }) => {
     await page.goto('/')
-    await page
-      .waitForFunction(
-        () => {
-          const c = document.querySelector('#hero canvas')
-          const h = document.querySelector('#hero')
-          return c && h && c.getBoundingClientRect().width > h.getBoundingClientRect().width * 0.9
-        },
-        { timeout: 10000 },
-      )
-      .catch(() => {})
-    const box = await page.evaluate(() => {
-      const hero = document.querySelector('#hero')!.getBoundingClientRect()
-      const canvas = document.querySelector('#hero canvas')?.getBoundingClientRect()
-      return { heroW: hero.width, canvasW: canvas?.width ?? 0 }
+    await expect(page.locator('[data-station]')).toHaveCount(7)
+    // Each station carries a heading and at least one concrete metric.
+    const content = await page.locator('[data-station]').evaluateAll((els) =>
+      els.map((el) => ({
+        heading: el.querySelector('h1,h2')?.textContent?.trim() ?? '',
+        metrics: el.querySelectorAll('dd').length,
+      })),
+    )
+    for (const station of content) {
+      expect(station.heading.length).toBeGreaterThan(0)
+      expect(station.metrics).toBeGreaterThan(0)
+    }
+  })
+
+  test('reverse scroll retraces the flight', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForFunction(() => !!document.querySelector('#hero canvas'), { timeout: 10000 })
+
+    const fractions = [0.2, 0.45, 0.7, 0.95]
+    const forward: string[][] = []
+    for (const f of fractions) forward.push(await sampleAt(page, f))
+
+    await sampleAt(page, 1)
+
+    // Walk back up through the same positions. The flight is a pure function of scroll
+    // offset, but Lenis's smoothing does not land on the exact same pixel twice, so
+    // compare with a small tolerance rather than bit-for-bit. A camera that got stuck,
+    // snapped, or held one-way state at a boundary would miss by far more than this.
+    for (let i = fractions.length - 1; i >= 0; i -= 1) {
+      const back = await sampleAt(page, fractions[i])
+      const expected = forward[i]
+      expect(back).toHaveLength(expected.length)
+
+      for (let station = 0; station < expected.length; station += 1) {
+        expect(Number(back[station])).toBeCloseTo(Number(expected[station]), 1)
+      }
+      // The same station must still be the dominant one in both directions.
+      const dominant = (values: string[]) => values.indexOf(String(Math.max(...values.map(Number)).toFixed(3)))
+      expect(dominant(back)).toBe(dominant(expected))
+    }
+  })
+
+  test('only nearby stills are fetched on first paint', async ({ page }) => {
+    await page.goto('/')
+    // Wait for the opening station's texture specifically — the canvas mounts before
+    // any still has been requested, so keying off the canvas alone races the fetch.
+    await page.waitForFunction(
+      () =>
+        performance.getEntriesByType('resource').some((r) => r.name.includes('/scenes/01-ingress')),
+      { timeout: 10000 },
+    )
+    const loaded = await page.evaluate(() =>
+      performance
+        .getEntriesByType('resource')
+        .filter((r) => r.name.includes('/scenes/'))
+        .map((r) => r.name.split('/').pop()!),
+    )
+    // The flight lazily mounts stations, so the far end of the world must not be
+    // downloaded before the visitor has scrolled anywhere near it.
+    expect(loaded.length).toBeLessThanOrEqual(3)
+    expect(loaded.some((n) => n.startsWith('01-'))).toBeTruthy()
+    expect(loaded.some((n) => n.startsWith('07-'))).toBeFalsy()
+  })
+
+  test('scrolling past the flight reaches the sections below', async ({ page }) => {
+    await page.goto('/')
+    await page.evaluate(() => {
+      const section = document.querySelector('#hero') as HTMLElement
+      window.scrollTo({ top: section.offsetTop + section.offsetHeight, behavior: 'instant' })
     })
-    expect(box.canvasW).toBeGreaterThan(box.heroW * 0.95)
+    // The sections below the flight are lazy chunks, so give the Suspense boundary
+    // time to resolve rather than asserting on the same tick as the scroll.
+    await expect(page.locator('#timeline')).toBeVisible({ timeout: 10000 })
   })
 })

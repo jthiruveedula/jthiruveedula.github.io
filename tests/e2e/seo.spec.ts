@@ -48,48 +48,49 @@ test.describe('SEO & social discovery', () => {
 })
 
 test.describe('first paint & loading intro', () => {
-  test('main is painted immediately and hero reveals after intro hands off', async ({ page }) => {
+  test('main and the first station paint immediately, then the intro hands off', async ({ page }) => {
     await page.goto('/')
     // main is no longer gated behind an `invisible` class — it paints under the intro overlay.
     await expect(page.locator('main')).toBeVisible()
     await expect(page.locator('#hero')).toBeVisible()
 
-    // Before the intro completes, hero headline words are pre-hidden (no flash, no jump).
-    const hiddenWords = await page
-      .locator('#hero .split-word')
-      .evaluateAll((els) => els.length > 0 && els.every((el) => Number(getComputedStyle(el).opacity) < 0.1))
-    expect(hiddenWords).toBeTruthy()
+    // The opening station's headline is the page h1 and is readable straight away —
+    // the flight has no entrance gate that could leave the hero blank.
+    const h1 = page.locator('#hero h1')
+    await expect(h1).toHaveCount(1)
+    await expect(h1).toContainText('Eleven years')
 
-    // Skip the intro — hero headline should reveal (opacity returns to ~1).
     await page.keyboard.press('Escape')
+
+    // Park at the very top before measuring: the opening station is only fully opaque
+    // at flight progress 0, so any residual scroll would legitimately dim it.
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
     await expect
       .poll(
         async () =>
           page
-            .locator('#hero .split-word')
-            .evaluateAll((els) => els.length > 0 && els.every((el) => Number(getComputedStyle(el).opacity) > 0.9)),
-        { timeout: 4000 },
+            .locator('[data-station="0"]')
+            .first()
+            .evaluate((el) => Number(getComputedStyle(el).opacity)),
+        { timeout: 10_000 },
       )
-      .toBeTruthy()
+      .toBeGreaterThan(0.9)
   })
 
-  test('hero content is fully visible under reduced motion (no intro gate)', async ({ page }) => {
+  test('reduced motion renders the stations statically with no WebGL', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/')
     await expect(page.locator('main')).toBeVisible()
-    // Under reduced motion the loading intro is skipped entirely and words are shown.
-    await expect
-      .poll(
-        async () =>
-          page
-            .locator('#hero .split-word')
-            .evaluateAll((els) => els.length > 0 && els.every((el) => Number(getComputedStyle(el).opacity) > 0.9)),
-        { timeout: 4000 },
-      )
-      .toBeTruthy()
 
-    // Reduced motion must skip the WebGL scene entirely (no <canvas>), rendering the
-    // lightweight 2D fallback so the ~180KB three.js chunk never loads.
+    // All seven stations are present as ordinary stacked sections, fully opaque.
+    await expect(page.locator('[data-station]')).toHaveCount(7)
+    const opacities = await page
+      .locator('[data-station]')
+      .evaluateAll((els) => els.map((el) => Number(getComputedStyle(el).opacity)))
+    expect(Math.min(...opacities)).toBeGreaterThan(0.9)
+
+    // Reduced motion must skip the WebGL flight entirely (no <canvas>), so the
+    // ~180KB three.js chunk never loads.
     await expect(page.locator('#hero canvas')).toHaveCount(0)
   })
 })
