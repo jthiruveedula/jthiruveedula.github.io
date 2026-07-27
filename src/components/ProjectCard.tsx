@@ -464,7 +464,27 @@ export default function ProjectCard({ project, index, total, onExpand }: Project
         <h3 className="mt-4 text-xl font-semibold text-ink md:text-2xl">{project.name}</h3>
         <p className={`mt-2 text-sm leading-relaxed md:text-base ${meta.text}`}>{project.tagline}</p>
 
-        <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-panel-edge/70 pt-5">
+        {/* The transformation itself, on the card face. This section promises
+            "Featured Transformations" but every card used to show only the end state —
+            the before/after was real data sitting behind a click, at exactly the moment
+            a reader's interest peaks. The old state is dimmed and struck; the arrow
+            carries the era colour; the new state is full ink. */}
+        {project.shift && (
+          <p className="mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px] md:text-xs">
+            <span className="text-ink-faint line-through decoration-ink-faint/60">
+              {project.shift.from}
+            </span>
+            <span aria-hidden="true" className={`text-base leading-none ${meta.text}`}>
+              →
+            </span>
+            <span className="font-medium text-ink">{project.shift.to}</span>
+            <span className="sr-only">
+              — transformed from {project.shift.from} to {project.shift.to}
+            </span>
+          </p>
+        )}
+
+        <dl className="mt-4 grid grid-cols-2 gap-4 border-t border-panel-edge/70 pt-5">
           {frontMetrics.map((m) => {
             const parts = splitMetricValue(m.value)
             return (
@@ -513,7 +533,10 @@ export default function ProjectCard({ project, index, total, onExpand }: Project
           }}
           className={`mt-6 inline-flex min-h-11 cursor-pointer items-center gap-2 self-start font-mono text-xs uppercase tracking-[0.18em] ${meta.text}`}
         >
-          View transformation
+          {/* Renamed: the transformation is now visible above, so this label no longer
+              promises what the card was already meant to show. It opens the full
+              before/after narrative. */}
+          Read the case study
           <svg
             aria-hidden="true"
             viewBox="0 0 16 16"
