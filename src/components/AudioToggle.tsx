@@ -31,7 +31,10 @@ export default function AudioToggle() {
       className="fixed bottom-4 right-4 z-[180] flex items-center gap-2 rounded-full border border-panel-edge bg-surface/80 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-muted backdrop-blur-md transition-colors hover:border-accent hover:text-ink"
     >
       <span aria-hidden="true" className="size-2 rounded-full" style={{ background: enabled ? '#34d399' : '#5b6780' }} />
-      {enabled ? 'Sound on' : 'Sound off'}
+      {/* "Sound on" read as an instruction as easily as a state — someone browsing at
+          work could not tell whether audio was already playing. The `Sound:` prefix
+          makes it unambiguously a readout. */}
+      {enabled ? 'Sound: on' : 'Sound: off'}
     </button>
   )
 }

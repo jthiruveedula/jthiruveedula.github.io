@@ -405,7 +405,15 @@ export default function Navigation() {
         className={`relative z-10 border-b transition-[background-color,border-color,box-shadow] duration-300 ${
           scrolled || menuOpen
             ? 'border-panel-edge/70 bg-surface/80 shadow-[0_8px_32px_rgba(5,8,16,0.55)] backdrop-blur-xl'
-            : 'border-transparent bg-transparent'
+            : // Unscrolled the bar used to be fully transparent, which put the nav
+              // directly on the scroll-world scene: at wide viewports the bright
+              // monolith sits behind the first three items and washed them out. A
+              // top-down scrim gives the labels a floor without making the bar look
+              // like a solid header before you have scrolled.
+              // The mid-stop carries the weight: the labels sit at the bar's vertical
+              // centre, and light text over the monolith's bright core is what was
+              // washing out, so the scrim has to still be dense there.
+              'border-transparent bg-linear-to-b from-void/95 via-void/80 to-void/25 backdrop-blur-[2px]'
         }`}
       >
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">

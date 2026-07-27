@@ -291,7 +291,8 @@ export default function ScrollWorld({ introDone = false }: { introDone?: boolean
 const INK_SHADOW = '0 1px 2px rgba(5,8,16,0.9), 0 2px 18px rgba(5,8,16,0.75)'
 
 function SceneCopy({ scene, index }: { scene: (typeof worldScenes)[number]; index: number }) {
-  const Heading = index === 0 ? 'h1' : 'h2'
+  const isOpening = index === 0
+  const Heading = isOpening ? 'h1' : 'h2'
   const total = String(worldScenes.length).padStart(2, '0')
   const current = String(index + 1).padStart(2, '0')
 
@@ -301,7 +302,10 @@ function SceneCopy({ scene, index }: { scene: (typeof worldScenes)[number]; inde
           composition rather than a caption stuck to the bottom edge. On phones the
           still occupies the top band, so the column sits under it instead. */}
       <div className="flex flex-1 items-end px-6 pt-20 pb-5 sm:items-center sm:px-10 sm:pt-0 sm:pb-0">
-        <div className="mx-auto w-full max-w-6xl">
+        {/* Centred up to ~1800px, then left-anchored. The scene's subject is centred in
+            the viewport, so on an ultrawide monitor a centred text column drifts right
+            into the bright middle of the frame and its line-ends wash out. */}
+        <div className="mx-auto w-full max-w-6xl min-[1800px]:mx-0">
           <div className="max-w-[33rem] border-l-2 pl-5 sm:pl-6" style={{ borderColor: scene.accent }}>
             {/* Station counter — the flight's "you are here". */}
             <span className="font-mono text-[11px] tabular-nums" style={{ color: scene.accent }}>
@@ -317,8 +321,19 @@ function SceneCopy({ scene, index }: { scene: (typeof worldScenes)[number]; inde
               className="mt-2.5 font-display text-[1.7rem] font-semibold leading-[1.12] tracking-tight text-ink sm:text-[2.7rem]"
               style={{ textShadow: INK_SHADOW }}
             >
-              {scene.title}
+              {scene.lead ?? scene.title}
             </Heading>
+
+            {/* When a station carries a `lead`, its narrative line becomes the subhead
+                directly under the role — still prominent, no longer the first thing read. */}
+            {scene.lead && (
+              <p
+                className="mt-2 font-display text-base leading-snug text-ink/90 sm:text-xl"
+                style={{ textShadow: INK_SHADOW }}
+              >
+                {scene.title}
+              </p>
+            )}
 
             {/* Narrower than the headline: body text is small and muted, so it has to
                 stay inside the darker part of the scrim to hold contrast. */}
@@ -344,7 +359,14 @@ function SceneCopy({ scene, index }: { scene: (typeof worldScenes)[number]; inde
               <div className="mt-6 flex flex-wrap items-center gap-4">
                 <a
                   href={scene.cta.href}
-                  className="inline-flex min-h-11 items-center rounded-md bg-accent px-6 py-3 font-display text-sm font-semibold text-void transition-colors hover:bg-accent-soft"
+                  // The opening station's action is outlined rather than filled: it exists
+                  // so intent can convert immediately, without stealing the emphasis that
+                  // belongs to the closing station's CTA.
+                  className={
+                    isOpening
+                      ? 'inline-flex min-h-11 items-center rounded-md border border-accent/60 px-5 py-2.5 font-display text-sm font-semibold text-accent transition-colors hover:border-accent hover:bg-accent/10'
+                      : 'inline-flex min-h-11 items-center rounded-md bg-accent px-6 py-3 font-display text-sm font-semibold text-void transition-colors hover:bg-accent-soft'
+                  }
                 >
                   {scene.cta.label}
                 </a>

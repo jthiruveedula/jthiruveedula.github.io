@@ -54,11 +54,19 @@ test.describe('first paint & loading intro', () => {
     await expect(page.locator('main')).toBeVisible()
     await expect(page.locator('#hero')).toBeVisible()
 
-    // The opening station's headline is the page h1 and is readable straight away —
-    // the flight has no entrance gate that could leave the hero blank.
+    // The opening station is readable straight away — the flight has no entrance gate
+    // that could leave the hero blank. The h1 is the ROLE, not the narrative line: a
+    // recruiter scanning the first viewport is matching a job title, so that has to be
+    // the largest thing on it (and the most semantically prominent).
     const h1 = page.locator('#hero h1')
     await expect(h1).toHaveCount(1)
-    await expect(h1).toContainText('Eleven years')
+    await expect(h1).toContainText('Data & AI Architect')
+
+    // The narrative line still ships, demoted to the subhead beneath it.
+    await expect(page.locator('[data-station="0"]')).toContainText('Eleven years')
+
+    // And an interested visitor can act without scrolling the whole flight.
+    await expect(page.locator('[data-station="0"] a[href^="mailto:"]')).toHaveCount(1)
 
     await page.keyboard.press('Escape')
 
