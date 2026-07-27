@@ -352,7 +352,12 @@ export default function Timeline() {
                       text={`chapter ${String(chapterIndex + 1).padStart(2, '0')} · ${chapterYears(roles.map((r) => r.role))}`}
                     />
                     <h3 className={`mt-2 text-2xl font-bold md:text-3xl ${era.text}`}>{chapter.title}</h3>
-                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ink-muted md:mx-auto">{chapter.blurb}</p>
+                    {/* Centred block, left-aligned text. The kicker and title are short
+                        enough to centre; this blurb runs 5–7 lines, and centred ragged
+                        text that long is hard to track back to the next line's start. */}
+                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted md:mx-auto md:text-left">
+                      {chapter.blurb}
+                    </p>
                   </div>
 
                   <ol role="list" className="mt-10 space-y-10 md:mt-14 md:space-y-14">
