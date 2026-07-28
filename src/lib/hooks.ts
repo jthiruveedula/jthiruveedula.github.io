@@ -14,19 +14,35 @@ export function useReducedMotion(): boolean {
   return reduced
 }
 
-/** WebGL availability — false means render the 2D fallback instead of a Canvas. */
-export function useWebGLSupport(): boolean {
-  const [supported] = useState(() => {
-    if (typeof window === 'undefined') return false
-    try {
-      const canvas = document.createElement('canvas')
-      return Boolean(canvas.getContext('webgl2') ?? canvas.getContext('webgl'))
-    } catch {
-      return false
-    }
-  })
-  return supported
+/**
+ * Does this browser support WebGL at all? Detected once and cached.
+ *
+ * A platform capability check, deliberately NOT a context allocation. The previous
+ * implementation created a detached canvas and asked it for a context, which is
+ * unreliable twice over: a document's live-context budget may already be spent by the
+ * scroll-world flight, and a canvas that was never attached to the DOM is refused a
+ * context outright in some environments. Both were measured here — with the flight
+ * running, a detached probe returns null on hardware whose WebGL plainly works.
+ *
+ * The consequence of that false negative was visible: the skills section fell back to its
+ * text branch and dumped all 154 capabilities on screen beneath the constellation.
+ *
+ * Whether a SECOND context can actually be created is not answered here, because it is
+ * not reliably answerable in advance — a probe can succeed and three.js still fail.
+ * Sections that mount a canvas handle that by degrading: a static base layer behind the
+ * canvas, plus an ErrorBoundary around it.
+ */
+function detectWebGL(): boolean {
+  if (typeof window === 'undefined') return false
+  return typeof WebGL2RenderingContext !== 'undefined' || typeof WebGLRenderingContext !== 'undefined'
 }
+
+const webglSupport = detectWebGL()
+
+export function useWebGLSupport(): boolean {
+  return webglSupport
+}
+
 
 /** Coarse device heuristic — used to cut particle counts / geometry on mobile. */
 export function useIsMobile(breakpoint = 768): boolean {
