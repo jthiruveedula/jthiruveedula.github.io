@@ -14,6 +14,7 @@ import ConstellationScene, { DOMAIN_COLORS } from '@/scenes/ConstellationScene'
 import Decrypt from '@/components/Decrypt'
 import SectionSweep from '@/components/SectionSweep'
 import ClipReveal from '@/components/ClipReveal'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -204,7 +205,11 @@ export default function SkillsConstellation() {
       {/* How to read this — the encoding, stated. The section used to lean on a paragraph of
           instructions plus a 154-chip table beneath, which explained the data but never the
           graphic. A key does that job in a fraction of the space. */}
-      <dl data-reveal className="mt-8 grid gap-x-8 gap-y-4 sm:grid-cols-3">
+      <dl
+        data-reveal
+        // Only shown when the graphic it describes is actually rendering.
+        className={`mt-8 grid gap-x-8 gap-y-4 sm:grid-cols-3 ${webgl ? '' : 'hidden'}`}
+      >
         {[
           {
             label: 'Cluster',
@@ -259,7 +264,39 @@ export default function SkillsConstellation() {
           {/* The 3D graph is a decorative enhancement — hidden from AT; the story
               panel below (when open) is real interactive content and stays exposed. */}
           <div aria-hidden="true" className="absolute inset-0">
+            {/* Static base layer, always present, behind the canvas.
+                Whether a SECOND WebGL context can be created is not reliably knowable in
+                advance — a document's context budget may be spent by the scroll-world
+                flight, and probing for one gives false positives (measured: a probe
+                succeeds, then three.js still fails). Rather than detect, degrade: this
+                draws a quiet constellation of the eight domains in their era colours, and
+                the live canvas simply covers it when it works. The panel is never empty. */}
+            <div className="absolute inset-0 overflow-hidden">
+              {groups.map((g, i) => {
+                // Deterministic scatter — stable across renders, no layout thrash.
+                const angle = (i / groups.length) * Math.PI * 2 + 0.6
+                const radius = 24 + (i % 3) * 9
+                return (
+                  <span
+                    key={g.domain}
+                    className="absolute rounded-full"
+                    style={{
+                      left: `${50 + Math.cos(angle) * radius}%`,
+                      top: `${50 + Math.sin(angle) * radius * 0.72}%`,
+                      width: `${8 + (g.tier1.length + g.rest.length) / 6}px`,
+                      height: `${8 + (g.tier1.length + g.rest.length) / 6}px`,
+                      background: g.color,
+                      boxShadow: `0 0 18px ${g.color}aa`,
+                      opacity: 0.55,
+                    }}
+                  />
+                )
+              })}
+            </div>
+
+            {/* Guard the canvas so a context failure cannot take the section down. */}
             {hasEntered && (
+              <ErrorBoundary label="skills-constellation">
               <Canvas
                 camera={{ position: [0, 0.4, 10.5], fov: 42 }}
                 dpr={[1, 2]}
@@ -281,6 +318,7 @@ export default function SkillsConstellation() {
                   reducedMotion={reducedMotion}
                 />
               </Canvas>
+              </ErrorBoundary>
             )}
             <span className="hud-label pointer-events-none absolute left-4 top-3">skill graph</span>
             <span className="hud-label pointer-events-none absolute right-4 top-3">
@@ -414,30 +452,20 @@ export default function SkillsConstellation() {
         )
       })()}
 
-      {/* The complete record. Visually hidden when the constellation is doing the talking —
-          the graphic plus the domain rail is the presentation — but always in the DOM so
-          crawlers and screen readers get all 154 capabilities with their depth and standing.
-          When WebGL is unavailable this is the only representation, so it becomes visible. */}
-      <div className={webgl ? 'sr-only' : 'mt-10 grid gap-6 sm:grid-cols-2'}>
-        <h3 className={webgl ? '' : 'sr-only'}>Full capability record</h3>
+      {/* The complete record — always screen-reader only, never rendered visibly.
+          It exists so crawlers and assistive tech get all 154 capabilities with their
+          depth and standing; the presentation is the constellation plus the era rail,
+          which already names every domain and its count. This used to become a visible
+          grid when `webgl` was false, and a spurious false (see useWebGLSupport) dumped
+          the entire inventory on screen as a wall of text under the map. */}
+      <div className="sr-only">
+        <h3>Full capability record</h3>
         {groups.map((g) => (
           <section key={g.domain} aria-label={`${g.domain} skills`}>
-            <h4 className={webgl ? '' : 'flex items-center gap-2.5 font-display text-base font-medium'}>
-              {!webgl && (
-                <span
-                  aria-hidden="true"
-                  className="size-2.5 shrink-0 rounded-full"
-                  style={{ background: g.color, boxShadow: `0 0 10px ${g.color}66` }}
-                />
-              )}
-              {g.domain}
-            </h4>
-            <ul className={webgl ? '' : 'mt-3 flex flex-wrap gap-x-3 gap-y-1.5'}>
+            <h4>{g.domain}</h4>
+            <ul>
               {[...g.tier1, ...g.rest].map((skill) => (
-                <li
-                  key={skill.name}
-                  className={webgl ? '' : 'font-mono text-xs text-ink-muted'}
-                >
+                <li key={skill.name}>
                   {skill.name}
                   {skill.years ? ` — ${skill.years} years` : ''}
                   {`, ${TIER_LABELS[skill.tier]}`}
