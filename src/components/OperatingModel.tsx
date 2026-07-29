@@ -17,6 +17,15 @@ interface Pillar {
   era: Era | 'accent'
   blurb: string
   principle: string
+  /**
+   * The engagement that demonstrates this move, and the proof it carries.
+   *
+   * This section used to be the only one on the page making claims nobody could check —
+   * four assertions about method sitting between two sections that are entirely evidence,
+   * which is what made it read as filler. Each move now points at the work that proves it,
+   * so the section indexes the evidence instead of asserting competence a fourth time.
+   */
+  proof: { client: string; detail: string }
 }
 
 /** The four moves that turn an estate into production — and into a decision. */
@@ -28,6 +37,7 @@ const PILLARS: readonly Pillar[] = [
     blurb:
       'Design resilient data estates and cloud foundations before product code is written — so the platform never has to be rebuilt.',
     principle: 'The rebuild you avoid is the cheapest thing you ever ship.',
+    proof: { client: 'Charles Schwab', detail: 'multi-petabyte estate moved without losing a row' },
   },
   {
     index: '02',
@@ -36,6 +46,7 @@ const PILLARS: readonly Pillar[] = [
     blurb:
       'Assemble streaming and platform systems that hold under real load, not demo load — observable, testable, and boring to operate.',
     principle: 'Demo load proves nothing. Real load, or it is not built.',
+    proof: { client: 'HCA Healthcare', detail: '50+ sources streaming under HIPAA audit' },
   },
   {
     index: '03',
@@ -44,6 +55,7 @@ const PILLARS: readonly Pillar[] = [
     blurb:
       'Take GenAI from prototype to production with evaluation and guardrails engineered in, not bolted on after the incident.',
     principle: 'A model without evals is a prototype wearing a deadline.',
+    proof: { client: 'John Wiley & Sons', detail: 'RAG in production with evals and guardrails' },
   },
   {
     index: '04',
@@ -52,6 +64,9 @@ const PILLARS: readonly Pillar[] = [
     blurb:
       'Make the work legible to execs, peers, and operators — so the right decision actually gets made and survives contact.',
     principle: 'Work nobody can explain does not survive the next budget cycle.',
+    // The strongest version of this claim, and it is literal: the engagement was
+    // forward-deployed, embedded with Wiley leadership, shipping for CXO reporting.
+    proof: { client: 'John Wiley & Sons', detail: 'forward-deployed with leadership, CXO reporting' },
   },
 ]
 
@@ -150,7 +165,7 @@ export default function OperatingModel() {
         </h2>
         <p data-om-head className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted md:text-base">
           From estate to production to the room where the decision gets made — the loop I run on
-          every engagement.
+          every engagement, each move with the engagement that proves it.
         </p>
 
         <div className="relative mt-12">
@@ -216,11 +231,37 @@ export default function OperatingModel() {
                   this is a sentence, and caps at this length reads as shouting and wraps
                   awkwardly. Era-tinted rule ties it to the card's move. */}
               <p
-                className="mt-auto border-l-2 pl-3 text-[0.8rem] leading-snug text-ink-muted italic"
+                className="border-l-2 pl-3 text-[0.8rem] leading-snug text-ink-muted italic"
                 style={{ borderColor: `${COLOR[pillar.era]}66` }}
               >
                 {pillar.principle}
               </p>
+
+              {/* Where this move was actually made. Anchors to Projects, which is the
+                  section holding the before/after and the numbers — so the claim above is
+                  one click from its evidence rather than left standing on its own. */}
+              <a
+                href="#projects"
+                className="group/proof mt-auto flex items-baseline gap-2 border-t border-panel-edge/60 pt-3.5 font-mono text-[11px] transition-colors"
+              >
+                <span
+                  aria-hidden="true"
+                  className="mt-[0.3rem] size-1.5 shrink-0 rounded-full"
+                  style={{ background: COLOR[pillar.era] }}
+                />
+                <span className="text-ink-muted group-hover/proof:text-ink">
+                  <span className="text-ink">{pillar.proof.client}</span>
+                  {' — '}
+                  {pillar.proof.detail}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="ml-auto shrink-0 self-center text-ink-faint transition-transform duration-300 group-hover/proof:translate-x-0.5"
+                >
+                  →
+                </span>
+                <span className="sr-only">— see the featured work</span>
+              </a>
             </article>
           ))}
           </div>
