@@ -120,7 +120,7 @@ function MetricTile({ metric }: { metric: Metric }) {
 export default function Metrics() {
   const sectionRef = useRef<HTMLElement>(null)
   const reducedMotion = useReducedMotion()
-  const { headlineMetrics, certifications } = portfolio
+  const { headlineMetrics, certifications, education } = portfolio
 
   useGSAP(
     () => {
@@ -243,18 +243,54 @@ export default function Metrics() {
           ))}
         </ul>
 
-        <div className="mt-12 md:mt-16">
-          <p className="hud-label">Certifications</p>
-          <ul className="mt-4 flex flex-wrap gap-2 md:gap-3">
-            {certifications.map((cert) => (
-              <li
-                key={cert}
-                className="cert-pill rounded-full border border-panel-edge bg-panel/60 px-4 py-1.5 font-mono text-xs text-ink-muted"
-              >
-                {cert}
-              </li>
-            ))}
-          </ul>
+        {/* Credentials — certifications and education under one head.
+            Education was in the dataset and rendered nowhere on the page: a recruiter
+            scanning this site never saw a degree. Pairing it with certifications here
+            avoids a whole new section for two lines, and keeps the "Advanced Certificate"
+            entry next to the certifications it is a sibling of rather than stranded under
+            a separate heading. */}
+        <div className="mt-12 grid gap-x-10 gap-y-8 border-t border-panel-edge/60 pt-8 md:mt-16 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+          <div>
+            <p className="hud-label">Certifications</p>
+            <ul className="mt-4 flex flex-wrap gap-2 md:gap-3">
+              {certifications.map((cert) => (
+                <li
+                  key={cert}
+                  className="cert-pill rounded-full border border-panel-edge bg-panel/60 px-4 py-1.5 font-mono text-xs text-ink-muted"
+                >
+                  {cert}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="hud-label">Education</p>
+            <ul className="mt-4 space-y-3">
+              {education.map((entry) => {
+                // "Qualification — Institution, years, place" → split on the em dash so the
+                // qualification can carry the emphasis and the rest stays quiet.
+                const [qualification, ...detail] = entry.split(' — ')
+                return (
+                  <li key={entry} className="flex gap-2.5">
+                    <span
+                      aria-hidden="true"
+                      className="mt-1.5 size-1.5 shrink-0 rounded-full"
+                      style={{ background: ERA_COLORS.legacy }}
+                    />
+                    <span className="text-sm leading-snug">
+                      <span className="text-ink">{qualification}</span>
+                      {detail.length > 0 && (
+                        <span className="block font-mono text-[11px] text-ink-faint">
+                          {detail.join(' — ')}
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         </div>
         </ClipReveal>
       </div>

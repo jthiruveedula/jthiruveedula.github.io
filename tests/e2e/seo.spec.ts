@@ -16,9 +16,12 @@ test.describe('SEO & social discovery', () => {
   test('exposes OpenGraph + Twitter social card meta', async ({ page }) => {
     await page.goto('/')
 
+    // Must be a raster format. This test previously asserted `.svg`, which locked in a
+    // card that renders blank on LinkedIn, X, Slack, WhatsApp and Facebook — none of them
+    // support SVG in link previews, and those are the only places this URL gets shared.
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
       'content',
-      /og-image\.svg$/,
+      /og-image\.(png|jpe?g)$/,
     )
     await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200')
     await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630')
@@ -28,9 +31,21 @@ test.describe('SEO & social discovery', () => {
     )
     await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
       'content',
-      /og-image\.svg$/,
+      /og-image\.(png|jpe?g)$/,
     )
     await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute('content', 'en_US')
+  })
+
+  test('the social card image is served as a real raster file', async ({ page, request }) => {
+    await page.goto('/')
+    const url = await page
+      .locator('meta[property="og:image"]')
+      .getAttribute('content')
+    // Fetch the path the tag actually advertises, so a repointed tag with a missing file
+    // fails here rather than silently on someone's LinkedIn feed.
+    const res = await request.get(new URL(url!).pathname)
+    expect(res.status()).toBe(200)
+    expect(res.headers()['content-type']).toMatch(/image\/(png|jpeg)/)
   })
 
   test('loads brand webfonts without render-blocking stylesheet', async ({ request }) => {
