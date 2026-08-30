@@ -7,6 +7,11 @@ export interface Metric {
   numeric?: number
   prefix?: string
   suffix?: string
+  /** Where the number came from — shown under the label in the Index grid. */
+  source?: string
+  /** Filter categories this metric belongs to; groups[0] is the "primary" one used
+   *  for the category-composition bar. Only headlineMetrics use this. */
+  groups?: string[]
 }
 
 export interface Skill {
@@ -42,7 +47,23 @@ export interface Experience {
   tech?: string[]
 }
 
-export type ProjectVizType = 'migration' | 'streaming' | 'translation' | 'rag' | 'crosscloud'
+/**
+ * The shape of the stage-path diagram's timing — which of the four keyframe
+ * patterns (see .stage-path in globals.css) the traveling dot(s) run:
+ * - roundtrip: out to the end, dwell, then back — a request/response round trip.
+ * - batch: stepped dwell-then-jump — data landing in discrete batches.
+ * - gate: dwell at the midpoint — a checkpoint/eval gate the flow must clear.
+ * - stream: a single continuous sweep — real-time/streaming ingestion.
+ */
+export type ProjectFlow = 'roundtrip' | 'batch' | 'gate' | 'stream'
+
+export interface ProjectStage {
+  step: number
+  /** Short kind label under the node, e.g. "Source", "Govern", "Serve". */
+  kind: string
+  title: string
+  detail: string
+}
 
 export interface FeaturedProject {
   id: string
@@ -63,7 +84,10 @@ export interface FeaturedProject {
   shift?: { from: string; to: string }
   metrics: Metric[]
   tech: string[]
-  vizType: ProjectVizType
+  /** Data-flow shape animated by the stage-path diagram. */
+  flow: ProjectFlow
+  /** The stage-path diagram's nodes, source → destination. */
+  stages: ProjectStage[]
 }
 
 export interface Chapter {
@@ -101,9 +125,15 @@ export interface PortfolioData {
   story: { chapters: Chapter[] }
 }
 
-/** Era → design-token color hex (mirrors globals.css @theme). */
+/**
+ * Era → design-token color hex (mirrors globals.css @theme).
+ * v5 redesign: the story is no longer color-coded by era (amber/cyan/violet) —
+ * it's a single cyan accent against a grayscale ground. Legacy/cloud read as
+ * neutral gray steps that resolve into the accent for the AI era, matching the
+ * Timeline's era-band legend (Legacy → Cloud → Enterprise AI).
+ */
 export const ERA_COLORS: Record<Era, string> = {
-  legacy: '#f59e0b',
-  cloud: '#22d3ee',
-  ai: '#a78bfa',
+  legacy: '#808a91',
+  cloud: '#a6aeb4',
+  ai: '#46c9f0',
 }

@@ -1,32 +1,54 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Surfaces — deep-space navy, OLED-friendly */
-  --color-void: #050810;
-  --color-surface: #0b1120;
-  --color-panel: #111a2e;
-  --color-panel-edge: #1e2a45;
+  /* Surfaces — v5: a single dark ground, not deep-space navy. Old
+     void/surface/panel/panel-edge tokens are kept (ErrorBoundary, SectionSkeleton,
+     ProjectCaseStudy still reference them) but repointed at the new ground. */
+  --color-ground: #0b1013;
+  --color-ground-2: #121a1f;
+  --color-void: #0b1013;
+  --color-surface: #0b1013;
+  --color-panel: #121a1f;
+  --color-panel-edge: #333c43;
 
   /* Ink */
-  --color-ink: #e6edf7;
-  --color-ink-muted: #8b98b3;
-  --color-ink-faint: #5b6780;
+  --color-ink: #e8e6e1;
+  --color-ink-muted: #a6aeb4;
+  --color-ink-faint: #68727a;
 
-  /* Era accents — the story's color code */
-  --color-legacy: #f59e0b; /* amber — legacy systems */
-  --color-cloud: #22d3ee; /* cyan — cloud modernization */
-  --color-ai: #a78bfa; /* violet — enterprise AI */
-  --color-accent: #22d3ee;
-  --color-accent-soft: #67e8f9;
+  /* Neutral ramp — the grayscale half of the v5 palette */
+  --color-neutral-300: #c9ced2;
+  --color-neutral-400: #a6aeb4;
+  --color-neutral-500: #808a91;
+  --color-neutral-600: #68727a;
+  --color-neutral-700: #4e585f;
+  --color-neutral-800: #333c43;
+
+  /* Accent ramp — one cyan, not three era hues. Legacy/cloud/ai collapse to
+     neutral-500 / neutral-400 / accent-500 (see ERA_COLORS in data/types.ts) so
+     the only story told in color is "gray resolving into cyan". */
+  --color-legacy: #808a91;
+  --color-cloud: #a6aeb4;
+  --color-ai: #46c9f0;
+  --color-accent-200: #dcf5ff;
+  --color-accent-300: #b3e9fb;
+  --color-accent-400: #7fd8f4;
+  --color-accent-500: #46c9f0;
+  --color-accent-600: #17a6d2;
+  --color-accent-700: #0b7fa4;
+  --color-accent-800: #0a5c78;
+  --color-accent-900: #0a4053;
+  --color-accent: #46c9f0;
+  --color-accent-soft: #7fd8f4;
   --color-success: #34d399;
 
-  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
-  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Archivo Expanded', 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Archivo', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
 
-  --shadow-glow-cloud: 0 0 24px rgba(34, 211, 238, 0.25);
-  --shadow-glow-ai: 0 0 24px rgba(167, 139, 250, 0.25);
-  --shadow-glow-legacy: 0 0 24px rgba(245, 158, 11, 0.22);
+  --shadow-glow-cloud: 0 0 24px rgba(70, 201, 240, 0.25);
+  --shadow-glow-ai: 0 0 24px rgba(70, 201, 240, 0.25);
+  --shadow-glow-legacy: 0 0 24px rgba(128, 138, 145, 0.2);
 
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
@@ -39,7 +61,8 @@
 
 html {
   scroll-behavior: smooth;
-  scrollbar-color: #1e2a45 #050810;
+  scrollbar-color: #333c43 #0b1013;
+  background: #0b1013;
 }
 
 /* Lenis smooth-scroll hooks: disable native scroll-behavior while Lenis is active. */
@@ -71,7 +94,7 @@ h4 {
 }
 
 ::selection {
-  background: rgba(34, 211, 238, 0.35);
+  background: rgba(70, 201, 240, 0.35);
   color: #f8fafc;
 }
 
@@ -201,152 +224,9 @@ h4 {
   width: 100%;
   transform-origin: left;
   transform: scaleX(var(--scroll-progress, 0));
-  background: linear-gradient(90deg, var(--color-legacy, #f59e0b), var(--color-cloud, #22d3ee), var(--color-ai, #a78bfa));
+  background: var(--color-accent-500, #46c9f0);
   z-index: 200;
   pointer-events: none;
-}
-
-/* Hero scroll cue — gentle bob + ring pulse to invite the first scroll */
-@keyframes scroll-cue {
-  0%, 100% { transform: translateY(0); opacity: 0.55; }
-  50% { transform: translateY(5px); opacity: 1; }
-}
-@keyframes scroll-cue-ring {
-  0% { transform: scale(0.85); opacity: 0.7; }
-  70% { transform: scale(1.15); opacity: 0; }
-  100% { transform: scale(1.15); opacity: 0; }
-}
-.scroll-cue__chevron {
-  animation: scroll-cue 1.7s ease-in-out infinite;
-}
-.scroll-cue__ring {
-  animation: scroll-cue-ring 2.1s ease-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .scroll-cue__chevron,
-  .scroll-cue__ring { animation: none; }
-}
-
-/* Hero headline aura — slow breathing light behind the copy */
-@keyframes hero-aura {
-  0%, 100% { opacity: 0.45; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.08); }
-}
-.hero-aura {
-  background: radial-gradient(closest-side, rgba(34, 211, 238, 0.18), transparent 72%);
-  filter: blur(26px);
-  animation: hero-aura 6.5s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-aura { animation: none; opacity: 0.45; }
-}
-
-/* Signal Path — narrative spine: legacy -> cloud -> AI, traced top to bottom.
-   Inset below the fixed header and above the bottom edge: tick positions are raw
-   document fractions, so a section at offsetTop 0 lands at the rail's top. When the
-   rail started at y=0 that tick's label was sliced in half by the viewport edge and
-   sat behind the nav — the stray clipped word visible at the top-right. */
-.signal-path {
-  position: fixed;
-  top: 88px;
-  right: 6px;
-  height: calc(100dvh - 148px);
-  width: 2px;
-  z-index: 190;
-  pointer-events: none;
-}
-.signal-path__rail {
-  position: absolute;
-  inset: 0;
-  width: 2px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--color-legacy, #f59e0b) 55%, transparent),
-    color-mix(in srgb, var(--color-cloud, #22d3ee) 55%, transparent),
-    color-mix(in srgb, var(--color-ai, #a78bfa) 55%, transparent)
-  );
-  opacity: 0.35;
-  border-radius: 2px;
-}
-.signal-path__pulse {
-  --signal-progress: 0;
-  position: absolute;
-  left: 50%;
-  /* Percentage of the rail, not the viewport — the rail is now inset, so 100dvh would
-     run the pulse past its bottom end. */
-  top: calc(var(--signal-progress) * 100%);
-  width: 9px;
-  height: 9px;
-  margin-left: -3.5px;
-  margin-top: -3.5px;
-  border-radius: 50%;
-  background: color-mix(
-    in srgb,
-    var(--color-legacy, #f59e0b) calc((1 - var(--signal-progress)) * 100%),
-    color-mix(in srgb, var(--color-ai, #a78bfa) calc(var(--signal-progress) * 100%), var(--color-cloud, #22d3ee))
-  );
-  box-shadow: 0 0 10px 2px color-mix(in srgb, currentColor 60%, transparent),
-    0 0 22px 6px color-mix(in srgb, var(--color-cloud, #22d3ee) 25%, transparent);
-  transition: top 0.05s linear;
-}
-@media (prefers-reduced-motion: reduce) {
-  .signal-path__pulse {
-    transition: none;
-  }
-}
-.signal-path__tick {
-  position: absolute;
-  left: 50%;
-  width: 6px;
-  height: 6px;
-  margin-left: -2px;
-  margin-top: -2px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--color-cloud, #22d3ee) 60%, transparent);
-  opacity: 0.5;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-.signal-path__tick--active {
-  opacity: 1;
-  transform: scale(1.4);
-}
-.signal-path__tick-label {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%) translateX(4px);
-  white-space: nowrap;
-  font-family: var(--font-mono, monospace);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink, #e5e7eb);
-  opacity: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  pointer-events: none;
-  background: none;
-  border: none;
-  /* Vertical padding takes the hit area to ~32px without moving the label: at 4px it was
-     an 18px-tall target, well under the 24px WCAG 2.5.8 minimum. Horizontal padding is
-     asymmetric so the growth happens leftward, away from the viewport edge. */
-  padding: 9px 4px 9px 12px;
-  margin-right: -4px;
-  line-height: 1;
-}
-.signal-path__tick--active .signal-path__tick-label {
-  opacity: 0.85;
-  pointer-events: auto;
-  cursor: pointer;
-  transform: translateY(-50%) translateX(0);
-}
-.signal-path__tick--active .signal-path__tick-label:hover {
-  opacity: 1;
-  color: var(--color-accent, #22d3ee);
-}
-@media (max-width: 640px) {
-  .signal-path {
-    display: none;
-  }
 }
 
 /* FUI corner brackets — decorative, never carry meaning */
@@ -372,289 +252,12 @@ h4 {
   border-right: 1px solid var(--color-accent-soft);
 }
 
-/* FUI custom cursor — dot + magnetized trailing ring. Desktop fine-pointer only. */
-.cursor-fui {
-  position: fixed;
-  inset: 0;
-  /* Must sit above the case-study dialog (z-100). At the same level the dialog painted
-     over the custom cursor while the rule below still hid the native one, so opening a
-     case study left no visible pointer at all. */
-  z-index: 300;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-.cursor-fui--active {
-  opacity: 1;
-}
-.cursor-fui__dot,
-.cursor-fui__ring {
-  position: absolute;
-  top: 0;
-  left: 0;
-  border-radius: 50%;
-  will-change: transform;
-}
-.cursor-fui__dot {
-  width: 5px;
-  height: 5px;
-  margin: -2.5px;
-  background: var(--color-accent);
-  box-shadow: 0 0 6px 1px var(--color-accent);
-}
-.cursor-fui__ring {
-  width: 30px;
-  height: 30px;
-  margin: -15px;
-  border: 1px solid var(--color-accent-soft);
-  opacity: 0.6;
-  transition:
-    width 0.2s ease,
-    height 0.2s ease,
-    margin 0.2s ease,
-    opacity 0.2s ease,
-    border-color 0.2s ease;
-}
-.cursor-fui__ring--hover {
-  width: 46px;
-  height: 46px;
-  margin: -23px;
-  opacity: 1;
-  border-color: var(--color-accent);
-}
-.cursor-fui__label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translate3d(0, 0, 0);
-  margin-top: 14px;
-  padding: 3px 8px;
-  border-radius: 4px;
-  background: rgba(11, 17, 32, 0.85);
-  border: 1px solid rgba(34, 211, 238, 0.35);
-  font-family: var(--font-mono, monospace);
-  font-size: 9px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-accent-soft);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  will-change: transform;
-}
-.cursor-fui__label--visible {
-  opacity: 1;
-}
-.cursor-fui__ripple-layer {
-  position: absolute;
-  inset: 0;
-}
-.cursor-fui__ripple {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  margin: -4px;
-  border-radius: 50%;
-  border: 1px solid var(--color-accent);
-  animation: cursorRipple 0.5s ease-out forwards;
-  will-change: transform, opacity;
-}
-@keyframes cursorRipple {
-  from {
-    transform: scale(1);
-    opacity: 0.9;
-  }
-  to {
-    transform: scale(7);
-    opacity: 0;
-  }
-}
-@keyframes scan {
-  from {
-    transform: translateX(-120%);
-  }
-  to {
-    transform: translateX(420%);
-  }
-}
-@media (pointer: fine) {
-  html:has(.cursor-fui--active) {
-    cursor: none;
-  }
-  html:has(.cursor-fui--active) a,
-  html:has(.cursor-fui--active) button,
-  html:has(.cursor-fui--active) [role='button'],
-  html:has(.cursor-fui--active) input,
-  html:has(.cursor-fui--active) summary {
-    cursor: none;
-  }
-}
-
-/* Fixed atmosphere layer: scanlines + grain + aurora glows. Pure CSS, decorative only. */
-.atmosphere {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* Scroll-scrubbed era wash — the legacy → cloud → AI story tinted across the
-   whole page as you scroll. Sits BEHIND content (z: -1) so text contrast is
-   never compromised. Driven by the --era-wash custom property (0 → 1). */
-.era-wash {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(
-      55% 45% at 16% 26%,
-      color-mix(in srgb, var(--color-legacy) calc((1 - var(--era-wash, 0)) * 26%), transparent),
-      transparent 72%
-    ),
-    radial-gradient(
-      55% 45% at 84% 30%,
-      color-mix(in srgb, var(--color-ai) calc(var(--era-wash, 0) * 26%), transparent),
-      transparent 72%
-    ),
-    radial-gradient(
-      70% 55% at 50% 92%,
-      color-mix(in srgb, var(--color-cloud) 16%, transparent),
-      transparent 75%
-    );
-}
-.atmosphere__scanlines {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.025) 0px,
-    rgba(255, 255, 255, 0.025) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  mix-blend-mode: overlay;
-  opacity: 0.35;
-}
-.atmosphere__grain {
-  position: absolute;
-  inset: -10%;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: grain-shift 1.4s steps(2) infinite;
-}
-@keyframes grain-shift {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(-1%, 1%);
-  }
-}
-.atmosphere__aurora {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(600px circle at 15% 20%, color-mix(in srgb, var(--color-legacy) 10%, transparent), transparent 60%),
-    radial-gradient(700px circle at 85% 45%, color-mix(in srgb, var(--color-cloud) 10%, transparent), transparent 60%),
-    radial-gradient(650px circle at 30% 85%, color-mix(in srgb, var(--color-ai) 10%, transparent), transparent 60%);
-  animation: aurora-drift 24s ease-in-out infinite alternate;
-}
-.atmosphere__particles {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.7;
-}
-/* Scroll-linked reading light — a soft era glow that sweeps down the page as
-   you scroll, spotlighting each section on arrival (HyperFrames spotlight/dim).
-   Blended screen so it only lightens; --spot-y is 0→100% scroll progress. */
-.atmosphere__spotlight {
-  --spot-y: 50%;
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  background: radial-gradient(
-    90% 38% at 50% var(--spot-y),
-    color-mix(in srgb, var(--color-cloud) 16%, transparent),
-    transparent 70%
-  );
-}
-/* Cinematic vignette — Higgsfield "vignette" effect: darkens the frame edges
-   so the eye lands on the content lane. Edges are empty margins, so text
-   contrast is untouched. */
-.atmosphere__vignette {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: radial-gradient(
-    120% 120% at 50% 50%,
-    transparent 55%,
-    rgba(5, 8, 16, 0.45) 82%,
-    rgba(5, 8, 16, 0.85) 100%
-  );
-}
-@keyframes aurora-drift {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    transform: translateY(2%) scale(1.05);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .atmosphere__grain,
-  .atmosphere__aurora {
-    animation: none;
-  }
-}
-
 /* Skip link (a11y) */
 .skip-link {
   @apply fixed top-2 left-2 z-[1000] -translate-y-20 rounded bg-accent px-4 py-2 font-mono text-sm text-void transition-transform;
 }
 .skip-link:focus {
   transform: translateY(0);
-}
-
-/* Origin badge — marks the start of the story on the hero's right edge, beside
-   the vertical timeline rail. Rendered ABSOLUTE inside the hero's relative
-   container (.origin-container) so it can never snap to the viewport corner. */
-.origin-container {
-  position: absolute; /* fill the hero (which is position: relative) so the label
-                         anchors to the hero's top-right, never the viewport corner */
-  inset: 0; /* top/right/bottom/left: 0 → spans the whole hero section */
-  pointer-events: none; /* decorative — never intercepts clicks */
-  z-index: 2; /* above the background/era-wash, below the navbar (z-50) */
-}
-
-.origin-label {
-  position: absolute; /* anchors to .origin-container, NOT <body>/viewport */
-  top: 1.5rem; /* safe inset from the top edge */
-  right: 1.5rem; /* safe inset from the right edge (clears the scrollbar) */
-  z-index: 2; /* below the navbar (z-50), above the background */
-  padding: 0.35rem 0.75rem; /* breathing room so the text isn't cramped */
-  background: rgba(11, 17, 32, 0.72); /* dark glass so it reads on the gradient */
-  border: 1px solid rgba(30, 42, 69, 0.9);
-  border-radius: 9999px; /* pill shape */
-  font-family: var(--font-mono, monospace);
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #e6edf7;
-  backdrop-filter: blur(8px); /* matches the site's glass language */
-}
-
-/* Mobile: nudge slightly inward so it never clips on narrow screens. */
-@media (max-width: 768px) {
-  .origin-label {
-    top: 0.75rem;
-    right: 0.75rem;
-  }
 }
 
 /* Tactile press feedback for buttons, chips, and menu links that don't use tilt-card. */
@@ -690,6 +293,83 @@ h4 {
   .skeleton-shimmer {
     animation: none;
     background: rgba(91, 103, 128, 0.22);
+  }
+}
+
+/* v5 redesign — shared keyframes for the live-status dot, the Sequence hero's
+   scroll cue, and the Systems section's stage-path travel dots. The four
+   travel shapes map to a project's data-flow (see ProjectFlow in data/types.ts):
+   roundtrip (out, dwell, back), batch (stepped dwell-then-jump), gate (dwell at
+   the midpoint — an eval/checkpoint), stream (one continuous sweep). */
+@keyframes om-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.7); opacity: 0; }
+}
+[data-pulse] {
+  animation: om-pulse 1.8s ease-out infinite;
+}
+@keyframes om-scrolldot {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(22px); opacity: 0; }
+}
+@keyframes om-travel {
+  0% { left: 0%; opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+@keyframes om-travel-stream {
+  0% { left: 0%; opacity: 0; }
+  6% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+@keyframes om-travel-batch {
+  0% { left: 0%; opacity: 0; }
+  4% { opacity: 1; }
+  22% { left: 0%; }
+  28% { left: 25%; }
+  47% { left: 25%; }
+  53% { left: 50%; }
+  72% { left: 50%; }
+  78% { left: 75%; }
+  94% { left: 100%; opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+@keyframes om-travel-roundtrip {
+  0% { left: 0%; opacity: 0; }
+  6% { opacity: 1; }
+  44% { left: 100%; }
+  50% { left: 100%; opacity: 1; }
+  94% { left: 0%; }
+  100% { left: 0%; opacity: 0; }
+}
+@keyframes om-travel-gate {
+  0% { left: 0%; opacity: 0; }
+  6% { opacity: 1; }
+  38% { left: 50%; }
+  58% { left: 50%; }
+  96% { left: 100%; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* Sequence stations — collapse the copy/viz frame to one column on narrow
+   viewports, chart first. Ported from the v5 prototype's [data-frame] rules. */
+@media (max-width: 900px) {
+  [data-station-content] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+  }
+  [data-viz] {
+    order: 1;
+  }
+  [data-copy] {
+    order: 2;
+  }
+  [data-figs] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 }
 

@@ -20,9 +20,11 @@ export default defineConfig({
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
+        // three/@react-three were the WebGL ScrollWorld hero's vendor chunk — the v5
+        // redesign replaced it with a flat photo-based Sequence hero, so listing them
+        // here (an object literal forces Rollup to bundle them as entry points even
+        // with zero importers left in the app) was shipping ~185KB of dead weight.
         manualChunks: {
-          three: ['three'],
-          r3f: ['@react-three/fiber', '@react-three/drei'],
           gsap: ['gsap', '@gsap/react'],
         },
       },

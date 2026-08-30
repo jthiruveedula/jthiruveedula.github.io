@@ -1,9 +1,9 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
-import { ERA_COLORS, type Era, type Metric } from '@/data/types'
+import type { Metric } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
 import SplitText from '@/components/SplitText'
 import Decrypt from '@/components/Decrypt'
@@ -12,107 +12,92 @@ import ClipReveal from '@/components/ClipReveal'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
-/**
- * Era accent inference — keeps tiles color-coded to the site's story
- * (amber → legacy, cyan → cloud, violet → AI) without hard-coding indices,
- * so reordering or editing headlineMetrics degrades gracefully to cyan.
- */
-function eraFor(label: string): Era {
-  const l = label.toLowerCase()
-  if (l.includes('rag') || l.includes('ticket') || l.includes('llm') || l.includes(' ai')) return 'ai'
-  if (l.includes('year')) return 'legacy'
-  return 'cloud'
+const { headlineMetrics } = portfolio
+const TOTAL_COUNT = headlineMetrics.length
+
+type CategoryName = 'Cost' | 'Scale' | 'Reliability' | 'AI'
+type Filter = 'All' | CategoryName
+
+/** Fixed display order — not derived from the data, per the section's design. */
+const CATEGORIES: readonly CategoryName[] = ['Cost', 'Scale', 'Reliability', 'AI']
+const FILTERS: readonly Filter[] = ['All', ...CATEGORIES]
+
+/** Composition-bar segment colors, one per category, in the same fixed order. */
+const CATEGORY_ACCENT: Record<CategoryName, string> = {
+  Cost: 'var(--color-accent-300)',
+  Scale: 'var(--color-accent-500)',
+  Reliability: 'var(--color-accent-700)',
+  AI: 'var(--color-accent-900)',
 }
 
-function decimalsFor(n: number): number {
-  return Number.isInteger(n) ? 0 : 1
+/** How many metrics carry each category as their PRIMARY group (groups[0]) —
+ *  drives the composition bar's proportional widths. */
+const compositionCounts: Record<CategoryName, number> = CATEGORIES.reduce(
+  (acc, cat) => {
+    acc[cat] = headlineMetrics.filter((m) => m.groups?.[0] === cat).length
+    return acc
+  },
+  {} as Record<CategoryName, number>,
+)
+
+/** How many metrics carry each category ANYWHERE in groups — drives the pill
+ *  counts, deliberately different from the composition bar above. */
+const pillCounts: Record<Filter, number> = CATEGORIES.reduce(
+  (acc, cat) => {
+    acc[cat] = headlineMetrics.filter((m) => m.groups?.includes(cat)).length
+    return acc
+  },
+  { All: TOTAL_COUNT } as Record<Filter, number>,
+)
+
+/** Splits a metric's display value into prefix / number / suffix, and derives
+ *  the count-up's decimal precision from the number string itself (so "99.9%"
+ *  animates with 1 decimal and everything else with 0) — reading it straight
+ *  from `value` keeps this in sync even if numeric/prefix/suffix drift. */
+function parseValue(value: string): { prefix: string; number: string; suffix: string; decimals: number } {
+  const match = /^([^0-9]*)([0-9.]+)(.*)$/.exec(value)
+  if (!match) return { prefix: '', number: value, suffix: '', decimals: 0 }
+  const [, prefix, number, suffix] = match
+  const dot = number.indexOf('.')
+  const decimals = dot === -1 ? 0 : number.length - dot - 1
+  return { prefix, number, suffix, decimals }
 }
 
-/** Gauge dial geometry — radius chosen so the ring reads clearly at 40px. */
-const GAUGE_RADIUS = 15
-const GAUGE_CIRCUMFERENCE = 2 * Math.PI * GAUGE_RADIUS
-const GAUGE_TICKS = 12
-
-function MetricTile({ metric }: { metric: Metric }) {
-  const color = ERA_COLORS[eraFor(metric.label)]
-  const numeric = metric.numeric
+function MetricTile({
+  metric,
+  visible,
+  registerNumberRef,
+}: {
+  metric: Metric
+  visible: boolean
+  registerNumberRef: (label: string, el: HTMLSpanElement | null) => void
+}) {
+  const { prefix, number, suffix, decimals } = parseValue(metric.value)
+  const finalText = Number(number).toFixed(decimals)
 
   return (
     <li
-      className="metric-tile glass-panel relative overflow-hidden rounded-xl p-5 transition-colors duration-300 hover:border-panel-edge md:p-6"
+      hidden={!visible}
+      className="metric-tile relative overflow-hidden rounded-lg border border-neutral-800 bg-ground-2 p-5 transition-[transform,border-color] duration-300 hover:-translate-y-[3px] hover:border-neutral-700"
     >
-      {/* Accent hairline */}
       <span
         aria-hidden="true"
-        className="absolute inset-x-4 top-0 h-px opacity-70"
-        style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
+        className="metric-rule absolute inset-x-0 top-0 h-0.5 origin-left bg-accent-500"
+        style={{ transform: 'scaleX(0)' }}
       />
-
-      {/* Telemetry gauge — ring fill mirrors the count-up progress as it plays, ticks static */}
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 40 40"
-        className="absolute top-3 right-3 h-9 w-9 md:h-10 md:w-10"
-        style={{ transform: 'rotate(-90deg)' }}
-      >
-        {Array.from({ length: GAUGE_TICKS }, (_, i) => {
-          const angle = (i / GAUGE_TICKS) * 360
-          return (
-            <line
-              key={i}
-              x1={20}
-              y1={2.5}
-              x2={20}
-              y2={4.5}
-              stroke="currentColor"
-              strokeWidth={0.75}
-              className="text-ink-faint"
-              transform={`rotate(${angle} 20 20)`}
-            />
-          )
-        })}
-        <circle cx={20} cy={20} r={GAUGE_RADIUS} fill="none" stroke="currentColor" strokeWidth={1.5} className="text-panel-edge/70" />
-        <circle
-          className="metric-gauge-arc"
-          data-circumference={GAUGE_CIRCUMFERENCE}
-          cx={20}
-          cy={20}
-          r={GAUGE_RADIUS}
-          fill="none"
-          stroke={color}
-          strokeWidth={1.5}
-          strokeLinecap="round"
-          strokeDasharray={GAUGE_CIRCUMFERENCE}
-          strokeDashoffset={GAUGE_CIRCUMFERENCE}
-          style={{ filter: `drop-shadow(0 0 4px ${color})` }}
-        />
-      </svg>
-
-      <p className="font-display text-3xl font-semibold tracking-tight tabular-nums md:text-4xl">
+      <p className="font-display text-3xl font-semibold tabular-nums text-ink md:text-4xl">
         {/* Screen readers get the canonical value; the animated digits are decorative. */}
         <span className="sr-only">{metric.value}</span>
         <span aria-hidden="true">
-          {metric.prefix ? <span style={{ color }}>{metric.prefix}</span> : null}
-          {typeof numeric === 'number' ? (
-            <span
-              className="metric-number text-ink"
-              data-target={numeric}
-              data-decimals={decimalsFor(numeric)}
-              data-final={numeric.toFixed(decimalsFor(numeric))}
-            >
-              {numeric.toFixed(decimalsFor(numeric))}
-            </span>
-          ) : (
-            <span className="text-ink">{metric.value}</span>
-          )}
-          {metric.suffix ? (
-            <span className="text-2xl md:text-3xl" style={{ color }}>
-              {metric.suffix}
-            </span>
-          ) : null}
+          {prefix ? <span className="text-accent-500">{prefix}</span> : null}
+          <span ref={(el) => registerNumberRef(metric.label, el)} className="metric-number">
+            {finalText}
+          </span>
+          {suffix ? <span className="text-2xl text-accent-500 md:text-3xl">{suffix}</span> : null}
         </span>
       </p>
-      <p className="hud-label mt-3 normal-case tracking-[0.14em]">{metric.label}</p>
+      <p className="hud-label mt-3">{metric.label}</p>
+      {metric.source ? <p className="mt-1 text-[11px] text-neutral-500">{metric.source}</p> : null}
     </li>
   )
 }
@@ -120,26 +105,64 @@ function MetricTile({ metric }: { metric: Metric }) {
 export default function Metrics() {
   const sectionRef = useRef<HTMLElement>(null)
   const reducedMotion = useReducedMotion()
-  const { headlineMetrics, certifications, education } = portfolio
+  const [filter, setFilter] = useState<Filter>('All')
+  const numberRefs = useRef(new Map<string, HTMLSpanElement>())
+
+  const registerNumberRef = (label: string, el: HTMLSpanElement | null) => {
+    if (el) numberRefs.current.set(label, el)
+    else numberRefs.current.delete(label)
+  }
+
+  /** Tweens the currently-matching metrics' numbers from 0 to target. Used both
+   *  for the first scroll-into-view reveal and to replay on every filter click —
+   *  the grid stays mounted across clicks, so this is the only thing that re-fires. */
+  const animateCounts = (target: Filter, staggerEach: number) => {
+    if (reducedMotion) return
+    const list = target === 'All' ? headlineMetrics : headlineMetrics.filter((m) => m.groups?.includes(target))
+    list.forEach((m, i) => {
+      const el = numberRefs.current.get(m.label)
+      if (!el) return
+      const { number, decimals } = parseValue(m.value)
+      const numericTarget = Number(number)
+      if (!Number.isFinite(numericTarget)) return
+      const proxy = { value: 0 }
+      el.textContent = proxy.value.toFixed(decimals)
+      gsap.to(proxy, {
+        value: numericTarget,
+        duration: 1.1,
+        delay: i * staggerEach,
+        ease: 'power2.out',
+        onUpdate: () => {
+          el.textContent = proxy.value.toFixed(decimals)
+        },
+      })
+    })
+  }
+
+  const selectFilter = (name: Filter) => {
+    setFilter(name)
+    animateCounts(name, 0.03)
+  }
+
+  const toggleSegment = (cat: CategoryName) => {
+    const next: Filter = filter === cat ? 'All' : cat
+    setFilter(next)
+    animateCounts(next, 0.03)
+  }
 
   useGSAP(
     () => {
-      const numbers = gsap.utils.toArray<HTMLElement>('.metric-number')
-      const gauges = gsap.utils.toArray<SVGCircleElement>('.metric-gauge-arc')
+      const heads = gsap.utils.toArray<HTMLElement>('.index-head')
+      const tiles = gsap.utils.toArray<HTMLElement>('.metric-tile')
+      const rules = gsap.utils.toArray<HTMLElement>('.metric-rule')
 
       if (reducedMotion) {
-        // If motion preference flips mid-flight, pin every counter and gauge to their final state.
-        numbers.forEach((el) => {
-          if (el.dataset.final) el.textContent = el.dataset.final
-        })
-        gauges.forEach((gauge) => {
-          gauge.style.strokeDashoffset = '0'
-        })
+        gsap.set([...heads, ...tiles], { autoAlpha: 1, y: 0 })
+        gsap.set(rules, { scaleX: 1 })
         return
       }
 
-      const tiles = gsap.utils.toArray<HTMLElement>('.metric-tile')
-      const pills = gsap.utils.toArray<HTMLElement>('.cert-pill')
+      gsap.set(tiles, { autoAlpha: 0, y: 24 })
 
       const tl = gsap.timeline({
         defaults: { ease: 'power3.out' },
@@ -147,151 +170,103 @@ export default function Metrics() {
           trigger: sectionRef.current,
           start: 'top 75%',
           once: true,
+          onEnter: () => animateCounts('All', 0.05),
         },
       })
 
-      tl.fromTo(
-        '.impact-head',
-        { autoAlpha: 0, y: 24 },
-        { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.1 },
-        0,
-      )
-      tl.fromTo(
-        '.impact-head .split-word',
-        { yPercent: 110, autoAlpha: 0 },
-        { yPercent: 0, autoAlpha: 1, duration: 0.8, stagger: 0.05, ease: 'power3.out' },
-        0.1,
-      )
-      tl.fromTo(
-        tiles,
-        { autoAlpha: 0, y: 36 },
-        { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.08 },
-        0.15,
-      )
-
-      // Count-up: each tile's digits roll from 0 to their target as it lands.
-      numbers.forEach((el, i) => {
-        const target = Number(el.dataset.target)
-        const decimals = Number(el.dataset.decimals) || 0
-        if (!Number.isFinite(target)) return
-        const gauge = gauges[i]
-        const circumference = gauge ? Number(gauge.dataset.circumference) : 0
-        const proxy = { value: 0 }
-        el.textContent = proxy.value.toFixed(decimals)
-        tl.to(
-          proxy,
-          {
-            value: target,
-            duration: 1.3,
-            ease: 'power2.out',
-            onUpdate: () => {
-              el.textContent = proxy.value.toFixed(decimals)
-              if (gauge && target !== 0) {
-                gauge.style.strokeDashoffset = String(circumference * (1 - proxy.value / target))
-              }
-            },
-          },
-          0.25 + i * 0.08,
-        )
-      })
-
-      tl.fromTo(
-        pills,
-        { autoAlpha: 0, y: 16 },
-        { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.07 },
-        0.9,
-      )
+      tl.fromTo(heads, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.08 }, 0)
+      tl.to(tiles, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.06 }, 0.15)
+      tl.to(rules, { scaleX: 1, duration: 0.5, stagger: 0.06 }, 0.2)
     },
     { scope: sectionRef, dependencies: [reducedMotion], revertOnUpdate: true },
   )
 
+  const shownCount =
+    filter === 'All' ? TOTAL_COUNT : headlineMetrics.filter((m) => m.groups?.includes(filter)).length
+
   return (
     <section
       ref={sectionRef}
-      id="impact"
-      aria-labelledby="impact-heading"
+      id="index"
+      aria-labelledby="index-heading"
       className="relative isolate px-6 py-24 md:py-32"
     >
-      {/* Ambient glow behind the telemetry grid */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            'radial-gradient(60% 50% at 50% 35%, rgba(34, 211, 238, 0.06), transparent 70%)',
-        }}
-      />
-
       <div className="mx-auto max-w-6xl">
         <ClipReveal>
-        <Decrypt as="p" className="impact-head hud-label section-kicker" text="05 · impact telemetry" />
-        <SectionSweep />
-        <h2
-          id="impact-heading"
-          className="impact-head mt-3 text-3xl font-semibold text-ink md:text-4xl"
-        >
-          <SplitText as="span">Impact, measured</SplitText>
-        </h2>
-        <p className="impact-head mt-3 max-w-xl text-sm leading-relaxed text-ink-muted md:text-base">
-          Eleven years across legacy, cloud, and enterprise AI — reduced to the numbers that
-          survived production.
-        </p>
+          <Decrypt as="p" className="index-head hud-label section-kicker" text="05 · index" />
+          <SectionSweep />
 
-        <ul className="mt-10 grid grid-cols-2 gap-3 md:mt-12 md:gap-4 lg:grid-cols-4">
-          {headlineMetrics.map((metric) => (
-            <MetricTile key={metric.label} metric={metric} />
-          ))}
-        </ul>
+          <div className="mt-3 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <h2
+              id="index-heading"
+              className="index-head text-3xl font-semibold text-ink md:text-4xl"
+            >
+              <SplitText as="span">Measured, not claimed.</SplitText>
+            </h2>
+            <p
+              className="index-head font-mono text-xs tracking-[0.14em] text-neutral-500"
+              aria-live="polite"
+            >
+              {shownCount} of {TOTAL_COUNT} figures shown · filtered by category below.
+            </p>
+          </div>
 
-        {/* Credentials — certifications and education under one head.
-            Education was in the dataset and rendered nowhere on the page: a recruiter
-            scanning this site never saw a degree. Pairing it with certifications here
-            avoids a whole new section for two lines, and keeps the "Advanced Certificate"
-            entry next to the certifications it is a sibling of rather than stranded under
-            a separate heading. */}
-        <div className="mt-12 grid gap-x-10 gap-y-8 border-t border-panel-edge/60 pt-8 md:mt-16 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-          <div>
-            <p className="hud-label">Certifications</p>
-            <ul className="mt-4 flex flex-wrap gap-2 md:gap-3">
-              {certifications.map((cert) => (
-                <li
-                  key={cert}
-                  className="cert-pill rounded-full border border-panel-edge bg-panel/60 px-4 py-1.5 font-mono text-xs text-ink-muted"
+          {/* Category composition bar — segment width is each category's share of
+              metrics by PRIMARY group (groups[0]); clicking one filters to it. */}
+          <div className="index-head mt-8 flex h-2 gap-px bg-ground">
+            {CATEGORIES.map((cat) => {
+              const dimmed = filter !== 'All' && filter !== cat
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => toggleSegment(cat)}
+                  aria-pressed={filter === cat}
+                  aria-label={`${cat} — ${compositionCounts[cat]} of ${TOTAL_COUNT} figures by primary category`}
+                  className={`h-full transition-opacity duration-200 hover:opacity-100 ${dimmed ? 'opacity-[0.35]' : 'opacity-100'}`}
+                  style={{ flex: `${compositionCounts[cat]} 0 0`, background: CATEGORY_ACCENT[cat] }}
+                />
+              )
+            })}
+          </div>
+
+          {/* Filter pills — counts here are any-group matches, not primary-only. */}
+          <div
+            role="group"
+            aria-label="Filter outcomes"
+            className="index-head mt-4 inline-flex flex-wrap gap-1 rounded-full border border-neutral-800 p-1"
+          >
+            {FILTERS.map((name) => {
+              const active = filter === name
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => selectFilter(name)}
+                  aria-pressed={active}
+                  className={`rounded-full px-3 py-1 font-mono text-xs tracking-[0.08em] transition-colors duration-200 ${
+                    active ? 'bg-accent-500 text-ground' : 'text-neutral-500 hover:text-ink'
+                  }`}
                 >
-                  {cert}
-                </li>
-              ))}
-            </ul>
+                  {name} ({pillCounts[name]})
+                </button>
+              )
+            })}
           </div>
 
-          <div>
-            <p className="hud-label">Education</p>
-            <ul className="mt-4 space-y-3">
-              {education.map((entry) => {
-                // "Qualification — Institution, years, place" → split on the em dash so the
-                // qualification can carry the emphasis and the rest stays quiet.
-                const [qualification, ...detail] = entry.split(' — ')
-                return (
-                  <li key={entry} className="flex gap-2.5">
-                    <span
-                      aria-hidden="true"
-                      className="mt-1.5 size-1.5 shrink-0 rounded-full"
-                      style={{ background: ERA_COLORS.legacy }}
-                    />
-                    <span className="text-sm leading-snug">
-                      <span className="text-ink">{qualification}</span>
-                      {detail.length > 0 && (
-                        <span className="block font-mono text-[11px] text-ink-faint">
-                          {detail.join(' — ')}
-                        </span>
-                      )}
-                    </span>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        </div>
+          <ul className="index-head mt-10 grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-3 md:gap-4">
+            {headlineMetrics.map((metric) => {
+              const visible = filter === 'All' || (metric.groups?.includes(filter) ?? false)
+              return (
+                <MetricTile
+                  key={metric.label}
+                  metric={metric}
+                  visible={visible}
+                  registerNumberRef={registerNumberRef}
+                />
+              )
+            })}
+          </ul>
         </ClipReveal>
       </div>
     </section>
