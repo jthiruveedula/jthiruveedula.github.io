@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400&family=Geist:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background:
+      linear-gradient(oklch(96% 0.006 262 / 0.045) 1px, transparent 1px) 0 0 / 48px 48px,
+      linear-gradient(90deg, oklch(96% 0.006 262 / 0.045) 1px, transparent 1px) 0 0 / 48px 48px,
+      radial-gradient(52% 46% at 80% 34%, oklch(76% 0.17 50 / 0.10) 0%, transparent 66%),
+      oklch(15% 0.014 265);
+    color: oklch(80% 0.009 262);
+    font-family: 'Geist', system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
+    position: relative;
+  }
+  .wrap { padding: 64px 72px; height: 100%; display: flex; flex-direction: column; }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: oklch(64% 0.010 262);
+  }
+  .eyebrow b { color: oklch(76% 0.17 50); font-weight: 500; }
+  .figure {
+    font-family: 'Instrument Serif', Georgia, serif; font-weight: 400;
+    font-size: 132px; line-height: 0.9; letter-spacing: -0.03em;
+    color: oklch(96% 0.006 262); margin-top: 26px;
+  }
+  h1 {
+    font-family: 'Instrument Serif', Georgia, serif; font-weight: 400;
+    font-size: 52px; line-height: 1.06; letter-spacing: -0.028em;
+    color: oklch(96% 0.006 262); margin-top: 12px; text-transform: lowercase;
+    max-width: 17ch;
+  }
+  h1 .proper { text-transform: none; }
+  h1 em { font-style: normal; color: oklch(68% 0.16 18); position: relative; white-space: nowrap; }
+  h1 em::after {
+    content: ''; position: absolute; left: 0.04em; right: 0.04em; bottom: 0.06em;
+    height: 2px; background: oklch(68% 0.16 18);
+  }
+  .stats { margin-top: auto; display: flex; border-top: 1px solid oklch(30% 0.012 265); }
+  .stats div { padding: 22px 30px 0 0; }
+  .stats div + div { border-left: 1px solid oklch(30% 0.012 265); padding-left: 30px; }
+  .stats b {
+    display: block; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400;
+    font-size: 40px; line-height: 1; color: oklch(96% 0.006 262); letter-spacing: -0.02em;
+  }
+  .stats span {
+    display: block; margin-top: 8px; font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(64% 0.010 262);
+  }
+  .name {
+    position: absolute; right: 72px; top: 64px; text-align: right;
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: oklch(96% 0.006 262);
+  }
+  .name small {
+    display: block; margin-top: 8px; font-size: 12px; letter-spacing: 0.14em;
+    color: oklch(64% 0.010 262);
+  }
+  /* Topology apparatus — the same object the site's hero carries. */
+  svg.app { position: absolute; right: 96px; top: 178px; width: 300px; height: 300px; overflow: visible; }
+  .edge { stroke: oklch(38% 0.013 265); stroke-width: 1; fill: none; }
+  .node { fill: oklch(18.5% 0.015 265); stroke: oklch(38% 0.013 265); stroke-width: 1; }
+  .core { fill: oklch(76% 0.17 50 / 0.10); stroke: oklch(76% 0.17 50); }
+  .glow { fill: oklch(80% 0.16 50 / 0.16); }
+  .lbl {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.08em;
+    text-transform: uppercase; fill: oklch(64% 0.010 262);
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow"><b>00</b> &middot; Data &amp; AI Architect &middot; Dallas&ndash;Fort Worth, TX</p>
+    <p class="figure">500+ TiB</p>
+    <h1>of enterprise data <em>moved</em> onto <span class="proper">BigQuery</span>.</h1>
+    <div class="stats">
+      <div><b>$2M+</b><span>cost saved</span></div>
+      <div><b>1B+</b><span>events / day</span></div>
+      <div><b>50M+</b><span>docs in production RAG</span></div>
+      <div><b>11+</b><span>years, data &amp; AI</span></div>
+    </div>
+  </div>
+  <p class="name">Jagadeesh Thiruveedula<small>jthiruveedula.github.io</small></p>
+  <svg class="app" viewBox="0 0 400 400"></svg>
+  <script>
+    const CX = 200, CY = 200, R = 138
+    const NODES = [
+      ['COBOL', -90], ['Teradata', -30], ['Kafka', 30],
+      ['BigQuery', 90], ['Vertex AI', 150], ['Snowflake', 210],
+    ]
+    const at = (a, r) => [CX + r * Math.cos(a * Math.PI / 180), CY + r * Math.sin(a * Math.PI / 180)]
+    const ns = 'http://www.w3.org/2000/svg'
+    const svg = document.querySelector('svg.app')
+    const add = (tag, attrs, text) => {
+      const el = document.createElementNS(ns, tag)
+      for (const k in attrs) el.setAttribute(k, attrs[k])
+      if (text != null) el.textContent = text
+      svg.appendChild(el)
+      return el
+    }
+    for (const [, a] of NODES) {
+      const [x1, y1] = at(a, R), [x2, y2] = at(a, 46)
+      add('line', { class: 'edge', x1, y1, x2, y2 })
+    }
+    add('polygon', {
+      class: 'edge', opacity: 0.45,
+      points: NODES.map(([, a]) => at(a, R).map(v => v.toFixed(1)).join(',')).join(' '),
+    })
+    add('circle', { class: 'glow', cx: CX, cy: CY, r: 52 })
+    add('circle', { class: 'node core', cx: CX, cy: CY, r: 40 })
+    add('text', { class: 'lbl', x: CX, y: CY - 2, 'text-anchor': 'middle', fill: 'oklch(76% 0.17 50)' }, 'GOVERNED')
+    add('text', { class: 'lbl', x: CX, y: CY + 12, 'text-anchor': 'middle' }, 'PLANE')
+    for (const [label, a] of NODES) {
+      const [x, y] = at(a, R)
+      add('circle', { class: 'node', cx: x, cy: y, r: 5.5 })
+      const [lx, ly] = at(a, R + 22)
+      const anchor = a === -90 || a === 90 ? 'middle' : Math.cos(a * Math.PI / 180) > 0 ? 'start' : 'end'
+      const dy = a === -90 ? -4 : a === 90 ? 12 : 3
+      add('text', { class: 'lbl', x: lx, y: ly + dy, 'text-anchor': anchor }, label)
+    }
+  </script>
+</body>
+</html>

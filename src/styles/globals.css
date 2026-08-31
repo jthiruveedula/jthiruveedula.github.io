@@ -1,68 +1,113 @@
+/* Hallmark · genre: atmospheric · macrostructure: Stat-Led · theme: Lumen (drop: night-foundry)
+ * enrichment: apparatus — codebase-graph topology (Tier-A, pure CSS/SVG) · nav: N3 side-rail · footer: Ft5 statement
+ * paper: oklch(15% 0.014 265) · accent: oklch(76% 0.17 50) molten brass · accent-2: oklch(68% 0.16 18) coral chord
+ * axes — paper band: dark · display style: classical-serif · accent hue: warm (50°)
+ * tone: engineered / instrument-grade · audience: enterprise hiring managers + staff engineers
+ * pre-emit critique: P5 H5 E4 S5 R4 V5
+ *
+ * Two-register type system: prose renders lowercase, mono labels render UPPERCASE.
+ * Deviation from stock Lumen, deliberate: proper nouns that function as credentials
+ * (employer names, certifications, product names, the person's own name) keep their
+ * real case via .proper — this is a hiring document before it is a design object.
+ */
+
 @import 'tailwindcss';
 
 @theme {
-  /* Surfaces — v5: a single dark ground, not deep-space navy. Old
-     void/surface/panel/panel-edge tokens are kept (ErrorBoundary, SectionSkeleton,
-     ProjectCaseStudy still reference them) but repointed at the new ground. */
-  --color-ground: #0b1013;
-  --color-ground-2: #121a1f;
-  --color-void: #0b1013;
-  --color-surface: #0b1013;
-  --color-panel: #121a1f;
-  --color-panel-edge: #333c43;
+  /* ── Surfaces ──────────────────────────────────────────────────────────
+     Night Foundry: cool-violet near-black. Elevation goes *lighter*, never
+     darker. Legacy token names (void/surface/panel) are kept because
+     ErrorBoundary, SectionSkeleton and ProjectCard still reference them. */
+  --color-paper: oklch(15% 0.014 265);
+  --color-paper-2: oklch(18.5% 0.015 265);
+  --color-paper-3: oklch(22% 0.016 265);
+  --color-ground: oklch(15% 0.014 265);
+  --color-ground-2: oklch(18.5% 0.015 265);
+  --color-void: oklch(15% 0.014 265);
+  --color-surface: oklch(15% 0.014 265);
+  --color-panel: oklch(18.5% 0.015 265);
+  --color-panel-edge: oklch(30% 0.012 265);
 
-  /* Ink */
-  --color-ink: #e8e6e1;
-  --color-ink-muted: #a6aeb4;
-  --color-ink-faint: #68727a;
+  /* ── Ink ───────────────────────────────────────────────────────────────
+     ink-faint is L60 rather than the old L48 so 11px mono labels clear
+     WCAG AA against the paper instead of sitting just under it. */
+  --color-ink: oklch(96% 0.006 262);
+  --color-ink-muted: oklch(80% 0.009 262);
+  --color-ink-faint: oklch(64% 0.010 262);
 
-  /* Neutral ramp — the grayscale half of the v5 palette */
-  --color-neutral-300: #c9ced2;
-  --color-neutral-400: #a6aeb4;
-  --color-neutral-500: #808a91;
-  --color-neutral-600: #68727a;
-  --color-neutral-700: #4e585f;
-  --color-neutral-800: #333c43;
+  /* Neutral ramp — the grayscale half of the palette, tinted toward the
+     265° anchor so nothing reads as flat sRGB grey. */
+  --color-neutral-300: oklch(86% 0.008 262);
+  --color-neutral-400: oklch(76% 0.009 262);
+  --color-neutral-500: oklch(64% 0.010 262);
+  --color-neutral-600: oklch(52% 0.011 263);
+  --color-neutral-700: oklch(40% 0.012 264);
+  --color-neutral-800: oklch(30% 0.012 265);
 
-  /* Accent ramp — one cyan, not three era hues. Legacy/cloud/ai collapse to
-     neutral-500 / neutral-400 / accent-500 (see ERA_COLORS in data/types.ts) so
-     the only story told in color is "gray resolving into cyan". */
-  --color-legacy: #808a91;
-  --color-cloud: #a6aeb4;
-  --color-ai: #46c9f0;
-  --color-accent-200: #dcf5ff;
-  --color-accent-300: #b3e9fb;
-  --color-accent-400: #7fd8f4;
-  --color-accent-500: #46c9f0;
-  --color-accent-600: #17a6d2;
-  --color-accent-700: #0b7fa4;
-  --color-accent-800: #0a5c78;
-  --color-accent-900: #0a4053;
-  --color-accent: #46c9f0;
-  --color-accent-soft: #7fd8f4;
-  --color-success: #34d399;
+  /* Rules — two weights. `rule` is the default hairline, `rule-2` is the
+     apparatus/electrode weight that has to survive against the emit wash. */
+  --color-rule: oklch(30% 0.012 265);
+  --color-rule-2: oklch(38% 0.013 265);
 
-  --font-display: 'Archivo Expanded', 'Archivo', ui-sans-serif, system-ui, sans-serif;
-  --font-body: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  /* ── Accent ────────────────────────────────────────────────────────────
+     One molten-brass hue that emits, plus a coral chord reserved for the
+     single verb landmark in the hero headline. The era ramp collapses into
+     the neutrals so the only story told in colour is "grey resolving into
+     brass" — legacy and cloud are grey steps, AI is the accent. */
+  --color-legacy: oklch(52% 0.011 263);
+  --color-cloud: oklch(70% 0.009 262);
+  --color-ai: oklch(76% 0.17 50);
+  --color-accent-200: oklch(93% 0.06 50);
+  --color-accent-300: oklch(88% 0.10 50);
+  --color-accent-400: oklch(82% 0.14 50);
+  --color-accent-500: oklch(76% 0.17 50);
+  --color-accent-600: oklch(68% 0.16 50);
+  --color-accent-700: oklch(58% 0.14 50);
+  --color-accent-800: oklch(46% 0.11 50);
+  --color-accent-900: oklch(34% 0.08 50);
+  --color-accent: oklch(76% 0.17 50);
+  --color-accent-soft: oklch(82% 0.14 50);
+  --color-accent-2: oklch(68% 0.16 18);
+  --color-success: oklch(78% 0.15 155);
+  --color-focus: oklch(82% 0.14 50);
+
+  /* Emission — the apparatus is the only thing on the page that generates
+     light. Cards are *lit from within* at ≤6%; nothing else glows. */
+  --color-glow: oklch(80% 0.16 50 / 0.42);
+  --color-glow-2: oklch(80% 0.16 50 / 0.16);
+  --color-paper-emit: oklch(76% 0.17 50 / 0.045);
+  --color-rule-blueprint: oklch(96% 0.006 262 / 0.045);
+
+  /* ── Type ──────────────────────────────────────────────────────────────
+     Three families, no fourth. Instrument Serif is a 1960s technical-journal
+     serif — it reads considered rather than luxury, which is the difference
+     between this and a fashion masthead. */
+  --font-display: 'Instrument Serif', 'Tiempos Headline', ui-serif, Georgia, serif;
+  --font-body: 'Geist', 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
 
-  --shadow-glow-cloud: 0 0 24px rgba(70, 201, 240, 0.25);
-  --shadow-glow-ai: 0 0 24px rgba(70, 201, 240, 0.25);
-  --shadow-glow-legacy: 0 0 24px rgba(128, 138, 145, 0.2);
+  --tracking-micro: 0.10em;
+
+  --shadow-glow-cloud: 0 24px 60px -28px oklch(0% 0 0 / 0.55);
+  --shadow-glow-ai: 0 24px 60px -28px oklch(0% 0 0 / 0.55);
+  --shadow-glow-legacy: 0 24px 60px -28px oklch(0% 0 0 / 0.55);
 
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
   /* Motion rhythm — shared by CSS + GSAP (src/lib/motion.ts) */
   --dur-fast: 0.2s;
-  --dur-reveal: 0.7s;
+  --dur-reveal: 0.6s;
   --dur-exit: 0.45s;
+  --dur-pulse: 4s;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 html {
   scroll-behavior: smooth;
-  scrollbar-color: #333c43 #0b1013;
-  background: #0b1013;
+  scrollbar-color: oklch(30% 0.012 265) oklch(15% 0.014 265);
+  background: oklch(15% 0.014 265);
+  overflow-x: clip;
 }
 
 /* Lenis smooth-scroll hooks: disable native scroll-behavior while Lenis is active. */
@@ -81,35 +126,521 @@ html.lenis.lenis-stopped {
 }
 
 body {
-  @apply bg-void text-ink font-body antialiased;
-  overflow-x: hidden;
+  @apply bg-paper text-ink-muted font-body antialiased;
+  overflow-x: clip;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+
+/* Two-register foundation, scoped.
+   Lumen's stock rule lowercases *all* prose including proper nouns. On a
+   dataset this dense with units, acronyms and product names that rule
+   actively corrupts meaning — it rendered "500+ TiB" as "500+ tib", "1B+" as
+   "1b+" and "BigQuery" as "bigquery", which is a different claim, not a
+   different style. So the lowercase register lives on the display type and
+   the lede, where it reads as a deliberate move, and figures, tech names and
+   mono labels keep their real case. h3 is excluded because the arc's chapter
+   titles are dataset strings carrying COBOL / GCP / RAG inline — there is no
+   span to hang an escape hatch on. */
+h1,
+h2,
+.lede {
+  text-transform: lowercase;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  @apply font-display;
+  @apply font-display text-ink;
+  font-weight: 400;
   text-wrap: balance;
+  letter-spacing: -0.028em;
+  line-height: 1.04;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+/* Escape hatch inside lowercased display type: product names, acronyms and
+   units that would otherwise be flattened. */
+.proper,
+abbr,
+[data-proper],
+h1 .proper,
+h2 .proper,
+.lede .proper,
+.stat__figure {
+  text-transform: none;
 }
 
 ::selection {
-  background: rgba(70, 201, 240, 0.35);
-  color: #f8fafc;
+  background: oklch(76% 0.17 50 / 0.3);
+  color: oklch(96% 0.006 262);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-focus);
   outline-offset: 3px;
   border-radius: 2px;
 }
 
-/* HUD label utility — small mono caps used for data annotations */
-.hud-label {
-  @apply font-mono text-xs tracking-[0.2em] uppercase text-ink-muted;
+/* ── Mono label register ────────────────────────────────────────────────
+   The only uppercase surface on the page. Eyebrows, callouts, meter labels,
+   stat labels, nav rail entries. */
+.hud-label,
+.eyebrow,
+.callout,
+.meter__label,
+.stat__label {
+  @apply font-mono;
+  font-size: 11px;
+  letter-spacing: var(--tracking-micro);
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
 }
 
-/* Section kicker — FUI chapter marker with era-accent bar */
+/* Section eyebrow — mono ordinal, middle dot, role. Stacked directly above
+   its heading in the same column; never set as a left-margin hanging label. */
+.eyebrow {
+  display: block;
+  margin-bottom: 0.9rem;
+  color: var(--color-ink-faint);
+}
+.eyebrow b {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+/* ── Blueprint grid ─────────────────────────────────────────────────────
+   The "engineered, not vibed" signal. Sits under the emit wash so the
+   canvas appears to emit *through* the ruling. */
+.blueprint {
+  background:
+    linear-gradient(var(--color-rule-blueprint) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, var(--color-rule-blueprint) 1px, transparent 1px) 0 0 / 48px 48px,
+    radial-gradient(58% 48% at 78% 32%, var(--color-paper-emit) 0%, transparent 65%),
+    var(--color-paper);
+}
+
+/* ── Apparatus: codebase-graph topology ─────────────────────────────────
+   One hand-built object per page. A central node with satellites, hairline
+   edges, and a slow travelling packet — the shape of a data platform, not a
+   glowing orb. Pulses; never rotates. */
+.apparatus {
+  position: relative;
+  width: clamp(230px, 30vw, 400px);
+  aspect-ratio: 1;
+  margin: 0;
+  flex: none;
+}
+.apparatus svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.apparatus__edge {
+  stroke: var(--color-rule-2);
+  stroke-width: 1;
+  fill: none;
+}
+.apparatus__node {
+  fill: var(--color-paper-2);
+  stroke: var(--color-rule-2);
+  stroke-width: 1;
+}
+.apparatus__node--core {
+  fill: oklch(76% 0.17 50 / 0.1);
+  stroke: var(--color-accent);
+}
+.apparatus__core-glow {
+  fill: var(--color-glow-2);
+  /* Kept tight on purpose: a wide soft disc here reads as the glowing orb
+     the theme exists to avoid. This is a lit node inside a topology. */
+  animation: apparatus-pulse var(--dur-pulse) ease-in-out infinite;
+  transform-origin: center;
+}
+.apparatus__packet {
+  fill: var(--color-accent);
+  filter: drop-shadow(0 0 4px var(--color-glow));
+}
+.apparatus__label {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  fill: var(--color-ink-faint);
+}
+@keyframes apparatus-pulse {
+  0%,
+  100% {
+    opacity: 0.95;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.62;
+    transform: scale(1.06);
+  }
+}
+
+/* Leader-line callouts pinned around the apparatus. Every one carries a real
+   value from the dataset — never a placeholder. */
+.callout-list {
+  position: absolute;
+  inset: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+.callout {
+  position: absolute;
+  top: var(--y);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-ink-faint);
+}
+.callout[data-side='left'] {
+  right: calc(100% - 0.5rem);
+  flex-direction: row;
+}
+.callout[data-side='right'] {
+  left: calc(100% - 0.5rem);
+}
+.callout::before,
+.callout::after {
+  content: '';
+  height: 1px;
+  width: 1.5rem;
+  background: var(--color-rule-2);
+  flex: none;
+}
+.callout[data-side='left']::after,
+.callout[data-side='right']::before {
+  display: none;
+}
+@media (max-width: 1200px) {
+  .callout-list {
+    display: none;
+  }
+}
+
+/* ── Meter strip ────────────────────────────────────────────────────────
+   A printed readout, not a live feed: static ticks driven by a real
+   envelope so the band reads as measurement rather than decoration. */
+.meter {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 0.85rem clamp(18px, 3.4vw, 60px);
+  border-block: 1px solid var(--color-rule);
+  background: var(--color-paper);
+}
+.meter__bars {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 26px;
+  min-width: 0;
+}
+.meter__bars > span {
+  flex: 1 1 0;
+  min-width: 1px;
+  background: var(--color-accent);
+  border-radius: 0.5px;
+}
+@media (max-width: 640px) {
+  .meter {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+    text-align: center;
+  }
+}
+
+/* ── Hairline cards, lit from within ────────────────────────────────────
+   Never drop-shadowed. The inner radial is capped at 6% at rest / 12% on
+   hover — past that the card reads accent-tinted rather than lit. */
+.lit-card {
+  position: relative;
+  border: 1px solid var(--color-rule);
+  background:
+    radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 50 / 0.05) 0%, transparent 62%),
+    var(--color-paper-2);
+  transition:
+    transform 0.22s var(--ease-soft),
+    border-color 0.22s var(--ease-soft),
+    background 0.22s var(--ease-soft);
+}
+.lit-card:hover,
+.lit-card:focus-within {
+  transform: translateY(-4px);
+  border-color: var(--color-rule-2);
+  background:
+    radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 50 / 0.11) 0%, transparent 62%),
+    var(--color-paper-2);
+}
+.lit-card:active {
+  transform: translateY(-1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .lit-card:hover,
+  .lit-card:focus-within,
+  .lit-card:active {
+    transform: none;
+  }
+}
+
+/* Legacy alias — ProjectCard/SectionSkeleton still reference `.glass-panel`.
+   Repointed at the hairline-card treatment; the old blur is gone (Lumen
+   refuses glassmorphism) but the class keeps working. */
+.glass-panel {
+  position: relative;
+  border: 1px solid var(--color-rule);
+  background:
+    radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 50 / 0.05) 0%, transparent 62%),
+    var(--color-paper-2);
+}
+
+/* ── Verb landmark ──────────────────────────────────────────────────────
+   Exactly one word per headline, always the verb, coloured with the coral
+   chord and underlined by a 1px rule that draws in once and then stays. */
+.verb {
+  font-style: normal;
+  color: var(--color-accent-2);
+  position: relative;
+  white-space: nowrap;
+}
+.verb::after {
+  content: '';
+  position: absolute;
+  left: 0.04em;
+  right: 0.04em;
+  bottom: 0.06em;
+  height: 1px;
+  background: var(--color-accent-2);
+  transform-origin: left;
+  animation: verb-underline 320ms var(--ease-soft) 700ms backwards;
+}
+@keyframes verb-underline {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ── Side-rail nav (N3) ─────────────────────────────────────────────────
+   Fixed vertical strip. Replaces the two-destination top bar — the page has
+   five sections and previously only two were reachable. */
+.rail {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 90;
+  width: 4.25rem;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-items: center;
+  justify-items: center;
+  padding-block: 1.25rem;
+  border-right: 1px solid var(--color-rule);
+  background: var(--color-paper);
+}
+.rail__mark {
+  writing-mode: vertical-rl;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+.rail__list {
+  display: grid;
+  gap: 0.15rem;
+  align-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rail__link {
+  display: grid;
+  grid-template-columns: 1.25rem auto;
+  align-items: center;
+  gap: 0.5rem;
+  writing-mode: vertical-rl;
+  padding: 0.75rem 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  transition: color 0.2s var(--ease-soft);
+}
+.rail__link::before {
+  content: '';
+  writing-mode: horizontal-tb;
+  width: 6px;
+  height: 1px;
+  background: currentColor;
+  transition:
+    width 0.22s var(--ease-soft),
+    background 0.22s var(--ease-soft);
+}
+.rail__link:hover,
+.rail__link:focus-visible {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+.rail__link[aria-current='true'] {
+  color: var(--color-accent);
+}
+.rail__link[aria-current='true']::before {
+  width: 14px;
+  background: var(--color-accent);
+}
+
+/* Below the layout breakpoint the rail unsticks into a top bar — a fixed
+   4.25rem gutter is a quarter of a 320px screen. Breakpoint matches Tailwind's
+   `lg` so the main content's inset and the rail's orientation flip together. */
+@media (max-width: 1023px) {
+  .rail {
+    inset: 0 0 auto 0;
+    bottom: auto;
+    width: auto;
+    grid-template-rows: auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    justify-items: stretch;
+    align-items: center;
+    padding: 0.6rem clamp(14px, 4vw, 24px);
+    border-right: 0;
+    border-bottom: 1px solid var(--color-rule);
+  }
+  .rail__mark {
+    writing-mode: horizontal-tb;
+  }
+  .rail__list {
+    grid-auto-flow: column;
+    justify-content: center;
+    gap: 0.15rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .rail__link {
+    writing-mode: horizontal-tb;
+    grid-template-columns: auto;
+    min-height: 44px;
+    align-content: center;
+    padding: 0.5rem 0.6rem;
+  }
+  .rail__link::before {
+    display: none;
+  }
+  /* The trailing "2015—" mark is a third grid column on desktop; in the top-bar
+     layout it lands on top of the scrolling section list and clipped CONTACT. */
+  .rail > .rail__mark:last-child {
+    display: none;
+  }
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────
+   Outlined chip is the primary voice; the accent is a border and a text
+   colour, never a filled block. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0.65rem 1.15rem;
+  border: 1px solid var(--color-rule-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--tracking-micro);
+  text-transform: uppercase;
+  color: var(--color-ink);
+  white-space: nowrap;
+  transition:
+    border-color 0.2s var(--ease-soft),
+    color 0.2s var(--ease-soft),
+    background 0.2s var(--ease-soft);
+}
+.chip:hover,
+.chip:focus-visible {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  text-decoration: none;
+}
+.chip:active {
+  transform: translateY(1px);
+}
+.chip--primary {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: oklch(76% 0.17 50 / 0.07);
+}
+.chip--primary:hover,
+.chip--primary:focus-visible {
+  background: oklch(76% 0.17 50 / 0.14);
+}
+.chip[aria-disabled='true'] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* ── Touch targets ──────────────────────────────────────────────────────
+   Wherever the rail is in its touch layout, every control clears 44px —
+   768px is an iPad, not a desktop, so the floor tracks the rail's breakpoint
+   rather than the narrower 40rem one. The controls that can't grow without
+   breaking their layout (the composition bar's segments are 8px tall by
+   design, the rail wordmark is a 16px monogram) get an invisible expanded hit
+   area instead of a taller box. */
+@media (max-width: 1023px) {
+  .skip-link,
+  .filter-pill {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .contact-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .contact-links > li + li {
+    margin-top: 0.15rem;
+  }
+  .hit-expand,
+  .rail__mark {
+    position: relative;
+  }
+  .hit-expand::after,
+  .rail__mark::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, 44px);
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* ── Stat display ───────────────────────────────────────────────────────
+   Instrument Serif numerals, tabular figures, hairline dividers. */
+.stat__figure {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  color: var(--color-ink);
+}
+
+/* Section kicker — retained for components that still use it, restyled as a
+   plain accent tick rather than the old glowing bar. */
 .section-kicker {
   position: relative;
   padding-left: 1.25rem;
@@ -120,18 +651,16 @@ h4 {
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 2px;
-  height: 0.8rem;
-  background: var(--kicker-accent, var(--color-cloud));
-  box-shadow: 0 0 10px var(--kicker-accent, var(--color-cloud));
+  width: 8px;
+  height: 1px;
+  background: var(--color-accent);
 }
 
-/* Section entrance sweep — FUI line draws across on scroll-in */
 .section-sweep {
   position: absolute;
   inset-inline: 0;
   top: 0;
-  height: 2px;
+  height: 1px;
   overflow: hidden;
   pointer-events: none;
   z-index: 2;
@@ -140,77 +669,30 @@ h4 {
   position: absolute;
   inset: 0;
   transform-origin: left center;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--kicker-accent, var(--color-cloud)) 50%,
-    transparent
-  );
-  box-shadow: 0 0 12px var(--kicker-accent, var(--color-cloud));
+  background: linear-gradient(90deg, transparent, var(--color-rule-2) 50%, transparent);
 }
 
-/* Panel utility — glass surface used across sections */
-.glass-panel {
-  position: relative;
-  background: linear-gradient(160deg, rgba(17, 26, 46, 0.85), rgba(11, 17, 32, 0.75));
-  border: 1px solid rgba(30, 42, 69, 0.9);
-  backdrop-filter: blur(12px);
-}
-
-/* Cursor-tracked spotlight + tilt on interactive cards */
+/* ── Interactive card depth ─────────────────────────────────────────────
+   The old cursor-tilt + spotlight is gone: Lumen refuses magnetic cursor
+   effects, and a 3D tilt on a case-study card fought the hairline geometry.
+   `.tilt-card` now resolves to the same lift as `.lit-card` so existing
+   markup keeps a coherent affordance. */
 .tilt-card {
-  --mx: 50%;
-  --my: 50%;
-  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0) scale(var(--tilt-scale, 1));
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
-  will-change: transform;
+  transition:
+    transform 0.22s var(--ease-soft),
+    border-color 0.22s var(--ease-soft);
 }
-.tilt-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0;
-  background: radial-gradient(280px circle at var(--mx) var(--my), rgba(56, 189, 248, 0.12), transparent 65%);
-  transition: opacity 0.25s ease;
+.tilt-card:hover,
+.tilt-card:focus-within {
+  transform: translateY(-4px);
 }
-.tilt-card:hover::after {
-  opacity: 1;
-}
-/* Tactile press feedback — works on both desktop click and mobile tap.
-   On coarse pointers we skip the tilt transform entirely so only scale applies. */
 .tilt-card:active {
-  --tilt-scale: 0.985;
-}
-@media (pointer: coarse) {
-  .tilt-card {
-    transform: scale(var(--tilt-scale, 1));
-  }
-  .tilt-card:active {
-    --tilt-scale: 0.98;
-  }
-}
-/* Hover elevation — lifts every tilt-card slightly for a tactile rise. */
-.tilt-card:hover {
-  --tilt-scale: 1.02;
-}
-/* Cursor-tracked depth parallax — background motif drifts opposite the pointer
-   while the foreground content leans into it, giving cards real 3D depth.
-   --px/--py are unitless (-0.5..0.5) set by the card's pointer handler. */
-.project-viz {
-  transform: translate3d(calc(var(--px, 0) * -16px), calc(var(--py, 0) * -16px), 0);
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-  will-change: transform;
-}
-.project-content {
-  transform: translate3d(calc(var(--px, 0) * 7px), calc(var(--py, 0) * 7px), 0);
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-  will-change: transform;
+  transform: translateY(-1px);
 }
 @media (prefers-reduced-motion: reduce) {
-  .project-viz,
-  .project-content {
+  .tilt-card:hover,
+  .tilt-card:focus-within,
+  .tilt-card:active {
     transform: none;
   }
 }
@@ -224,59 +706,37 @@ h4 {
   width: 100%;
   transform-origin: left;
   transform: scaleX(var(--scroll-progress, 0));
-  background: var(--color-accent-500, #46c9f0);
+  background: var(--color-accent);
   z-index: 200;
   pointer-events: none;
 }
 
-/* FUI corner brackets — decorative, never carry meaning */
-.glass-panel::before,
-.glass-panel::after {
-  content: '';
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  pointer-events: none;
-  opacity: 0.55;
-}
-.glass-panel::before {
-  top: -1px;
-  left: -1px;
-  border-top: 1px solid var(--color-accent-soft);
-  border-left: 1px solid var(--color-accent-soft);
-}
-.glass-panel::after {
-  bottom: -1px;
-  right: -1px;
-  border-bottom: 1px solid var(--color-accent-soft);
-  border-right: 1px solid var(--color-accent-soft);
-}
-
 /* Skip link (a11y) */
 .skip-link {
-  @apply fixed top-2 left-2 z-[1000] -translate-y-20 rounded bg-accent px-4 py-2 font-mono text-sm text-void transition-transform;
+  @apply fixed top-2 left-2 z-[1000] -translate-y-20 bg-accent px-4 py-2 font-mono text-sm text-paper transition-transform;
 }
 .skip-link:focus {
   transform: translateY(0);
 }
 
-/* Tactile press feedback for buttons, chips, and menu links that don't use tilt-card. */
+/* Tactile press feedback for controls that aren't chips or cards. */
 .press-feedback {
-  transition: transform 0.15s var(--ease-out), box-shadow 0.25s ease, border-color 0.25s ease, color 0.2s ease;
+  transition:
+    transform 0.15s var(--ease-out),
+    border-color 0.25s ease,
+    color 0.2s ease;
 }
 .press-feedback:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
-/* Themed skeleton shimmer — HUD-style moving gradient that signals activity
-   without the generic browser defaults. */
+/* Skeleton shimmer — neutral, no accent streak. */
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(91, 103, 128, 0.18) 0%,
-    rgba(91, 103, 128, 0.32) 45%,
-    rgba(34, 211, 238, 0.18) 55%,
-    rgba(91, 103, 128, 0.18) 100%
+    oklch(30% 0.012 265 / 0.5) 0%,
+    oklch(38% 0.013 265 / 0.75) 45%,
+    oklch(30% 0.012 265 / 0.5) 100%
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.6s ease-in-out infinite;
@@ -292,95 +752,138 @@ h4 {
 @media (prefers-reduced-motion: reduce) {
   .skeleton-shimmer {
     animation: none;
-    background: rgba(91, 103, 128, 0.22);
+    background: oklch(30% 0.012 265 / 0.6);
   }
 }
 
-/* v5 redesign — shared keyframes for the live-status dot, the Sequence hero's
-   scroll cue, and the Systems section's stage-path travel dots. The four
+/* Live-status dot + the Systems section's stage-path travel dots. The four
    travel shapes map to a project's data-flow (see ProjectFlow in data/types.ts):
    roundtrip (out, dwell, back), batch (stepped dwell-then-jump), gate (dwell at
    the midpoint — an eval/checkpoint), stream (one continuous sweep). */
 @keyframes om-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.7); opacity: 0; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
 }
 [data-pulse] {
   animation: om-pulse 1.8s ease-out infinite;
 }
-/* Contact section's ambient "signal beacon" behind the headline — same
-   transmitting-a-signal idea as [data-pulse], stretched to a slow 7s loop so
-   it reads as ambient rather than a status indicator. Cyan-only, low opacity. */
-@keyframes om-beacon {
-  0% { transform: scale(0.4); opacity: 0.14; }
-  70% { opacity: 0.03; }
-  100% { transform: scale(1.9); opacity: 0; }
-}
-.signal-ring {
-  animation: om-beacon 7s ease-out infinite;
-}
-@keyframes om-scrolldot {
-  0% { transform: translateY(0); opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { transform: translateY(22px); opacity: 0; }
-}
 @keyframes om-travel {
-  0% { left: 0%; opacity: 0; }
-  8% { opacity: 1; }
-  92% { opacity: 1; }
-  100% { left: 100%; opacity: 0; }
+  0% {
+    left: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
 }
 @keyframes om-travel-stream {
-  0% { left: 0%; opacity: 0; }
-  6% { opacity: 1; }
-  88% { opacity: 1; }
-  100% { left: 100%; opacity: 0; }
+  0% {
+    left: 0%;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
 }
 @keyframes om-travel-batch {
-  0% { left: 0%; opacity: 0; }
-  4% { opacity: 1; }
-  22% { left: 0%; }
-  28% { left: 25%; }
-  47% { left: 25%; }
-  53% { left: 50%; }
-  72% { left: 50%; }
-  78% { left: 75%; }
-  94% { left: 100%; opacity: 1; }
-  100% { left: 100%; opacity: 0; }
+  0% {
+    left: 0%;
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  22% {
+    left: 0%;
+  }
+  28% {
+    left: 25%;
+  }
+  47% {
+    left: 25%;
+  }
+  53% {
+    left: 50%;
+  }
+  72% {
+    left: 50%;
+  }
+  78% {
+    left: 75%;
+  }
+  94% {
+    left: 100%;
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
 }
 @keyframes om-travel-roundtrip {
-  0% { left: 0%; opacity: 0; }
-  6% { opacity: 1; }
-  44% { left: 100%; }
-  50% { left: 100%; opacity: 1; }
-  94% { left: 0%; }
-  100% { left: 0%; opacity: 0; }
+  0% {
+    left: 0%;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  44% {
+    left: 100%;
+  }
+  50% {
+    left: 100%;
+    opacity: 1;
+  }
+  94% {
+    left: 0%;
+  }
+  100% {
+    left: 0%;
+    opacity: 0;
+  }
 }
 @keyframes om-travel-gate {
-  0% { left: 0%; opacity: 0; }
-  6% { opacity: 1; }
-  38% { left: 50%; }
-  58% { left: 50%; }
-  96% { left: 100%; }
-  100% { left: 100%; opacity: 0; }
-}
-
-/* Sequence stations — collapse the copy/viz frame to one column on narrow
-   viewports, chart first. Ported from the v5 prototype's [data-frame] rules. */
-@media (max-width: 900px) {
-  [data-station-content] {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: minmax(0, 1fr) auto !important;
+  0% {
+    left: 0%;
+    opacity: 0;
   }
-  [data-viz] {
-    order: 1;
+  6% {
+    opacity: 1;
   }
-  [data-copy] {
-    order: 2;
+  38% {
+    left: 50%;
   }
-  [data-figs] {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  58% {
+    left: 50%;
+  }
+  96% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
   }
 }
 

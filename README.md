@@ -1,9 +1,12 @@
-# Jagadeesh Thiruveedula — Immersive Portfolio
+# Jagadeesh Thiruveedula — Portfolio
 
-An explorable data landscape, not a static resume. The site tells one story — **Legacy Systems → Cloud Modernization → Enterprise AI** — through interactive 3D scenes, scroll-driven data-flow animations, and metric visualizations drawn from real project outcomes (500+ TiB migrated, $2M+ saved, production GenAI systems).
+A proof-led single page, not a static resume. It tells one story — **Legacy Systems →
+Cloud Modernization → Enterprise AI** — leading with the numbers that back it
+(500+ TiB migrated, $2M+ saved, 50M+ documents in production RAG) and then showing the
+work behind each one.
 
 **Live:** [https://jthiruveedula.github.io](https://jthiruveedula.github.io)
-**Hosting:** GitHub Pages (user site), deployed from `master` via GitHub Actions
+**Hosting:** GitHub Pages (user site), deployed on a published GitHub Release via GitHub Actions
 
 ---
 
@@ -36,14 +39,16 @@ To see the full detail (bio, all metrics, tech stacks per project), open `src/da
 
 ## Stack
 
-| Layer     | Tool                                     |
-| --------- | ---------------------------------------- |
-| Build     | Vite 7 (static output to `out/`)         |
-| UI        | React 19 + TypeScript (strict)           |
-| 3D        | Three.js + @react-three/fiber + drei     |
-| Animation | GSAP 3 (ScrollTrigger) via `@gsap/react` |
-| Styling   | Tailwind CSS v4 (`@theme` design tokens) |
-| E2E       | Playwright (chromium + mobile projects)  |
+| Layer     | Tool                                          |
+| --------- | --------------------------------------------- |
+| Build     | Vite 7 (static output to `out/`)              |
+| UI        | React 19 + TypeScript (strict)                |
+| Animation | GSAP 3 (ScrollTrigger) via `@gsap/react`      |
+| Scroll    | Lenis (smooth scroll, reduced-motion aware)   |
+| Styling   | Tailwind CSS v4 (`@theme` design tokens)      |
+| E2E       | Playwright (chromium + mobile projects)       |
+
+No WebGL. Earlier versions shipped a Three.js scroll-world; v6 is DOM, SVG and CSS only.
 
 ## Setup
 
@@ -59,73 +64,102 @@ npm run build      # static site → out/
 npm run preview    # serve the production build on :4173
 ```
 
-Pushing to `master` triggers `.github/workflows/deploy.yml`, which builds and publishes `out/` to GitHub Pages. Every deploy is tagged `v0.0.0-<sha>` for one-click rollback via `workflow_dispatch` → `rollback_ref`.
+Publishing a GitHub Release triggers `.github/workflows/deploy.yml`, which builds and
+publishes `out/` to GitHub Pages only after the build job passes. Point-in-time recovery
+lives in a separate `.github/workflows/rollback.yml` (`workflow_dispatch` → `rollback_ref`),
+so a rollback never needs a new release.
 
 ## Architecture
 
 ```
 src/
   components/          # One self-contained section per file (no props; each imports its own data)
-    Navigation.tsx       ScrollWorld.tsx   Timeline.tsx
-    SkillsConstellation.tsx  Projects.tsx  ProjectCard.tsx
+    Rail.tsx             Sequence.tsx      Apparatus.tsx     MeterStrip.tsx
+    Timeline.tsx         Projects.tsx      ProjectCard.tsx
     Metrics.tsx          Contact.tsx
-  scenes/              # R3F scene graphs (scroll-world flight, skills constellation)
-    WorldScene.tsx       ConstellationScene.tsx
   data/
     types.ts           # Contractual shapes (Era, Skill, Experience, FeaturedProject…)
     portfolio.ts       # THE single content source — every section renders from this
-    scenes.ts          # The 7 scroll-world stations (copy + metrics + still paths)
-  lib/hooks.ts         # useReducedMotion / useWebGLSupport / useIsMobile / useInView
-  styles/globals.css   # Tailwind v4 @theme tokens (era colors, fonts, surfaces)
-public/scenes/         # The 7 AI-generated station stills, 2048w + 1280w (`@sm`)
+    scenes.ts          # The six career chapters rendered by the arc
+  lib/hooks.ts         # useReducedMotion / useInView
+  styles/globals.css   # Tailwind v4 @theme tokens + the theme's own components
+tokens.css             # Framework-free mirror of the token set, for reuse elsewhere
+public/scenes/         # Station stills from v3–v5. Retained, no longer referenced.
 ```
 
-Sections below the flight are `React.lazy` code-split; Three.js, R3F, and GSAP ship as separate chunks (`manualChunks` in `vite.config.ts`).
+Sections below the hero are `React.lazy` code-split; GSAP ships as its own chunk
+(`manualChunks` in `vite.config.ts`).
 
-## The scroll-world hero
+## The page shape
 
-The top of the page is one continuous camera flight through seven stations of the résumé —
-legacy substrate → cloud migration → governed realtime → LLM translation → production RAG
-→ the whole system + CTA. Backdrops are AI-generated stills (Higgsfield); the camera is
-real Three.js.
+**Stat-Led.** The hero leads with the single largest defensible figure (500+ TiB) and a
+headline that completes its sentence, backed by three supporting figures, a meter strip,
+and one hand-built SVG apparatus — a topology graph of six sources ringing a governed
+plane, with leader-line callouts carrying real values from `portfolio.ts`.
 
-**Scroll drives a camera, not a timeline.** Station depth, scale, opacity, the dust field
-and every DOM overlay are pure functions of one scroll-progress value, so scrolling up
-retraces the flight exactly, there is nothing to snap at a station boundary, and no video
-is decoded on a phone. There is no GSAP pin either — the scene is `position: sticky` in a
-tall section, which keeps Lenis out of a fight with a pin-spacer and stops mobile URL-bar
-resizes from jumping the page (`100svh`, not `dvh`).
+Below it, six career chapters render as a hairline spec sheet: mono ordinal and era on
+the left, chapter and figures on the right.
 
-- **Framing** covers on landscape, and *contains* on portrait: cropping a 16:9 still to a
-  tall phone would throw away three quarters of its width, so phones get the whole frame
-  anchored to the top band with the copy on clean void beneath it.
-- **Lazy stations** — only the stations within a scroll-window of the camera are mounted,
-  and leaving one disposes its GPU texture. A visitor downloads what they fly through.
-- **Degradation** — no WebGL or `prefers-reduced-motion` renders the same seven stations
-  as ordinary stacked sections with the stills as backdrops. The copy is real DOM in both
-  paths, so it stays crawlable and screen-reader navigable either way.
+**What v6 removed.** v5 spent 13,284px — roughly sixteen viewports — driving those six
+chapters through a pinned, scroll-scrubbed timeline. Everything past the first station was
+invisible until you had scrolled most of a novel, and a deep link or a restored scroll
+position could land on an empty screen because the pinned timeline had never been driven.
+The chapters are now static DOM: same copy, same figures, ~2k px instead of ~13k, correct
+at any scroll position and with JavaScript doing nothing. Total page height went from
+17,670px to ~7,200px.
 
-Scene plan and generation prompts: [SCENE_PLAN.md](./SCENE_PLAN.md). Asset mapping,
-re-rolls and credit spend: [ASSET_MANIFEST.md](./ASSET_MANIFEST.md).
+The seven AI-generated station stills are no longer referenced either. They rendered at
+4–8% opacity behind the copy, which read as noise rather than imagery while costing
+fourteen JPEGs of payload. The files stay in `public/scenes/`; the generation prompts stay
+in [SCENE_PLAN.md](./SCENE_PLAN.md) and [ASSET_MANIFEST.md](./ASSET_MANIFEST.md).
 
 ## Design language
 
-- **Era color code** carried through every visual: amber `#f59e0b` = legacy, cyan `#22d3ee` = cloud, violet `#a78bfa` = AI.
-- Dark OLED base (`#050810`), Space Grotesk headings, Inter body, JetBrains Mono for data/HUD labels.
-- Every animation is field-related — migration particle streams, pipeline pulses, schema grids, count-up metrics — no decorative motion.
+Built with the Hallmark design skill. Genre **atmospheric**, theme **Lumen / Night
+Foundry**, macrostructure **Stat-Led** — the stamp at the top of `src/styles/globals.css`
+is the durable record, and `.hallmark/log.json` is what the next run reads.
+
+- **One accent.** Molten brass `oklch(76% 0.17 50)` against a cool-violet near-black
+  ground `oklch(15% 0.014 265)`. A coral chord `oklch(68% 0.16 18)` is reserved for exactly
+  one word per headline — always the verb — carried by colour plus a 1px underline, never
+  italics. The era code is grey resolving into brass; v5's amber/cyan/violet is gone.
+- **Three faces.** Instrument Serif for display, Geist for body, JetBrains Mono for labels.
+- **Two registers.** Display type and the lede render lowercase; mono labels render
+  UPPERCASE. Proper nouns that carry credibility — employers, certifications, product
+  names, units — opt out via `.proper`. Lumen's stock rule lowercases those too, which
+  turned "500+ TiB" into "500+ tib" and "1B+" into "1b+": a different claim, not a
+  different style.
+- **Colour is OKLCH throughout**, declared once in the `@theme` block and mirrored in
+  `tokens.css`. No hex outside the favicon, the social card and the `<meta>` tags.
+- Motion is fade-and-lift only. The apparatus pulses; nothing rotates, nothing parallaxes,
+  and no cursor is tracked.
 
 ## Performance & accessibility
 
-- Max two WebGL canvases (scroll-world, Skills); everything else is SVG/CSS/GSAP. Instanced geometry only, DPR clamped (1.75 desktop / 1.25 mobile — the flight is fill-rate bound), frameloops pause when offscreen.
-- The flight holds 60fps through a 2× CPU throttle on a mobile viewport and locks to a clean 30fps at 4×+ (p95 ≈ median, so it slows rather than stutters). Overlay writes are skipped for stations parked at zero, and the dust volume streams by translating two tiles instead of re-uploading a vertex buffer each frame.
-- `prefers-reduced-motion` → static stations and instant metric values. No WebGL → 2D fallbacks. Mobile → reduced particle counts and 1280w stills.
-- All content exists as semantic HTML (canvases are `aria-hidden` enhancements): keyboard navigation, `aria-expanded` disclosures, skip link, 4.5:1 contrast on body text.
-- First paint is not gated by the loading intro: the opening station renders underneath the overlay and its copy staggers in once the intro hands off (no flash, no jump). Brand webfonts load non-render-blocking via a `preload`→`stylesheet` swap, with a `<noscript>` fallback.
+- No canvas mounts anywhere — the hero apparatus is inline SVG, the meter strip is 72
+  spans, and every diagram is CSS or SVG. GSAP drives section reveals only.
+- `prefers-reduced-motion` freezes the apparatus packets and collapses every reveal to its
+  final state. The six chapters and all their figures are static text in every path, so
+  nothing depends on an animation having run.
+- All content is semantic HTML: keyboard navigation, `aria-expanded` disclosures, a skip
+  link, and a side-rail nav that marks the active section.
+- **Contrast: zero WCAG AA failures** across the rendered page (audited by resolving every
+  computed `oklch()` through a canvas and checking each text node against its painted
+  background at its real size).
+- **Touch targets: every control clears 44×44px** wherever the rail is in its touch
+  layout (≤1023px). Controls that cannot grow without breaking their layout — the 8px
+  composition-bar segments, the 16px rail monogram — carry an invisible expanded hit area.
+- Brand webfonts load non-render-blocking via a `preload`→`stylesheet` swap, with a
+  `<noscript>` fallback.
 
 ## SEO & social
 
 - `public/robots.txt` and `public/sitemap.xml` are published to the site root for crawler discovery.
-- `public/og-image.svg` (1200×630) backs the OpenGraph + Twitter `summary_large_image` cards declared in `index.html` (`og:image`, `og:image:width/height`, `og:locale`, `twitter:image`, `link[rel="me"]`).
+- `public/og-image.png` (1200×630) backs the OpenGraph + Twitter `summary_large_image`
+  cards declared in `index.html`. It is a raster on purpose — LinkedIn, X, Slack, WhatsApp
+  and Facebook all render a blank card for an SVG. `public/og-image.svg` is the editable
+  source of record and `public/og-image.source.html` is the live-webfont render the PNG is
+  captured from.
 
 ## Customization (swap in your own data)
 
@@ -142,7 +176,5 @@ npm run test:e2e:chrome   # production build served via `npm run preview` automa
 npm run test:e2e:all      # chromium + mobile
 ```
 
-Playwright runs with `workers: 2`. Headless Chromium falls back to software GL, and
-several concurrent WebGL contexts uploading full-screen station textures starve each
-other enough to time tests out — that is a harness limit, not the page's (a real
-GPU-backed browser holds 60fps).
+Playwright runs with `workers: 2`. The suite has no WebGL to contend with any more, so the
+old software-GL caveat is gone — 40 tests across chromium and mobile finish in ~10s each.

@@ -1,0 +1,79 @@
+/* Hallmark · portable token export — Lumen / Night Foundry
+ *
+ * The site itself consumes these through Tailwind v4's `@theme` block in
+ * src/styles/globals.css; this file is the framework-free mirror, so the system
+ * can move to another project without dragging Tailwind along. Keep the two in
+ * sync — globals.css is the source of truth.
+ *
+ * Axes — paper band: dark · display style: classical-serif · accent hue: warm (50°)
+ */
+
+:root {
+  /* Surfaces — elevation goes lighter, never darker. */
+  --color-paper: oklch(15% 0.014 265);
+  --color-paper-2: oklch(18.5% 0.015 265);
+  --color-paper-3: oklch(22% 0.016 265);
+
+  /* Ink */
+  --color-ink: oklch(96% 0.006 262);
+  --color-ink-2: oklch(80% 0.009 262);
+  --color-muted: oklch(64% 0.010 262);
+
+  /* Rules */
+  --color-rule: oklch(30% 0.012 265);
+  --color-rule-2: oklch(38% 0.013 265);
+  --color-rule-blueprint: oklch(96% 0.006 262 / 0.045);
+
+  /* Accent — one molten-brass hue, plus a coral chord reserved for the single
+     verb landmark in a headline. Never more than one accent-coloured word. */
+  --color-accent: oklch(76% 0.17 50);
+  --color-accent-2: oklch(68% 0.16 18);
+  --color-accent-ink: oklch(15% 0.014 265);
+  --color-focus: oklch(82% 0.14 50);
+
+  /* Emission — the apparatus is the only thing that generates light. */
+  --color-glow: oklch(80% 0.16 50 / 0.42);
+  --color-glow-2: oklch(80% 0.16 50 / 0.16);
+  --color-paper-emit: oklch(76% 0.17 50 / 0.045);
+
+  /* Type — three families, no fourth. */
+  --font-display: 'Instrument Serif', 'Tiempos Headline', ui-serif, Georgia, serif;
+  --font-body: 'Geist', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  --tracking-micro: 0.1em;
+
+  /* Space — 4pt scale */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 7rem;
+
+  /* Type scale */
+  --text-xs: 0.6875rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-display-s: clamp(1.7rem, 3.6vw, 2.8rem);
+  --text-display: clamp(3.6rem, 11vw, 8.5rem);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-fast: 0.2s;
+  --dur-reveal: 0.6s;
+  --dur-exit: 0.45s;
+  --dur-pulse: 4s;
+
+  /* Geometry — the theme is hairline-and-square; radii exist only for the
+     favicon plate and the filter pills. */
+  --rule-hair: 1px;
+  --radius-card: 0;
+  --radius-pill: 999px;
+}

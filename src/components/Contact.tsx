@@ -68,7 +68,7 @@ export default function Contact() {
                 />
               </span>
             )}
-            <h2 id="contact-heading" className="font-display text-3xl uppercase text-ink md:text-5xl">
+            <h2 id="contact-heading" className="font-display text-[clamp(2rem,5vw,3.6rem)] text-ink">
               {HEADLINE_WORDS.map((word, i) => (
                 // The trailing space must live OUTSIDE the inline-block span — a browser
                 // collapses whitespace at the end of an inline-block's own content, which
@@ -84,7 +84,7 @@ export default function Contact() {
           {profile.email && (
             <a
               href={`mailto:${profile.email}`}
-              className="contact-cta inline-flex shrink-0 items-center justify-center bg-accent-700 px-5 py-3 text-[11px] font-semibold tracking-[0.16em] uppercase text-white transition-colors hover:bg-accent-600"
+              className="contact-cta chip chip--primary shrink-0"
             >
               Open a conversation
             </a>
@@ -97,7 +97,7 @@ export default function Contact() {
         >
           <div>
             <p className={LABEL_CLASS}>Direct</p>
-            <ul className="mt-4 space-y-2 text-sm text-ink-muted">
+            <ul className="contact-links mt-4 text-sm text-ink-muted">
               {profile.email && (
                 <li>
                   <a href={`mailto:${profile.email}`} className="transition-colors hover:text-ink">
@@ -156,7 +156,7 @@ export default function Contact() {
             <p className={LABEL_CLASS}>Next step</p>
             <a
               href="/resume.html"
-              className="mt-4 inline-block border border-ink/25 px-4 py-2 text-sm text-ink transition-colors hover:bg-ink/10"
+              className="chip mt-4 inline-flex transition-colors hover:bg-ink/10"
             >
               View résumé
             </a>
