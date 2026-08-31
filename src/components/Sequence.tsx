@@ -402,7 +402,11 @@ function StationShell({
             flexDirection: frame ? undefined : 'column',
             justifyContent: frame ? undefined : 'center',
             gridTemplateColumns: frame ? 'minmax(0, 0.85fr) minmax(0, 1.15fr)' : undefined,
-            alignItems: 'center',
+            // Grid stations (1-5) want their two columns vertically centered; the flex-column
+            // hero (station 0) was inheriting that same 'center' on its cross axis, which
+            // horizontally centers each child by its own width instead of left-aligning the
+            // whole block — the bug that made the eyebrow/headline/stats look staggered.
+            alignItems: frame ? 'center' : 'flex-start',
             gap: frame ? 'clamp(20px, 4vw, 70px)' : 30,
             padding: frame ? 'clamp(20px, 4vh, 50px) clamp(18px, 3.4vw, 60px)' : '0 clamp(18px, 3.4vw, 60px)',
             opacity: 1,
