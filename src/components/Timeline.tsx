@@ -94,7 +94,21 @@ const ROLE_ROWS: RoleRow[] = ROLES.map((role, i): RoleRow => {
   }
 })
 
-const MOST_RECENT_ROLE = portfolio.experience[0]
+const MOST_RECENT_ROLE = ROLES[ROLES.length - 1]
+
+interface EraBoundary {
+  id: string
+  leftPct: number
+}
+
+/** Midpoint between each era's end and the next era's start — where one chapter hands off to the next. */
+const ERA_BOUNDARIES: EraBoundary[] = ERA_BANDS.slice(1).map((band, i) => {
+  const prev = ERA_BANDS[i]
+  return {
+    id: `${prev.id}-${band.id}`,
+    leftPct: (prev.leftPct + prev.widthPct + band.leftPct) / 2,
+  }
+})
 
 /** Inner solid dot + outer expanding [data-pulse] ring — the sitewide live-status motif. */
 function LiveDot() {
@@ -113,7 +127,12 @@ export default function Timeline() {
 
   useGSAP(
     () => {
-      if (reducedMotion) return
+      const bandFills = gsap.utils.toArray<HTMLElement>('.ledger-band-fill')
+
+      if (reducedMotion) {
+        gsap.set(bandFills, { scaleX: 1 })
+        return
+      }
 
       gsap.fromTo(
         '.ledger-head',
@@ -139,6 +158,23 @@ export default function Timeline() {
           scrollTrigger: { trigger: sectionRef.current, start: 'top 70%', once: true },
         },
       )
+
+      // Era-band legend draws itself in, then a brief accent flash marks each
+      // era-to-era handoff point — a one-shot beat, not a loop.
+      const bandTl = gsap.timeline({
+        scrollTrigger: { trigger: sectionRef.current, start: 'top 75%', once: true },
+      })
+      bandTl.fromTo(bandFills, { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power2.out', stagger: 0.12 })
+      if (ERA_BOUNDARIES.length) {
+        bandTl
+          .fromTo(
+            '.era-boundary-flash',
+            { scale: 0, opacity: 0 },
+            { scale: 1.6, opacity: 1, duration: 0.35, ease: 'power2.out', stagger: 0.12 },
+            '-=0.15',
+          )
+          .to('.era-boundary-flash', { scale: 1, opacity: 0.55, duration: 0.45, ease: 'power2.out' }, '-=0.1')
+      }
     },
     { scope: sectionRef, dependencies: [reducedMotion], revertOnUpdate: true },
   )
@@ -205,10 +241,24 @@ export default function Timeline() {
                 <span
                   key={band.id}
                   aria-hidden="true"
-                  className="absolute inset-y-0"
-                  style={{ left: `${band.leftPct}%`, width: `${band.widthPct}%`, background: ERA_COLORS[band.id] }}
+                  className="ledger-band-fill origin-left absolute inset-y-0"
+                  style={{
+                    left: `${band.leftPct}%`,
+                    width: `${band.widthPct}%`,
+                    background: ERA_COLORS[band.id],
+                    transform: 'scaleX(0)',
+                  }}
                 />
               ))}
+              {!reducedMotion &&
+                ERA_BOUNDARIES.map((boundary) => (
+                  <span
+                    key={boundary.id}
+                    aria-hidden="true"
+                    className="era-boundary-flash absolute top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-500"
+                    style={{ left: `${boundary.leftPct}%`, opacity: 0 }}
+                  />
+                ))}
             </div>
           </div>
           <div className={`ledger-head grid ${GRID_COLS} gap-4`}>
@@ -231,8 +281,11 @@ export default function Timeline() {
             {ROLE_ROWS.map((row, i) => (
               <li
                 key={`${row.role.company}-${row.role.start}`}
-                className={`ledger-row grid ${GRID_COLS} items-center gap-4 transition-opacity duration-300`}
-                style={{ opacity: hoveredIndex === null || hoveredIndex === i ? 1 : 0.32 }}
+                className={`ledger-row grid ${GRID_COLS} items-center gap-4 transition-[opacity,transform] duration-300`}
+                style={{
+                  opacity: hoveredIndex === null || hoveredIndex === i ? 1 : 0.32,
+                  transform: hoveredIndex === i ? 'scale(1.0075)' : 'scale(1)',
+                }}
                 onMouseEnter={() => setHoveredIndex(i)}
                 onMouseLeave={() => setHoveredIndex(null)}
               >

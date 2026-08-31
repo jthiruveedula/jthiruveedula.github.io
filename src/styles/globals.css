@@ -308,6 +308,17 @@ h4 {
 [data-pulse] {
   animation: om-pulse 1.8s ease-out infinite;
 }
+/* Contact section's ambient "signal beacon" behind the headline — same
+   transmitting-a-signal idea as [data-pulse], stretched to a slow 7s loop so
+   it reads as ambient rather than a status indicator. Cyan-only, low opacity. */
+@keyframes om-beacon {
+  0% { transform: scale(0.4); opacity: 0.14; }
+  70% { opacity: 0.03; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+.signal-ring {
+  animation: om-beacon 7s ease-out infinite;
+}
 @keyframes om-scrolldot {
   0% { transform: translateY(0); opacity: 0; }
   20% { opacity: 1; }

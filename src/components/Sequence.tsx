@@ -165,7 +165,7 @@ function applyAnim(a: ParsedAnim, prog: number, accent: string) {
   }
 }
 
-function snapFinal(a: ParsedAnim) {
+function snapFinal(a: ParsedAnim, accent: string) {
   const { el } = a
   const style = el.style
   if (a.kind === 'fill') {
@@ -203,9 +203,13 @@ function snapFinal(a: ParsedAnim) {
       return
     }
     case 'scale':
+      style.transform = 'scale(1)'
+      style.opacity = '1'
+      return
     case 'travel':
       style.transform = 'scale(1)'
       style.opacity = '1'
+      style.background = accent
       return
     case 'scaleXLeft':
       style.transform = 'scaleX(1)'
@@ -314,7 +318,7 @@ function StatLabel({ children }: { children: React.ReactNode }) {
   )
 }
 
-function VizFrame({ children }: { children: React.ReactNode }) {
+function VizFrame({ ghostLabel, children }: { ghostLabel: string; children: React.ReactNode }) {
   return (
     <div
       style={{
@@ -327,7 +331,13 @@ function VizFrame({ children }: { children: React.ReactNode }) {
         gap: 16,
       }}
     >
-      <span data-anim="ghost" aria-hidden="true" style={{ position: 'absolute', right: '-0.06em', top: '-0.34em', fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(52px, 8vw, 128px)', lineHeight: 0.78, letterSpacing: '-0.05em', textTransform: 'uppercase', color: 'var(--color-ink)', opacity: 0, pointerEvents: 'none' }} />
+      {/* Ghost watermark rides its own parallax layer (data-rate) — a distinctly
+          different rate than the plate's scale-push, for a sense of depth. */}
+      <div data-anim="parallax" data-rate="20" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        <span data-anim="ghost" aria-hidden="true" style={{ position: 'absolute', right: '-0.06em', top: '-0.34em', fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(52px, 8vw, 128px)', lineHeight: 0.78, letterSpacing: '-0.05em', textTransform: 'uppercase', color: 'var(--color-ink)', opacity: 0 }}>
+          {ghostLabel}
+        </span>
+      </div>
       <span data-anim="sweep" aria-hidden="true" style={{ position: 'absolute', left: -10, right: -10, top: 0, height: 1, background: 'var(--sa)', opacity: 0, pointerEvents: 'none' }} />
       {children}
     </div>
@@ -373,6 +383,12 @@ function StationShell({
               background:
                 'linear-gradient(180deg, color-mix(in srgb, var(--color-ground) 92%, transparent) 0%, color-mix(in srgb, var(--color-ground) 60%, transparent) 45%, color-mix(in srgb, var(--color-ground) 97%, transparent) 100%)',
             }}
+          />
+          {/* Static vignette — always-on radial edge darkening, no scroll tie,
+              no motion cost, safe under reduced motion. */}
+          <div
+            aria-hidden="true"
+            style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 50%, transparent 52%, color-mix(in srgb, var(--color-ground) 62%, transparent) 100%)' }}
           />
         </div>
         <div aria-hidden="true" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '7.5vh', background: 'var(--color-ground)', borderBottom: '1px solid color-mix(in srgb, var(--color-ink) 12%, transparent)' }} />
@@ -449,8 +465,8 @@ function StationLegacy({ stationRef }: { stationRef: (el: HTMLDivElement | null)
         <p style={{ fontSize: 15, lineHeight: 1.5, color: 'var(--color-neutral-400)', maxWidth: '32ch' }}>Twenty pipelines, built by hand.</p>
       </div>
       <div data-viz>
-        <VizFrame>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, fontSize: 9, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-neutral-700)' }}>
+        <VizFrame ghostLabel={GHOST[1]}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, fontSize: 9, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-neutral-500)' }}>
             <span>Pipelines, one per bar · left to right, 2015 → 2019</span>
             <span data-anim="seq" data-t="none" data-order="19" data-count="20" data-in="0.6" data-out="0.82" style={{ color: 'var(--sa-soft)', opacity: 0 }}>
               Accent — became the standing framework
@@ -509,7 +525,7 @@ function StationMigration({ stationRef }: { stationRef: (el: HTMLDivElement | nu
         <p style={{ fontSize: 15, lineHeight: 1.5, color: 'var(--color-neutral-400)', maxWidth: '32ch' }}>A multi-petabyte estate, onto GCP.</p>
       </div>
       <div data-viz>
-        <VizFrame>
+        <VizFrame ghostLabel={GHOST[2]}>
           <div style={{ display: 'grid', gridTemplateColumns: '84px minmax(0, 1fr) 84px', alignItems: 'center', gap: 12 }}>
             <div style={{ border: '1px solid color-mix(in srgb, var(--color-ink) 40%, transparent)', padding: '12px 8px', textAlign: 'center', fontSize: 9, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-neutral-400)' }}>
               Hadoop{' '}
@@ -562,7 +578,7 @@ function StationRealtime({ stationRef }: { stationRef: (el: HTMLDivElement | nul
         <p style={{ fontSize: 15, lineHeight: 1.5, color: 'var(--color-neutral-400)', maxWidth: '32ch' }}>Fifty sources live, under HIPAA.</p>
       </div>
       <div data-viz>
-        <VizFrame>
+        <VizFrame ghostLabel={GHOST[3]}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, minmax(0, 1fr))', gap: 'clamp(4px, 0.8vw, 10px)' }}>
             {sourceBars.map((h, i) => (
               <span key={i} data-anim="seq" data-t="scaleY" data-order={i} data-count="50" style={{ display: 'block', height: `clamp(18px, ${(h / 100) * 3.4}vh, ${(h / 100) * 34}px)`, background: 'var(--color-ink)', transformOrigin: 'bottom center', transform: 'scaleY(0.08)', opacity: 0.16 }} />
@@ -599,10 +615,10 @@ function StationTranslation({ stationRef }: { stationRef: (el: HTMLDivElement | 
         <p style={{ fontSize: 15, lineHeight: 1.5, color: 'var(--color-neutral-400)', maxWidth: '32ch' }}>Nothing ships until the eval scores it.</p>
       </div>
       <div data-viz>
-        <VizFrame>
+        <VizFrame ghostLabel={GHOST[4]}>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 40px minmax(0, 1fr)', alignItems: 'stretch', gap: 'clamp(8px, 1.4vw, 20px)', minHeight: 'clamp(160px, 27vh, 270px)' }}>
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 8, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-neutral-700)', marginBottom: 4 }}>COBOL</span>
+              <span style={{ fontSize: 8, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-neutral-500)', marginBottom: 4 }}>COBOL</span>
               {cobolWidths.map((w, i) => (
                 <span key={i} data-anim="seq" data-t="out" data-order={i} data-count="12" style={{ display: 'block', width: `${w}%`, height: 4, background: 'var(--color-neutral-500)' }} />
               ))}
@@ -646,7 +662,7 @@ function StationGrounded({ stationRef }: { stationRef: (el: HTMLDivElement | nul
         <p style={{ fontSize: 15, lineHeight: 1.5, color: 'var(--color-neutral-400)', maxWidth: '32ch' }}>Fifty million documents, inside their VPC.</p>
       </div>
       <div data-viz>
-        <VizFrame>
+        <VizFrame ghostLabel={GHOST[5]}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(20, minmax(0, 1fr))', gap: 4 }}>
             {Array.from({ length: DOC_COUNT }, (_, i) => (
               <span key={i} data-anim="seq" data-t={docDim.has(i) ? 'dim' : 'scale'} data-order={i} data-count="120" style={{ display: 'block', aspectRatio: '1', background: 'var(--color-ink)', transform: 'scale(0.25)', opacity: 0.12 }} />
@@ -689,6 +705,10 @@ export default function Sequence() {
   const rafRef = useRef<number | null>(null)
   const introRef = useRef(0)
   const introTimerRef = useRef<number | null>(null)
+  const railRef = useRef<HTMLDivElement | null>(null)
+  const tickFillRefs = useRef<(HTMLSpanElement | null)[]>([])
+  const seamRef = useRef<HTMLDivElement | null>(null)
+  const activeStationRef = useRef(-1)
 
   useEffect(() => {
     const stations = stationEls.current.filter((el): el is HTMLDivElement => el !== null)
@@ -711,18 +731,30 @@ export default function Sequence() {
     }))
 
     if (reducedMotion) {
-      collected.forEach((s) => s.anims.forEach(snapFinal))
+      collected.forEach((s) => s.anims.forEach((a) => snapFinal(a, s.accent)))
       return
     }
 
     const run = () => {
       const vh = window.innerHeight
+      let active = -1
+
       collected.forEach((s, i) => {
         const rect = s.el.getBoundingClientRect()
         const span = rect.height - vh
         const prog = clamp01(span > 0 ? -rect.top / span : 0)
         const onScreen = rect.top < vh && rect.bottom > 0
         const drive = i === 0 ? Math.max(prog, introRef.current) : prog
+
+        // Scrub rail: this station's own progress fills its tick regardless of
+        // whether it's currently on screen (so a passed station stays full and
+        // an unreached one stays empty); only the on-screen station gets accent.
+        const tick = tickFillRefs.current[i]
+        if (tick) {
+          tick.style.transform = `scaleX(${prog})`
+          tick.style.background = onScreen ? s.accent : 'var(--color-neutral-700)'
+        }
+        if (onScreen) active = i
 
         if (!onScreen) {
           if (s.content) {
@@ -731,7 +763,13 @@ export default function Sequence() {
           }
           return
         }
-        if (s.plate) s.plate.style.transform = `scale(${1.08 + drive * 0.1})`
+        if (s.plate) {
+          const climax = easeOut(drive)
+          s.plate.style.transform = `scale(${1.08 + drive * 0.1})`
+          // Restrained per-station color-grade: intensifies toward the
+          // station's climax (its heaviest stat reveal, i.e. deepest scroll).
+          s.plate.style.filter = `${STATIONS[i].filter} brightness(${1 + climax * 0.06}) contrast(${1 + climax * 0.05}) saturate(${1 + climax * 0.12})`
+        }
         if (s.content) {
           const inP = clamp01(drive / 0.08)
           s.content.style.transform = `translate3d(0, ${(1 - inP) * 24}px, 0)`
@@ -739,6 +777,23 @@ export default function Sequence() {
         }
         s.anims.forEach((a) => applyAnim(a, drive, s.accent))
       })
+
+      if (railRef.current) railRef.current.style.opacity = active === -1 ? '0' : '1'
+
+      // One-shot seam flash: fires only on an actual station handoff, never on
+      // every scroll tick, and never on first mount (prevStation === -1).
+      if (active !== activeStationRef.current) {
+        if (activeStationRef.current !== -1 && active !== -1 && seamRef.current) {
+          const seam = seamRef.current
+          seam.style.transition = 'none'
+          seam.style.background = collected[active].accent
+          seam.style.opacity = '1'
+          void seam.offsetWidth // force reflow so the transition below actually animates
+          seam.style.transition = 'opacity 200ms ease-out'
+          seam.style.opacity = '0'
+        }
+        activeStationRef.current = active
+      }
     }
 
     let ticking = false
@@ -783,13 +838,63 @@ export default function Sequence() {
   }
 
   return (
-    <section aria-label="Career sequence" style={{ position: 'relative' }}>
-      <StationIngress stationRef={refAt(0)} />
-      <StationLegacy stationRef={refAt(1)} />
-      <StationMigration stationRef={refAt(2)} />
-      <StationRealtime stationRef={refAt(3)} />
-      <StationTranslation stationRef={refAt(4)} />
-      <StationGrounded stationRef={refAt(5)} />
-    </section>
+    <>
+      <section aria-label="Career sequence" style={{ position: 'relative' }}>
+        <StationIngress stationRef={refAt(0)} />
+        <StationLegacy stationRef={refAt(1)} />
+        <StationMigration stationRef={refAt(2)} />
+        <StationRealtime stationRef={refAt(3)} />
+        <StationTranslation stationRef={refAt(4)} />
+        <StationGrounded stationRef={refAt(5)} />
+      </section>
+
+      {/* Scrub rail — fixed, hidden until a station is on screen. One tick per
+          station; each tick fills with that station's own scroll progress and
+          lights up in its accent while active. Stays hidden under reduced
+          motion, since it has no scroll-driven state to show without the
+          driver's rAF loop (which never runs in that mode). */}
+      <div
+        ref={railRef}
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 20,
+          display: 'flex',
+          gap: 2,
+          padding: '10px clamp(18px, 3.4vw, 60px) 12px',
+          background: 'linear-gradient(0deg, color-mix(in srgb, var(--color-ground) 88%, transparent), transparent)',
+          opacity: 0,
+          transition: 'opacity 400ms ease',
+          pointerEvents: 'none',
+        }}
+      >
+        {STATIONS.map((_, i) => (
+          <div key={i} style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <span style={{ display: 'block', fontSize: 8, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-neutral-500)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {GHOST[i]}
+            </span>
+            <div style={{ height: 2, background: 'color-mix(in srgb, var(--color-ink) 14%, transparent)' }}>
+              <span
+                ref={(el) => {
+                  tickFillRefs.current[i] = el
+                }}
+                style={{ display: 'block', height: '100%', width: '100%', transformOrigin: 'left center', transform: 'scaleX(0)', background: 'var(--color-neutral-700)' }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Seam flash — a one-shot accent line at the letterbox seam, fired once
+          per station-to-station handoff (see run()), never a loop. */}
+      <div
+        ref={seamRef}
+        aria-hidden="true"
+        style={{ position: 'fixed', left: 0, right: 0, top: '7.5vh', height: 2, opacity: 0, zIndex: 15, pointerEvents: 'none' }}
+      />
+    </>
   )
 }

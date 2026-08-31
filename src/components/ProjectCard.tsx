@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import type { FeaturedProject, ProjectFlow, ProjectStage } from '@/data/types'
 import { useInView, useReducedMotion } from '@/lib/hooks'
 
@@ -16,6 +17,13 @@ const FLOW_DURATION: Record<ProjectFlow, string> = {
   stream: '2.6s',
 }
 
+/** Small fixed lag (seconds) so the ghost trail copy reads as behind the lead dot,
+ *  not ahead of it. A *larger* animation-delay starts an identical infinite-loop
+ *  animation later, so at any shared instant its progress along the same keyframes
+ *  is behind the lead dot's by exactly this amount — a negative delay would instead
+ *  read as leading (or, on the wrap, as nearly a full lap behind). */
+const GHOST_LAG = 0.12
+
 /** The horizontal baseline + traveling dot(s) + stage nodes. One per card. */
 function StagePath({
   flow,
@@ -31,32 +39,62 @@ function StagePath({
   reduced: boolean
 }) {
   const dotCount = flow === 'stream' ? 3 : 1
+  const segments = stages.length - 1
 
   return (
     <div className="mt-6">
       <div className="relative h-4">
         <span aria-hidden="true" className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-neutral-800" />
-        <span
-          aria-hidden="true"
-          className="absolute inset-x-0 top-1/2 h-px origin-left -translate-y-1/2 bg-neutral-600 transition-transform duration-700 ease-out"
-          style={{ transform: inView ? 'scaleX(1)' : 'scaleX(0)', transitionDelay: `${index * 100}ms` }}
-        />
-        {!reduced &&
-          Array.from({ length: dotCount }, (_, d) => (
+        {/* Per-segment draw-in, keyed to match each stage node's own reveal delay
+            (j * 90ms below) so the line visibly reaches a node as it pops in,
+            instead of one full-width tween running on an unrelated stagger. */}
+        {segments > 0 &&
+          stages.slice(0, -1).map((stage, j) => (
             <span
-              key={d}
+              key={`seg-${stage.step}`}
               aria-hidden="true"
-              className="absolute top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-accent-500"
+              className="absolute top-1/2 h-px origin-left -translate-y-1/2 bg-neutral-600 transition-transform duration-500 ease-out"
               style={{
-                animationName: `om-travel-${flow}`,
-                animationDuration: FLOW_DURATION[flow],
-                animationTimingFunction: 'linear',
-                animationIterationCount: 'infinite',
-                animationDelay: `${index * 0.35 + d * 0.7}s`,
-                boxShadow: '0 0 9px var(--color-accent-500)',
+                left: `${(j / segments) * 100}%`,
+                width: `${(1 / segments) * 100}%`,
+                transform: inView ? 'scaleX(1)' : 'scaleX(0)',
+                transitionDelay: `${(j + 1) * 90}ms`,
               }}
             />
           ))}
+        {!reduced &&
+          Array.from({ length: dotCount }, (_, d) => {
+            const delay = index * 0.35 + d * 0.7
+            return (
+              <Fragment key={d}>
+                {/* Fading ghost copy, offset a touch behind the lead dot along the same
+                    path — reads as a signal pulse traveling a wire, not a teleporting
+                    dot. Pure CSS (shared keyframes, no per-frame JS), no box-shadow. */}
+                <span
+                  aria-hidden="true"
+                  className="absolute top-1/2 size-1 -translate-y-1/2 rounded-full bg-accent-500/35"
+                  style={{
+                    animationName: `om-travel-${flow}`,
+                    animationDuration: FLOW_DURATION[flow],
+                    animationTimingFunction: 'linear',
+                    animationIterationCount: 'infinite',
+                    animationDelay: `${delay + GHOST_LAG}s`,
+                  }}
+                />
+                <span
+                  aria-hidden="true"
+                  className="absolute top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-accent-500"
+                  style={{
+                    animationName: `om-travel-${flow}`,
+                    animationDuration: FLOW_DURATION[flow],
+                    animationTimingFunction: 'linear',
+                    animationIterationCount: 'infinite',
+                    animationDelay: `${delay}s`,
+                  }}
+                />
+              </Fragment>
+            )
+          })}
       </div>
 
       <div className="relative mt-3 min-h-10">
@@ -110,12 +148,14 @@ export default function ProjectCard({ project, index, isOpen, onToggle }: Projec
   return (
     <article
       ref={cardRef}
-      className="project-card relative flex flex-col border border-neutral-800 bg-panel/30 p-6 transition-colors duration-300 hover:border-neutral-600 md:p-7"
+      className={`project-card relative flex flex-col border p-6 transition-colors duration-300 md:p-7 ${
+        isOpen ? 'border-neutral-700 bg-accent-500/5' : 'border-neutral-800 bg-panel/30 hover:border-neutral-600'
+      }`}
       style={isOpen ? { gridColumn: '1 / -1' } : undefined}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-baseline gap-3">
-          <span className="font-mono text-xs text-neutral-600">{String(index + 1).padStart(2, '0')}</span>
+          <span className="font-mono text-xs text-neutral-500">{String(index + 1).padStart(2, '0')}</span>
           {project.client && (
             <span className="font-mono text-xs uppercase tracking-[0.16em] text-accent-500">{project.client}</span>
           )}
@@ -144,35 +184,49 @@ export default function ProjectCard({ project, index, isOpen, onToggle }: Projec
         {isOpen ? '− Hide the build' : '+ Open the wiring'}
       </button>
 
-      {isOpen && (
-        <div id={panelId} className="mt-8 border-t border-neutral-800 pt-6">
-          <div
-            className="grid gap-4"
-            style={{ gridTemplateColumns: `repeat(${project.stages.length}, minmax(0,1fr))` }}
-          >
-            {project.stages.map((stage) => (
-              <div key={stage.step}>
-                <p className={`font-mono text-[10px] uppercase tracking-[0.12em] ${kindText(stage.kind)}`}>
-                  {stage.step}·{stage.kind}
-                </p>
-                <p className="mt-1.5 text-sm font-semibold text-ink">{stage.title}</p>
-                <p className="mt-1 text-xs leading-relaxed text-neutral-400">{stage.detail}</p>
-              </div>
-            ))}
-          </div>
+      {/* Always mounted so aria-controls resolves to a real node and the reveal can
+          animate — grid-template-rows 0fr→1fr collapses/expands the row, the inner
+          overflow-hidden div clips content at zero height. Reduced motion snaps the
+          row size instantly (0.01ms) instead of skipping the technique. */}
+      <div
+        id={panelId}
+        aria-hidden={!isOpen}
+        className="grid transition-[grid-template-rows] ease-out"
+        style={{
+          gridTemplateRows: isOpen ? '1fr' : '0fr',
+          transitionDuration: reduced ? '0.01ms' : '450ms',
+        }}
+      >
+        <div className="overflow-hidden">
+          <div className="mt-8 border-t border-neutral-800 pt-6">
+            <div
+              className="grid gap-4"
+              style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px,1fr))' }}
+            >
+              {project.stages.map((stage) => (
+                <div key={stage.step}>
+                  <p className={`font-mono text-[10px] uppercase tracking-[0.12em] ${kindText(stage.kind)}`}>
+                    {stage.step}·{stage.kind}
+                  </p>
+                  <p className="mt-1.5 text-sm font-semibold text-ink">{stage.title}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-neutral-400">{stage.detail}</p>
+                </div>
+              ))}
+            </div>
 
-          <div className="mt-8 grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(90px,1fr))' }}>
-            {project.metrics.map((m) => (
-              <div key={m.label}>
-                <p className="font-display text-xl font-semibold text-accent-500 md:text-2xl">{m.value}</p>
-                <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-400">{m.label}</p>
-              </div>
-            ))}
-          </div>
+            <div className="mt-8 grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(90px,1fr))' }}>
+              {project.metrics.map((m) => (
+                <div key={m.label}>
+                  <p className="font-display text-xl font-semibold text-accent-500 md:text-2xl">{m.value}</p>
+                  <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-400">{m.label}</p>
+                </div>
+              ))}
+            </div>
 
-          <p className="mt-8 font-mono text-xs text-neutral-400">{project.tech.join('  ·  ')}</p>
+            <p className="mt-8 font-mono text-xs text-neutral-400">{project.tech.join('  ·  ')}</p>
+          </div>
         </div>
-      )}
+      </div>
     </article>
   )
 }
