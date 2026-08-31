@@ -1,14 +1,24 @@
 name: Deploy
 
+# Deploys only on a published GitHub Release (a real tag, e.g. v5.0.0) — not on
+# every push to master. master can carry several merged, CI-passed PRs ahead of
+# what's actually live; a release is the deliberate "these merged changes go
+# live now" gate. workflow_dispatch remains for a manual re-run of whatever ref
+# is currently checked out (e.g. retrying a flaky Pages deploy of the same
+# release) — it is not for shipping unreleased master, and rolling back to an
+# OLDER release lives in rollback.yml instead: re-publishing an old GitHub
+# Release doesn't fire a new release:published event, so this workflow can't
+# already do that.
+#
+# Tests run again here, at the exact release tag, before anything deploys — PR
+# CI already ran once, but a release tag can in principle be cut from any point
+# on master, so this is the gate against the commit that's actually about to go
+# live, not against whatever happened to pass earlier.
+
 on:
-  push:
-    branches: [master]
+  release:
+    types: [published]
   workflow_dispatch:
-    inputs:
-      rollback_ref:
-        description: "Git ref to deploy (branch/tag/sha). Leave empty to deploy HEAD of master."
-        required: false
-        default: ""
 
 permissions:
   contents: write
@@ -21,61 +31,68 @@ concurrency:
 
 env:
   NODE_VERSION: "22"
-  KEEP_LAST_DEPLOYMENTS: 5
 
 jobs:
-  # Gate. Deploy previously ran on push to master with no dependency on any check, so a
-  # commit that broke lint, types, the build, or the E2E suite still shipped to
-  # production — observed in practice: a Deploy run went green while the CI run for the
-  # same commit was still in progress. Gating on the CI workflow alone would not fix it,
-  # because CI marks Lint and E2E `continue-on-error`, so a green CI does not mean the
-  # tests passed. This job re-runs the checks with failures fatal, and deploy needs it.
   verify:
     name: Verify (lint, type-check, build, E2E)
     runs-on: ubuntu-latest
     outputs:
-      deploy_sha: ${{ steps.deploy_vars.outputs.deploy_sha }}
-      deploy_mode: ${{ steps.deploy_vars.outputs.deploy_mode }}
+      failed_stage: ${{ steps.record_stage.outputs.failed_stage }}
     steps:
-      - name: Resolve deploy ref
-        id: deploy_vars
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.rollback_ref }}" ]; then
-            echo "deploy_sha=${{ inputs.rollback_ref }}" >> $GITHUB_OUTPUT
-            echo "deploy_mode=rollback" >> $GITHUB_OUTPUT
-          else
-            echo "deploy_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
-            echo "deploy_mode=deploy" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Checkout
+      - id: checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ steps.deploy_vars.outputs.deploy_sha }}
           fetch-depth: 0
 
-      - name: Setup Node
+      - id: setup_node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
-      - name: Install dependencies
+      - id: install
+        name: Install dependencies
         run: npm ci --no-audit --no-fund --prefer-offline
 
-      - name: Lint
+      - id: lint
+        name: Lint
         run: npm run lint
 
-      - name: Type check
+      - id: typecheck
+        name: Type check
         run: npx tsc --noEmit
 
-      - name: Build
+      - id: build
+        name: Build
         run: npm run build
 
-      - name: Install Playwright browser
-        run: npx playwright install chromium
+      - id: playwright_version
+        name: Get installed Playwright version
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
 
-      - name: Run E2E tests
+      - id: playwright_cache
+        name: Cache Playwright browser binaries
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ runner.os }}-${{ steps.playwright_version.outputs.version }}
+
+      - id: install_browsers
+        name: Install Playwright browsers
+        # On a cache hit the browser binaries are already in place, but the runner
+        # image itself is fresh every run, so the OS-level shared libraries
+        # --with-deps installs via apt (not cached above) still need installing —
+        # install-deps alone skips the slow, network-bound browser download while
+        # still doing that apt install.
+        run: |
+          if [ "${{ steps.playwright_cache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install-deps chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
+
+      - id: e2e_tests
+        name: E2E tests
         run: npx playwright test --project=chromium --reporter=line
         timeout-minutes: 10
 
@@ -90,28 +107,53 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+      - name: Record which stage failed (if any)
+        id: record_stage
+        if: always()
+        run: |
+          failed_stage=""
+          declare -A LABELS=(
+            [checkout]="Checkout"
+            [setup_node]="Set up Node"
+            [install]="Install dependencies"
+            [lint]="Lint"
+            [typecheck]="Type check"
+            [build]="Build"
+            [install_browsers]="Install Playwright browsers"
+            [e2e_tests]="E2E tests"
+          )
+          declare -A OUTCOMES=(
+            [checkout]="${{ steps.checkout.outcome }}"
+            [setup_node]="${{ steps.setup_node.outcome }}"
+            [install]="${{ steps.install.outcome }}"
+            [lint]="${{ steps.lint.outcome }}"
+            [typecheck]="${{ steps.typecheck.outcome }}"
+            [build]="${{ steps.build.outcome }}"
+            [install_browsers]="${{ steps.install_browsers.outcome }}"
+            [e2e_tests]="${{ steps.e2e_tests.outcome }}"
+          )
+          for id in checkout setup_node install lint typecheck build install_browsers e2e_tests; do
+            if [ "${OUTCOMES[$id]}" = "failure" ]; then
+              failed_stage="${LABELS[$id]}"
+              break
+            fi
+          done
+          echo "failed_stage=$failed_stage" >> "$GITHUB_OUTPUT"
+
   deploy:
     name: Build & deploy to GitHub Pages
     needs: [verify]
+    if: needs.verify.result == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Carry resolved ref through from verify
-        id: deploy_vars
-        run: |
-          echo "deploy_sha=${{ needs.verify.outputs.deploy_sha }}" >> $GITHUB_OUTPUT
-          echo "deploy_mode=${{ needs.verify.outputs.deploy_mode }}" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
 
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.deploy_vars.outputs.deploy_sha }}
-          fetch-depth: 0
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
@@ -122,12 +164,9 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v5
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
 
@@ -135,49 +174,51 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Tag release
-        if: steps.deploy_vars.outputs.deploy_mode == 'deploy'
+  notify:
+    name: Post deploy summary
+    needs: [verify, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post deploy summary
         run: |
-          git config --global user.email "deploy-bot@jthiruveedula.github.io"
-          git config --global user.name "Deploy Bot"
-          SHORT_SHA="${GITHUB_SHA::7}"
-          if git rev-parse "v0.0.0-$SHORT_SHA" >/dev/null 2>&1; then
-            echo "Tag v0.0.0-$SHORT_SHA already exists, skipping"
-            exit 0
-          fi
-          git tag -a "v0.0.0-$SHORT_SHA" -m "Auto release $SHORT_SHA at $(date -u +%FT%TZ)"
-          git push origin "v0.0.0-$SHORT_SHA"
-          echo "Tagged release v0.0.0-$SHORT_SHA" >> $GITHUB_STEP_SUMMARY
+          TAG="${{ github.event.release.tag_name }}"
+          TAG="${TAG:-manual workflow_dispatch (no release tag)}"
 
-      - name: Record deployment
-        run: |
-          DEPLOY_SHA="${{ steps.deploy_vars.outputs.deploy_sha }}"
-          DEPLOY_MODE="${{ steps.deploy_vars.outputs.deploy_mode }}"
-          DEPLOY_URL="${{ steps.deployment.outputs.page_url }}"
-          DEPLOY_TIME=$(date -u +%FT%TZ)
-          SHORT_SHA="${DEPLOY_SHA::7}"
-          {
-            echo "### 🚀 Deployment ($DEPLOY_MODE)"
-            echo ""
-            echo "| Field | Value |"
-            echo "|---|---|"
-            echo "| Mode | \`$DEPLOY_MODE\` |"
-            echo "| SHA | \`$DEPLOY_SHA\` |"
-            echo "| Short SHA | \`$SHORT_SHA\` |"
-            echo "| URL | $DEPLOY_URL |"
-            echo "| Time | \`$DEPLOY_TIME\` |"
-            echo ""
-            echo "### Rollback strategy"
-            echo ""
-            echo "GitHub Pages keeps the last \`${{ env.KEEP_LAST_DEPLOYMENTS }}\` deployments automatically per environment."
-            echo ""
-            echo "To roll back, use the Actions tab → select \`Deploy\` → \`Run workflow\` → set \`rollback_ref\` to:"
-            echo ""
-            echo "| Option | Value |"
-            echo "|---|---|"
-            echo "| Previous commit | \`<full-sha>\` (e.g. \`abc1234...\`) |"
-            echo "| Previous branch | \`refs/heads/<branch-name>\` |"
-            echo "| Release tag | \`v0.0.0-<short-sha>\` |"
-            echo ""
-            echo "Each successful master deploy creates an immutable tag \`v0.0.0-<sha>\` that can be redeployed."
-          } >> $GITHUB_STEP_SUMMARY
+          VERIFY_RESULT="${{ needs.verify.result }}"
+          DEPLOY_RESULT="${{ needs.deploy.result }}"
+          FAILED_STAGE="${{ needs.verify.outputs.failed_stage }}"
+          PAGE_URL="${{ needs.deploy.outputs.page_url }}"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          if [ "$VERIFY_RESULT" = "success" ] && [ "$DEPLOY_RESULT" = "success" ]; then
+            {
+              echo "### 🎉 Site is live"
+              echo ""
+              echo "Release **$TAG** deployed successfully."
+              echo ""
+              echo "| | |"
+              echo "|---|---|"
+              echo "| Release tag | \`$TAG\` |"
+              echo "| Live URL | ${PAGE_URL:-https://jthiruveedula.github.io/} |"
+              echo "| Tests | ✅ lint + type-check + build + e2e passed at this exact commit |"
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            STAGE_LABEL="${FAILED_STAGE:-deploy step}"
+            if [ "$VERIFY_RESULT" != "success" ] && [ -z "$FAILED_STAGE" ]; then
+              STAGE_LABEL="verify job (cancelled or infra error before a stage recorded)"
+            fi
+            {
+              echo "### ❌ Deploy failed — site NOT updated"
+              echo ""
+              echo "| | |"
+              echo "|---|---|"
+              echo "| Release tag | \`$TAG\` |"
+              echo "| Failed stage | **$STAGE_LABEL** |"
+              echo "| Verify job | $VERIFY_RESULT |"
+              echo "| Deploy job | ${DEPLOY_RESULT:-skipped (verify did not succeed)} |"
+              echo "| Logs | [View this run]($RUN_URL) |"
+              echo ""
+              echo "The previously deployed release is still live — this workflow only replaces it on a successful deploy."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi

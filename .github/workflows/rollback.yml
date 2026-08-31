@@ -1,0 +1,85 @@
+name: Rollback site to a previous release
+
+# Re-deploys a previously published release tag to GitHub Pages without cutting
+# a new release — for when the currently-live release has an issue and the
+# fastest fix is "go back to what was live before", not "ship a new release
+# that reverts it". Re-publishing an old GitHub Release doesn't fire a new
+# release:published event, so this is a separate, explicit workflow rather
+# than something deploy.yml can already do.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to redeploy (e.g. v4.2.0) — must already exist under Releases"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  verify-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Confirm the tag exists
+        run: |
+          if ! git rev-parse "refs/tags/${{ inputs.tag }}" >/dev/null 2>&1; then
+            echo "::error::Tag '${{ inputs.tag }}' does not exist in this repo. Check https://github.com/${{ github.repository }}/tags." >&2
+            exit 1
+          fi
+
+  build:
+    needs: verify-tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Post rollback summary
+        run: |
+          {
+            echo "### ⏪ Rolled back"
+            echo ""
+            echo "Re-deployed release **${{ inputs.tag }}**."
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Redeployed tag | \`${{ inputs.tag }}\` |"
+            echo "| Live URL | ${{ steps.deployment.outputs.page_url }} |"
+            echo ""
+            echo "This did not run the test suite — it redeploys a build that was already verified when \`${{ inputs.tag }}\` was originally released."
+          } >> "$GITHUB_STEP_SUMMARY"
