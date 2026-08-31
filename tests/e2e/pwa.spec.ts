@@ -12,7 +12,7 @@ test.describe('PWA & mobile metadata', () => {
     const manifest = await (await page.request.get(manifestHref!)).json()
     expect(manifest.name).toBeTruthy()
     expect(manifest.display).toBe('standalone')
-    expect(manifest.theme_color).toBe('#050810')
+    expect(manifest.theme_color).toBe('#0b1013')
     // A maskable icon lets the OS fill the adaptive-icon safe area on Android.
     const purposes = manifest.icons.map((i: { purpose?: string }) => i.purpose)
     expect(purposes).toContain('maskable')
@@ -31,7 +31,7 @@ test.describe('PWA & mobile metadata', () => {
     )
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
       'content',
-      '#050810',
+      '#0b1013',
     )
   })
 

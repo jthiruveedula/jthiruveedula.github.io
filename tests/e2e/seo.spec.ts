@@ -62,58 +62,44 @@ test.describe('SEO & social discovery', () => {
   })
 })
 
-test.describe('first paint & loading intro', () => {
-  test('main and the first station paint immediately, then the intro hands off', async ({ page }) => {
+test.describe('first paint', () => {
+  test('main and the first station paint immediately', async ({ page }) => {
     await page.goto('/')
-    // main is no longer gated behind an `invisible` class — it paints under the intro overlay.
     await expect(page.locator('main')).toBeVisible()
-    await expect(page.locator('#hero')).toBeVisible()
 
-    // The opening station is readable straight away — the flight has no entrance gate
-    // that could leave the hero blank. The h1 is the ROLE, not the narrative line: a
-    // recruiter scanning the first viewport is matching a job title, so that has to be
-    // the largest thing on it (and the most semantically prominent).
-    const h1 = page.locator('#hero h1')
+    const firstStation = page.locator('[data-station]').first()
+    await expect(firstStation).toBeVisible()
+
+    // The opening station's h1 is the ROLE, not the narrative line: a recruiter
+    // scanning the first viewport is matching a job title, so that has to be the
+    // largest thing on it (and the most semantically prominent element on the page).
+    const h1 = page.locator('main h1')
     await expect(h1).toHaveCount(1)
     await expect(h1).toContainText('Data & AI Architect')
 
-    // The narrative line still ships, demoted to the subhead beneath it.
-    await expect(page.locator('[data-station="0"]')).toContainText('Eleven years')
-
-    // And an interested visitor can act without scrolling the whole flight.
-    await expect(page.locator('[data-station="0"] a[href^="mailto:"]')).toHaveCount(1)
-
-    await page.keyboard.press('Escape')
-
-    // Park at the very top before measuring: the opening station is only fully opaque
-    // at flight progress 0, so any residual scroll would legitimately dim it.
+    // Park at the very top before measuring: the driver's own opacity handling only
+    // guarantees "fully settled" once it's had one run() pass at scrollY 0.
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
     await expect
-      .poll(
-        async () =>
-          page
-            .locator('[data-station="0"]')
-            .first()
-            .evaluate((el) => Number(getComputedStyle(el).opacity)),
-        { timeout: 10_000 },
-      )
+      .poll(async () => firstStation.evaluate((el) => Number(getComputedStyle(el).opacity)), {
+        timeout: 10_000,
+      })
       .toBeGreaterThan(0.9)
   })
 
-  test('reduced motion renders the stations statically with no WebGL', async ({ page }) => {
+  test('reduced motion renders every station statically with no WebGL', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/')
     await expect(page.locator('main')).toBeVisible()
 
-    // All seven stations are present as ordinary stacked sections, fully opaque.
-    await expect(page.locator('[data-station]')).toHaveCount(7)
+    // All six stations are present as ordinary stacked sections, fully opaque.
+    await expect(page.locator('[data-station]')).toHaveCount(6)
     const opacities = await page
       .locator('[data-station]')
       .evaluateAll((els) => els.map((el) => Number(getComputedStyle(el).opacity)))
     expect(Math.min(...opacities)).toBeGreaterThan(0.9)
 
-    // Reduced motion must skip the WebGL flight entirely (no <canvas>), so the
-    // ~180KB three.js chunk never loads.
-    await expect(page.locator('#hero canvas')).toHaveCount(0)
+    // The Sequence hero is plain photo + CSS filters, not WebGL — no canvas ever mounts.
+    await expect(page.locator('main canvas')).toHaveCount(0)
   })
 })

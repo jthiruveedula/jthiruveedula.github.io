@@ -1354,7 +1354,14 @@ export const portfolio: PortfolioData = {
         "GCP VPC",
         "IAM"
       ],
-      "vizType": "translation"
+      "flow": "gate",
+      "stages": [
+        { "step": 1, "kind": "Source", "title": "Mainframe / COBOL", "detail": "12 workstreams triaged by risk and value" },
+        { "step": 2, "kind": "Translate", "title": "LLM translation pipeline", "detail": "COBOL → BigQuery SQL + PySpark" },
+        { "step": 3, "kind": "Verify", "title": "Semantic-fidelity evals", "detail": "Scored before any pipeline is promoted" },
+        { "step": 4, "kind": "Run", "title": "PySpark + Pub/Sub", "detail": "Batch and real-time, audit-ready" },
+        { "step": 5, "kind": "Target", "title": "BigQuery", "detail": "Data-quality gates" }
+      ]
     },
     {
       "id": "schwab-hadoop-teradata-gcp",
@@ -1402,7 +1409,14 @@ export const portfolio: PortfolioData = {
         "Qlik Replicate",
         "Terraform"
       ],
-      "vizType": "migration"
+      "flow": "stream",
+      "stages": [
+        { "step": 1, "kind": "Source", "title": "Hadoop + Teradata", "detail": "Multi-petabyte legacy estate" },
+        { "step": 2, "kind": "Capture", "title": "Qlik Replicate CDC", "detail": "Standardized change-capture" },
+        { "step": 3, "kind": "Transform", "title": "PySpark + Talend rewrite", "detail": "1B+ daily records, zero loss" },
+        { "step": 4, "kind": "Process", "title": "Dataproc + Dataflow", "detail": "30M records/day at 99.5% SLA" },
+        { "step": 5, "kind": "Target", "title": "BigQuery", "detail": "Metadata-driven deployments" }
+      ]
     },
     {
       "id": "hca-hipaa-streaming",
@@ -1450,7 +1464,14 @@ export const portfolio: PortfolioData = {
         "HIPAA",
         "DLP"
       ],
-      "vizType": "streaming"
+      "flow": "stream",
+      "stages": [
+        { "step": 1, "kind": "Source", "title": "50+ clinical sources", "detail": "On-prem warehouses and data lakes" },
+        { "step": 2, "kind": "Stream", "title": "Kafka + Pub/Sub", "detail": "Real-time ingestion, 100% accuracy" },
+        { "step": 3, "kind": "Accelerate", "title": "GenAI conversion", "detail": "Talend ETL + SQL → PySpark" },
+        { "step": 4, "kind": "Target", "title": "GCP warehouse", "detail": "100+ TB migrated, ETL 30% faster" },
+        { "step": 5, "kind": "Serve", "title": "Power BI", "detail": "Executive reporting" }
+      ]
     },
     {
       "id": "nrg-cross-cloud",
@@ -1491,7 +1512,14 @@ export const portfolio: PortfolioData = {
         "Vertex AI",
         "dbt"
       ],
-      "vizType": "crosscloud"
+      "flow": "batch",
+      "stages": [
+        { "step": 1, "kind": "Source", "title": "AWS S3 + EMR", "detail": "Siloed data lake" },
+        { "step": 2, "kind": "Bridge", "title": "Cross-cloud ingestion", "detail": "Phased, reversible cutover" },
+        { "step": 3, "kind": "Transform", "title": "GCP Databricks", "detail": "Delta Lake, PySpark pipelines" },
+        { "step": 4, "kind": "Model", "title": "BigQuery + Vertex AI", "detail": "Predictive maintenance" },
+        { "step": 5, "kind": "Serve", "title": "dbt cost analytics", "detail": "Reporting latency down 40%" }
+      ]
     },
     {
       "id": "wiley-snowflake-bigquery",
@@ -1539,7 +1567,14 @@ export const portfolio: PortfolioData = {
         "Terraform",
         "GitHub Actions"
       ],
-      "vizType": "migration"
+      "flow": "batch",
+      "stages": [
+        { "step": 1, "kind": "Source", "title": "Snowflake, 500+ TiB", "detail": "200+ ETL workflows" },
+        { "step": 2, "kind": "Map", "title": "GenAI schema mapping", "detail": "Manual refactoring cut 40%" },
+        { "step": 3, "kind": "Orchestrate", "title": "Cloud Composer", "detail": "Zero data loss across workflows" },
+        { "step": 4, "kind": "Stream", "title": "Pub/Sub + Dataflow", "detail": "Event-driven telemetry" },
+        { "step": 5, "kind": "Target", "title": "BigQuery", "detail": "SCD2, partitioning, clustering" }
+      ]
     },
     {
       "id": "wiley-private-llm-rag",
@@ -1605,66 +1640,30 @@ export const portfolio: PortfolioData = {
         "Kubernetes",
         "VPC-SC"
       ],
-      "vizType": "rag"
+      "flow": "roundtrip",
+      "stages": [
+        { "step": 1, "kind": "Corpus", "title": "50M+ documents", "detail": "Chunking and embedding strategy" },
+        { "step": 2, "kind": "Retrieve", "title": "Vector Search + Pinecone", "detail": "Hybrid retrieval, cross-encoder reranking" },
+        { "step": 3, "kind": "Orchestrate", "title": "LangGraph + MCP", "detail": "Multi-agent tool use, human-in-the-loop" },
+        { "step": 4, "kind": "Generate", "title": "A/B model routing", "detail": "GPT-4o / Gemini / Claude Sonnet 4" },
+        { "step": 5, "kind": "Govern", "title": "LLMOps layer", "detail": "RAGAS, LLM-as-judge, drift observability" }
+      ]
     }
   ],
   "headlineMetrics": [
-    {
-      "label": "Cost savings delivered",
-      "value": "$2M+",
-      "numeric": 2,
-      "prefix": "$",
-      "suffix": "M+"
-    },
-    {
-      "label": "Cloud migrations orchestrated",
-      "value": "500+ TiB",
-      "numeric": 500,
-      "prefix": "",
-      "suffix": "+ TiB"
-    },
-    {
-      "label": "Events streamed daily",
-      "value": "1B+",
-      "numeric": 1,
-      "prefix": "",
-      "suffix": "B+"
-    },
-    {
-      "label": "System uptime",
-      "value": "99.9%",
-      "numeric": 99.9,
-      "prefix": "",
-      "suffix": "%"
-    },
-    {
-      "label": "Documents in production RAG",
-      "value": "50M+",
-      "numeric": 50,
-      "prefix": "",
-      "suffix": "M+"
-    },
-    {
-      "label": "Grounded RAG accuracy",
-      "value": "95%",
-      "numeric": 95,
-      "prefix": "",
-      "suffix": "%"
-    },
-    {
-      "label": "Tier-1 ticket deflection",
-      "value": "60%",
-      "numeric": 60,
-      "prefix": "",
-      "suffix": "%"
-    },
-    {
-      "label": "Years across data & AI",
-      "value": "11+",
-      "numeric": 11,
-      "prefix": "",
-      "suffix": "+"
-    }
+    { "label": "Cost savings delivered", "value": "$2M+", "numeric": 2, "prefix": "$", "suffix": "M+", "source": "Schwab, HCA, NRG, Wiley", "groups": ["Cost"] },
+    { "label": "Cloud migration orchestrated", "value": "500+ TiB", "numeric": 500, "suffix": "+ TiB", "source": "Snowflake → BigQuery", "groups": ["Scale"] },
+    { "label": "Events streamed daily", "value": "1B+", "numeric": 1, "suffix": "B+", "source": "Charles Schwab", "groups": ["Scale"] },
+    { "label": "Documents in production RAG", "value": "50M+", "numeric": 50, "suffix": "M+", "source": "John Wiley & Sons", "groups": ["Scale", "AI"] },
+    { "label": "System uptime", "value": "99.9%", "numeric": 99.9, "suffix": "%", "source": "Production platforms", "groups": ["Reliability"] },
+    { "label": "Data accuracy under HIPAA", "value": "100%", "numeric": 100, "suffix": "%", "source": "HCA Healthcare", "groups": ["Reliability"] },
+    { "label": "Cross-cloud cutover downtime", "value": "<30 min", "numeric": 30, "prefix": "<", "suffix": " min", "source": "NRG Energy", "groups": ["Reliability"] },
+    { "label": "Grounded RAG accuracy", "value": "95%", "numeric": 95, "suffix": "%", "source": "RAGAS + human review", "groups": ["AI"] },
+    { "label": "Tier-1 ticket deflection", "value": "60%", "numeric": 60, "suffix": "%", "source": "Multi-turn agent", "groups": ["AI"] },
+    { "label": "Analyst productivity", "value": "3×", "numeric": 3, "suffix": "×", "source": "Research assistant", "groups": ["AI"] },
+    { "label": "Manual refactoring cut", "value": "40%", "numeric": 40, "suffix": "%", "source": "GenAI schema mapping", "groups": ["AI", "Cost"] },
+    { "label": "Release cycles cut", "value": "50%", "numeric": 50, "suffix": "%", "source": "Terraform IaC", "groups": ["Cost", "Reliability"] },
+    { "label": "Years across data & AI", "value": "11+", "numeric": 11, "suffix": "+", "source": "2015 — present", "groups": ["Scale"] }
   ],
   "certifications": [
     "Google Cloud Professional Data Engineer (GCP PDE)",

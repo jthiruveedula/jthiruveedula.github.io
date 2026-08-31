@@ -170,31 +170,4 @@ export const worldScenes: WorldScene[] = [
     ],
     tags: ['Vertex AI', 'Pinecone', 'LangGraph', 'MCP', 'RAGAS', 'VPC-SC'],
   },
-  {
-    id: 'whole-system',
-    label: 'The Offer',
-    era: 'ai',
-    accent: '#a78bfa',
-    still: '/scenes/07-whole-system.jpg',
-    stillMobile: '/scenes/07-whole-system@sm.jpg',
-    // Location is already stated on station 1 and again in Contact; the closing beat does
-    // not need to be the third time.
-    eyebrow: 'The whole system · 2015 – present',
-    title: 'I build the system, not the demo.',
-    body:
-      'Legacy untangled, platforms modernized, GenAI shipped into production with evals and governance intact. That is the whole eleven years in one sentence.',
-    metrics: [
-      { label: 'Cost savings delivered', value: '$2M+' },
-      { label: 'Cloud migrations orchestrated', value: '500+ TiB' },
-      { label: 'Grounded RAG accuracy', value: '95%' },
-      { label: 'Years across data & AI', value: '11+' },
-    ],
-    tags: ['GCP PDE certified', 'Forward deployed', 'Architecture governance'],
-    cta: {
-      label: 'Hire me — view résumé',
-      href: '/resume.html',
-      secondaryLabel: 'jagadeeshthiruveedula77@gmail.com',
-      secondaryHref: 'mailto:jagadeeshthiruveedula77@gmail.com',
-    },
-  },
 ]

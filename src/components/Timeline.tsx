@@ -1,316 +1,180 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
-import { ERA_COLORS, type Chapter, type Era, type Experience } from '@/data/types'
+import { ERA_COLORS, type Era, type Experience } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
-import Decrypt from '@/components/Decrypt'
-import SplitText from '@/components/SplitText'
-import SectionSweep from '@/components/SectionSweep'
-import ClipReveal from '@/components/ClipReveal'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
-/* ---------------------------------- data --------------------------------- */
+/** Short axis/legend label per era — chapter.title is the long form ("Legacy Systems"). */
+const ERA_AXIS_LABEL: Record<Era, string> = {
+  legacy: 'Legacy',
+  cloud: 'Cloud',
+  ai: 'Enterprise AI',
+}
 
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const TODAY = new Date()
+const CURRENT_YEAR = TODAY.getFullYear()
+const CURRENT_DECIMAL_YEAR = CURRENT_YEAR + TODAY.getMonth() / 12
 
-function parseYM(ym: string): { year: number; month: number } {
+/** 'YYYY-MM' | 'present' -> decimal year, e.g. '2025-05' -> 2025.33. */
+function toDecimalYear(ym: string): number {
+  if (ym === 'present') return CURRENT_DECIMAL_YEAR
   const [year, month] = ym.split('-').map(Number)
-  return { year, month }
+  return year + (month - 1) / 12
 }
 
-function formatYM(ym: string): string {
-  if (ym === 'present') return 'Present'
-  const { year, month } = parseYM(ym)
-  return `${MONTH_NAMES[month - 1]} ${year}`
+const ROLES = [...portfolio.experience].sort((a, b) => a.start.localeCompare(b.start))
+
+/** Chart floor — the earliest engagement's year, not a hardcoded date, so an
+ *  earlier role added later still lands on the axis correctly. */
+const T0 = Math.floor(Math.min(...ROLES.map((r) => toDecimalYear(r.start))))
+/** Scale runs one year past today, so "NOW" always has room and never sits on a bar. */
+const TSPAN = CURRENT_YEAR + 1 - T0
+const AXIS_YEARS = Array.from({ length: CURRENT_YEAR - T0 + 1 }, (_, i) => T0 + i)
+const NOW_LEFT_PCT = ((CURRENT_DECIMAL_YEAR - T0) / TSPAN) * 100
+
+/** Shared label/track split so axis ticks, era bands, and every role row line up. */
+const GRID_COLS = 'grid-cols-[6.5rem_1fr] sm:grid-cols-[10rem_1fr]'
+
+const YEAR_GRIDLINES = `repeating-linear-gradient(to right, rgba(232, 230, 225, 0.1) 0, rgba(232, 230, 225, 0.1) 1px, transparent 1px, transparent ${100 / TSPAN}%)`
+
+interface EraBand {
+  id: Era
+  label: string
+  leftPct: number
+  widthPct: number
 }
 
-function formatDuration(start: string, end: string): string {
-  const s = parseYM(start)
-  const now = new Date()
-  const e = end === 'present' ? { year: now.getFullYear(), month: now.getMonth() + 1 } : parseYM(end)
-  const months = (e.year - s.year) * 12 + (e.month - s.month) + 1
-  const yrs = Math.floor(months / 12)
-  const mos = months % 12
-  const parts: string[] = []
-  if (yrs > 0) parts.push(`${yrs} yr${yrs > 1 ? 's' : ''}`)
-  if (mos > 0) parts.push(`${mos} mo${mos > 1 ? 's' : ''}`)
-  return parts.join(' ') || '1 mo'
+/** Each band's span is the min/max of that era's actual roles — never hardcoded. */
+const ERA_BANDS: EraBand[] = portfolio.story.chapters.map((chapter): EraBand => {
+  const roles = ROLES.filter((r) => r.era === chapter.id)
+  const starts = roles.map((r) => toDecimalYear(r.start))
+  const ends = roles.map((r) => toDecimalYear(r.end))
+  const startYear = Math.min(...starts)
+  const endYear = Math.max(...ends)
+  return {
+    id: chapter.id,
+    label: ERA_AXIS_LABEL[chapter.id],
+    leftPct: ((startYear - T0) / TSPAN) * 100,
+    widthPct: ((endYear - startYear) / TSPAN) * 100,
+  }
+})
+
+interface RoleRow {
+  role: Experience
+  ref: number
+  left: number
+  width: number
+  flip: boolean
+  isCurrent: boolean
+  periodLabel: string
+  durationLabel: string
+  barColor: string
 }
 
-function chapterYears(roles: Experience[]): string {
-  const first = roles[0]
-  const last = roles[roles.length - 1]
-  if (!first || !last) return ''
-  const endYear = last.end === 'present' ? 'now' : last.end.slice(0, 4)
-  return `${first.start.slice(0, 4)} — ${endYear}`
+const ROLE_ROWS: RoleRow[] = ROLES.map((role, i): RoleRow => {
+  const startYear = toDecimalYear(role.start)
+  const endYear = toDecimalYear(role.end)
+  const left = ((startYear - T0) / TSPAN) * 100
+  const width = Math.max(((endYear - startYear) / TSPAN) * 100, 2.2)
+  const span = endYear - startYear
+  return {
+    role,
+    ref: i + 1,
+    left,
+    width,
+    flip: left + width > 62,
+    isCurrent: role.end === 'present',
+    periodLabel: `${Math.floor(startYear)} — ${role.end === 'present' ? 'present' : Math.floor(endYear)}`,
+    durationLabel: span < 1 ? '<1 yr' : `${Math.round(span)} yr${Math.round(span) === 1 ? '' : 's'}`,
+    barColor: role.era === 'ai' ? 'var(--color-accent-500)' : ERA_COLORS[role.era],
+  }
+})
+
+const MOST_RECENT_ROLE = ROLES[ROLES.length - 1]
+
+interface EraBoundary {
+  id: string
+  leftPct: number
 }
 
-interface EraGroup {
-  chapter: Chapter
-  roles: { role: Experience; index: number }[]
-}
+/** Midpoint between each era's end and the next era's start — where one chapter hands off to the next. */
+const ERA_BOUNDARIES: EraBoundary[] = ERA_BANDS.slice(1).map((band, i) => {
+  const prev = ERA_BANDS[i]
+  return {
+    id: `${prev.id}-${band.id}`,
+    leftPct: (prev.leftPct + prev.widthPct + band.leftPct) / 2,
+  }
+})
 
-/** Roles oldest-first so the timeline reads as an ascent: legacy → cloud → ai. */
-const CHRONOLOGICAL_ROLES = [...portfolio.experience].sort((a, b) => a.start.localeCompare(b.start))
-
-const ERA_GROUPS: EraGroup[] = (() => {
-  let index = 0
-  return portfolio.story.chapters.map((chapter) => ({
-    chapter,
-    roles: CHRONOLOGICAL_ROLES.filter((role) => role.era === chapter.id).map((role) => ({ role, index: index++ })),
-  }))
-})()
-
-/* --------------------------------- styles -------------------------------- */
-
-const ERA_LABELS: Record<Era, string> = { legacy: 'Legacy', cloud: 'Cloud', ai: 'AI' }
-
-/** Literal class strings per era so Tailwind v4 can see every utility. */
-const ERA_STYLES: Record<
-  Era,
-  { text: string; chip: string; node: string; marker: string; bullet: string; cardHover: string }
-> = {
-  legacy: {
-    text: 'text-legacy',
-    chip: 'border-legacy/40 text-legacy',
-    node: 'bg-legacy shadow-glow-legacy',
-    marker: 'border-legacy shadow-glow-legacy',
-    bullet: 'bg-legacy',
-    cardHover: 'hover:border-legacy/40',
-  },
-  cloud: {
-    text: 'text-cloud',
-    chip: 'border-cloud/40 text-cloud',
-    node: 'bg-cloud shadow-glow-cloud',
-    marker: 'border-cloud shadow-glow-cloud',
-    bullet: 'bg-cloud',
-    cardHover: 'hover:border-cloud/40',
-  },
-  ai: {
-    text: 'text-ai',
-    chip: 'border-ai/40 text-ai',
-    node: 'bg-ai shadow-glow-ai',
-    marker: 'border-ai shadow-glow-ai',
-    bullet: 'bg-ai',
-    cardHover: 'hover:border-ai/40',
-  },
-}
-
-const SPINE_GRADIENT = `linear-gradient(180deg, ${ERA_COLORS.legacy} 0%, ${ERA_COLORS.cloud} 45%, ${ERA_COLORS.ai} 100%)`
-
-/** Expanding a card's highlights shifts layout below it — recalc trigger positions. */
-function handleDetailsToggle() {
-  ScrollTrigger.refresh()
-}
-
-/* ------------------------------- components ------------------------------ */
-
-function RoleCard({ role, index }: { role: Experience; index: number }) {
-  const side = index % 2 === 0 ? 'left' : 'right'
-  const era = ERA_STYLES[role.era]
-  const overflowTech = (role.tech?.length ?? 0) - 6
-
+/** Inner solid dot + outer expanding [data-pulse] ring — the sitewide live-status motif. */
+function LiveDot() {
   return (
-    <li className="relative pl-14 md:pl-0">
-      {/* Era node on the spine */}
-      <span
-        aria-hidden="true"
-        className={`tl-node absolute top-8 left-5 z-10 h-3.5 w-3.5 -translate-x-1/2 rounded-full border-2 border-void md:left-1/2 ${era.node}`}
-      />
-      <article
-        data-side={side}
-        className={`tl-card glass-panel relative rounded-xl p-6 transition-colors duration-300 md:w-[calc(50%-3rem)] ${
-          side === 'left' ? 'md:mr-auto' : 'md:ml-auto'
-        } ${era.cardHover}`}
-      >
-        <p className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-          <span
-            className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] tracking-[0.18em] uppercase ${era.chip}`}
-          >
-            {ERA_LABELS[role.era]}
-          </span>
-          <span className="hud-label">
-            <time dateTime={role.start}>{formatYM(role.start)}</time>
-            {' — '}
-            {role.end === 'present' ? 'Present' : <time dateTime={role.end}>{formatYM(role.end)}</time>}
-            {' · '}
-            {formatDuration(role.start, role.end)}
-          </span>
-        </p>
-
-        <h4 className="mt-3 text-lg font-semibold text-ink md:text-xl">{role.title}</h4>
-        <p className="mt-1 text-sm font-medium text-ink-muted">
-          {role.company}
-          {role.client ? <span className="text-ink-faint"> · {role.client}</span> : null}
-        </p>
-
-        {role.summary ? <p className="mt-3 text-sm leading-relaxed text-ink-muted">{role.summary}</p> : null}
-
-        {role.metrics && role.metrics.length > 0 ? (
-          <dl className="mt-4 flex flex-wrap gap-2">
-            {role.metrics.slice(0, 3).map((metric) => (
-              <div
-                key={metric.label}
-                className="flex flex-col-reverse rounded-md border border-panel-edge bg-panel/60 px-2.5 py-1.5"
-              >
-                <dt className="text-[11px] leading-tight text-ink-faint">{metric.label}</dt>
-                <dd className={`font-mono text-sm font-semibold ${era.text}`}>{metric.value}</dd>
-              </div>
-            ))}
-          </dl>
-        ) : null}
-
-        {role.highlights.length > 0 ? (
-          <details className="group mt-4" onToggle={handleDetailsToggle}>
-            <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 rounded font-mono text-xs tracking-[0.18em] text-ink-muted uppercase transition-colors select-none hover:text-ink [&::-webkit-details-marker]:hidden">
-              <span aria-hidden="true" className="group-open:hidden">
-                +
-              </span>
-              <span aria-hidden="true" className="hidden group-open:inline">
-                −
-              </span>
-              key work
-            </summary>
-            <ul role="list" className="mt-3 space-y-2.5">
-              {role.highlights.map((highlight) => (
-                <li key={highlight} className="flex gap-2.5 text-sm leading-relaxed text-ink-muted">
-                  <span aria-hidden="true" className={`mt-2 h-1 w-1 shrink-0 rounded-full ${era.bullet}`} />
-                  <span>{highlight}</span>
-                </li>
-              ))}
-            </ul>
-          </details>
-        ) : null}
-
-        {role.tech && role.tech.length > 0 ? (
-          <ul role="list" aria-label="Technologies" className="mt-4 flex flex-wrap gap-1.5">
-            {role.tech.slice(0, 6).map((tech) => (
-              <li
-                key={tech}
-                className="rounded border border-panel-edge px-2 py-0.5 font-mono text-[11px] text-ink-muted"
-              >
-                {tech}
-              </li>
-            ))}
-            {overflowTech > 0 ? (
-              <li className="rounded border border-panel-edge px-2 py-0.5 font-mono text-[11px] text-ink-faint">
-                +{overflowTech} more
-              </li>
-            ) : null}
-          </ul>
-        ) : null}
-      </article>
-    </li>
+    <span aria-hidden="true" className="relative inline-flex h-[7px] w-[7px] shrink-0">
+      <span className="absolute inset-0 rounded-full bg-accent-500" />
+      <span data-pulse className="absolute inset-0 rounded-full bg-accent-500" />
+    </span>
   )
 }
 
 export default function Timeline() {
   const sectionRef = useRef<HTMLElement>(null)
   const reducedMotion = useReducedMotion()
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   useGSAP(
     () => {
-      if (reducedMotion) return
+      const bandFills = gsap.utils.toArray<HTMLElement>('.ledger-band-fill')
 
-      // Section header: staggered word reveal on the headline, then subcopy fades up.
+      if (reducedMotion) {
+        gsap.set(bandFills, { scaleX: 1 })
+        return
+      }
+
       gsap.fromTo(
-        '.tl-head .split-word',
-        { yPercent: 110, autoAlpha: 0 },
+        '.ledger-head',
+        { autoAlpha: 0, y: 24 },
         {
-          yPercent: 0,
           autoAlpha: 1,
-          duration: 0.8,
-          ease: 'power3.out',
-          stagger: 0.05,
-          scrollTrigger: { trigger: '.tl-head', start: 'top 82%', toggleActions: 'play none none none reverse' },
-        },
-      )
-      gsap.fromTo(
-        '.tl-sub',
-        { y: 24, autoAlpha: 0 },
-        {
           y: 0,
-          autoAlpha: 1,
           duration: 0.7,
           ease: 'power2.out',
-          scrollTrigger: { trigger: '.tl-head', start: 'top 78%', toggleActions: 'play none none none reverse' },
+          stagger: 0.08,
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', once: true },
         },
       )
-
-      // Gradient spine draws itself (amber → cyan → violet) in lockstep with scroll.
       gsap.fromTo(
-        '.tl-progress',
-        { clipPath: 'inset(0% 0% 100% 0%)' },
+        '.ledger-row',
+        { autoAlpha: 0, y: 18 },
         {
-          clipPath: 'inset(0% 0% 0% 0%)',
-          ease: 'none',
-          scrollTrigger: { trigger: '.tl-track', start: 'top 72%', end: 'bottom 72%', scrub: 0.4 },
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.6,
+          ease: 'power2.out',
+          stagger: 0.05,
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 70%', once: true },
         },
       )
 
-      // Era chapter milestones.
-      gsap.utils.toArray<HTMLElement>('.tl-chapter').forEach((el) => {
-        gsap.fromTo(
-          el,
-          { autoAlpha: 0, y: 36 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.7,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play none none reverse' },
-          },
-        )
+      // Era-band legend draws itself in, then a brief accent flash marks each
+      // era-to-era handoff point — a one-shot beat, not a loop.
+      const bandTl = gsap.timeline({
+        scrollTrigger: { trigger: sectionRef.current, start: 'top 75%', once: true },
       })
-
-      // Carry-forward beats rise on approach, matching the chapter milestones.
-      gsap.utils.toArray<HTMLElement>('.tl-carry').forEach((el) => {
-        gsap.fromTo(
-          el,
-          { autoAlpha: 0, y: 20 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.6,
-            ease: 'power2.out',
-            clearProps: 'opacity,visibility',
-            scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' },
-          },
-        )
-      })
-
-      // Nodes pop as the spine reaches them.
-      gsap.utils.toArray<HTMLElement>('.tl-node').forEach((el) => {
-        gsap.fromTo(
-          el,
-          { scale: 0 },
-          {
-            scale: 1,
-            duration: 0.45,
-            ease: 'back.out(2.5)',
-            scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play none none reverse' },
-          },
-        )
-      })
-
-      // Cards rise and drift in from their side of the spine.
-      gsap.utils.toArray<HTMLElement>('.tl-card').forEach((el) => {
-        gsap.fromTo(
-          el,
-          { autoAlpha: 0, y: 44, x: el.dataset.side === 'left' ? -32 : 32 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            x: 0,
-            duration: 0.75,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: el, start: 'top 84%', toggleActions: 'play none none reverse' },
-          },
-        )
-      })
+      bandTl.fromTo(bandFills, { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power2.out', stagger: 0.12 })
+      if (ERA_BOUNDARIES.length) {
+        bandTl
+          .fromTo(
+            '.era-boundary-flash',
+            { scale: 0, opacity: 0 },
+            { scale: 1.6, opacity: 1, duration: 0.35, ease: 'power2.out', stagger: 0.12 },
+            '-=0.15',
+          )
+          .to('.era-boundary-flash', { scale: 1, opacity: 0.55, duration: 0.45, ease: 'power2.out' }, '-=0.1')
+      }
     },
     { scope: sectionRef, dependencies: [reducedMotion], revertOnUpdate: true },
   )
@@ -318,102 +182,176 @@ export default function Timeline() {
   return (
     <section
       ref={sectionRef}
-      id="timeline"
-      aria-labelledby="timeline-heading"
-      className="relative scroll-mt-24 py-24 md:py-32"
+      id="ledger"
+      aria-labelledby="ledger-heading"
+      className="relative border-t-2 border-ink/25 px-6 py-24 md:py-32"
     >
-      <ClipReveal>
-      <div className="mx-auto w-full max-w-6xl px-6">
-        <header className="tl-head max-w-3xl">
-          <Decrypt as="p" className="hud-label section-kicker" text="01 · career trajectory" />
-          <SectionSweep />
-          <h2 id="timeline-heading" className="mt-3 text-3xl font-bold text-ink md:text-5xl">
-            <SplitText
-              as="span"
-              accent={['Legacy', 'Cloud', 'AI']}
-              accentInnerClassName="split-word inline-block text-legacy"
-            >
-              Legacy → Cloud → Enterprise AI
-            </SplitText>
-          </h2>
-          <p className="tl-sub mt-4 text-base leading-relaxed text-ink-muted md:text-lg">
-            Eleven years, seven roles, three eras — mainframe ETL fluency compounding into cloud-scale migrations,
-            then into production GenAI. Follow the spine.
-          </p>
+      <div className="mx-auto max-w-6xl">
+        <header className="ledger-head flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+          <div className="max-w-2xl">
+            <h2 id="ledger-heading" className="font-display text-3xl font-semibold text-ink md:text-4xl">
+              Eleven years, drawn to scale.
+            </h2>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted md:text-base">
+              One bar per engagement, sized by its term. Hover a row to isolate it.
+            </p>
+          </div>
         </header>
 
-        <div className="tl-track relative mt-16 md:mt-20">
-          {/* Spine: faint track + scroll-drawn era gradient */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-5 w-0.5 -translate-x-1/2 md:left-1/2"
-          >
-            <div className="absolute inset-0 bg-panel-edge/70" />
-            <div className="tl-progress absolute inset-0" style={{ background: SPINE_GRADIENT }} />
+        <div className="ledger-head mt-8 flex flex-wrap items-center gap-x-8 gap-y-3">
+          <p className="flex items-baseline gap-2">
+            <span className="font-display text-2xl font-semibold text-ink">{portfolio.experience.length}</span>
+            <span className="hud-label">Roles</span>
+          </p>
+          <p className="flex items-baseline gap-2">
+            <span className="font-display text-2xl font-semibold text-ink">{portfolio.story.chapters.length}</span>
+            <span className="hud-label">Eras</span>
+          </p>
+          {MOST_RECENT_ROLE.end === 'present' ? (
+            <p className="flex items-center gap-2.5">
+              <LiveDot />
+              <span className="hud-label text-accent-500">Currently at {MOST_RECENT_ROLE.company}</span>
+            </p>
+          ) : null}
+        </div>
+
+        <div className="mt-12">
+          {/* Year axis */}
+          <div className={`ledger-head grid ${GRID_COLS} gap-4`}>
+            <span aria-hidden="true" />
+            <div className="relative h-4">
+              {AXIS_YEARS.map((year) => (
+                <span
+                  key={year}
+                  className="hud-label absolute top-0 -translate-x-1/2 text-[10px]"
+                  style={{ left: `${((year - T0) / TSPAN) * 100}%` }}
+                >
+                  '{String(year).slice(-2)}
+                </span>
+              ))}
+              <span className="hud-label absolute top-0 right-0 text-[10px] text-accent-500">NOW</span>
+            </div>
           </div>
 
-          <ol role="list" className="space-y-16 md:space-y-24">
-            {ERA_GROUPS.map(({ chapter, roles }, chapterIndex) => {
-              const era = ERA_STYLES[chapter.id]
-              return (
-                <li key={chapter.id}>
-                  <div className="tl-chapter relative pl-14 md:pl-0 md:pt-12 md:text-center">
+          {/* Era-band legend */}
+          <div className={`ledger-head mt-3 grid ${GRID_COLS} gap-4`}>
+            <span aria-hidden="true" />
+            <div className="relative h-1.5">
+              {ERA_BANDS.map((band) => (
+                <span
+                  key={band.id}
+                  aria-hidden="true"
+                  className="ledger-band-fill origin-left absolute inset-y-0"
+                  style={{
+                    left: `${band.leftPct}%`,
+                    width: `${band.widthPct}%`,
+                    background: ERA_COLORS[band.id],
+                    transform: 'scaleX(0)',
+                  }}
+                />
+              ))}
+              {!reducedMotion &&
+                ERA_BOUNDARIES.map((boundary) => (
+                  <span
+                    key={boundary.id}
+                    aria-hidden="true"
+                    className="era-boundary-flash absolute top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-500"
+                    style={{ left: `${boundary.leftPct}%`, opacity: 0 }}
+                  />
+                ))}
+            </div>
+          </div>
+          <div className={`ledger-head grid ${GRID_COLS} gap-4`}>
+            <span aria-hidden="true" />
+            <div className="relative mt-1.5 h-4">
+              {ERA_BANDS.map((band) => (
+                <span
+                  key={band.id}
+                  className="hud-label absolute top-0 text-center text-[10px]"
+                  style={{ left: `${band.leftPct}%`, width: `${band.widthPct}%` }}
+                >
+                  {band.label}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Rows */}
+          <ol role="list" className="mt-8 space-y-6">
+            {ROLE_ROWS.map((row, i) => (
+              <li
+                key={`${row.role.company}-${row.role.start}`}
+                className={`ledger-row grid ${GRID_COLS} items-center gap-4 transition-[opacity,transform] duration-300`}
+                style={{
+                  opacity: hoveredIndex === null || hoveredIndex === i ? 1 : 0.32,
+                  transform: hoveredIndex === i ? 'scale(1.0075)' : 'scale(1)',
+                }}
+                onMouseEnter={() => setHoveredIndex(i)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              >
+                <div className="min-w-0">
+                  <p className="flex items-baseline gap-2">
+                    <span className="hud-label text-ink-faint">{String(row.ref).padStart(2, '0')}</span>
+                    <span className="truncate font-display text-sm font-semibold text-ink md:text-base">
+                      {row.role.company}
+                    </span>
+                  </p>
+                  <p className="hud-label mt-0.5 text-accent-500">{row.role.title}</p>
+                </div>
+
+                <div className="relative h-11">
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0"
+                    style={{ backgroundImage: YEAR_GRIDLINES }}
+                  />
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-y-0 w-px bg-accent-500/25"
+                    style={{ left: `${NOW_LEFT_PCT}%` }}
+                  />
+                  <span
+                    className="absolute top-1/2 rounded-[1px] transition-[height] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                    style={{
+                      left: `${row.left}%`,
+                      width: `${row.width}%`,
+                      height: hoveredIndex === i ? '18px' : '12px',
+                      transform: 'translateY(-50%)',
+                      background: row.barColor,
+                    }}
+                  />
+                  {row.isCurrent ? (
                     <span
                       aria-hidden="true"
-                      className={`absolute top-1.5 left-5 z-10 h-4 w-4 -translate-x-1/2 rotate-45 border-2 bg-void md:top-0 md:left-1/2 ${era.marker}`}
-                    />
-                    <Decrypt
-                      as="p"
-                      className="hud-label"
-                      text={`chapter ${String(chapterIndex + 1).padStart(2, '0')} · ${chapterYears(roles.map((r) => r.role))}`}
-                    />
-                    <h3 className={`mt-2 text-2xl font-bold md:text-3xl ${era.text}`}>{chapter.title}</h3>
-                    {/* Centred block, left-aligned text. The kicker and title are short
-                        enough to centre; this blurb runs 5–7 lines, and centred ragged
-                        text that long is hard to track back to the next line's start. */}
-                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted md:mx-auto md:text-left">
-                      {chapter.blurb}
+                      className="absolute top-1/2 inline-flex h-[7px] w-[7px] -translate-y-1/2"
+                      style={{ left: `calc(${row.left + row.width}% - 3.5px)` }}
+                    >
+                      <span className="absolute inset-0 rounded-full bg-accent-500" />
+                      <span data-pulse className="absolute inset-0 rounded-full bg-accent-500" />
+                    </span>
+                  ) : null}
+                  <div
+                    className="absolute top-1/2 whitespace-nowrap"
+                    style={{
+                      left: row.flip ? `${row.left}%` : `${row.left + row.width}%`,
+                      transform: row.flip ? 'translate(calc(-100% - 0.6rem), -50%)' : 'translate(0.6rem, -50%)',
+                      textAlign: row.flip ? 'right' : 'left',
+                    }}
+                  >
+                    <p className="hud-label text-[10px] text-ink-muted">{row.periodLabel}</p>
+                    <p
+                      className="hud-label text-[10px] text-accent-500 transition-opacity duration-[250ms]"
+                      style={{ opacity: hoveredIndex === i ? 1 : 0 }}
+                    >
+                      {row.durationLabel}
                     </p>
                   </div>
-
-                  <ol role="list" className="mt-10 space-y-10 md:mt-14 md:space-y-14">
-                    {roles.map(({ role, index }) => (
-                      <RoleCard key={`${role.company}-${role.start}`} role={role} index={index} />
-                    ))}
-                  </ol>
-
-                  {/* Carry-forward beat: what this era handed the next one. This is the
-                      section's actual argument — the eras are not a list of jobs, they
-                      compound — so it gets its own moment on the spine between chapters,
-                      tinted from this era toward the one it feeds. */}
-                  {chapter.carry && (
-                    <div className="tl-carry relative mt-14 pl-14 md:mt-20 md:pl-0">
-                      <div className="md:mx-auto md:max-w-2xl md:text-center">
-                        <span
-                          aria-hidden="true"
-                          // Left-aligned on phones so it reads as part of the left spine;
-                          // centred from md up, where the spine runs down the middle.
-                          className="mb-4 block h-10 w-px md:mx-auto md:h-12"
-                          style={{
-                            background: `linear-gradient(to bottom, ${ERA_COLORS[chapter.id]}, ${
-                              ERA_COLORS[ERA_GROUPS[chapterIndex + 1]?.chapter.id ?? chapter.id]
-                            })`,
-                          }}
-                        />
-                        <p className="hud-label text-[10px] text-ink-faint">carries forward</p>
-                        <p className="mt-2 font-display text-base leading-snug text-ink/90 md:text-lg">
-                          {chapter.carry}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </li>
-              )
-            })}
+                </div>
+              </li>
+            ))}
           </ol>
         </div>
       </div>
-      </ClipReveal>
     </section>
   )
 }
