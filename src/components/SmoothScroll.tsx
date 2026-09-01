@@ -49,10 +49,30 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
 
     instance.on('scroll', ScrollTrigger.update)
 
-    gsap.ticker.add((time) => {
+    // Named so it can actually be removed. The anonymous version leaked: in
+    // StrictMode dev the stale callback kept calling .raf() on a destroyed Lenis
+    // every frame, and this build adds per-frame scroll work on top of it.
+    const tick = (time: number) => {
       instance.raf(time * 1000)
-    })
+    }
+    gsap.ticker.add(tick)
     gsap.ticker.lagSmoothing(0)
+
+    // Deep-link and restored-scroll correctness. The browser restoring a scroll
+    // position before triggers exist is one half of how v5 landed on a blank
+    // frame; a lazy chunk resolving and changing document height — firing neither
+    // scroll nor resize — is the other.
+    history.scrollRestoration = 'manual'
+    const hash = window.location.hash
+    const raf = requestAnimationFrame(() => {
+      if (hash && document.querySelector(hash)) {
+        instance.scrollTo(hash, { immediate: true, offset: -72 })
+      }
+      ScrollTrigger.refresh()
+    })
+    const onLoad = () => ScrollTrigger.refresh()
+    window.addEventListener('load', onLoad)
+    void document.fonts?.ready.then(() => ScrollTrigger.refresh())
 
     const handleAnchorClick = (e: MouseEvent) => {
       const target = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="#"]')
@@ -65,6 +85,9 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     document.addEventListener('click', handleAnchorClick)
 
     return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('load', onLoad)
+      gsap.ticker.remove(tick)
       document.removeEventListener('click', handleAnchorClick)
       instance.destroy()
       setLenis(null)

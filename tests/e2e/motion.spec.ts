@@ -1,38 +1,40 @@
 import { test, expect } from '@playwright/test'
 
 /**
- * The v5 Sequence hero: six stacked, sticky, opaque "stations" (no WebGL, no
- * crossfade — each station simply covers the one before it). One rAF-throttled
- * scroll driver reads each station's getBoundingClientRect() to compute a 0..1
- * "how far scrolled through this station" progress and drives per-element
- * count-up/fill/travel animations directly via inline styles.
+ * The v6 arc. The v5 hero drove six sticky, scroll-scrubbed "stations" through
+ * 13,284px of pinned scroll, animating each stat's count-up from a rAF scroll
+ * driver. That is gone: the six chapters are now ordinary stacked list items
+ * with their figures printed as static text.
+ *
+ * These tests survive that rewrite because their intent never depended on the
+ * scrubbing — they exist to guarantee the copy is in the DOM, opaque, and
+ * showing final values no matter where the visitor is on the page. That
+ * guarantee is now *stronger*, so the assertions below check it unconditionally
+ * instead of only after scrolling into range.
  */
 
-const sampleFirstStat = (page: import('@playwright/test').Page, stationIndex: number, fraction: number) =>
+const statsOfStation = (page: import('@playwright/test').Page, index: number) =>
   page.evaluate(
-    ({ stationIndex, fraction }) => {
-      const station = document.querySelectorAll('[data-station]')[stationIndex] as HTMLElement
-      const span = station.offsetHeight - window.innerHeight
-      window.scrollTo({ top: station.offsetTop + Math.max(span, 0) * fraction, behavior: 'instant' })
-      const stat = station.querySelector('[data-anim="count"], [data-anim="countdown"]') as HTMLElement
-      return stat?.textContent ?? ''
+    (index) => {
+      const station = document.querySelectorAll('[data-station]')[index] as HTMLElement
+      return [...station.querySelectorAll('[data-stat]')].map((el) => el.textContent?.trim() ?? '')
     },
-    { stationIndex, fraction },
+    index,
   )
 
-test.describe('Sequence stations', () => {
-  test('all six stations are in the DOM so the copy stays crawlable', async ({ page }) => {
+test.describe('Arc chapters', () => {
+  test('all six chapters are in the DOM so the copy stays crawlable', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('[data-station]')).toHaveCount(6)
     const content = await page.locator('[data-station]').evaluateAll((els) =>
-      els.map((el) => el.querySelector('h1,h2')?.textContent?.trim() ?? ''),
+      els.map((el) => el.querySelector('h1,h2,h3')?.textContent?.trim() ?? ''),
     )
     for (const heading of content) {
       expect(heading.length).toBeGreaterThan(0)
     }
   })
 
-  test('stations are opaque (no crossfade) and stay covered by later ones', async ({ page }) => {
+  test('chapters are opaque', async ({ page }) => {
     await page.goto('/')
     const opacities = await page
       .locator('[data-station]')
@@ -40,37 +42,37 @@ test.describe('Sequence stations', () => {
     for (const o of opacities) expect(o).toBeGreaterThan(0.99)
   })
 
-  test('scrolling deep into a station settles its stat counter on the final value', async ({ page }) => {
+  test('a chapter shows its final figures before it is ever scrolled to', async ({ page }) => {
     await page.goto('/')
-    // Station 1 = "Legacy" — first stat is "20+" (ETL pipelines).
-    const settled = await sampleFirstStat(page, 1, 0.95)
-    await expect.poll(async () => sampleFirstStat(page, 1, 0.95), { timeout: 6000 }).toBe(settled)
-    expect(settled).toBe('20+')
+    // Chapter 1 = "Legacy" — first figure is "20+" (ETL pipelines). Read it while
+    // the page is still parked at the top: nothing may render a placeholder or a
+    // zero on the way to its real value.
+    expect(await statsOfStation(page, 1)).toEqual(['20+', '5M+', '25%', '35%'])
   })
 
-  test('a station not yet scrolled into view is not mid-animation', async ({ page }) => {
+  test('scrolling deep into a chapter leaves its figures unchanged', async ({ page }) => {
     await page.goto('/')
-    // Before scrolling, station 1 (below the fold) keeps its settled JSX value —
-    // the driver only touches a station's counters once it's on screen.
-    const text = await page.evaluate(() => {
+    const before = await statsOfStation(page, 1)
+    await page.evaluate(() => {
       const station = document.querySelectorAll('[data-station]')[1] as HTMLElement
-      const stat = station.querySelector('[data-anim="count"], [data-anim="countdown"]') as HTMLElement
-      return stat?.textContent ?? ''
+      window.scrollTo({ top: station.offsetTop, behavior: 'instant' })
     })
-    expect(text).toBe('20+')
+    await page.waitForTimeout(600)
+    expect(await statsOfStation(page, 1)).toEqual(before)
   })
 
-  test('reduced motion settles every counter with no animation and no scroll', async ({ page }) => {
+  test('reduced motion settles every figure with no animation and no scroll', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/')
     const values = await page
-      .locator('[data-anim="count"], [data-anim="countdown"]')
-      .evaluateAll((els) => els.map((el) => el.textContent))
+      .locator('[data-stat]')
+      .evaluateAll((els) => els.map((el) => el.textContent?.trim()))
     expect(values).toContain('11+')
     expect(values).toContain('20+')
+    expect(values).toContain('50M+')
   })
 
-  test('scrolling past the sequence reaches the sections below', async ({ page }) => {
+  test('scrolling past the arc reaches the sections below', async ({ page }) => {
     await page.goto('/')
     await page.evaluate(() => {
       const stations = document.querySelectorAll('[data-station]')

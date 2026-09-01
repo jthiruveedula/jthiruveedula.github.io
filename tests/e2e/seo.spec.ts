@@ -63,43 +63,42 @@ test.describe('SEO & social discovery', () => {
 })
 
 test.describe('first paint', () => {
-  test('main and the first station paint immediately', async ({ page }) => {
+  test('main and the hero paint immediately', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('main')).toBeVisible()
 
-    const firstStation = page.locator('[data-station]').first()
-    await expect(firstStation).toBeVisible()
-
-    // The opening station's h1 is the ROLE, not the narrative line: a recruiter
-    // scanning the first viewport is matching a job title, so that has to be the
-    // largest thing on it (and the most semantically prominent element on the page).
+    // The flight opens on scene one, whose headline is the page's thesis. It is
+    // authored in CSS as the resting state, so this assertion also proves the
+    // no-JS / dead-timeline frame is a true one rather than an empty one.
     const h1 = page.locator('main h1')
     await expect(h1).toHaveCount(1)
-    await expect(h1).toContainText('Data & AI Architect')
+    await expect(h1).toContainText('I automated the job I used to do by hand')
 
-    // Park at the very top before measuring: the driver's own opacity handling only
-    // guarantees "fully settled" once it's had one run() pass at scrollY 0.
+    // The role a recruiter is scanning for still has to be on the first viewport;
+    // in v6 it sits in the hero eyebrow above the figure rather than in the h1.
+    await expect(page.locator('#top .eyebrow')).toContainText('Data & AI Architect')
+
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
     await expect
-      .poll(async () => firstStation.evaluate((el) => Number(getComputedStyle(el).opacity)), {
+      .poll(async () => page.locator('#top').evaluate((el) => Number(getComputedStyle(el).opacity)), {
         timeout: 10_000,
       })
       .toBeGreaterThan(0.9)
   })
 
-  test('reduced motion renders every station statically with no WebGL', async ({ page }) => {
+  test('reduced motion renders every chapter statically with no WebGL', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/')
     await expect(page.locator('main')).toBeVisible()
 
-    // All six stations are present as ordinary stacked sections, fully opaque.
+    // All six chapters are present as ordinary stacked list items, fully opaque.
     await expect(page.locator('[data-station]')).toHaveCount(6)
     const opacities = await page
       .locator('[data-station]')
       .evaluateAll((els) => els.map((el) => Number(getComputedStyle(el).opacity)))
     expect(Math.min(...opacities)).toBeGreaterThan(0.9)
 
-    // The Sequence hero is plain photo + CSS filters, not WebGL — no canvas ever mounts.
+    // The hero is typography plus a hand-built SVG apparatus — no canvas ever mounts.
     await expect(page.locator('main canvas')).toHaveCount(0)
   })
 })

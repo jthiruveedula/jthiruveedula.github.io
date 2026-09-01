@@ -77,3 +77,6 @@ docs/ROADMAP.md
 
 # Playwright MCP browser artifacts
 .playwright-mcp/
+
+# Graded plates — generated from scene-sources/ by scripts/grade-scenes.mjs on prebuild
+public/scenes/

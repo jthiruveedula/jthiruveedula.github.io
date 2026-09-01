@@ -30,12 +30,6 @@ const CATEGORY_ACCENT: Record<CategoryName, string> = {
   AI: 'var(--color-accent-900)',
 }
 
-/** Geometry for each tile's data-dial ring — a literal instrument reading that
- *  fills in sync with the count-up tween, reusing the same accent ramp as the
- *  composition bar above. */
-const RING_R = 15.5
-const RING_CIRC = 2 * Math.PI * RING_R
-
 /** How many metrics carry each category as their PRIMARY group (groups[0]) —
  *  drives the composition bar's proportional widths. */
 const compositionCounts: Record<CategoryName, number> = CATEGORIES.reduce(
@@ -73,17 +67,13 @@ function MetricTile({
   metric,
   visible,
   registerNumberRef,
-  registerDialRef,
 }: {
   metric: Metric
   visible: boolean
   registerNumberRef: (label: string, el: HTMLSpanElement | null) => void
-  registerDialRef: (label: string, el: SVGCircleElement | null) => void
 }) {
   const { prefix, number, suffix, decimals } = parseValue(metric.value)
   const finalText = Number(number).toFixed(decimals)
-  const primaryGroup = metric.groups?.[0] as CategoryName | undefined
-  const ringColor = (primaryGroup && CATEGORY_ACCENT[primaryGroup]) || 'var(--color-accent-500)'
 
   return (
     <li
@@ -107,24 +97,6 @@ function MetricTile({
             {suffix ? <span className="text-2xl text-accent-500 md:text-3xl">{suffix}</span> : null}
           </span>
         </p>
-        {/* Data-dial — a literal instrument reading beside the number, filling in
-            sync with the count-up tween (see animateCounts). Starts fully filled
-            (matches the pre-rendered final number) until a filter click resets it. */}
-        <svg aria-hidden="true" viewBox="0 0 36 36" className="metric-dial h-8 w-8 flex-none -rotate-90">
-          <circle cx="18" cy="18" r={RING_R} fill="none" stroke="var(--color-neutral-800)" strokeWidth="2" />
-          <circle
-            ref={(el) => registerDialRef(metric.label, el)}
-            cx="18"
-            cy="18"
-            r={RING_R}
-            fill="none"
-            stroke={ringColor}
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeDasharray={RING_CIRC}
-            strokeDashoffset={0}
-          />
-        </svg>
       </div>
       <p className="hud-label mt-3">{metric.label}</p>
       {metric.source ? <p className="mt-1 text-[11px] text-neutral-500">{metric.source}</p> : null}
@@ -137,7 +109,6 @@ export default function Metrics() {
   const reducedMotion = useReducedMotion()
   const [filter, setFilter] = useState<Filter>('All')
   const numberRefs = useRef(new Map<string, HTMLSpanElement>())
-  const dialRefs = useRef(new Map<string, SVGCircleElement>())
   const activeTweens = useRef(new Map<string, gsap.core.Tween>())
   const gridSweepRef = useRef<HTMLSpanElement>(null)
 
@@ -146,13 +117,9 @@ export default function Metrics() {
     else numberRefs.current.delete(label)
   }
 
-  const registerDialRef = (label: string, el: SVGCircleElement | null) => {
-    if (el) dialRefs.current.set(label, el)
-    else dialRefs.current.delete(label)
-  }
 
-  /** Tweens the currently-matching metrics' numbers from 0 to target, and their
-   *  data-dial rings in step. Used both for the first scroll-into-view reveal and
+  /** Tweens the currently-matching metrics' numbers from 0 to target. Used both
+   *  for the first scroll-into-view reveal and
    *  to replay on every filter click — the grid stays mounted across clicks, so
    *  this is the only thing that re-fires. Kills any tween still in flight for a
    *  given metric first so two rapid filter clicks can't race the same textContent. */
@@ -166,10 +133,8 @@ export default function Metrics() {
       const numericTarget = Number(number)
       if (!Number.isFinite(numericTarget)) return
       activeTweens.current.get(m.label)?.kill()
-      const dial = dialRefs.current.get(m.label)
       const proxy = { value: 0 }
       el.textContent = proxy.value.toFixed(decimals)
-      if (dial) dial.style.strokeDashoffset = String(RING_CIRC)
       const tween = gsap.to(proxy, {
         value: numericTarget,
         duration: 1.1,
@@ -177,7 +142,6 @@ export default function Metrics() {
         ease: 'power2.out',
         onUpdate: () => {
           el.textContent = proxy.value.toFixed(decimals)
-          if (dial) dial.style.strokeDashoffset = String(numericTarget === 0 ? 0 : RING_CIRC * (1 - proxy.value / numericTarget))
         },
       })
       activeTweens.current.set(m.label, tween)
@@ -291,7 +255,7 @@ export default function Metrics() {
                   onClick={() => toggleSegment(cat)}
                   aria-pressed={filter === cat}
                   aria-label={`${cat} — ${compositionCounts[cat]} of ${TOTAL_COUNT} figures by primary category`}
-                  className={`h-full transition-opacity duration-200 hover:opacity-100 ${dimmed ? 'opacity-[0.35]' : 'opacity-100'}`}
+                  className={`hit-expand h-full transition-opacity duration-200 hover:opacity-100 ${dimmed ? 'opacity-[0.35]' : 'opacity-100'}`}
                   style={{ flex: `${compositionCounts[cat]} 0 0`, background: CATEGORY_ACCENT[cat] }}
                 />
               )
@@ -312,7 +276,7 @@ export default function Metrics() {
                   type="button"
                   onClick={() => selectFilter(name)}
                   aria-pressed={active}
-                  className={`rounded-full px-3 py-1 font-mono text-xs tracking-[0.08em] transition-colors duration-200 ${
+                  className={`filter-pill rounded-full px-3 py-1 font-mono text-xs tracking-[0.08em] transition-colors duration-200 ${
                     active ? 'bg-accent-500 text-ground' : 'text-neutral-500 hover:text-ink'
                   }`}
                 >
@@ -337,7 +301,6 @@ export default function Metrics() {
                     metric={metric}
                     visible={visible}
                     registerNumberRef={registerNumberRef}
-                    registerDialRef={registerDialRef}
                   />
                 )
               })}

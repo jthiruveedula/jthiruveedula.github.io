@@ -1,9 +1,12 @@
-# Jagadeesh Thiruveedula — Immersive Portfolio
+# Jagadeesh Thiruveedula — Portfolio
 
-An explorable data landscape, not a static resume. The site tells one story — **Legacy Systems → Cloud Modernization → Enterprise AI** — through interactive 3D scenes, scroll-driven data-flow animations, and metric visualizations drawn from real project outcomes (500+ TiB migrated, $2M+ saved, production GenAI systems).
+A proof-led single page, not a static resume. It tells one story — **Legacy Systems →
+Cloud Modernization → Enterprise AI** — leading with the numbers that back it
+(500+ TiB migrated, $2M+ saved, 50M+ documents in production RAG) and then showing the
+work behind each one.
 
 **Live:** [https://jthiruveedula.github.io](https://jthiruveedula.github.io)
-**Hosting:** GitHub Pages (user site), deployed from `master` via GitHub Actions
+**Hosting:** GitHub Pages (user site), deployed on a published GitHub Release via GitHub Actions
 
 ---
 
@@ -36,14 +39,16 @@ To see the full detail (bio, all metrics, tech stacks per project), open `src/da
 
 ## Stack
 
-| Layer     | Tool                                     |
-| --------- | ---------------------------------------- |
-| Build     | Vite 7 (static output to `out/`)         |
-| UI        | React 19 + TypeScript (strict)           |
-| 3D        | Three.js + @react-three/fiber + drei     |
-| Animation | GSAP 3 (ScrollTrigger) via `@gsap/react` |
-| Styling   | Tailwind CSS v4 (`@theme` design tokens) |
-| E2E       | Playwright (chromium + mobile projects)  |
+| Layer     | Tool                                          |
+| --------- | --------------------------------------------- |
+| Build     | Vite 7 (static output to `out/`)              |
+| UI        | React 19 + TypeScript (strict)                |
+| Animation | GSAP 3 (ScrollTrigger) via `@gsap/react`      |
+| Scroll    | Lenis (smooth scroll, reduced-motion aware)   |
+| Styling   | Tailwind CSS v4 (`@theme` design tokens)      |
+| E2E       | Playwright (chromium + mobile projects)       |
+
+No WebGL. Earlier versions shipped a Three.js scroll-world; v6 is DOM, SVG and CSS only.
 
 ## Setup
 
@@ -59,73 +64,155 @@ npm run build      # static site → out/
 npm run preview    # serve the production build on :4173
 ```
 
-Pushing to `master` triggers `.github/workflows/deploy.yml`, which builds and publishes `out/` to GitHub Pages. Every deploy is tagged `v0.0.0-<sha>` for one-click rollback via `workflow_dispatch` → `rollback_ref`.
+Publishing a GitHub Release triggers `.github/workflows/deploy.yml`, which builds and
+publishes `out/` to GitHub Pages only after the build job passes. Point-in-time recovery
+lives in a separate `.github/workflows/rollback.yml` (`workflow_dispatch` → `rollback_ref`),
+so a rollback never needs a new release.
 
 ## Architecture
 
 ```
 src/
   components/          # One self-contained section per file (no props; each imports its own data)
-    Navigation.tsx       ScrollWorld.tsx   Timeline.tsx
-    SkillsConstellation.tsx  Projects.tsx  ProjectCard.tsx
+    Rail.tsx             Sequence.tsx      Apparatus.tsx     MeterStrip.tsx
+    Timeline.tsx         Projects.tsx      ProjectCard.tsx
     Metrics.tsx          Contact.tsx
-  scenes/              # R3F scene graphs (scroll-world flight, skills constellation)
-    WorldScene.tsx       ConstellationScene.tsx
   data/
     types.ts           # Contractual shapes (Era, Skill, Experience, FeaturedProject…)
     portfolio.ts       # THE single content source — every section renders from this
-    scenes.ts          # The 7 scroll-world stations (copy + metrics + still paths)
-  lib/hooks.ts         # useReducedMotion / useWebGLSupport / useIsMobile / useInView
-  styles/globals.css   # Tailwind v4 @theme tokens (era colors, fonts, surfaces)
-public/scenes/         # The 7 AI-generated station stills, 2048w + 1280w (`@sm`)
+    scenes.ts          # The six career chapters rendered by the arc
+  lib/hooks.ts         # useReducedMotion / useInView
+  styles/globals.css   # Tailwind v4 @theme tokens + the theme's own components
+tokens.css             # Framework-free mirror of the token set, for reuse elsewhere
+scene-sources/         # The 7 original stills. Build inputs, not served.
+public/scenes/         # Graded AVIF plates, generated on prebuild (gitignored).
 ```
 
-Sections below the flight are `React.lazy` code-split; Three.js, R3F, and GSAP ship as separate chunks (`manualChunks` in `vite.config.ts`).
+Sections below the hero are `React.lazy` code-split; GSAP ships as its own chunk
+(`manualChunks` in `vite.config.ts`).
 
-## The scroll-world hero
+## The page shape
 
-The top of the page is one continuous camera flight through seven stations of the résumé —
-legacy substrate → cloud migration → governed realtime → LLM translation → production RAG
-→ the whole system + CTA. Backdrops are AI-generated stills (Higgsfield); the camera is
-real Three.js.
+**A corridor, then a document.**
 
-**Scroll drives a camera, not a timeline.** Station depth, scale, opacity, the dust field
-and every DOM overlay are pure functions of one scroll-progress value, so scrolling up
-retraces the flight exactly, there is nothing to snap at a station boundary, and no video
-is decoded on a phone. There is no GSAP pin either — the scene is `position: sticky` in a
-tall section, which keeps Lenis out of a fight with a pin-spacer and stops mobile URL-bar
-resizes from jumping the page (`100svh`, not `dvh`).
+The top of the page is one unbroken camera move. Seven plates are composited not as
+siblings on a page but as depths in a single space: a room grows until it passes the
+lens, and the next one is already behind it. Nothing fades in, nothing slides — across
+the whole flight exactly one number changes, the camera's position.
 
-- **Framing** covers on landscape, and *contains* on portrait: cropping a 16:9 still to a
-  tall phone would throw away three quarters of its width, so phones get the whole frame
-  anchored to the top band with the copy on clean void beneath it.
-- **Lazy stations** — only the stations within a scroll-window of the camera are mounted,
-  and leaving one disposes its GPU texture. A visitor downloads what they fly through.
-- **Degradation** — no WebGL or `prefers-reduced-motion` renders the same seven stations
-  as ordinary stacked sections with the stills as backdrops. The copy is real DOM in both
-  paths, so it stays crawlable and screen-reader navigable either way.
+Three things enforce it: fixed letterbox bars that belong to the viewport rather than
+to any scene; a 1px brass horizon rule at 46%, held unchanged through all seven shots
+(every plate in the set puts its vanishing point between 46% and 55%, so the eye locks
+to it — a match cut for the cost of one div); and an equal-power crossfade, `sin²+cos²=1`,
+which for additive-over-black compositing is exactly the fix for the luminance dip you
+get from a naive linear dissolve.
 
-Scene plan and generation prompts: [SCENE_PLAN.md](./SCENE_PLAN.md). Asset mapping,
-re-rolls and credit spend: [ASSET_MANIFEST.md](./ASSET_MANIFEST.md).
+Below the flight, the same argument again as a static spec sheet. That redundancy is
+deliberate — it is what makes the film safe to ship, and it is why the first viewport
+carries a **skip the film** chip. Cinema that gates the evidence is an imposition;
+cinema with the evidence one click below it is an offer.
+
+**The one rule: the image scrubs, the type cuts.** The plate dissolves as a smooth
+function of scroll, but the headline swaps hard at the crossfade midpoint, then plays a
+per-line mask stagger. So at every scroll position exactly one headline is at full
+opacity, and legibility is never a function of scrub position. That is the specific
+defect underneath v5 — it scrubbed `textContent` on its count-ups, so a half-scrolled
+frame showed half-finished numbers, and a cold load advertised
+`0 years · $0 saved · 0 TiB · 0.0% uptime`.
+
+### What v5 got wrong, and what it didn't
+
+v5 was also cinematic, and it was retired for defects that **cinema did not cause**:
+
+| | v5 | v7 |
+| --- | --- | --- |
+| Camera travel | 13,284px over 6 full-viewport pins | 2,880px, zero pins |
+| Sequential beats | 24 | 7 |
+| Dead scroll (nothing new revealed) | ~5,600px, 42% | ~0 |
+| Deep link / restored scroll | could land on a blank screen | resting state is a painted frame |
+| Stills | 4–8% opacity behind copy, 2.8MB of JPEG | full bleed, 1.0MB of AVIF |
+
+The scroll-jail came from choosing 24 *sequential* beats and six pins — beats running
+in parallel inside a scene cost the same distance as one. The blank screen came from a
+hand-rolled scroll driver that bypassed the ScrollTrigger already installed and wired to
+Lenis, leaving off-screen stations in an undefined state. Neither is a property of
+scrubbed cinema. v6 removed the cinema to fix them, which was an over-correction.
+
+`tests/e2e/deep-link.spec.ts` now asserts the blank-screen property directly from every
+entry point the site exposes, plus a mid-page reload, so the structure cannot silently
+decay back into it.
+
+### The grade
+
+The seven stills were generated in the old era palette (amber legacy / cyan cloud /
+violet AI), which fights the brass accent. `scripts/grade-scenes.mjs` (a `prebuild` step)
+regrades them from `scene-sources/` instead of re-rendering: greyscale, a mild linear lift, then a 256-entry
+per-channel LUT interpolated from a 4-stop luminance ramp, out to AVIF at two widths.
+
+The shadow stop is exactly `--color-paper`, so a full-bleed plate and the page
+background share one black point and there is no seam where the film meets the document.
+Scene 03 is split-toned along x — its whole argument is old-left / new-right, which a
+single ramp would erase. Scene 06 runs the coral ramp: six scenes are one hue, and on the
+seventh idea a second colour arrives. It also kills the stock-purple-AI-orb tell, which
+was the weakest thing in the set.
+
+`hue-rotate()` was tested and rejected: it is a linear sRGB matrix, so at the rotation
+that takes cyan to brass it turns 01's amber machines blue and 06 green.
 
 ## Design language
 
-- **Era color code** carried through every visual: amber `#f59e0b` = legacy, cyan `#22d3ee` = cloud, violet `#a78bfa` = AI.
-- Dark OLED base (`#050810`), Space Grotesk headings, Inter body, JetBrains Mono for data/HUD labels.
-- Every animation is field-related — migration particle streams, pipeline pulses, schema grids, count-up metrics — no decorative motion.
+Genre **atmospheric**, theme **Lumen / Night Foundry**, macrostructure **Corridor**. The
+stamp at the top of `src/styles/globals.css` is the durable record and
+`.hallmark/log.json` is what the next run reads.
+
+- **One accent.** Molten brass `oklch(76% 0.17 50)` on a cool-violet near-black ground
+  `oklch(15% 0.014 265)`. A coral chord `oklch(68% 0.16 18)` is reserved for exactly one
+  word per headline — always the verb — carried by colour plus a 1px underline, never
+  italics.
+- **Three faces.** Instrument Serif display, Geist body, JetBrains Mono labels.
+- **Two registers, scoped.** Display type and the lede render lowercase; mono labels
+  render UPPERCASE. Two deliberate exceptions: proper nouns that carry credibility
+  (employers, units, product names) opt out via `.proper`, and the **flight headlines are
+  sentence case** — the copy is first person, and the lowercase register turns "I
+  automated the job I used to do by hand" into "i automated…", which is a grammar error
+  wearing a design rule.
+- **Colour is OKLCH throughout**, declared once in the `@theme` block and mirrored in
+  `tokens.css`.
+- Motion has three verbs and no more: the camera (`ease: 'none'` — scroll is the clock,
+  and easing a scrubbed camera makes the visitor feel their input being interpreted), the
+  type cut (`power4.out`), and grain. Nothing rotates, nothing parallaxes on a cursor.
 
 ## Performance & accessibility
 
-- Max two WebGL canvases (scroll-world, Skills); everything else is SVG/CSS/GSAP. Instanced geometry only, DPR clamped (1.75 desktop / 1.25 mobile — the flight is fill-rate bound), frameloops pause when offscreen.
-- The flight holds 60fps through a 2× CPU throttle on a mobile viewport and locks to a clean 30fps at 4×+ (p95 ≈ median, so it slows rather than stutters). Overlay writes are skipped for stations parked at zero, and the dust volume streams by translating two tiles instead of re-uploading a vertex buffer each frame.
-- `prefers-reduced-motion` → static stations and instant metric values. No WebGL → 2D fallbacks. Mobile → reduced particle counts and 1280w stills.
-- All content exists as semantic HTML (canvases are `aria-hidden` enhancements): keyboard navigation, `aria-expanded` disclosures, skip link, 4.5:1 contrast on body text.
-- First paint is not gated by the loading intro: the opening station renders underneath the overlay and its copy staggers in once the intro hands off (no flash, no jump). Brand webfonts load non-render-blocking via a `preload`→`stylesheet` swap, with a `<noscript>` fallback.
+- No canvas and no WebGL. The flight is seven `<img>` plates, transforms and opacity
+  only — everything animated is compositor-side, and `will-change` is leased on the
+  flight's `onToggle` rather than held permanently (a standing lease on seven full-bleed
+  plates is real VRAM on a high-DPR phone).
+- `prefers-reduced-motion` collapses the **geometry**, not just the animation: the runway
+  becomes one screen instead of 420svh, the stage un-sticks, and the arc below carries the
+  argument. v5 shipped reduced-motion users the full 13,284px of runway with none of the
+  payoff, which is the worst of both.
+- All content is semantic HTML: keyboard navigation, `aria-expanded` disclosures, a skip
+  link, and a side-rail nav that marks the active section.
+- **Contrast: zero WCAG AA failures** across the rendered page, and the flight is verified
+  the harder way — by screenshotting each scene with the copy hidden and measuring the
+  *brightest actual pixel* behind the headline. Worst case across the whole flight is
+  **6.05:1** against a 4.5:1 floor. That check matters because these plates carry
+  near-white speculars exactly where the headline sits.
+- **Touch targets: every control clears 44×44px** wherever the rail is in its touch
+  layout (≤1023px). Controls that cannot grow without breaking their layout — the 8px
+  composition-bar segments, the 16px rail monogram — carry an invisible expanded hit area.
+- Brand webfonts load non-render-blocking via a `preload`→`stylesheet` swap, with a
+  `<noscript>` fallback.
 
 ## SEO & social
 
 - `public/robots.txt` and `public/sitemap.xml` are published to the site root for crawler discovery.
-- `public/og-image.svg` (1200×630) backs the OpenGraph + Twitter `summary_large_image` cards declared in `index.html` (`og:image`, `og:image:width/height`, `og:locale`, `twitter:image`, `link[rel="me"]`).
+- `public/og-image.png` (1200×630) backs the OpenGraph + Twitter `summary_large_image`
+  cards declared in `index.html`. It is a raster on purpose — LinkedIn, X, Slack, WhatsApp
+  and Facebook all render a blank card for an SVG. `public/og-image.svg` is the editable
+  source of record and `public/og-image.source.html` is the live-webfont render the PNG is
+  captured from.
 
 ## Customization (swap in your own data)
 
@@ -142,7 +229,5 @@ npm run test:e2e:chrome   # production build served via `npm run preview` automa
 npm run test:e2e:all      # chromium + mobile
 ```
 
-Playwright runs with `workers: 2`. Headless Chromium falls back to software GL, and
-several concurrent WebGL contexts uploading full-screen station textures starve each
-other enough to time tests out — that is a harness limit, not the page's (a real
-GPU-backed browser holds 60fps).
+Playwright runs with `workers: 2`. The suite has no WebGL to contend with any more, so the
+old software-GL caveat is gone — 40 tests across chromium and mobile finish in ~10s each.
