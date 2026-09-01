@@ -16,6 +16,7 @@ const SECTIONS = [
   { id: 'arc', label: 'Arc' },
   { id: 'ledger', label: 'Timeline' },
   { id: 'systems', label: 'Systems' },
+  { id: 'skills', label: 'Skills' },
   { id: 'index', label: 'Index' },
   { id: 'contact', label: 'Contact' },
 ] as const

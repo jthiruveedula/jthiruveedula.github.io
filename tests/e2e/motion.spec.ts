@@ -161,7 +161,7 @@ test.describe('scroll-reveal durability', () => {
     await wheelUntil(atTop, -500)
     await page.waitForTimeout(1400)
 
-    const sections = ['ledger', 'systems', 'index', 'contact']
+    const sections = ['ledger', 'systems', 'skills', 'index', 'contact']
     for (const id of sections) {
       const heading = page.locator(`#${id} h2`).first()
       await expect(heading, `${id} heading should not be stranded`).toBeVisible({ timeout: 10000 })

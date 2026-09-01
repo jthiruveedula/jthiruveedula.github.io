@@ -53,7 +53,7 @@ export default function Contact() {
     <section ref={sectionRef} id="contact" aria-labelledby="contact-heading" className="px-6 py-24 md:py-32">
       <div className="mx-auto max-w-[1320px]">
         <p className="eyebrow">
-          <b>05</b> · Contact
+          <b>06</b> · Contact
         </p>
         <div className="contact-headline flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="relative">

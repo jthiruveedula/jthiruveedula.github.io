@@ -9,6 +9,7 @@ import SmoothScroll from '@/components/SmoothScroll'
 
 const Timeline = lazy(() => import('@/components/Timeline'))
 const Projects = lazy(() => import('@/components/Projects'))
+const Skills = lazy(() => import('@/components/Skills'))
 const Metrics = lazy(() => import('@/components/Metrics'))
 const Contact = lazy(() => import('@/components/Contact'))
 
@@ -33,6 +34,11 @@ export default function App() {
         <Suspense fallback={<SectionSkeleton variant="projects" label="systems" />}>
           <ErrorBoundary label="systems">
             <Projects />
+          </ErrorBoundary>
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton variant="skills" label="skills" />}>
+          <ErrorBoundary label="skills">
+            <Skills />
           </ErrorBoundary>
         </Suspense>
         <Suspense fallback={<SectionSkeleton variant="metrics" label="index" />}>

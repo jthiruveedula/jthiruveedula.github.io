@@ -17,7 +17,7 @@ test.describe('portfolio smoke', () => {
 
   test('all sections render on scroll', async ({ page }) => {
     await page.goto('/')
-    for (const id of ['ledger', 'systems', 'index', 'contact']) {
+    for (const id of ['ledger', 'systems', 'skills', 'index', 'contact']) {
       await page.locator(`#${id}`).scrollIntoViewIfNeeded()
       await expect(page.locator(`#${id}`)).toBeVisible()
     }
