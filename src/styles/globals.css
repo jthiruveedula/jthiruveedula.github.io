@@ -76,7 +76,6 @@
   --color-glow: oklch(80% 0.16 50 / 0.42);
   --color-glow-2: oklch(80% 0.16 50 / 0.16);
   --color-paper-emit: oklch(76% 0.17 50 / 0.045);
-  --color-rule-blueprint: oklch(96% 0.006 262 / 0.045);
 
   /* ── Type ──────────────────────────────────────────────────────────────
      Three families, no fourth. Instrument Serif is a 1960s technical-journal
@@ -189,7 +188,6 @@ h2 .proper,
    stat labels, nav rail entries. */
 .hud-label,
 .eyebrow,
-.callout,
 .meter__label,
 .stat__label {
   @apply font-mono;
@@ -209,121 +207,6 @@ h2 .proper,
 .eyebrow b {
   color: var(--color-accent);
   font-weight: 500;
-}
-
-/* ── Blueprint grid ─────────────────────────────────────────────────────
-   The "engineered, not vibed" signal. Sits under the emit wash so the
-   canvas appears to emit *through* the ruling. */
-.blueprint {
-  background:
-    linear-gradient(var(--color-rule-blueprint) 1px, transparent 1px) 0 0 / 48px 48px,
-    linear-gradient(90deg, var(--color-rule-blueprint) 1px, transparent 1px) 0 0 / 48px 48px,
-    radial-gradient(58% 48% at 78% 32%, var(--color-paper-emit) 0%, transparent 65%),
-    var(--color-paper);
-}
-
-/* ── Apparatus: codebase-graph topology ─────────────────────────────────
-   One hand-built object per page. A central node with satellites, hairline
-   edges, and a slow travelling packet — the shape of a data platform, not a
-   glowing orb. Pulses; never rotates. */
-.apparatus {
-  position: relative;
-  width: clamp(230px, 30vw, 400px);
-  aspect-ratio: 1;
-  margin: 0;
-  flex: none;
-}
-.apparatus svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.apparatus__edge {
-  stroke: var(--color-rule-2);
-  stroke-width: 1;
-  fill: none;
-}
-.apparatus__node {
-  fill: var(--color-paper-2);
-  stroke: var(--color-rule-2);
-  stroke-width: 1;
-}
-.apparatus__node--core {
-  fill: oklch(76% 0.17 50 / 0.1);
-  stroke: var(--color-accent);
-}
-.apparatus__core-glow {
-  fill: var(--color-glow-2);
-  /* Kept tight on purpose: a wide soft disc here reads as the glowing orb
-     the theme exists to avoid. This is a lit node inside a topology. */
-  animation: apparatus-pulse var(--dur-pulse) ease-in-out infinite;
-  transform-origin: center;
-}
-.apparatus__packet {
-  fill: var(--color-accent);
-  filter: drop-shadow(0 0 4px var(--color-glow));
-}
-.apparatus__label {
-  font-family: var(--font-mono);
-  font-size: 8.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  fill: var(--color-ink-faint);
-}
-@keyframes apparatus-pulse {
-  0%,
-  100% {
-    opacity: 0.95;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.62;
-    transform: scale(1.06);
-  }
-}
-
-/* Leader-line callouts pinned around the apparatus. Every one carries a real
-   value from the dataset — never a placeholder. */
-.callout-list {
-  position: absolute;
-  inset: 0;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  pointer-events: none;
-}
-.callout {
-  position: absolute;
-  top: var(--y);
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--color-ink-faint);
-}
-.callout[data-side='left'] {
-  right: calc(100% - 0.5rem);
-  flex-direction: row;
-}
-.callout[data-side='right'] {
-  left: calc(100% - 0.5rem);
-}
-.callout::before,
-.callout::after {
-  content: '';
-  height: 1px;
-  width: 1.5rem;
-  background: var(--color-rule-2);
-  flex: none;
-}
-.callout[data-side='left']::after,
-.callout[data-side='right']::before {
-  display: none;
-}
-@media (max-width: 1200px) {
-  .callout-list {
-    display: none;
-  }
 }
 
 /* ── Meter strip ────────────────────────────────────────────────────────
@@ -369,26 +252,34 @@ h2 .proper,
     radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 50 / 0.05) 0%, transparent 62%),
     var(--color-paper-2);
   transition:
-    transform 0.22s var(--ease-soft),
+    translate 0.22s var(--ease-soft),
     border-color 0.22s var(--ease-soft),
     background 0.22s var(--ease-soft);
 }
+/* The lift uses the standalone `translate` property, not `transform`. Every
+   consumer of this class is also a revealFrom() target, and revealFrom's
+   clearProps only drops opacity/visibility — GSAP leaves `transform:
+   translate(0px, 0px)` behind as inline style when the reveal completes. An
+   inline transform beats a class rule, so a transform-based lift would
+   silently stop working the moment a card had been revealed. `translate`
+   composes with `transform` and the reveal never writes it. Still a
+   compositor-only property, so the transform-and-opacity rule holds. */
 .lit-card:hover,
 .lit-card:focus-within {
-  transform: translateY(-4px);
+  translate: 0 -4px;
   border-color: var(--color-rule-2);
   background:
     radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 50 / 0.11) 0%, transparent 62%),
     var(--color-paper-2);
 }
 .lit-card:active {
-  transform: translateY(-1px);
+  translate: 0 -1px;
 }
 @media (prefers-reduced-motion: reduce) {
   .lit-card:hover,
   .lit-card:focus-within,
   .lit-card:active {
-    transform: none;
+    translate: none;
   }
 }
 
@@ -606,8 +497,7 @@ h2 .proper,
    design, the rail wordmark is a 16px monogram) get an invisible expanded hit
    area instead of a taller box. */
 @media (max-width: 1023px) {
-  .skip-link,
-  .filter-pill {
+  .skip-link {
     min-height: 44px;
     display: inline-flex;
     align-items: center;
@@ -620,11 +510,9 @@ h2 .proper,
   .contact-links > li + li {
     margin-top: 0.15rem;
   }
-  .hit-expand,
   .rail__mark {
     position: relative;
   }
-  .hit-expand::after,
   .rail__mark::after {
     content: '';
     position: absolute;
@@ -647,64 +535,6 @@ h2 .proper,
   color: var(--color-ink);
 }
 
-/* Section kicker — retained for components that still use it, restyled as a
-   plain accent tick rather than the old glowing bar. */
-.section-kicker {
-  position: relative;
-  padding-left: 1.25rem;
-}
-.section-kicker::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 8px;
-  height: 1px;
-  background: var(--color-accent);
-}
-
-.section-sweep {
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 1px;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 2;
-}
-.section-sweep__bar {
-  position: absolute;
-  inset: 0;
-  transform-origin: left center;
-  background: linear-gradient(90deg, transparent, var(--color-rule-2) 50%, transparent);
-}
-
-/* ── Interactive card depth ─────────────────────────────────────────────
-   The old cursor-tilt + spotlight is gone: Lumen refuses magnetic cursor
-   effects, and a 3D tilt on a case-study card fought the hairline geometry.
-   `.tilt-card` now resolves to the same lift as `.lit-card` so existing
-   markup keeps a coherent affordance. */
-.tilt-card {
-  transition:
-    transform 0.22s var(--ease-soft),
-    border-color 0.22s var(--ease-soft);
-}
-.tilt-card:hover,
-.tilt-card:focus-within {
-  transform: translateY(-4px);
-}
-.tilt-card:active {
-  transform: translateY(-1px);
-}
-@media (prefers-reduced-motion: reduce) {
-  .tilt-card:hover,
-  .tilt-card:focus-within,
-  .tilt-card:active {
-    transform: none;
-  }
-}
-
 /* Top-of-page scroll progress indicator */
 .scroll-progress {
   position: fixed;
@@ -725,17 +555,6 @@ h2 .proper,
 }
 .skip-link:focus {
   transform: translateY(0);
-}
-
-/* Tactile press feedback for controls that aren't chips or cards. */
-.press-feedback {
-  transition:
-    transform 0.15s var(--ease-out),
-    border-color 0.25s ease,
-    color 0.2s ease;
-}
-.press-feedback:active {
-  transform: scale(0.97);
 }
 
 /* Skeleton shimmer — neutral, no accent streak. */

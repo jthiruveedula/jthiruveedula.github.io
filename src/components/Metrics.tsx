@@ -5,10 +5,7 @@ import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import type { Metric } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
-import SplitText from '@/components/SplitText'
-import Decrypt from '@/components/Decrypt'
-import SectionSweep from '@/components/SectionSweep'
-import ClipReveal from '@/components/ClipReveal'
+import { revealFrom } from '@/lib/motion'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -22,27 +19,9 @@ type Filter = 'All' | CategoryName
 const CATEGORIES: readonly CategoryName[] = ['Cost', 'Scale', 'Reliability', 'AI']
 const FILTERS: readonly Filter[] = ['All', ...CATEGORIES]
 
-/** Composition-bar segment colors, one per category, in the same fixed order. */
-const CATEGORY_ACCENT: Record<CategoryName, string> = {
-  Cost: 'var(--color-accent-300)',
-  Scale: 'var(--color-accent-500)',
-  Reliability: 'var(--color-accent-700)',
-  AI: 'var(--color-accent-900)',
-}
-
-/** How many metrics carry each category as their PRIMARY group (groups[0]) —
- *  drives the composition bar's proportional widths. */
-const compositionCounts: Record<CategoryName, number> = CATEGORIES.reduce(
-  (acc, cat) => {
-    acc[cat] = headlineMetrics.filter((m) => m.groups?.[0] === cat).length
-    return acc
-  },
-  {} as Record<CategoryName, number>,
-)
-
-/** How many metrics carry each category ANYWHERE in groups — drives the pill
- *  counts, deliberately different from the composition bar above. */
-const pillCounts: Record<Filter, number> = CATEGORIES.reduce(
+/** How many metrics carry each category anywhere in `groups`. Printed on the
+ *  filter chip so the reader knows the size of a cut before taking it. */
+const categoryCounts: Record<Filter, number> = CATEGORIES.reduce(
   (acc, cat) => {
     acc[cat] = headlineMetrics.filter((m) => m.groups?.includes(cat)).length
     return acc
@@ -63,7 +42,18 @@ function parseValue(value: string): { prefix: string; number: string; suffix: st
   return { prefix, number, suffix, decimals }
 }
 
-function MetricTile({
+/**
+ * One row of the index. Thirteen of these, not thirteen tiles: a fixed figure
+ * column is what turns thirteen competing headlines into a table you can scan.
+ * Same grid template and same hairline rule as the arc's chapter list above, so
+ * the two lists read as one document.
+ *
+ * `hidden` is the filter mechanism — every row stays mounted because the count-up
+ * holds a ref per label and fires synchronously on the click, before React has
+ * re-rendered. Tailwind's preflight gives `[hidden]` `display: none !important`,
+ * so the `grid` utility below cannot out-specify it.
+ */
+function MetricRow({
   metric,
   visible,
   registerNumberRef,
@@ -78,28 +68,38 @@ function MetricTile({
   return (
     <li
       hidden={!visible}
-      className="metric-tile group relative overflow-hidden rounded-lg border border-neutral-800 bg-ground-2 p-5"
+      className="metric-row grid gap-x-10 gap-y-2 border-b border-rule py-5 md:grid-cols-[13rem_minmax(0,1fr)]"
     >
-      <span
-        aria-hidden="true"
-        className="metric-rule absolute inset-x-0 top-0 h-0.5 origin-left bg-accent-500 transition-colors duration-300 group-hover:bg-accent-300"
-        style={{ transform: 'scaleX(0)' }}
-      />
-      <div className="flex items-start justify-between gap-3">
-        <p className="font-display text-3xl font-semibold tabular-nums text-ink md:text-4xl">
+      <div>
+        <p className="stat__figure text-[clamp(1.5rem,3vw,2rem)]">
           {/* Screen readers get the canonical value; the animated digits are decorative. */}
           <span className="sr-only">{metric.value}</span>
           <span aria-hidden="true">
-            {prefix ? <span className="text-accent-500">{prefix}</span> : null}
+            {prefix ? <span className="text-accent">{prefix}</span> : null}
             <span ref={(el) => registerNumberRef(metric.label, el)} className="metric-number">
               {finalText}
             </span>
-            {suffix ? <span className="text-2xl text-accent-500 md:text-3xl">{suffix}</span> : null}
+            {suffix ? <span className="text-[0.7em] text-accent">{suffix}</span> : null}
           </span>
         </p>
+        {metric.groups?.length ? (
+          <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+            {metric.groups.map((group) => (
+              <li
+                key={group}
+                className="font-mono text-[10.5px] tracking-[0.08em] text-ink-faint proper"
+              >
+                {group}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
-      <p className="hud-label mt-3">{metric.label}</p>
-      {metric.source ? <p className="mt-1 text-[11px] text-neutral-500">{metric.source}</p> : null}
+
+      <div className="min-w-0">
+        <p className="stat__label">{metric.label}</p>
+        {metric.source ? <p className="mt-1.5 text-[11px] text-ink-faint">{metric.source}</p> : null}
+      </div>
     </li>
   )
 }
@@ -111,6 +111,10 @@ export default function Metrics() {
   const numberRefs = useRef(new Map<string, HTMLSpanElement>())
   const activeTweens = useRef(new Map<string, gsap.core.Tween>())
   const gridSweepRef = useRef<HTMLSpanElement>(null)
+  /** The reveal trigger below is replayable by design, so scrolling past #index and
+   *  back would otherwise re-zero all thirteen figures. Explicit filter clicks still
+   *  replay the count freely; only the scroll-entry firing is one-shot. */
+  const counted = useRef(false)
 
   const registerNumberRef = (label: string, el: HTMLSpanElement | null) => {
     if (el) numberRefs.current.set(label, el)
@@ -175,40 +179,28 @@ export default function Metrics() {
     fireGridSweep()
   }
 
-  const toggleSegment = (cat: CategoryName) => {
-    const next: Filter = filter === cat ? 'All' : cat
-    setFilter(next)
-    animateCounts(next, 0.03)
-    fireGridSweep()
-  }
-
   useGSAP(
     () => {
-      const heads = gsap.utils.toArray<HTMLElement>('.index-head')
-      const tiles = gsap.utils.toArray<HTMLElement>('.metric-tile')
-      const rules = gsap.utils.toArray<HTMLElement>('.metric-rule')
-
-      if (reducedMotion) {
-        gsap.set([...heads, ...tiles], { autoAlpha: 1, y: 0 })
-        gsap.set(rules, { scaleX: 1 })
-        return
-      }
-
-      gsap.set(tiles, { autoAlpha: 0, y: 24 })
+      if (reducedMotion) return
 
       const tl = gsap.timeline({
         defaults: { ease: 'power3.out' },
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 75%',
-          once: true,
-          onEnter: () => animateCounts('All', 0.05),
+          // Replayable, so a rebuilt GSAP context can run the reveal again instead of
+          // sitting on a consumed trigger with the from-state still applied.
+          toggleActions: 'play none none none',
+          onEnter: () => {
+            if (counted.current) return
+            counted.current = true
+            animateCounts('All', 0.05)
+          },
         },
       })
 
-      tl.fromTo(heads, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.08 }, 0)
-      tl.to(tiles, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.06 }, 0.15)
-      tl.to(rules, { scaleX: 1, duration: 0.5, stagger: 0.06 }, 0.2)
+      revealFrom(tl, '.index-head', { y: 24, duration: 0.6, stagger: 0.08 }, 0)
+      revealFrom(tl, '.metric-row', { y: 20, duration: 0.6, stagger: 0.05 }, 0.15)
     },
     { scope: sectionRef, dependencies: [reducedMotion], revertOnUpdate: true },
   )
@@ -221,92 +213,75 @@ export default function Metrics() {
       ref={sectionRef}
       id="index"
       aria-labelledby="index-heading"
-      className="relative isolate px-6 py-24 md:py-32"
+      className="relative isolate scroll-mt-24 px-[clamp(20px,4vw,64px)] py-[clamp(64px,10vh,120px)]"
     >
-      <div className="mx-auto max-w-6xl">
-        <ClipReveal>
-          <Decrypt as="p" className="index-head hud-label section-kicker" text="05 · index" />
-          <SectionSweep />
 
-          <div className="mt-3 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-            <h2
-              id="index-heading"
-              className="index-head text-3xl font-semibold text-ink md:text-4xl"
-            >
-              <SplitText as="span">Measured, not claimed.</SplitText>
-            </h2>
-            <p
-              className="index-head font-mono text-xs tracking-[0.14em] text-neutral-500"
-              aria-live="polite"
-            >
-              {shownCount} of {TOTAL_COUNT} figures shown · filtered by category below.
-            </p>
-          </div>
+      <div className="mx-auto max-w-[1320px]">
+        <header className="max-w-[46ch]">
+          <p className="index-head eyebrow">
+            <b>04</b> · The index
+          </p>
+          <h2 id="index-heading" className="index-head text-[clamp(1.7rem,3.6vw,2.8rem)]">
+            Measured, not claimed.
+          </h2>
+          <p className="index-head lede mt-5 text-[clamp(0.95rem,1.1vw,1.05rem)] leading-[1.62] text-ink-muted">
+            Thirteen figures, each one carrying the system it came from. Cut the list down
+            to the ones you care about.
+          </p>
+        </header>
 
-          {/* Category composition bar — segment width is each category's share of
-              metrics by PRIMARY group (groups[0]); clicking one filters to it. */}
-          <div className="index-head mt-8 flex h-2 gap-px bg-ground">
-            {CATEGORIES.map((cat) => {
-              const dimmed = filter !== 'All' && filter !== cat
+        {/* One control, not two. The composition bar that used to sit above this said the
+            same thing in a second grammar — and disagreed with itself, because it counted
+            primary groups while the pills counted every group. Each row now carries its
+            own categories, which is where that information is actually actionable. */}
+        <div
+          role="group"
+          aria-label="Filter figures by category"
+          className="index-head mt-10 flex flex-wrap gap-2"
+        >
+          {FILTERS.map((name) => {
+            const active = filter === name
+            return (
+              <button
+                key={name}
+                type="button"
+                onClick={() => selectFilter(name)}
+                aria-pressed={active}
+                className={active ? 'chip chip--primary' : 'chip'}
+              >
+                {name}
+                <span className="tabular-nums text-ink-faint">
+                  {String(categoryCounts[name]).padStart(2, '0')}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        <p className="index-head stat__label mt-4" aria-live="polite">
+          {shownCount} of {TOTAL_COUNT} figures shown
+        </p>
+
+        <div className="relative mt-8 border-t border-rule">
+          <span
+            ref={gridSweepRef}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 z-10 h-px origin-left bg-accent opacity-0"
+          />
+          <ul>
+            {headlineMetrics.map((metric) => {
+              const visible = filter === 'All' || (metric.groups?.includes(filter) ?? false)
               return (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => toggleSegment(cat)}
-                  aria-pressed={filter === cat}
-                  aria-label={`${cat} — ${compositionCounts[cat]} of ${TOTAL_COUNT} figures by primary category`}
-                  className={`hit-expand h-full transition-opacity duration-200 hover:opacity-100 ${dimmed ? 'opacity-[0.35]' : 'opacity-100'}`}
-                  style={{ flex: `${compositionCounts[cat]} 0 0`, background: CATEGORY_ACCENT[cat] }}
+                <MetricRow
+                  key={metric.label}
+                  metric={metric}
+                  visible={visible}
+                  registerNumberRef={registerNumberRef}
                 />
               )
             })}
-          </div>
-
-          {/* Filter pills — counts here are any-group matches, not primary-only. */}
-          <div
-            role="group"
-            aria-label="Filter metrics by category"
-            className="index-head mt-4 inline-flex flex-wrap gap-1 rounded-full border border-neutral-800 p-1"
-          >
-            {FILTERS.map((name) => {
-              const active = filter === name
-              return (
-                <button
-                  key={name}
-                  type="button"
-                  onClick={() => selectFilter(name)}
-                  aria-pressed={active}
-                  className={`filter-pill rounded-full px-3 py-1 font-mono text-xs tracking-[0.08em] transition-colors duration-200 ${
-                    active ? 'bg-accent-500 text-ground' : 'text-neutral-500 hover:text-ink'
-                  }`}
-                >
-                  {name} ({pillCounts[name]})
-                </button>
-              )
-            })}
-          </div>
-
-          <div className="relative mt-10">
-            <span
-              ref={gridSweepRef}
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 z-10 h-0.5 origin-left bg-accent-500 opacity-0"
-            />
-            <ul className="index-head grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-3 md:gap-4">
-              {headlineMetrics.map((metric) => {
-                const visible = filter === 'All' || (metric.groups?.includes(filter) ?? false)
-                return (
-                  <MetricTile
-                    key={metric.label}
-                    metric={metric}
-                    visible={visible}
-                    registerNumberRef={registerNumberRef}
-                  />
-                )
-              })}
-            </ul>
-          </div>
-        </ClipReveal>
+          </ul>
+        </div>
       </div>
     </section>
   )

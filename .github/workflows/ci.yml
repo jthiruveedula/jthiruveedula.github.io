@@ -98,19 +98,35 @@ jobs:
         run: npm run lint
         continue-on-error: true
 
-      - name: Report lint result
-        if: steps.lint.outcome == 'failure'
-        run: |
-          echo "::warning::Lint reported issues. Continuing build."
-
       - name: Type check
         run: npx tsc --noEmit
+
+      - name: Cache graded scene plates
+        uses: actions/cache@v4
+        with:
+          path: public/scenes
+          key: scenes-${{ runner.os }}-${{ hashFiles('scene-sources/**', 'scripts/grade-scenes.mjs') }}
 
       - name: Build
         run: npm run build
 
+      - name: Get installed Playwright version
+        id: playwright_version
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browser binaries
+        id: playwright_cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ runner.os }}-${{ steps.playwright_version.outputs.version }}
+
       - name: Install Playwright browser
+        if: steps.playwright_cache.outputs.cache-hit != 'true'
         run: npx playwright install chromium
+
+      - name: Install Playwright system deps
+        run: npx playwright install-deps chromium
 
       - name: Run E2E tests
         id: e2e
@@ -153,6 +169,35 @@ jobs:
             test-results
           if-no-files-found: ignore
           retention-days: ${{ env.RETENTION_DAYS }}
+
+      # continue-on-error above exists so the Playwright report still uploads when a
+      # test fails. Without this gate that also meant the job reported SUCCESS on a
+      # failing suite — a green check on a PR was not evidence the tests passed, and
+      # the only real gate was deploy.yml at release time. Runs after the uploads so
+      # the artifacts survive.
+      - name: Gate on lint and test results
+        if: always()
+        run: |
+          failed=0
+          if [ "${{ steps.lint.outcome }}" = "failure" ]; then
+            echo "::error::Lint failed."
+            failed=1
+          fi
+          if [ "${{ steps.e2e.outcome }}" = "failure" ]; then
+            echo "::error::E2E tests failed. See the playwright-report artifact."
+            failed=1
+          fi
+          if [ "$failed" = "1" ]; then
+            {
+              echo "### ❌ CI failed"
+              echo ""
+              echo "| Stage | Result |"
+              echo "|---|---|"
+              echo "| Lint | \`${{ steps.lint.outcome }}\` |"
+              echo "| E2E | \`${{ steps.e2e.outcome }}\` |"
+            } >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
 
       - name: Build complete
         if: success()

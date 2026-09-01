@@ -44,7 +44,7 @@ function StagePath({
   return (
     <div className="mt-6">
       <div className="relative h-4">
-        <span aria-hidden="true" className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-neutral-800" />
+        <span aria-hidden="true" className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-rule" />
         {/* Per-segment draw-in, keyed to match each stage node's own reveal delay
             (j * 90ms below) so the line visibly reaches a node as it pops in,
             instead of one full-width tween running on an unrelated stagger. */}
@@ -148,27 +148,22 @@ export default function ProjectCard({ project, index, isOpen, onToggle }: Projec
   return (
     <article
       ref={cardRef}
-      className={`project-card relative flex flex-col border p-6 transition-colors duration-300 md:p-7 ${
-        isOpen ? 'border-neutral-700 bg-accent-500/5' : 'border-neutral-800 bg-panel/30 hover:border-neutral-600'
-      }`}
+      className="project-card lit-card flex flex-col p-6 md:p-7"
       style={isOpen ? { gridColumn: '1 / -1' } : undefined}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-baseline gap-3">
-          <span className="font-mono text-xs text-neutral-500">{String(index + 1).padStart(2, '0')}</span>
-          {project.client && (
-            <span className="font-mono text-xs uppercase tracking-[0.16em] text-accent-500">{project.client}</span>
-          )}
-        </div>
-        {spotlight && (
-          <span className="font-display text-2xl font-semibold text-accent-500 md:text-3xl">{spotlight.value}</span>
-        )}
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <span className="font-mono text-[11px] tracking-[0.1em] text-accent">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        {project.client && <span className="stat__label">{project.client}</span>}
       </div>
 
-      <h3 className="mt-4 text-xl font-semibold text-ink md:text-2xl">{project.name}</h3>
+      <h3 className="mt-4 text-xl md:text-2xl">{project.name}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-ink-muted">{project.tagline}</p>
       {spotlight && (
-        <p className="mt-2 text-sm leading-relaxed text-neutral-400">
-          {project.tagline} · {spotlight.label}
+        <p className="mt-4">
+          <span className="stat__figure text-[1.35rem]">{spotlight.value}</span>
+          <span className="stat__label ml-2">{spotlight.label}</span>
         </p>
       )}
 
@@ -179,7 +174,7 @@ export default function ProjectCard({ project, index, isOpen, onToggle }: Projec
         onClick={onToggle}
         aria-expanded={isOpen}
         aria-controls={panelId}
-        className="mt-6 inline-flex w-fit min-h-11 items-center border border-neutral-700 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-accent-500 transition-colors hover:bg-accent-500/10"
+        className="chip mt-6 w-fit"
       >
         {isOpen ? '− Hide the build' : '+ Open the wiring'}
       </button>
@@ -198,14 +193,14 @@ export default function ProjectCard({ project, index, isOpen, onToggle }: Projec
         }}
       >
         <div className="overflow-hidden">
-          <div className="mt-8 border-t border-neutral-800 pt-6">
+          <div className="mt-8 border-t border-rule pt-6">
             <div
               className="grid gap-4"
               style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px,1fr))' }}
             >
               {project.stages.map((stage) => (
                 <div key={stage.step}>
-                  <p className={`font-mono text-[10px] uppercase tracking-[0.12em] ${kindText(stage.kind)}`}>
+                  <p className={`font-mono text-[10px] uppercase tracking-[0.1em] ${kindText(stage.kind)}`}>
                     {stage.step}·{stage.kind}
                   </p>
                   <p className="mt-1.5 text-sm font-semibold text-ink">{stage.title}</p>
@@ -214,16 +209,18 @@ export default function ProjectCard({ project, index, isOpen, onToggle }: Projec
               ))}
             </div>
 
-            <div className="mt-8 grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(90px,1fr))' }}>
+            <div className="mt-8 flex flex-wrap items-baseline gap-x-8 gap-y-3">
               {project.metrics.map((m) => (
-                <div key={m.label}>
-                  <p className="font-display text-xl font-semibold text-accent-500 md:text-2xl">{m.value}</p>
-                  <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-400">{m.label}</p>
-                </div>
+                <p key={m.label} className="min-w-0">
+                  <span className="stat__figure text-[1.35rem]">{m.value}</span>
+                  <span className="stat__label ml-2">{m.label}</span>
+                </p>
               ))}
             </div>
 
-            <p className="mt-8 font-mono text-xs text-neutral-400">{project.tech.join('  ·  ')}</p>
+            <p className="mt-8 font-mono text-[10.5px] tracking-[0.08em] text-ink-faint">
+              {project.tech.join('  ·  ')}
+            </p>
           </div>
         </div>
       </div>
