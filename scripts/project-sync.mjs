@@ -1,74 +1,126 @@
 #!/usr/bin/env node
 /**
- * Populate the GitHub Project board with the redesign arc, and give it the fields
- * needed to read it as a history rather than a flat list of closed tickets.
+ * Keep the GitHub Project board in step with the repository.
  *
- * Requires the `project` scope, which the repo token does not carry by default:
+ * The board is derived, not hand-maintained: everything except two deliberate
+ * exceptions is read off the issue/PR itself.
  *
- *     gh auth refresh -s project
+ *   Status   from state        open -> Todo, closed/merged -> Done
+ *   Release  from milestone    "v7.2 — visual primacy" -> v7.2
+ *   Area     from labels       area:dataviz -> dataviz
+ *   Outcome  from state        merged/closed-completed -> Shipped
  *
- * Idempotent — re-running adds nothing twice. Fields that already exist are reused,
- * items already on the board are skipped, and field values are re-applied so a
- * partially-populated board converges rather than duplicating.
+ * `OUTCOME_OVERRIDES` is the only hand-written part, and it exists because state
+ * cannot express intent. A closed issue is not always shipped work: #120 closed
+ * with zero code because the behaviour already existed, and #111 was replaced by a
+ * later PR. Recording either as "Shipped" would assert work that never happened,
+ * which is precisely what a board is supposed to prevent.
  *
- *     node scripts/project-sync.mjs            # apply
- *     node scripts/project-sync.mjs --dry-run  # print the plan, touch nothing
+ * Requires the `project` scope:  gh auth refresh -s project
+ *
+ *   node scripts/project-sync.mjs            # apply
+ *   node scripts/project-sync.mjs --dry-run  # print the plan, touch nothing
+ *   node scripts/project-sync.mjs --only 123 # a single issue/PR, for CI
  */
 import { execFileSync } from 'node:child_process'
 
 const OWNER = 'jthiruveedula'
 const REPO = 'jthiruveedula/jthiruveedula.github.io'
 const PROJECT = '4'
-const DRY = process.argv.includes('--dry-run')
+
+const argv = process.argv.slice(2)
+const DRY = argv.includes('--dry-run')
+const ONLY = (() => {
+  const i = argv.indexOf('--only')
+  return i === -1 ? null : Number(argv[i + 1])
+})()
 
 const sh = (args, { allowFail = false } = {}) => {
   try {
     return execFileSync('gh', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
   } catch (err) {
     if (allowFail) return null
-    const stderr = (err.stderr || '').toString().trim()
-    throw new Error(`gh ${args.join(' ')}\n${stderr}`)
+    throw new Error(`gh ${args.join(' ')}\n${(err.stderr || '').toString().trim()}`)
   }
 }
 const json = (args) => JSON.parse(sh(args) || 'null')
 
-/**
- * The board's content. `outcome` is the honest disposition, which is not always
- * "Done": #120 closed with zero code because the behaviour it asked for already
- * existed, and recording that as Done would assert work that never happened.
- */
-const ITEMS = [
-  { n: 111, release: 'v6.0', area: 'design',  outcome: 'Superseded' },
-  { n: 114, release: 'v7.0', area: 'design',  outcome: 'Shipped' },
-  { n: 112, release: 'v7.1', area: 'design',  outcome: 'Shipped' },
-  { n: 113, release: 'v7.0', area: 'imagery', outcome: 'Shipped' },
-  { n: 115, release: 'v7.1', area: 'design',  outcome: 'Shipped' },
-  { n: 116, release: 'v7.1', area: 'ci',      outcome: 'Shipped' },
-  { n: 117, release: 'v7.2', area: 'dataviz', outcome: 'Shipped' },
-  { n: 118, release: 'v7.2', area: 'imagery', outcome: 'Shipped' },
-  { n: 119, release: 'v7.2', area: 'a11y',    outcome: 'Shipped' },
-  { n: 120, release: 'v7.2', area: 'motion',  outcome: 'Already satisfied' },
-  { n: 121, release: 'v7.2', area: 'motion',  outcome: 'Shipped' },
-  { n: 122, release: 'v7.2', area: 'dataviz', outcome: 'Shipped' },
-]
+/** State cannot express intent; these two closed without shipping what they asked for. */
+const OUTCOME_OVERRIDES = {
+  111: 'Superseded', //  replaced by #114 before it ever merged
+  120: 'Already satisfied', //  closed with zero code — the animation already existed
+}
 
 const FIELDS = [
   { name: 'Release', options: ['v6.0', 'v7.0', 'v7.1', 'v7.2'] },
   { name: 'Area', options: ['design', 'dataviz', 'imagery', 'motion', 'a11y', 'ci'] },
-  // Distinct from Status on purpose. Status says where a card sits; Outcome says
-  // what actually happened to it — including the one that needed no code.
-  { name: 'Outcome', options: ['Shipped', 'Already satisfied', 'Superseded'] },
+  { name: 'Outcome', options: ['Shipped', 'Already satisfied', 'Superseded', 'In flight'] },
 ]
 
-console.log(`${DRY ? 'PLAN' : 'SYNC'} · project ${PROJECT} · ${ITEMS.length} items, ${FIELDS.length} fields\n`)
+/** Milestone title -> Release option. Falls back to the leading vN.N if unlisted. */
+function releaseOf(milestoneTitle) {
+  if (!milestoneTitle) return null
+  const m = /^v(\d+\.\d+)/.exec(milestoneTitle)
+  return m ? `v${m[1]}` : null
+}
 
+/** First `area:*` label wins; a card has one home even when the work touched several. */
+function areaOf(labels) {
+  const hit = (labels ?? []).map((l) => l.name).find((n) => n.startsWith('area:'))
+  if (hit) return hit.slice('area:'.length)
+  return 'design'
+}
+
+function outcomeOf(item) {
+  if (OUTCOME_OVERRIDES[item.number]) return OUTCOME_OVERRIDES[item.number]
+  if (item.state === 'OPEN') return 'In flight'
+  // A PR that closed without merging shipped nothing.
+  if (item.isPr && !item.merged) return 'Superseded'
+  return 'Shipped'
+}
+
+const statusOf = (item) => (item.state === 'OPEN' ? 'Todo' : 'Done')
+
+// ── Gather the repo side ───────────────────────────────────────────────
+const rawIssues = json([
+  'issue', 'list', '-R', REPO, '--state', 'all', '--limit', '200',
+  '--json', 'number,title,state,labels,milestone',
+])
+const rawPrs = json([
+  'pr', 'list', '-R', REPO, '--state', 'all', '--limit', '200',
+  '--json', 'number,title,state,labels,milestone,mergedAt',
+])
+
+const all = [
+  ...rawIssues.map((i) => ({ ...i, isPr: false })),
+  ...rawPrs.map((p) => ({ ...p, isPr: true, merged: Boolean(p.mergedAt) })),
+]
+  // Only things that carry a milestone belong on this board — that is what makes it
+  // the redesign arc rather than every ticket the repo has ever had.
+  .filter((i) => i.milestone && releaseOf(i.milestone.title))
+  .filter((i) => (ONLY ? i.number === ONLY : true))
+  .map((i) => ({
+    number: i.number,
+    title: i.title,
+    isPr: i.isPr,
+    merged: i.merged,
+    state: i.state === 'MERGED' ? 'CLOSED' : i.state,
+    release: releaseOf(i.milestone.title),
+    area: areaOf(i.labels),
+  }))
+  .map((i) => ({ ...i, outcome: outcomeOf(i), status: statusOf(i) }))
+  .sort((a, b) => a.number - b.number)
+
+console.log(`${DRY ? 'PLAN' : 'SYNC'} · project ${PROJECT} · ${all.length} item(s)\n`)
+for (const i of all) {
+  console.log(`  #${String(i.number).padEnd(4)} ${i.release.padEnd(5)} ${i.area.padEnd(8)} ${i.status.padEnd(5)} ${i.outcome}`)
+}
 if (DRY) {
-  for (const f of FIELDS) console.log(`  field  ${f.name.padEnd(8)} ${f.options.join(' · ')}`)
-  console.log()
-  for (const i of ITEMS) {
-    console.log(`  #${String(i.n).padEnd(4)} ${i.release.padEnd(5)} ${i.area.padEnd(8)} ${i.outcome}`)
-  }
   console.log('\nRe-run without --dry-run to apply.')
+  process.exit(0)
+}
+if (!all.length) {
+  console.log('\nNothing to sync.')
   process.exit(0)
 }
 
@@ -77,51 +129,64 @@ const projectId = json(['project', 'view', PROJECT, '--owner', OWNER, '--format'
 let fields = json(['project', 'field-list', PROJECT, '--owner', OWNER, '--format', 'json']).fields
 
 for (const spec of FIELDS) {
-  if (fields.some((f) => f.name === spec.name)) {
-    console.log(`  field  ${spec.name} — exists`)
+  const found = fields.find((f) => f.name === spec.name)
+  if (!found) {
+    sh(['project', 'field-create', PROJECT, '--owner', OWNER, '--name', spec.name,
+        '--data-type', 'SINGLE_SELECT', '--single-select-options', spec.options.join(',')])
+    console.log(`\n  field ${spec.name} — created`)
     continue
   }
-  sh([
-    'project', 'field-create', PROJECT, '--owner', OWNER,
-    '--name', spec.name, '--data-type', 'SINGLE_SELECT',
-    '--single-select-options', spec.options.join(','),
-  ])
-  console.log(`  field  ${spec.name} — created`)
+  // A field can exist while missing an option added later (e.g. "In flight").
+  const missing = spec.options.filter((o) => !(found.options ?? []).some((x) => x.name === o))
+  if (missing.length) console.log(`\n  field ${spec.name} — missing option(s): ${missing.join(', ')} (add in the UI; the API cannot append)`)
 }
 fields = json(['project', 'field-list', PROJECT, '--owner', OWNER, '--format', 'json']).fields
+const byName = Object.fromEntries(fields.map((f) => [f.name, f]))
+const optionId = (field, value) => (byName[field]?.options ?? []).find((o) => o.name === value)?.id ?? null
 
-const fieldByName = Object.fromEntries(fields.map((f) => [f.name, f]))
-const optionId = (fieldName, value) => {
-  const opt = (fieldByName[fieldName]?.options ?? []).find((o) => o.name === value)
-  if (!opt) throw new Error(`no option "${value}" on field "${fieldName}"`)
-  return opt.id
+// ── Add every missing item FIRST, then read the board once ─────────────
+// Projects v2 is eventually consistent. The first version of this script re-read the
+// item list immediately after each add and matched nothing, so it created the board
+// and set zero field values. Batch the writes, then read once.
+const before = json(['project', 'item-list', PROJECT, '--owner', OWNER, '--format', 'json', '--limit', '300'])
+const present = new Set((before.items ?? []).map((it) => it.content?.number))
+
+const added = all.filter((i) => !present.has(i.number))
+for (const i of added) {
+  sh(['project', 'item-add', PROJECT, '--owner', OWNER,
+      '--url', `https://github.com/${REPO}/issues/${i.number}`], { allowFail: true })
+}
+if (added.length) console.log(`\n  added ${added.length} item(s); waiting for the board to settle`)
+
+/** Poll until every expected item is visible, rather than assuming one read is enough. */
+let board = null
+for (let attempt = 0; attempt < 6; attempt++) {
+  board = json(['project', 'item-list', PROJECT, '--owner', OWNER, '--format', 'json', '--limit', '300'])
+  const seen = new Set((board.items ?? []).map((it) => it.content?.number))
+  if (all.every((i) => seen.has(i.number))) break
+  execFileSync('sleep', ['2'])
+}
+const entryOf = new Map((board.items ?? []).map((it) => [it.content?.number, it]))
+
+// ── Field values ───────────────────────────────────────────────────────
+let applied = 0
+const unresolved = []
+for (const i of all) {
+  const entry = entryOf.get(i.number)
+  if (!entry) { unresolved.push(i.number); continue }
+  for (const [field, value] of [['Status', i.status], ['Release', i.release], ['Area', i.area], ['Outcome', i.outcome]]) {
+    const opt = optionId(field, value)
+    if (!opt) continue
+    sh(['project', 'item-edit', '--id', entry.id, '--project-id', projectId,
+        '--field-id', byName[field].id, '--single-select-option-id', opt], { allowFail: true })
+  }
+  applied++
 }
 
-// ── Items ──────────────────────────────────────────────────────────────
-const existing = json(['project', 'item-list', PROJECT, '--owner', OWNER, '--format', 'json', '--limit', '200'])
-const byNumber = new Map((existing.items ?? []).map((it) => [it.content?.number, it]))
-
-for (const item of ITEMS) {
-  let entry = byNumber.get(item.n)
-  if (!entry) {
-    const url = `https://github.com/${REPO}/issues/${item.n}` // works for PRs too
-    sh(['project', 'item-add', PROJECT, '--owner', OWNER, '--url', url])
-    const refreshed = json(['project', 'item-list', PROJECT, '--owner', OWNER, '--format', 'json', '--limit', '200'])
-    entry = (refreshed.items ?? []).find((it) => it.content?.number === item.n)
-    if (!entry) {
-      console.log(`  #${item.n} — added but not found on re-read, skipping fields`)
-      continue
-    }
-  }
-  for (const [fieldName, value] of [['Release', item.release], ['Area', item.area], ['Outcome', item.outcome]]) {
-    sh([
-      'project', 'item-edit', '--id', entry.id, '--project-id', projectId,
-      '--field-id', fieldByName[fieldName].id,
-      '--single-select-option-id', optionId(fieldName, value),
-    ], { allowFail: true })
-  }
-  console.log(`  #${String(item.n).padEnd(4)} ${item.release} / ${item.area} / ${item.outcome}`)
+console.log(`\n  fields applied to ${applied}/${all.length} item(s)`)
+if (unresolved.length) {
+  console.log(`  NOT on the board after retries: ${unresolved.join(', ')} — re-run to converge`)
+  process.exitCode = 1
 }
-
 sh(['project', 'link', PROJECT, '--owner', OWNER, '-R', REPO], { allowFail: true })
-console.log(`\nDone. https://github.com/users/${OWNER}/projects/${PROJECT}`)
+console.log(`\nhttps://github.com/users/${OWNER}/projects/${PROJECT}`)
