@@ -297,7 +297,7 @@ export default function Timeline() {
                 <div className="min-w-0">
                   <p className="flex items-baseline gap-2">
                     <span className="hud-label text-ink-faint">{String(row.ref).padStart(2, '0')}</span>
-                    <span className="truncate font-display text-sm font-semibold text-ink md:text-base">
+                    <span className="truncate font-display text-sm text-ink md:text-base">
                       {row.role.company}
                     </span>
                   </p>
@@ -344,9 +344,14 @@ export default function Timeline() {
                     }}
                   >
                     <p className="hud-label text-[10px] text-ink-muted">{row.periodLabel}</p>
+                    {/* Always shown. This was opacity:0 until hover, which meant the
+                        one quantity the whole chart encodes — how long each engagement
+                        ran — was invisible to keyboard users, invisible on touch, and a
+                        WCAG 1.4.13 failure. Hover now only promotes it from faint to
+                        accent; it never gates it. */}
                     <p
-                      className="hud-label text-[10px] text-accent-500 transition-opacity duration-[250ms]"
-                      style={{ opacity: hoveredIndex === i ? 1 : 0 }}
+                      className="hud-label text-[10px] transition-colors duration-[250ms]"
+                      style={{ color: hoveredIndex === i ? 'var(--color-accent)' : 'var(--color-ink-faint)' }}
                     >
                       {row.durationLabel}
                     </p>

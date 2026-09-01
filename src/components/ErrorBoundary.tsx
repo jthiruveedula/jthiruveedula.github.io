@@ -38,7 +38,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
             className="glass-panel mx-auto my-10 max-w-2xl rounded-2xl border border-panel-edge p-8 text-center"
           >
             <p className="hud-label">module offline</p>
-            <h3 className="mt-3 font-display text-xl font-semibold text-ink">This section hit a snag</h3>
+            <h3 className="mt-3 font-display text-xl text-ink">This section hit a snag</h3>
             <p className="mt-2 text-sm text-ink-muted">
               The rest of the experience is unaffected. Reload to try again.
             </p>

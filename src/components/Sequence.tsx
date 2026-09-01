@@ -1,4 +1,5 @@
 import { worldScenes } from '@/data/scenes'
+import { flightScenes } from '@/data/flight'
 import MeterStrip from '@/components/MeterStrip'
 
 /**
@@ -49,6 +50,30 @@ export default function Sequence() {
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <span className="stat__label proper">{scene.eyebrow}</span>
+
+                  {/* The chapter's own plate, in the column that was already holding
+                      an ordinal and a label in 13rem of otherwise empty track. Small
+                      and lazy on purpose: the arc's job is to be the fast scannable
+                      version you reach by clicking "skip the film", so this anchors
+                      it to the film visually without adding a row of height or a
+                      reason to wait. Ordering matches flightScenes 1:1 for the first
+                      six chapters. */}
+                  {flightScenes[i] ? (
+                    <picture className="arc-plate mt-1 hidden md:block">
+                      <source
+                        type="image/avif"
+                        srcSet={`/scenes/${flightScenes[i].plate}@sm.avif`}
+                      />
+                      <img
+                        src={`/scenes/${flightScenes[i].plate}@sm.avif`}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                        draggable={false}
+                      />
+                    </picture>
+                  ) : null}
                 </div>
 
                 <div className="min-w-0">
