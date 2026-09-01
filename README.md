@@ -84,7 +84,8 @@ src/
   lib/hooks.ts         # useReducedMotion / useInView
   styles/globals.css   # Tailwind v4 @theme tokens + the theme's own components
 tokens.css             # Framework-free mirror of the token set, for reuse elsewhere
-public/scenes/         # Station stills from v3–v5. Retained, no longer referenced.
+scene-sources/         # The 7 original stills. Build inputs, not served.
+public/scenes/         # Graded AVIF plates, generated on prebuild (gitignored).
 ```
 
 Sections below the hero are `React.lazy` code-split; GSAP ships as its own chunk
@@ -145,7 +146,7 @@ decay back into it.
 
 The seven stills were generated in the old era palette (amber legacy / cyan cloud /
 violet AI), which fights the brass accent. `scripts/grade-scenes.mjs` (a `prebuild` step)
-regrades them instead of re-rendering: greyscale, a mild linear lift, then a 256-entry
+regrades them from `scene-sources/` instead of re-rendering: greyscale, a mild linear lift, then a 256-entry
 per-channel LUT interpolated from a 4-stop luminance ramp, out to AVIF at two widths.
 
 The shadow stop is exactly `--color-paper`, so a full-bleed plate and the page

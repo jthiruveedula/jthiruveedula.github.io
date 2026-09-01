@@ -29,8 +29,10 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const SRC = path.join(ROOT, 'public', 'scenes')
-const OUT = path.join(SRC, 'graded')
+// Originals live outside public/ deliberately: they are build inputs, not served
+// assets. Left in public/ they added 2.8MB of unreferenced JPEG to every deploy.
+const SRC = path.join(ROOT, 'scene-sources')
+const OUT = path.join(ROOT, 'public', 'scenes')
 
 /** 4-stop luminance gradient maps. Stops are [luminance, r, g, b]. */
 const RAMPS = {

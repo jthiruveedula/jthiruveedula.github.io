@@ -185,11 +185,11 @@ export default function Flight() {
             <picture>
               <source
                 type="image/avif"
-                srcSet={`/scenes/graded/${s.plate}@sm.avif 1280w, /scenes/graded/${s.plate}.avif 2048w`}
+                srcSet={`/scenes/${s.plate}@sm.avif 1280w, /scenes/${s.plate}.avif 2048w`}
                 sizes="100vw"
               />
               <img
-                src={`/scenes/graded/${s.plate}${i < 2 ? '.jpg' : '.avif'}`}
+                src={`/scenes/${s.plate}${i < 2 ? '.jpg' : '.avif'}`}
                 alt=""
                 aria-hidden="true"
                 decoding={i === 0 ? 'sync' : 'async'}
