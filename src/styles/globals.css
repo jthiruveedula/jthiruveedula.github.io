@@ -1118,7 +1118,6 @@ h2 .proper,
   letter-spacing: var(--tracking-micro);
   text-transform: uppercase;
 }
-.flight__counter-idx { color: var(--color-accent); }
 .flight__counter-year { color: var(--color-ink-faint); }
 
 /* The opt-out, in the first viewport. A visitor who wants the spec sheet is

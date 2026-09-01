@@ -252,12 +252,11 @@ export default function Flight() {
           </ul>
         </div>
 
-        {/* Frame counter — the year you are standing in, borrowed from the Descent
-            direction. Scroll position means "which year", not "how much is left". */}
+        {/* The year you are standing in — scroll position means "which year", not
+            "how far through". There is deliberately no shot counter beside it: the
+            page already has a scroll-progress bar, and an "01/07" would frame a
+            continuous camera move as a slideshow. */}
         <p aria-hidden="true" className="flight__counter">
-          <span className="flight__counter-idx">
-            {String(active + 1).padStart(2, '0')}/{String(flightScenes.length).padStart(2, '0')}
-          </span>
           <span className="flight__counter-year">{scene.year}</span>
         </p>
 
