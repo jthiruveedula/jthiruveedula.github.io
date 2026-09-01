@@ -67,13 +67,12 @@ test.describe('first paint', () => {
     await page.goto('/')
     await expect(page.locator('main')).toBeVisible()
 
-    // Stat-Led hero: the lead figure is the largest element, and the h1 completes
-    // its sentence. The h1 carries the figure as screen-reader-only text so the
-    // heading reads as a whole statement rather than a dangling fragment.
+    // The flight opens on scene one, whose headline is the page's thesis. It is
+    // authored in CSS as the resting state, so this assertion also proves the
+    // no-JS / dead-timeline frame is a true one rather than an empty one.
     const h1 = page.locator('main h1')
     await expect(h1).toHaveCount(1)
-    await expect(h1).toContainText('500+ TiB')
-    await expect(h1).toContainText('BigQuery')
+    await expect(h1).toContainText('I automated the job I used to do by hand')
 
     // The role a recruiter is scanning for still has to be on the first viewport;
     // in v6 it sits in the hero eyebrow above the figure rather than in the h1.

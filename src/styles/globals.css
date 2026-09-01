@@ -1,5 +1,5 @@
-/* Hallmark · genre: atmospheric · macrostructure: Stat-Led · theme: Lumen (drop: night-foundry)
- * enrichment: apparatus — codebase-graph topology (Tier-A, pure CSS/SVG) · nav: N3 side-rail · footer: Ft5 statement
+/* Hallmark · genre: atmospheric · macrostructure: Corridor · theme: Lumen (drop: night-foundry)
+ * enrichment: seven build-time-graded plates composited as depths in one space · nav: N3 side-rail · footer: Ft5 statement
  * paper: oklch(15% 0.014 265) · accent: oklch(76% 0.17 50) molten brass · accent-2: oklch(68% 0.16 18) coral chord
  * axes — paper band: dark · display style: classical-serif · accent hue: warm (50°)
  * tone: engineered / instrument-grade · audience: enterprise hiring managers + staff engineers
@@ -516,6 +516,7 @@ h2 .proper,
     justify-items: stretch;
     align-items: center;
     padding: 0.6rem clamp(14px, 4vw, 24px);
+    column-gap: 0.9rem;
     border-right: 0;
     border-bottom: 1px solid var(--color-rule);
   }
@@ -534,7 +535,14 @@ h2 .proper,
     grid-template-columns: auto;
     min-height: 44px;
     align-content: center;
-    padding: 0.5rem 0.6rem;
+    /* Tightened so all six destinations fit a 390px bar without the last one
+       being clipped off the end of a scroll container nobody will discover. */
+    padding: 0.5rem 0.45rem;
+    font-size: 9px;
+    letter-spacing: 0.11em;
+  }
+  .rail__list {
+    justify-content: flex-end;
   }
   .rail__link::before {
     display: none;
@@ -898,4 +906,251 @@ h2 .proper,
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ── The flight ─────────────────────────────────────────────────────────
+   Seven plates composited as depths in one space rather than as siblings on
+   a page. A sticky stage inside an explicit-height runway: native CSS, no
+   pin, no pin-spacer, correct before JavaScript parses. */
+.flight {
+  position: relative;
+  height: 420svh;
+  /* The stage renders the plates; the runway itself is just travel distance. */
+  background: var(--color-paper);
+}
+.flight__stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: clip;
+  isolation: isolate;
+}
+
+.plane {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform-origin: 50% 46%;
+  backface-visibility: hidden;
+}
+/* Resting state: scene one, fully painted, with its real copy. A dead
+   timeline, a reverted GSAP context or a JS failure lands on a true frame
+   rather than an empty one — the whole defense against v5's blank screen. */
+.plane:first-of-type {
+  opacity: 1;
+  visibility: visible;
+}
+.plane picture,
+.plane img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.plane img {
+  object-fit: cover;
+  object-position: center 48%;
+  user-select: none;
+}
+
+/* A single 1px rule at the height every plate puts its vanishing point.
+   One match cut, held for the whole film. */
+.flight__horizon {
+  position: absolute;
+  inset-inline: 0;
+  top: 46%;
+  height: 1px;
+  background: var(--color-accent);
+  opacity: 0.34;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* Reads as a lens, hides the plate/ground seam, and buys contrast headroom
+   at the frame edges. */
+.flight__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 90% at 50% 44%,
+    transparent 38%,
+    oklch(15% 0.014 265 / 0.55) 78%,
+    oklch(15% 0.014 265 / 0.94) 100%
+  );
+}
+
+.flight__grain {
+  position: absolute;
+  inset: -60px;
+  z-index: 18;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* Translate the layer, never background-position — that is a full-viewport
+     repaint every frame. */
+  animation: grain-drift 0.6s steps(6) infinite;
+}
+@keyframes grain-drift {
+  0% { transform: translate3d(0, 0, 0); }
+  20% { transform: translate3d(-12px, 6px, 0); }
+  40% { transform: translate3d(8px, -10px, 0); }
+  60% { transform: translate3d(-6px, 12px, 0); }
+  80% { transform: translate3d(10px, 4px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* Letterbox — the frame belongs to the viewport, not to any one scene. */
+.flight__stage::before,
+.flight__stage::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  height: 7svh;
+  background: var(--color-paper);
+  z-index: 25;
+  pointer-events: none;
+}
+.flight__stage::before { top: 0; }
+.flight__stage::after { bottom: 0; }
+
+/* Copy sits in a static scrim — never scrubbed, so contrast is a constant
+   rather than a function of scroll position. That was the v5 failure: 8px
+   labels over a plate the driver was actively brightening. */
+.flight__copy {
+  position: absolute;
+  isolation: isolate;
+  z-index: 30;
+  left: 0;
+  bottom: 0;
+  width: min(100%, 62rem);
+  /* `main` is already inset past the rail, so this is plain page gutter. */
+  padding: 0 clamp(20px, 4vw, 64px) clamp(84px, 14svh, 132px);
+}
+/* The scrim is a separate, masked layer rather than a background on the copy
+   box: a plain background paints a rectangle, and its hard top edge reads as a
+   drawn panel sitting on the plate. Masked vertically, it dissolves into the
+   frame instead. It never scrubs, so contrast stays a constant rather than a
+   function of scroll position — the v5 failure was 8px labels over a plate the
+   driver was actively brightening. */
+.flight__copy::before {
+  content: '';
+  position: absolute;
+  inset: -14svh 0 0;
+  z-index: -1;
+  pointer-events: none;
+  /* Held near-opaque across the whole text column, then dropped fast.
+     Measured, not guessed: the plates carry near-white specular pixels
+     (L≈0.95) exactly where the headline sits in scenes 2-4, and a softer ramp
+     put white serif over a white highlight at ~1:1. The falloff starts past
+     the headline's 20ch measure so the frame still opens up to the right. */
+  background: linear-gradient(
+    100deg,
+    var(--color-paper) 0 55%,
+    oklch(15% 0.014 265 / 0.9) 72%,
+    oklch(15% 0.014 265 / 0.5) 86%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(to top, #000 0 58%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0 58%, transparent 100%);
+}
+.flight__eyebrow { margin-bottom: 0.75rem; }
+.flight__headline {
+  font-size: clamp(1.9rem, 4.6vw, 4rem);
+  line-height: 1.03;
+  max-width: 20ch;
+  /* Belt and braces over the scrim: a title-card shadow so a stray hot pixel
+     can never eat a glyph. Invisible against the dark ground it usually sits on. */
+  text-shadow:
+    0 1px 16px oklch(15% 0.014 265 / 0.92),
+    0 0 44px oklch(15% 0.014 265 / 0.7);
+  /* Deliberately NOT lowercased, unlike the rest of the display type. The flight
+     copy is first person, and the lowercase register turns "I automated the job I
+     used to do by hand" into "i automated the job i used to do by hand" — that is
+     a grammar error wearing a design rule. Sentence case here; the arc below keeps
+     the lowercase register. */
+  text-transform: none;
+}
+.flight__kicker {
+  margin-top: 1rem;
+  max-width: 54ch;
+  font-size: clamp(0.9rem, 1.05vw, 1.02rem);
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  overflow: clip;
+}
+.flight__readings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2.25rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-rule);
+  list-style: none;
+}
+.flight__readings li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.flight__readings .stat__figure { font-size: clamp(1.15rem, 1.9vw, 1.6rem); }
+
+.flight__counter {
+  position: absolute;
+  z-index: 30;
+  top: calc(7svh + 1.1rem);
+  right: clamp(20px, 4vw, 64px);
+  display: grid;
+  justify-items: end;
+  gap: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--tracking-micro);
+  text-transform: uppercase;
+}
+.flight__counter-idx { color: var(--color-accent); }
+.flight__counter-year { color: var(--color-ink-faint); }
+
+/* The opt-out, in the first viewport. A visitor who wants the spec sheet is
+   one click from it, which is what turns cinema from an imposition into an
+   offer. */
+.flight__skip {
+  position: absolute;
+  z-index: 30;
+  right: clamp(20px, 4vw, 64px);
+  bottom: calc(7svh + 1.1rem);
+}
+
+@media (max-width: 899px) {
+  .flight { height: 320svh; }
+  .flight__copy {
+    width: 100%;
+    padding-left: clamp(20px, 4vw, 64px);
+  }
+  .flight__copy::before {
+    inset: -22svh 0 0;
+    background: linear-gradient(
+      to top,
+      var(--color-paper) 0 46%,
+      oklch(15% 0.014 265 / 0.86) 72%,
+      transparent 100%
+    );
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .flight__headline { max-width: 100%; }
+  .flight__kicker { display: none; }
+  .flight__skip { display: none; }
+}
+
+/* Reduced motion collapses the geometry, not just the animation. v5 shipped
+   the full 13,284px of runway with none of the payoff, which is the worst of
+   both. Here the runway becomes one screen and the arc below carries the rest. */
+@media (prefers-reduced-motion: reduce) {
+  .flight { height: auto; }
+  .flight__stage { position: static; height: 100svh; }
+  .flight__grain { animation: none; }
 }

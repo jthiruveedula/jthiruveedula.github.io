@@ -30,13 +30,15 @@
     font-size: 132px; line-height: 0.9; letter-spacing: -0.03em;
     color: oklch(96% 0.006 262); margin-top: 26px;
   }
-  h1 {
+  h1.thesis {
     font-family: 'Instrument Serif', Georgia, serif; font-weight: 400;
-    font-size: 52px; line-height: 1.06; letter-spacing: -0.028em;
-    color: oklch(96% 0.006 262); margin-top: 12px; text-transform: lowercase;
-    max-width: 17ch;
+    font-size: 74px; line-height: 1.04; letter-spacing: -0.03em;
+    color: oklch(96% 0.006 262); margin-top: 30px; max-width: 15ch;
   }
-  h1 .proper { text-transform: none; }
+  .sub {
+    margin-top: 20px; max-width: 46ch; font-size: 15.5px; line-height: 1.55;
+    color: oklch(80% 0.009 262);
+  }
   h1 em { font-style: normal; color: oklch(68% 0.16 18); position: relative; white-space: nowrap; }
   h1 em::after {
     content: ''; position: absolute; left: 0.04em; right: 0.04em; bottom: 0.06em;
@@ -77,8 +79,8 @@
 <body>
   <div class="wrap">
     <p class="eyebrow"><b>00</b> &middot; Data &amp; AI Architect &middot; Dallas&ndash;Fort Worth, TX</p>
-    <p class="figure">500+ TiB</p>
-    <h1>of enterprise data <em>moved</em> onto <span class="proper">BigQuery</span>.</h1>
+    <h1 class="thesis">I <em>automated</em> the job I used to do by hand.</h1>
+    <p class="sub">Eleven years: hand-written ETL against Mainframe and Teradata, then petabyte estates onto GCP, now the LLM systems that do the first job &mdash; and the eval harnesses that prove they did it right.</p>
     <div class="stats">
       <div><b>$2M+</b><span>cost saved</span></div>
       <div><b>1B+</b><span>events / day</span></div>

@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import Rail from '@/components/Rail'
+import Flight from '@/components/Flight'
 import Sequence from '@/components/Sequence'
 import ScrollProgress from '@/components/ScrollProgress'
 import SectionSkeleton from '@/components/SectionSkeleton'
@@ -22,6 +23,7 @@ export default function App() {
       {/* The rail is a fixed 4.25rem gutter on desktop and a top bar below
           1024px, so the page content is inset rather than overlapped. */}
       <main id="main" className="pt-16 lg:pt-0 lg:pl-[4.25rem]">
+        <Flight />
         <Sequence />
         <Suspense fallback={<SectionSkeleton variant="timeline" label="timeline" />}>
           <ErrorBoundary label="timeline">

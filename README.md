@@ -92,60 +92,112 @@ Sections below the hero are `React.lazy` code-split; GSAP ships as its own chunk
 
 ## The page shape
 
-**Stat-Led.** The hero leads with the single largest defensible figure (500+ TiB) and a
-headline that completes its sentence, backed by three supporting figures, a meter strip,
-and one hand-built SVG apparatus — a topology graph of six sources ringing a governed
-plane, with leader-line callouts carrying real values from `portfolio.ts`.
+**A corridor, then a document.**
 
-Below it, six career chapters render as a hairline spec sheet: mono ordinal and era on
-the left, chapter and figures on the right.
+The top of the page is one unbroken camera move. Seven plates are composited not as
+siblings on a page but as depths in a single space: a room grows until it passes the
+lens, and the next one is already behind it. Nothing fades in, nothing slides — across
+the whole flight exactly one number changes, the camera's position.
 
-**What v6 removed.** v5 spent 13,284px — roughly sixteen viewports — driving those six
-chapters through a pinned, scroll-scrubbed timeline. Everything past the first station was
-invisible until you had scrolled most of a novel, and a deep link or a restored scroll
-position could land on an empty screen because the pinned timeline had never been driven.
-The chapters are now static DOM: same copy, same figures, ~2k px instead of ~13k, correct
-at any scroll position and with JavaScript doing nothing. Total page height went from
-17,670px to ~7,200px.
+Three things enforce it: fixed letterbox bars that belong to the viewport rather than
+to any scene; a 1px brass horizon rule at 46%, held unchanged through all seven shots
+(every plate in the set puts its vanishing point between 46% and 55%, so the eye locks
+to it — a match cut for the cost of one div); and an equal-power crossfade, `sin²+cos²=1`,
+which for additive-over-black compositing is exactly the fix for the luminance dip you
+get from a naive linear dissolve.
 
-The seven AI-generated station stills are no longer referenced either. They rendered at
-4–8% opacity behind the copy, which read as noise rather than imagery while costing
-fourteen JPEGs of payload. The files stay in `public/scenes/`; the generation prompts stay
-in [SCENE_PLAN.md](./SCENE_PLAN.md) and [ASSET_MANIFEST.md](./ASSET_MANIFEST.md).
+Below the flight, the same argument again as a static spec sheet. That redundancy is
+deliberate — it is what makes the film safe to ship, and it is why the first viewport
+carries a **skip the film** chip. Cinema that gates the evidence is an imposition;
+cinema with the evidence one click below it is an offer.
+
+**The one rule: the image scrubs, the type cuts.** The plate dissolves as a smooth
+function of scroll, but the headline swaps hard at the crossfade midpoint, then plays a
+per-line mask stagger. So at every scroll position exactly one headline is at full
+opacity, and legibility is never a function of scrub position. That is the specific
+defect underneath v5 — it scrubbed `textContent` on its count-ups, so a half-scrolled
+frame showed half-finished numbers, and a cold load advertised
+`0 years · $0 saved · 0 TiB · 0.0% uptime`.
+
+### What v5 got wrong, and what it didn't
+
+v5 was also cinematic, and it was retired for defects that **cinema did not cause**:
+
+| | v5 | v7 |
+| --- | --- | --- |
+| Camera travel | 13,284px over 6 full-viewport pins | 2,880px, zero pins |
+| Sequential beats | 24 | 7 |
+| Dead scroll (nothing new revealed) | ~5,600px, 42% | ~0 |
+| Deep link / restored scroll | could land on a blank screen | resting state is a painted frame |
+| Stills | 4–8% opacity behind copy, 2.8MB of JPEG | full bleed, 1.0MB of AVIF |
+
+The scroll-jail came from choosing 24 *sequential* beats and six pins — beats running
+in parallel inside a scene cost the same distance as one. The blank screen came from a
+hand-rolled scroll driver that bypassed the ScrollTrigger already installed and wired to
+Lenis, leaving off-screen stations in an undefined state. Neither is a property of
+scrubbed cinema. v6 removed the cinema to fix them, which was an over-correction.
+
+`tests/e2e/deep-link.spec.ts` now asserts the blank-screen property directly from every
+entry point the site exposes, plus a mid-page reload, so the structure cannot silently
+decay back into it.
+
+### The grade
+
+The seven stills were generated in the old era palette (amber legacy / cyan cloud /
+violet AI), which fights the brass accent. `scripts/grade-scenes.mjs` (a `prebuild` step)
+regrades them instead of re-rendering: greyscale, a mild linear lift, then a 256-entry
+per-channel LUT interpolated from a 4-stop luminance ramp, out to AVIF at two widths.
+
+The shadow stop is exactly `--color-paper`, so a full-bleed plate and the page
+background share one black point and there is no seam where the film meets the document.
+Scene 03 is split-toned along x — its whole argument is old-left / new-right, which a
+single ramp would erase. Scene 06 runs the coral ramp: six scenes are one hue, and on the
+seventh idea a second colour arrives. It also kills the stock-purple-AI-orb tell, which
+was the weakest thing in the set.
+
+`hue-rotate()` was tested and rejected: it is a linear sRGB matrix, so at the rotation
+that takes cyan to brass it turns 01's amber machines blue and 06 green.
 
 ## Design language
 
-Built with the Hallmark design skill. Genre **atmospheric**, theme **Lumen / Night
-Foundry**, macrostructure **Stat-Led** — the stamp at the top of `src/styles/globals.css`
-is the durable record, and `.hallmark/log.json` is what the next run reads.
+Genre **atmospheric**, theme **Lumen / Night Foundry**, macrostructure **Corridor**. The
+stamp at the top of `src/styles/globals.css` is the durable record and
+`.hallmark/log.json` is what the next run reads.
 
-- **One accent.** Molten brass `oklch(76% 0.17 50)` against a cool-violet near-black
-  ground `oklch(15% 0.014 265)`. A coral chord `oklch(68% 0.16 18)` is reserved for exactly
-  one word per headline — always the verb — carried by colour plus a 1px underline, never
-  italics. The era code is grey resolving into brass; v5's amber/cyan/violet is gone.
-- **Three faces.** Instrument Serif for display, Geist for body, JetBrains Mono for labels.
-- **Two registers.** Display type and the lede render lowercase; mono labels render
-  UPPERCASE. Proper nouns that carry credibility — employers, certifications, product
-  names, units — opt out via `.proper`. Lumen's stock rule lowercases those too, which
-  turned "500+ TiB" into "500+ tib" and "1B+" into "1b+": a different claim, not a
-  different style.
+- **One accent.** Molten brass `oklch(76% 0.17 50)` on a cool-violet near-black ground
+  `oklch(15% 0.014 265)`. A coral chord `oklch(68% 0.16 18)` is reserved for exactly one
+  word per headline — always the verb — carried by colour plus a 1px underline, never
+  italics.
+- **Three faces.** Instrument Serif display, Geist body, JetBrains Mono labels.
+- **Two registers, scoped.** Display type and the lede render lowercase; mono labels
+  render UPPERCASE. Two deliberate exceptions: proper nouns that carry credibility
+  (employers, units, product names) opt out via `.proper`, and the **flight headlines are
+  sentence case** — the copy is first person, and the lowercase register turns "I
+  automated the job I used to do by hand" into "i automated…", which is a grammar error
+  wearing a design rule.
 - **Colour is OKLCH throughout**, declared once in the `@theme` block and mirrored in
-  `tokens.css`. No hex outside the favicon, the social card and the `<meta>` tags.
-- Motion is fade-and-lift only. The apparatus pulses; nothing rotates, nothing parallaxes,
-  and no cursor is tracked.
+  `tokens.css`.
+- Motion has three verbs and no more: the camera (`ease: 'none'` — scroll is the clock,
+  and easing a scrubbed camera makes the visitor feel their input being interpreted), the
+  type cut (`power4.out`), and grain. Nothing rotates, nothing parallaxes on a cursor.
 
 ## Performance & accessibility
 
-- No canvas mounts anywhere — the hero apparatus is inline SVG, the meter strip is 72
-  spans, and every diagram is CSS or SVG. GSAP drives section reveals only.
-- `prefers-reduced-motion` freezes the apparatus packets and collapses every reveal to its
-  final state. The six chapters and all their figures are static text in every path, so
-  nothing depends on an animation having run.
+- No canvas and no WebGL. The flight is seven `<img>` plates, transforms and opacity
+  only — everything animated is compositor-side, and `will-change` is leased on the
+  flight's `onToggle` rather than held permanently (a standing lease on seven full-bleed
+  plates is real VRAM on a high-DPR phone).
+- `prefers-reduced-motion` collapses the **geometry**, not just the animation: the runway
+  becomes one screen instead of 420svh, the stage un-sticks, and the arc below carries the
+  argument. v5 shipped reduced-motion users the full 13,284px of runway with none of the
+  payoff, which is the worst of both.
 - All content is semantic HTML: keyboard navigation, `aria-expanded` disclosures, a skip
   link, and a side-rail nav that marks the active section.
-- **Contrast: zero WCAG AA failures** across the rendered page (audited by resolving every
-  computed `oklch()` through a canvas and checking each text node against its painted
-  background at its real size).
+- **Contrast: zero WCAG AA failures** across the rendered page, and the flight is verified
+  the harder way — by screenshotting each scene with the copy hidden and measuring the
+  *brightest actual pixel* behind the headline. Worst case across the whole flight is
+  **6.05:1** against a 4.5:1 floor. That check matters because these plates carry
+  near-white speculars exactly where the headline sits.
 - **Touch targets: every control clears 44×44px** wherever the rail is in its touch
   layout (≤1023px). Controls that cannot grow without breaking their layout — the 8px
   composition-bar segments, the 16px rail monogram — carry an invisible expanded hit area.
