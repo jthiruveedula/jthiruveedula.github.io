@@ -184,33 +184,38 @@ export default function Timeline() {
       ref={sectionRef}
       id="ledger"
       aria-labelledby="ledger-heading"
-      className="relative border-t-2 border-ink/25 px-6 py-24 md:py-32"
+      className="relative scroll-mt-24 px-[clamp(20px,4vw,64px)] py-[clamp(64px,10vh,120px)]"
     >
-      <div className="mx-auto max-w-6xl">
-        <header className="ledger-head flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
-          <div className="max-w-2xl">
-            <h2 id="ledger-heading" className="font-display text-3xl font-semibold text-ink md:text-4xl">
-              Eleven years, drawn to scale.
-            </h2>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted md:text-base">
-              One bar per engagement, sized by its term. Hover a row to isolate it.
-            </p>
-          </div>
+      <div className="mx-auto max-w-[1320px]">
+        {/* Same head geometry as #arc: mono eyebrow stacked directly above the
+            heading, in the same column. The v5 version was a flex-wrap header with
+            no eyebrow and a heavier 2px top border — it read as a different species
+            of section from the one immediately above it. */}
+        <header className="max-w-[46ch]">
+          <p className="eyebrow">
+            <b>02</b> · The ledger
+          </p>
+          <h2 id="ledger-heading" className="text-[clamp(1.7rem,3.6vw,2.8rem)]">
+            Eleven years, drawn to&nbsp;<em className="verb">scale</em>.
+          </h2>
+          <p className="mt-5 text-[clamp(0.95rem,1.1vw,1.05rem)] leading-[1.62] text-ink-muted">
+            One bar per engagement, sized by its term. Hover a row to isolate it.
+          </p>
         </header>
 
-        <div className="ledger-head mt-8 flex flex-wrap items-center gap-x-8 gap-y-3">
+        <div className="ledger-head mt-12 flex flex-wrap items-baseline gap-x-8 gap-y-3 border-t border-rule pt-6">
           <p className="flex items-baseline gap-2">
-            <span className="font-display text-2xl font-semibold text-ink">{portfolio.experience.length}</span>
-            <span className="hud-label">Roles</span>
+            <span className="stat__figure text-[1.35rem]">{portfolio.experience.length}</span>
+            <span className="stat__label">Roles</span>
           </p>
           <p className="flex items-baseline gap-2">
-            <span className="font-display text-2xl font-semibold text-ink">{portfolio.story.chapters.length}</span>
-            <span className="hud-label">Eras</span>
+            <span className="stat__figure text-[1.35rem]">{portfolio.story.chapters.length}</span>
+            <span className="stat__label">Eras</span>
           </p>
           {MOST_RECENT_ROLE.end === 'present' ? (
             <p className="flex items-center gap-2.5">
               <LiveDot />
-              <span className="hud-label text-accent-500">Currently at {MOST_RECENT_ROLE.company}</span>
+              <span className="stat__label proper text-accent">Currently at {MOST_RECENT_ROLE.company}</span>
             </p>
           ) : null}
         </div>

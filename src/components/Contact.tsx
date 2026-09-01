@@ -3,13 +3,16 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
-import { useInView, useReducedMotion } from '@/lib/hooks'
+import { useReducedMotion } from '@/lib/hooks'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
 const { profile, certifications } = portfolio
 
-const LABEL_CLASS = 'text-[9px] font-semibold tracking-[0.16em] uppercase text-neutral-500'
+// The theme already has this label: mono, 11px, uppercase, ink-faint. The old
+// bespoke 9px version was both smaller than the AA floor allows comfortably and a
+// second vocabulary for the same job.
+const LABEL_CLASS = 'stat__label'
 
 // Word-split for the headline's staggered entrance (rendered as .contact-word spans
 // below) — keep the apostrophe as a real U+2019 char since it's no longer emitted as a
@@ -26,7 +29,6 @@ function splitLocation(location: string): [string, string] {
 export default function Contact() {
   const reduced = useReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
-  const [beaconRef, beaconInView] = useInView<HTMLSpanElement>()
 
   useGSAP(
     () => {
@@ -49,25 +51,12 @@ export default function Contact() {
 
   return (
     <section ref={sectionRef} id="contact" aria-labelledby="contact-heading" className="px-6 py-24 md:py-32">
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-[1320px]">
+        <p className="eyebrow">
+          <b>05</b> · Contact
+        </p>
         <div className="contact-headline flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="relative">
-            {!reduced && (
-              <span
-                ref={beaconRef}
-                aria-hidden="true"
-                className="signal-beacon pointer-events-none absolute left-0 top-1/2 -z-10 size-11 -translate-x-1/2 -translate-y-1/2"
-              >
-                <span
-                  className="signal-ring absolute inset-0 rounded-full border border-accent-500"
-                  style={{ animationPlayState: beaconInView ? 'running' : 'paused' }}
-                />
-                <span
-                  className="signal-ring absolute inset-0 rounded-full border border-accent-500"
-                  style={{ animationDelay: '3.5s', animationPlayState: beaconInView ? 'running' : 'paused' }}
-                />
-              </span>
-            )}
             <h2 id="contact-heading" className="font-display text-[clamp(2rem,5vw,3.6rem)] text-ink">
               {HEADLINE_WORDS.map((word, i) => (
                 // The trailing space must live OUTSIDE the inline-block span — a browser
@@ -163,8 +152,8 @@ export default function Contact() {
           </div>
         </div>
 
-        <footer className="contact-footer mt-16 border-t-2 border-ink/15 pt-6">
-          <p className="text-xs text-ink-muted">
+        <footer className="contact-footer mt-16 border-t border-rule pt-6">
+          <p className="text-xs text-ink-faint">
             {profile.name} · Legacy → Cloud → Enterprise AI
           </p>
         </footer>
