@@ -12,6 +12,11 @@ gsap.registerPlugin(useGSAP, ScrollTrigger)
 const { headlineMetrics } = portfolio
 const TOTAL_COUNT = headlineMetrics.length
 
+/** Volumes first — they are the headline claims and each stands alone. Then the six
+ *  rates as one contiguous block, because six adjacent bars on a shared axis read as
+ *  a chart while six scattered ones read as decoration. The window closes it. */
+const FAMILY_ORDER = { volume: 0, rate: 1, window: 2 } as const
+
 type CategoryName = 'Cost' | 'Scale' | 'Reliability' | 'AI'
 type Filter = 'All' | CategoryName
 
@@ -43,6 +48,47 @@ function parseValue(value: string): { prefix: string; number: string; suffix: st
 }
 
 /**
+ * Which of three scales a figure lives on — and therefore which form can honestly
+ * show it.
+ *
+ * Thirteen figures do NOT share an axis. Six are percentages and genuinely compare
+ * on 0–100. The rest are $2M, 500 TiB, 1B events, 50M documents, 11 years, 3× — five
+ * different units, where a common bar length would be a fabricated comparison. One
+ * is a duration where *lower* is better, which is the opposite polarity from
+ * everything else and is really a ratio against a limit.
+ *
+ * So: bars for the rates, weight for the volumes, a meter for the window. Three
+ * forms because there are three jobs, not one chart pretending there is one.
+ */
+type Family = 'rate' | 'volume' | 'window'
+
+function familyOf(metric: Metric): Family {
+  const { suffix } = parseValue(metric.value)
+  if (suffix.trim() === '%') return 'rate'
+  if (suffix.trim() === 'min') return 'window'
+  return 'volume'
+}
+
+/**
+ * `<30 min` is deliberately NOT plotted. It is an upper bound, not a measurement —
+ * the dataset says "under thirty minutes", not how long it actually took. Drawing it
+ * against a 30-minute limit fills the bar to 100%, which asserts the entire window
+ * was consumed: precisely the opposite of the claim. A bound gets a figure and a
+ * label; only a measured value gets a bar.
+ */
+
+/** What each band is measured against — said once per band rather than once per row. */
+const BANDS: readonly { family: Family; caption: string }[] = [
+  { family: 'volume', caption: 'Volumes · each on its own scale' },
+  { family: 'rate', caption: 'Rates · measured against 100%' },
+  { family: 'window', caption: 'Window · an upper bound, not a measurement' },
+]
+
+const ORDERED_METRICS = [...headlineMetrics].sort(
+  (a, b) => FAMILY_ORDER[familyOf(a)] - FAMILY_ORDER[familyOf(b)],
+)
+
+/**
  * One row of the index. Thirteen of these, not thirteen tiles: a fixed figure
  * column is what turns thirteen competing headlines into a table you can scan.
  * Same grid template and same hairline rule as the arc's chapter list above, so
@@ -64,6 +110,11 @@ function MetricRow({
 }) {
   const { prefix, number, suffix, decimals } = parseValue(metric.value)
   const finalText = Number(number).toFixed(decimals)
+  const family = familyOf(metric)
+  // Rates plot themselves; the window plots as the share of its limit it consumed,
+  // so a shorter bar is the better outcome — which the "of 30 min" label states
+  // outright rather than leaving the reader to infer a flipped polarity.
+  const pct = family === 'rate' ? Math.min(100, Number(number)) : 0
 
   return (
     <li
@@ -99,6 +150,25 @@ function MetricRow({
       <div className="min-w-0">
         <p className="stat__label">{metric.label}</p>
         {metric.source ? <p className="mt-1.5 text-[11px] text-ink-faint">{metric.source}</p> : null}
+
+        {/* The bar is the encoding; the figure beside it is the exact read. Length
+            only — one hue, because colour here would be a second encoding of the
+            same variable. The track is drawn so an empty bar still reads as "0 of
+            100" rather than as a missing element. */}
+        {family === 'rate' ? (
+          <div className="metric-plot mt-3">
+            <div className="relative h-[6px] w-full max-w-[26rem] bg-paper-2" aria-hidden="true">
+              <span
+                className="metric-bar absolute inset-y-0 left-0 w-full origin-left bg-accent"
+                data-pct={pct}
+                /* The true length is the authored resting state, so a no-JS or
+                   reduced-motion visitor sees the real bar rather than an empty
+                   track. The reveal only plays it forward from zero. */
+                style={{ transform: `scaleX(${pct / 100})` }}
+              />
+            </div>
+          </div>
+        ) : null}
       </div>
     </li>
   )
@@ -201,6 +271,21 @@ export default function Metrics() {
 
       revealFrom(tl, '.index-head', { y: 24, duration: 0.6, stagger: 0.08 }, 0)
       revealFrom(tl, '.metric-row', { y: 20, duration: 0.6, stagger: 0.05 }, 0.15)
+
+      // Bars play forward from zero to the length already authored in the markup.
+      // fromTo with an explicit end, never .from() — a reverted context must not be
+      // able to strand a bar at scaleX(0), which would silently read as "0%".
+      gsap.utils.toArray<HTMLElement>('.metric-bar').forEach((bar, i) => {
+        const target = Number(bar.dataset.pct ?? 0) / 100
+        tl.fromTo(
+          bar,
+          { scaleX: 0 },
+          // No clearProps here: the inline transform is the bar's LENGTH, not a
+          // leftover from the animation. Clearing it snapped every bar to full width.
+          { scaleX: target, duration: 0.85, ease: 'power3.out' },
+          0.3 + i * 0.05,
+        )
+      })
     },
     { scope: sectionRef, dependencies: [reducedMotion], revertOnUpdate: true },
   )
@@ -268,19 +353,32 @@ export default function Metrics() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 top-0 z-10 h-px origin-left bg-accent opacity-0"
           />
-          <ul>
-            {headlineMetrics.map((metric) => {
-              const visible = filter === 'All' || (metric.groups?.includes(filter) ?? false)
-              return (
-                <MetricRow
-                  key={metric.label}
-                  metric={metric}
-                  visible={visible}
-                  registerNumberRef={registerNumberRef}
-                />
-              )
-            })}
-          </ul>
+          {BANDS.map(({ family, caption }) => {
+            const rows = ORDERED_METRICS.filter((m) => familyOf(m) === family)
+            const anyVisible = rows.some(
+              (m) => filter === 'All' || (m.groups?.includes(filter) ?? false),
+            )
+            return (
+              <section key={family} hidden={!anyVisible} aria-label={caption}>
+                <p className="metric-row stat__label border-b border-rule py-3 text-ink-faint">
+                  {caption}
+                </p>
+                <ul>
+                  {rows.map((metric) => {
+                    const visible = filter === 'All' || (metric.groups?.includes(filter) ?? false)
+                    return (
+                      <MetricRow
+                        key={metric.label}
+                        metric={metric}
+                        visible={visible}
+                        registerNumberRef={registerNumberRef}
+                      />
+                    )
+                  })}
+                </ul>
+              </section>
+            )
+          })}
         </div>
       </div>
     </section>
