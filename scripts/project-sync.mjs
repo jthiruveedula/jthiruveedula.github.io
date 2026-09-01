@@ -123,5 +123,5 @@ for (const item of ITEMS) {
   console.log(`  #${String(item.n).padEnd(4)} ${item.release} / ${item.area} / ${item.outcome}`)
 }
 
-sh(['project', 'link', PROJECT, '--owner', OWNER, '--repo', REPO], { allowFail: true })
+sh(['project', 'link', PROJECT, '--owner', OWNER, '-R', REPO], { allowFail: true })
 console.log(`\nDone. https://github.com/users/${OWNER}/projects/${PROJECT}`)
