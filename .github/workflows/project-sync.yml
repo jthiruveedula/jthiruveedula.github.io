@@ -1,0 +1,99 @@
+name: Project sync
+
+# Keeps the Project board derived from the repository instead of hand-maintained.
+# Status, Release, Area and Outcome are all read off the issue/PR itself — its
+# state, its milestone, its `area:*` label — so the board cannot drift from
+# reality by being forgotten.
+#
+# SETUP, one step, or every run no-ops:
+#   The built-in GITHUB_TOKEN cannot touch a *user-owned* Project (it is scoped to
+#   the repository, and Projects v2 lives on the user). This needs a fine-grained
+#   PAT with `Projects: Read and write`, stored as the repo secret PROJECTS_TOKEN:
+#
+#     gh secret set PROJECTS_TOKEN -R jthiruveedula/jthiruveedula.github.io
+#
+#   Without it the job logs why it skipped and exits green, rather than failing
+#   every issue edit with a permissions error.
+
+on:
+  issues:
+    types: [opened, closed, reopened, labeled, unlabeled, milestoned, demilestoned]
+  pull_request_target:
+    types: [opened, closed, reopened, labeled, unlabeled, milestoned, demilestoned]
+  # Backfill / repair after editing the script or the labels.
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print the plan without writing to the board"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  # Projects v2 is eventually consistent; concurrent writers race each other and
+  # leave items half-populated. One at a time, and do not cancel a run midway
+  # through applying fields.
+  group: project-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Sync the board
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for the Projects token
+        id: guard
+        env:
+          PROJECTS_TOKEN: ${{ secrets.PROJECTS_TOKEN }}
+        run: |
+          if [ -z "$PROJECTS_TOKEN" ]; then
+            echo "have_token=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "### Project sync skipped"
+              echo ""
+              echo 'No `PROJECTS_TOKEN` secret is set, and the built-in `GITHUB_TOKEN`'
+              echo 'cannot write to a user-owned Project. Add a fine-grained PAT with'
+              echo '`Projects: Read and write`:'
+              echo ""
+              echo '```'
+              echo 'gh secret set PROJECTS_TOKEN -R ${{ github.repository }}'
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "have_token=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.guard.outputs.have_token == 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        if: steps.guard.outputs.have_token == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Sync
+        if: steps.guard.outputs.have_token == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.PROJECTS_TOKEN }}
+          # On an issue/PR event, reconcile only the thing that changed. On a manual
+          # run, reconcile everything — that is the backfill path.
+          ONLY: ${{ github.event.issue.number || github.event.pull_request.number }}
+          DRY: ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: |
+          set -o pipefail
+          if [ -n "$ONLY" ]; then
+            node scripts/project-sync.mjs --only "$ONLY" $DRY | tee sync.log
+          else
+            node scripts/project-sync.mjs $DRY | tee sync.log
+          fi
+          {
+            echo "### Project sync"
+            echo ""
+            echo '```'
+            cat sync.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
