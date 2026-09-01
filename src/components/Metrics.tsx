@@ -304,7 +304,7 @@ export default function Metrics() {
       <div className="mx-auto max-w-[1320px]">
         <header className="max-w-[46ch]">
           <p className="index-head eyebrow">
-            <b>04</b> · The index
+            <b>05</b> · The index
           </p>
           <h2 id="index-heading" className="index-head text-[clamp(1.7rem,3.6vw,2.8rem)]">
             Measured, not claimed.

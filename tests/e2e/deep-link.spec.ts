@@ -11,7 +11,7 @@ import { test, expect } from '@playwright/test'
  *
  * So this asserts the property directly, from every entry point the site exposes.
  */
-const ENTRIES = ['/', '/#top', '/#arc', '/#ledger', '/#systems', '/#index', '/#contact']
+const ENTRIES = ['/', '/#top', '/#arc', '/#ledger', '/#systems', '/#skills', '/#index', '/#contact']
 
 /** Nothing that carries content may be invisible, zero-height or clipped away. */
 async function assertNothingStranded(page: import('@playwright/test').Page) {

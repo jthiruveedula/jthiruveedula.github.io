@@ -76,19 +76,20 @@ function TimelineSkeleton() {
 
 function SkillsSkeleton() {
   return (
-    <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6 md:py-32">
+    <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
       <HeaderBlock />
-      <div className="mt-10 h-[420px] overflow-hidden rounded-2xl border border-panel-edge/60 bg-panel/30 md:h-[540px]">
-        <div className="flex h-full items-center justify-center">
-          <div className="text-center">
-            <Shimmer className="mx-auto h-12 w-48" />
-            <Shimmer className="mx-auto mt-4 h-4 w-64" />
+      <div className="mt-14 border-t border-panel-edge/60">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="grid gap-x-10 gap-y-3 border-b border-panel-edge/60 py-8 md:grid-cols-[10rem_minmax(0,1fr)] lg:grid-cols-[13rem_minmax(0,1fr)]"
+          >
+            <div className="space-y-2">
+              <Shimmer className="h-3 w-16" />
+              <Shimmer className="h-5 w-28" />
+            </div>
+            <Shimmer className="h-4 w-full" />
           </div>
-        </div>
-      </div>
-      <div className="mt-10 flex flex-wrap gap-2">
-        {Array.from({ length: 18 }).map((_, i) => (
-          <Shimmer key={i} className="h-9 w-20 rounded-full" />
         ))}
       </div>
     </div>

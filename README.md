@@ -74,9 +74,9 @@ so a rollback never needs a new release.
 ```
 src/
   components/          # One self-contained section per file (no props; each imports its own data)
-    Rail.tsx             Sequence.tsx      Apparatus.tsx     MeterStrip.tsx
+    Rail.tsx             Sequence.tsx      MeterStrip.tsx
     Timeline.tsx         Projects.tsx      ProjectCard.tsx
-    Metrics.tsx          Contact.tsx
+    Skills.tsx           Metrics.tsx       Contact.tsx
   data/
     types.ts           # Contractual shapes (Era, Skill, Experience, FeaturedProject…)
     portfolio.ts       # THE single content source — every section renders from this
