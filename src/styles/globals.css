@@ -1002,13 +1002,18 @@ h2 .proper,
   100% { transform: translate3d(0, 0, 0); }
 }
 
-/* Letterbox — the frame belongs to the viewport, not to any one scene. */
+/* Letterbox — the frame belongs to the viewport, not to any one scene.
+   These bars are also the title-safe zone: all chrome lives inside them rather
+   than over the plate. Measured reason, not taste — the plates carry regions at
+   L 0.57 behind the top-right corner, where 11px mono ran at 1.2:1. Nothing is
+   legible there without an opaque panel, and an opaque panel over the film is
+   worse than no film. Sized to hold a 44px control. */
 .flight__stage::before,
 .flight__stage::after {
   content: '';
   position: absolute;
   inset-inline: 0;
-  height: 7svh;
+  height: max(7svh, 58px);
   background: var(--color-paper);
   z-index: 25;
   pointer-events: none;
@@ -1027,7 +1032,7 @@ h2 .proper,
   bottom: 0;
   width: min(100%, 62rem);
   /* `main` is already inset past the rail, so this is plain page gutter. */
-  padding: 0 clamp(20px, 4vw, 64px) clamp(84px, 14svh, 132px);
+  padding: 0 clamp(20px, 4vw, 64px) calc(max(7svh, 58px) + clamp(28px, 5svh, 56px));
 }
 /* The scrim is a separate, masked layer rather than a background on the copy
    box: a plain background paints a rectangle, and its hard top edge reads as a
@@ -1101,11 +1106,13 @@ h2 .proper,
 .flight__counter {
   position: absolute;
   z-index: 30;
-  top: calc(7svh + 1.1rem);
+  top: 0;
   right: clamp(20px, 4vw, 64px);
-  display: grid;
-  justify-items: end;
-  gap: 0.3rem;
+  height: max(7svh, 58px);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 0;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: var(--tracking-micro);
@@ -1121,7 +1128,17 @@ h2 .proper,
   position: absolute;
   z-index: 30;
   right: clamp(20px, 4vw, 64px);
-  bottom: calc(7svh + 1.1rem);
+  bottom: 0;
+  height: max(7svh, 58px);
+  min-height: 0;
+  border: 0;
+  padding-inline: 0;
+  color: var(--color-ink-faint);
+}
+.flight__skip:hover,
+.flight__skip:focus-visible {
+  border: 0;
+  color: var(--color-accent);
 }
 
 @media (max-width: 899px) {

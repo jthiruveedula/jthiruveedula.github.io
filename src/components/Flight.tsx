@@ -107,7 +107,16 @@ export default function Flight() {
             setScale[j](Math.pow(2, local * 0.46))
           }
 
-          const index = Math.min(flightScenes.length - 1, Math.max(0, Math.round(position)))
+          // Flip the copy at the crossfade's true midpoint, not at the halfway point
+          // of the scene unit. The plate holds for (1 - BLEND) and only then starts
+          // dissolving, so the incoming plane overtakes the outgoing one at
+          // local = (1 - BLEND) + BLEND/2. Rounding at 0.5 named the next scene while
+          // the previous plate was still at 97% opacity — the label led the picture.
+          const CROSS_MID = 1 - BLEND / 2
+          const index = Math.min(
+            flightScenes.length - 1,
+            Math.max(0, Math.floor(position + (1 - CROSS_MID))),
+          )
           if (index !== lastIndex) {
             lastIndex = index
             setActive(index)
