@@ -74,16 +74,25 @@ export default function Projects() {
         </header>
 
         <div className="mt-14 grid gap-6 md:grid-cols-2">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              index={index}
-              isOpen={openIndex === index}
-              onToggle={() => toggle(index)}
-              featured={project.id === FEATURED_ID}
-            />
-          ))}
+          {projects.map((project, index) => {
+            // The featured card spans both columns on its own; everything after it
+            // sits in the regular 2-col grid. An odd count there leaves the last
+            // card alone with an empty cell beside it — span it too instead.
+            const supportingCount = projects.length - 1
+            const isTrailingOdd =
+              project.id !== FEATURED_ID && index === projects.length - 1 && supportingCount % 2 === 1
+            return (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={index}
+                isOpen={openIndex === index}
+                onToggle={() => toggle(index)}
+                featured={project.id === FEATURED_ID}
+                fillRow={isTrailingOdd}
+              />
+            )
+          })}
         </div>
       </div>
     </section>

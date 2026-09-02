@@ -143,9 +143,20 @@ interface ProjectCardProps {
    *  hierarchy without relying solely on color or boxes"). Everything past this
    *  prop (stage path, expand panel, metrics) is identical to a supporting card. */
   featured?: boolean
+  /** The lone trailing card when the supporting grid has an odd count — spans both
+   *  columns so it doesn't leave an empty cell beside it. Width only, no type-scale
+   *  change (that's `featured`'s job); the two are independent flags. */
+  fillRow?: boolean
 }
 
-export default function ProjectCard({ project, index, isOpen, onToggle, featured = false }: ProjectCardProps) {
+export default function ProjectCard({
+  project,
+  index,
+  isOpen,
+  onToggle,
+  featured = false,
+  fillRow = false,
+}: ProjectCardProps) {
   const [cardRef, inView] = useInView<HTMLElement>()
   const reduced = useReducedMotion()
   const spotlight = project.metrics[0]
@@ -155,7 +166,7 @@ export default function ProjectCard({ project, index, isOpen, onToggle, featured
     <article
       ref={cardRef}
       className={`project-card lit-card flex flex-col ${featured ? 'p-8 md:p-12' : 'p-6 md:p-7'}`}
-      style={featured || isOpen ? { gridColumn: '1 / -1' } : undefined}
+      style={featured || isOpen || fillRow ? { gridColumn: '1 / -1' } : undefined}
     >
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="font-mono text-[11px] tracking-[0.1em] text-accent">
