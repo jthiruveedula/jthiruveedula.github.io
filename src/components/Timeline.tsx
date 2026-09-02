@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react'
+import { Fragment, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import { ERA_COLORS, type Era, type Experience } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
+import { domainSlug, pulseDomainRow, techDomain } from '@/lib/skillMatch'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -124,6 +125,7 @@ export default function Timeline() {
   const sectionRef = useRef<HTMLElement>(null)
   const reducedMotion = useReducedMotion()
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   useGSAP(
     () => {
@@ -283,7 +285,11 @@ export default function Timeline() {
 
           {/* Rows */}
           <ol role="list" className="mt-8 space-y-6">
-            {ROLE_ROWS.map((row, i) => (
+            {ROLE_ROWS.map((row, i) => {
+              const isOpen = openIndex === i
+              const hasDetail = Boolean(row.role.summary) || row.role.highlights.length > 0
+              const detailId = `role-detail-${row.ref}`
+              return (
               <li
                 key={`${row.role.company}-${row.role.start}`}
                 className={`ledger-row grid ${GRID_COLS} items-center gap-4 transition-[opacity,transform] duration-300`}
@@ -302,6 +308,19 @@ export default function Timeline() {
                     </span>
                   </p>
                   <p className="hud-label mt-0.5 text-accent-500">{row.role.title}</p>
+                  {hasDetail && (
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls={detailId}
+                      onClick={() => setOpenIndex(isOpen ? null : i)}
+                      onFocus={() => setHoveredIndex(i)}
+                      onBlur={() => setHoveredIndex(null)}
+                      className="hud-label mt-1.5 text-ink-faint transition-colors hover:text-accent focus-visible:text-accent"
+                    >
+                      {isOpen ? '− hide' : '+ the build'}
+                    </button>
+                  )}
                 </div>
 
                 <div className="relative h-11">
@@ -357,8 +376,74 @@ export default function Timeline() {
                     </p>
                   </div>
                 </div>
+
+                {hasDetail && (
+                  <div
+                    id={detailId}
+                    aria-hidden={!isOpen}
+                    className="grid transition-[grid-template-rows] ease-out"
+                    style={{
+                      gridColumn: '1 / -1',
+                      gridTemplateRows: isOpen ? '1fr' : '0fr',
+                      transitionDuration: reducedMotion ? '0.01ms' : '450ms',
+                    }}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="mt-4 max-w-[68ch] border-t border-rule pt-4">
+                        {row.role.summary && (
+                          <p className="text-sm leading-relaxed text-ink-muted">{row.role.summary}</p>
+                        )}
+                        {row.role.highlights.length > 0 && (
+                          <ul className="mt-4 space-y-2.5">
+                            {row.role.highlights.map((line) => (
+                              <li key={line} className="flex gap-2.5 text-sm leading-relaxed text-ink-muted">
+                                <span aria-hidden="true" className="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-accent-500/60" />
+                                {line}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {row.role.metrics && row.role.metrics.length > 0 && (
+                          <div className="mt-5 flex flex-wrap items-baseline gap-x-8 gap-y-3">
+                            {row.role.metrics.map((m) => (
+                              <p key={m.label} className="min-w-0">
+                                <span className="stat__figure text-[1.2rem]">{m.value}</span>
+                                <span className="stat__label ml-2">{m.label}</span>
+                              </p>
+                            ))}
+                          </div>
+                        )}
+                        {row.role.tech && row.role.tech.length > 0 && (
+                          <p className="mt-5 font-mono text-[10.5px] tracking-[0.08em] text-ink-faint">
+                            {row.role.tech.map((tech, ti) => {
+                              const domain = techDomain(tech)
+                              return (
+                                <Fragment key={tech}>
+                                  {ti > 0 && '  ·  '}
+                                  {domain ? (
+                                    <a
+                                      href={`#${domainSlug(domain)}`}
+                                      className="tech-link"
+                                      title={`${domain} in the toolkit`}
+                                      onClick={() => pulseDomainRow(domain)}
+                                    >
+                                      {tech}
+                                    </a>
+                                  ) : (
+                                    tech
+                                  )}
+                                </Fragment>
+                              )
+                            })}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </li>
-            ))}
+              )
+            })}
           </ol>
         </div>
       </div>
