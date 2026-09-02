@@ -5,7 +5,7 @@
  * can move to another project without dragging Tailwind along. Keep the two in
  * sync — globals.css is the source of truth.
  *
- * Axes — paper band: dark · display style: classical-serif · accent hue: warm (50°)
+ * Axes — paper band: dark · display style: classical-serif · accent hue: cool (215°)
  */
 
 :root {
@@ -24,17 +24,17 @@
   --color-rule-2: oklch(38% 0.013 265);
   --color-rule-blueprint: oklch(96% 0.006 262 / 0.045);
 
-  /* Accent — one molten-brass hue, plus a coral chord reserved for the single
+  /* Accent — one azure hue, plus a coral chord reserved for the single
      verb landmark in a headline. Never more than one accent-coloured word. */
-  --color-accent: oklch(76% 0.17 50);
+  --color-accent: oklch(76% 0.17 215);
   --color-accent-2: oklch(68% 0.16 18);
   --color-accent-ink: oklch(15% 0.014 265);
-  --color-focus: oklch(82% 0.14 50);
+  --color-focus: oklch(82% 0.14 215);
 
   /* Emission — the apparatus is the only thing that generates light. */
-  --color-glow: oklch(80% 0.16 50 / 0.42);
-  --color-glow-2: oklch(80% 0.16 50 / 0.16);
-  --color-paper-emit: oklch(76% 0.17 50 / 0.045);
+  --color-glow: oklch(80% 0.16 215 / 0.42);
+  --color-glow-2: oklch(80% 0.16 215 / 0.16);
+  --color-paper-emit: oklch(76% 0.17 215 / 0.045);
 
   /* Type — three families, no fourth. */
   --font-display: 'Instrument Serif', 'Tiempos Headline', ui-serif, Georgia, serif;

@@ -1,7 +1,13 @@
 /* Hallmark · genre: atmospheric · macrostructure: Corridor · theme: Lumen (drop: night-foundry)
  * enrichment: seven build-time-graded plates composited as depths in one space · nav: N3 side-rail · footer: Ft5 statement
- * paper: oklch(15% 0.014 265) · accent: oklch(76% 0.17 50) molten brass · accent-2: oklch(68% 0.16 18) coral chord
- * axes — paper band: dark · display style: classical-serif · accent hue: warm (50°)
+ * paper: oklch(15% 0.014 265) · accent: oklch(76% 0.17 215) azure signal · accent-2: oklch(68% 0.16 18) coral chord
+ * axes — paper band: dark · display style: classical-serif · accent hue: cool (215°)
+ * v7.4: rehued from the v6 Lumen molten-brass (50°) to azure per the goal spec's
+ * cyan/azure-primary direction. The hero's legacy-era corridor still keeps its own
+ * baked-in amber lighting — that's photographic, not this token, and stays as the
+ * one deliberate warm/human moment the spec allows. accent-2's coral verb-landmark
+ * chord is untouched: it is already a *selective* accent (one word per headline),
+ * not the dominant hue this rehue targets.
  * tone: engineered / instrument-grade · audience: enterprise hiring managers + staff engineers
  * pre-emit critique: P5 H5 E4 S5 R4 V5
  *
@@ -79,32 +85,34 @@
   --color-rule-2: oklch(38% 0.013 265);
 
   /* ── Accent ────────────────────────────────────────────────────────────
-     One molten-brass hue that emits, plus a coral chord reserved for the
-     single verb landmark in the hero headline. The era ramp collapses into
-     the neutrals so the only story told in colour is "grey resolving into
-     brass" — legacy and cloud are grey steps, AI is the accent. */
+     One azure hue that emits, plus a coral chord reserved for the single verb
+     landmark in the hero headline. The era ramp collapses into the neutrals
+     so the only story told in colour is "grey resolving into azure" — legacy
+     and cloud are grey steps, AI is the accent. (v7.4: rehued from the v6
+     Lumen molten-brass 50° to azure 215°, per the goal spec's cyan/azure-
+     primary direction — see the file header.) */
   --color-legacy: oklch(52% 0.011 263);
   --color-cloud: oklch(70% 0.009 262);
-  --color-ai: oklch(76% 0.17 50);
-  --color-accent-200: oklch(93% 0.06 50);
-  --color-accent-300: oklch(88% 0.10 50);
-  --color-accent-400: oklch(82% 0.14 50);
-  --color-accent-500: oklch(76% 0.17 50);
-  --color-accent-600: oklch(68% 0.16 50);
-  --color-accent-700: oklch(58% 0.14 50);
-  --color-accent-800: oklch(46% 0.11 50);
-  --color-accent-900: oklch(34% 0.08 50);
-  --color-accent: oklch(76% 0.17 50);
-  --color-accent-soft: oklch(82% 0.14 50);
+  --color-ai: oklch(76% 0.17 215);
+  --color-accent-200: oklch(93% 0.06 215);
+  --color-accent-300: oklch(88% 0.10 215);
+  --color-accent-400: oklch(82% 0.14 215);
+  --color-accent-500: oklch(76% 0.17 215);
+  --color-accent-600: oklch(68% 0.16 215);
+  --color-accent-700: oklch(58% 0.14 215);
+  --color-accent-800: oklch(46% 0.11 215);
+  --color-accent-900: oklch(34% 0.08 215);
+  --color-accent: oklch(76% 0.17 215);
+  --color-accent-soft: oklch(82% 0.14 215);
   --color-accent-2: oklch(68% 0.16 18);
   --color-success: oklch(78% 0.15 155);
-  --color-focus: oklch(82% 0.14 50);
+  --color-focus: oklch(82% 0.14 215);
 
   /* Emission — the apparatus is the only thing on the page that generates
      light. Cards are *lit from within* at ≤6%; nothing else glows. */
-  --color-glow: oklch(80% 0.16 50 / 0.42);
-  --color-glow-2: oklch(80% 0.16 50 / 0.16);
-  --color-paper-emit: oklch(76% 0.17 50 / 0.045);
+  --color-glow: oklch(80% 0.16 215 / 0.42);
+  --color-glow-2: oklch(80% 0.16 215 / 0.16);
+  --color-paper-emit: oklch(76% 0.17 215 / 0.045);
 
   /* ── Type ──────────────────────────────────────────────────────────────
      Three families, no fourth. Instrument Serif is a 1960s technical-journal
@@ -202,7 +210,7 @@ h2 .proper,
 }
 
 ::selection {
-  background: oklch(76% 0.17 50 / 0.3);
+  background: oklch(76% 0.17 215 / 0.3);
   color: oklch(96% 0.006 262);
 }
 
@@ -278,7 +286,7 @@ h2 .proper,
   position: relative;
   border: 1px solid var(--color-rule);
   background:
-    radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 50 / 0.05) 0%, transparent 62%),
+    radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 215 / 0.05) 0%, transparent 62%),
     var(--color-paper-2);
   transition:
     translate 0.22s var(--ease-soft),
@@ -298,7 +306,7 @@ h2 .proper,
   translate: 0 -4px;
   border-color: var(--color-rule-2);
   background:
-    radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 50 / 0.11) 0%, transparent 62%),
+    radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 215 / 0.11) 0%, transparent 62%),
     var(--color-paper-2);
 }
 .lit-card:active {
@@ -319,7 +327,7 @@ h2 .proper,
   position: relative;
   border: 1px solid var(--color-rule);
   background:
-    radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 50 / 0.05) 0%, transparent 62%),
+    radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 215 / 0.05) 0%, transparent 62%),
     var(--color-paper-2);
 }
 
@@ -507,11 +515,11 @@ h2 .proper,
 .chip--primary {
   border-color: var(--color-accent);
   color: var(--color-accent);
-  background: oklch(76% 0.17 50 / 0.07);
+  background: oklch(76% 0.17 215 / 0.07);
 }
 .chip--primary:hover,
 .chip--primary:focus-visible {
-  background: oklch(76% 0.17 50 / 0.14);
+  background: oklch(76% 0.17 215 / 0.14);
 }
 .chip[aria-disabled='true'] {
   opacity: 0.45;
@@ -547,7 +555,7 @@ h2 .proper,
   content: '';
   position: absolute;
   inset: -0.25rem -1rem;
-  background: oklch(76% 0.17 50 / 0.08);
+  background: oklch(76% 0.17 215 / 0.08);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.6s var(--ease-soft);
