@@ -227,10 +227,14 @@ export default function Timeline() {
           <div className={`ledger-head grid ${GRID_COLS} gap-4`}>
             <span aria-hidden="true" />
             <div className="relative h-4">
-              {AXIS_YEARS.map((year) => (
+              {AXIS_YEARS.map((year, i) => (
                 <span
                   key={year}
-                  className="hud-label absolute top-0 -translate-x-1/2 text-[10px]"
+                  // Below `sm` the label column shrinks to 6.5rem, leaving too little
+                  // track width for every year — a dozen 3-char labels crammed into
+                  // ~240px overlap into an unreadable smear. Thinning to every other
+                  // year is "simplify," not "cram," per the responsive spec.
+                  className={`hud-label absolute top-0 -translate-x-1/2 text-[10px] ${i % 2 === 0 ? '' : 'hidden sm:inline'}`}
                   style={{ left: `${((year - T0) / TSPAN) * 100}%` }}
                 >
                   '{String(year).slice(-2)}
@@ -270,7 +274,11 @@ export default function Timeline() {
           </div>
           <div className={`ledger-head grid ${GRID_COLS} gap-4`}>
             <span aria-hidden="true" />
-            <div className="relative mt-1.5 h-4">
+            {/* Proportional label under each band's own width. Fine once the track has
+                room (>=sm) — below that, the "Enterprise AI" band is often under 30px
+                wide and the text wraps into the next band. A plain flex legend reads
+                better than cramming text into a slice too narrow for it. */}
+            <div className="relative mt-1.5 hidden h-4 sm:block">
               {ERA_BANDS.map((band) => (
                 <span
                   key={band.id}
@@ -281,6 +289,18 @@ export default function Timeline() {
                 </span>
               ))}
             </div>
+          </div>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 sm:hidden">
+            {ERA_BANDS.map((band) => (
+              <span key={band.id} className="hud-label flex items-center gap-1.5 text-[10px]">
+                <span
+                  aria-hidden="true"
+                  className="size-1.5 shrink-0 rounded-full"
+                  style={{ background: ERA_COLORS[band.id] }}
+                />
+                {band.label}
+              </span>
+            ))}
           </div>
 
           {/* Era thesis — the argument the chart's colour bands can only gesture at.
