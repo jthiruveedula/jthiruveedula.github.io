@@ -283,6 +283,30 @@ export default function Timeline() {
             </div>
           </div>
 
+          {/* Era thesis — the argument the chart's colour bands can only gesture at.
+              portfolio.story.chapters carries a blurb (the era's thesis) and a carry
+              line (what it handed the next era) for exactly this reason: "the eras
+              are not a list of jobs, they compound." Three short paragraphs, always
+              visible — this is the section's claim, not a per-role resume dump. */}
+          <div className="ledger-head mt-10 grid gap-8 border-t border-rule pt-8 md:grid-cols-3">
+            {portfolio.story.chapters.map((chapter) => (
+              <div key={chapter.id}>
+                <p className="stat__label" style={{ color: ERA_COLORS[chapter.id] }}>
+                  {chapter.title}
+                </p>
+                <p className="mt-2.5 text-sm leading-relaxed text-ink-muted">{chapter.blurb}</p>
+                {chapter.carry && (
+                  <p className="mt-3 text-sm leading-relaxed">
+                    <span aria-hidden="true" className="text-accent">
+                      →
+                    </span>{' '}
+                    <span className="text-ink-muted">{chapter.carry}</span>
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+
           {/* Rows */}
           <ol role="list" className="mt-8 space-y-6">
             {ROLE_ROWS.map((row, i) => {
