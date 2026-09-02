@@ -138,9 +138,14 @@ interface ProjectCardProps {
   index: number
   isOpen: boolean
   onToggle: () => void
+  /** The one large case study leading the section — bigger type, full-width, no
+   *  competing badge or box; scale alone carries the hierarchy (goal spec: "create
+   *  hierarchy without relying solely on color or boxes"). Everything past this
+   *  prop (stage path, expand panel, metrics) is identical to a supporting card. */
+  featured?: boolean
 }
 
-export default function ProjectCard({ project, index, isOpen, onToggle }: ProjectCardProps) {
+export default function ProjectCard({ project, index, isOpen, onToggle, featured = false }: ProjectCardProps) {
   const [cardRef, inView] = useInView<HTMLElement>()
   const reduced = useReducedMotion()
   const spotlight = project.metrics[0]
@@ -149,8 +154,8 @@ export default function ProjectCard({ project, index, isOpen, onToggle }: Projec
   return (
     <article
       ref={cardRef}
-      className="project-card lit-card flex flex-col p-6 md:p-7"
-      style={isOpen ? { gridColumn: '1 / -1' } : undefined}
+      className={`project-card lit-card flex flex-col ${featured ? 'p-8 md:p-12' : 'p-6 md:p-7'}`}
+      style={featured || isOpen ? { gridColumn: '1 / -1' } : undefined}
     >
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="font-mono text-[11px] tracking-[0.1em] text-accent">
@@ -159,11 +164,15 @@ export default function ProjectCard({ project, index, isOpen, onToggle }: Projec
         {project.client && <span className="stat__label">{project.client}</span>}
       </div>
 
-      <h3 className="mt-4 text-xl md:text-2xl">{project.name}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-ink-muted">{project.tagline}</p>
+      <h3 className={featured ? 'mt-5 text-[clamp(1.6rem,3.2vw,2.5rem)]' : 'mt-4 text-xl md:text-2xl'}>
+        {project.name}
+      </h3>
+      <p className={featured ? 'mt-3 max-w-[52ch] text-base leading-relaxed text-ink-muted' : 'mt-2 text-sm leading-relaxed text-ink-muted'}>
+        {project.tagline}
+      </p>
       {spotlight && (
         <p className="mt-4">
-          <span className="stat__figure text-[1.35rem]">{spotlight.value}</span>
+          <span className={`stat__figure ${featured ? 'text-[1.9rem]' : 'text-[1.35rem]'}`}>{spotlight.value}</span>
           <span className="stat__label ml-2">{spotlight.label}</span>
         </p>
       )}

@@ -9,10 +9,20 @@ import ProjectCard from '@/components/ProjectCard'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
+/** Leads the section as the one large featured case study — the most recent and
+ *  technically deepest of the six (production GenAI: RAG + multi-agent platform).
+ *  Everything else renders as the supporting grid at its regular size. This is the
+ *  "one featured large case study, rest as a tighter grid" layout the goal spec
+ *  asks for instead of six equal-weight cards. */
+const FEATURED_ID = 'wiley-private-llm-rag'
+
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null)
   const reduced = useReducedMotion()
-  const projects = portfolio.featuredProjects
+  // Featured project first, everything else keeps its original relative order.
+  const projects = [...portfolio.featuredProjects].sort((a, b) =>
+    a.id === FEATURED_ID ? -1 : b.id === FEATURED_ID ? 1 : 0,
+  )
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   const toggle = useCallback((index: number) => {
@@ -71,6 +81,7 @@ export default function Projects() {
               index={index}
               isOpen={openIndex === index}
               onToggle={() => toggle(index)}
+              featured={project.id === FEATURED_ID}
             />
           ))}
         </div>
