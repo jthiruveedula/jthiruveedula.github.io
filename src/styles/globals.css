@@ -270,6 +270,7 @@ h2 .proper,
   min-width: 1px;
   background: var(--color-accent);
   border-radius: 0.5px;
+  transform-origin: bottom;
 }
 @media (max-width: 640px) {
   .meter {
