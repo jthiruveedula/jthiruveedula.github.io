@@ -158,19 +158,31 @@ export const portfolio: PortfolioData = {
       "tier": 1
     },
     {
-      "name": "GPT-4o",
+      "name": "GPT-5",
       "domain": "GenAI & LLM",
       "years": 1,
       "tier": 1
     },
     {
-      "name": "Claude Sonnet 4",
+      "name": "Claude Sonnet 5",
       "domain": "GenAI & LLM",
       "years": 1,
       "tier": 2
     },
     {
-      "name": "Gemini 1.5 Pro",
+      "name": "Claude Opus 5",
+      "domain": "GenAI & LLM",
+      "years": 1,
+      "tier": 2
+    },
+    {
+      "name": "Gemini 3.5 Pro",
+      "domain": "GenAI & LLM",
+      "years": 2,
+      "tier": 1
+    },
+    {
+      "name": "Gemini 3.5 Flash",
       "domain": "GenAI & LLM",
       "years": 2,
       "tier": 1
@@ -949,9 +961,9 @@ export const portfolio: PortfolioData = {
       "summary": "Embedded with Wiley leadership to ship private LLM applications end-to-end and deliver a 500+ TiB Snowflake→BigQuery modernization with GenAI-accelerated tooling.",
       "highlights": [
         "Architected production RAG over 50M+ enterprise documents (Vertex AI Vector Search + Pinecone, hybrid retrieval + cross-encoder reranking, grounded citations, multi-agent orchestration with MCP tool interoperability) — 95% answer accuracy on stratified eval (RAGAS faithfulness + human review), 3x analyst productivity, p95 <1.5s; shipped for CXO-level executive reporting.",
-        "Built multi-turn customer service agent with tool-use (order lookup, policy retrieval, ticket routing), PI-redaction guardrails, and A/B routing across GPT-4o / Gemini 1.5 Pro / Claude Sonnet 4 — 60% tier-1 ticket deflection, p95 <2s, >4.3/5 CSAT; deployed in-VPC behind Wiley SSO/SAML with full audit logging.",
+        "Built multi-turn customer service agent with tool-use (order lookup, policy retrieval, ticket routing), PI-redaction guardrails, and A/B routing across GPT-5 / Gemini 3.5 Flash / Gemini 3.5 Pro / Claude Sonnet 5 / Claude Opus 5 — 60% tier-1 ticket deflection, p95 <2s, >4.3/5 CSAT; deployed in-VPC behind Wiley SSO/SAML with full audit logging.",
         "Orchestrated 500+ TiB Snowflake → BigQuery migration with GenAI-accelerated schema-mapping and SQL translation — 40% reduction in manual refactoring, zero data loss across 200+ ETL workflows on Cloud Composer + Dataflow.",
-        "Built LLMOps platform: prompt versioning + eval harness (LangSmith, RAGAS, LLM-as-judge), LoRA fine-tuning for GPT-4o/Gemini/PaLM, MLflow model registry, and hallucination/drift observability (Langfuse, Arize Phoenix); enforced VPC-SC, CMEK, zero data-exfiltration on Kubernetes with GPU-accelerated compute.",
+        "Built LLMOps platform: prompt versioning + eval harness (LangSmith, RAGAS, LLM-as-judge), LoRA fine-tuning for GPT-5/Gemini/PaLM, MLflow model registry, and hallucination/drift observability (Langfuse, Arize Phoenix); enforced VPC-SC, CMEK, zero data-exfiltration on Kubernetes with GPU-accelerated compute.",
         "Redesigned dimensional model, partitioning/clustering, and SCD2 patterns for the 50M+ document corpus; standardized CDC patterns and data-quality gates delivering 99.9% uptime with audit-ready lineage.",
         "Codified reusable RAG + agent patterns adopted by 3 downstream programs; routed 2 model failure modes to the vendor roadmap; automated CI/CD via GitHub Actions; mentored 4 engineers."
       ],
@@ -1019,9 +1031,11 @@ export const portfolio: PortfolioData = {
         "LangSmith",
         "Langfuse",
         "MLflow",
-        "GPT-4o",
-        "Gemini 1.5 Pro",
-        "Claude Sonnet 4",
+        "GPT-5",
+        "Gemini 3.5 Flash",
+        "Gemini 3.5 Pro",
+        "Claude Sonnet 5",
+        "Claude Opus 5",
         "Databricks",
         "Kubernetes",
         "GitHub Actions",
@@ -1583,7 +1597,7 @@ export const portfolio: PortfolioData = {
       "client": "John Wiley & Sons",
       "era": "ai",
       "tagline": "RAG over 50M+ documents at 95% grounded accuracy, plus agents deflecting 60% of tier-1 tickets",
-      "description": "Production RAG over 50M+ enterprise documents (Vertex AI Vector Search + Pinecone, hybrid retrieval + cross-encoder reranking, grounded citations, MCP-based multi-agent orchestration) shipped for CXO reporting — paired with a multi-turn customer service agent with PI-redaction guardrails and A/B routing across GPT-4o / Gemini 1.5 Pro / Claude Sonnet 4, all governed by an LLMOps platform (LangSmith, RAGAS, LLM-as-judge, Langfuse, Arize Phoenix) behind VPC-SC and CMEK.",
+      "description": "Production RAG over 50M+ enterprise documents (Vertex AI Vector Search + Pinecone, hybrid retrieval + cross-encoder reranking, grounded citations, MCP-based multi-agent orchestration) shipped for CXO reporting — paired with a multi-turn customer service agent with PI-redaction guardrails and A/B routing across GPT-5 / Gemini 3.5 Flash / Gemini 3.5 Pro / Claude Sonnet 5 / Claude Opus 5, all governed by an LLMOps platform (LangSmith, RAGAS, LLM-as-judge, Langfuse, Arize Phoenix) behind VPC-SC and CMEK.",
       "before": "Analysts manually searched a 50M+ document corpus and tier-1 support ran fully manual — days-long research with no verifiable citations and slow ticket resolution.",
       "after": "95% grounded answer accuracy and 3x analyst productivity at p95 <1.5s; 60% tier-1 ticket deflection at p95 <2s and >4.3/5 CSAT — in-VPC, behind SSO/SAML, with full audit logging.",
       "metrics": [
@@ -1630,9 +1644,11 @@ export const portfolio: PortfolioData = {
         "LangGraph",
         "LangChain",
         "MCP",
-        "GPT-4o",
-        "Gemini 1.5 Pro",
-        "Claude Sonnet 4",
+        "GPT-5",
+        "Gemini 3.5 Flash",
+        "Gemini 3.5 Pro",
+        "Claude Sonnet 5",
+        "Claude Opus 5",
         "RAGAS",
         "LangSmith",
         "Langfuse",
@@ -1645,7 +1661,7 @@ export const portfolio: PortfolioData = {
         { "step": 1, "kind": "Corpus", "title": "50M+ documents", "detail": "Chunking and embedding strategy" },
         { "step": 2, "kind": "Retrieve", "title": "Vector Search + Pinecone", "detail": "Hybrid retrieval, cross-encoder reranking" },
         { "step": 3, "kind": "Orchestrate", "title": "LangGraph + MCP", "detail": "Multi-agent tool use, human-in-the-loop" },
-        { "step": 4, "kind": "Generate", "title": "A/B model routing", "detail": "GPT-4o / Gemini / Claude Sonnet 4" },
+        { "step": 4, "kind": "Generate", "title": "A/B model routing", "detail": "GPT-5 / Gemini / Claude Sonnet 5" },
         { "step": 5, "kind": "Govern", "title": "LLMOps layer", "detail": "RAGAS, LLM-as-judge, drift observability" }
       ]
     }
