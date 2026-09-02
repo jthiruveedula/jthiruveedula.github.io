@@ -170,6 +170,16 @@ export default function ProjectCard({ project, index, isOpen, onToggle, featured
       <p className={featured ? 'mt-3 max-w-[52ch] text-base leading-relaxed text-ink-muted' : 'mt-2 text-sm leading-relaxed text-ink-muted'}>
         {project.tagline}
       </p>
+      {project.shift && (
+        <p className="mt-3 text-sm">
+          <span className="text-ink-muted">{project.shift.from}</span>
+          <span aria-hidden="true" className="mx-2 text-accent">
+            →
+          </span>
+          <span className="sr-only"> became </span>
+          <span className="text-ink">{project.shift.to}</span>
+        </p>
+      )}
       {spotlight && (
         <p className="mt-4">
           <span className={`stat__figure ${featured ? 'text-[1.9rem]' : 'text-[1.35rem]'}`}>{spotlight.value}</span>
@@ -204,8 +214,10 @@ export default function ProjectCard({ project, index, isOpen, onToggle, featured
       >
         <div className="overflow-hidden">
           <div className="mt-8 border-t border-rule pt-6">
+            <p className="max-w-[62ch] text-sm leading-relaxed text-ink-muted">{project.description}</p>
+
             <div
-              className="grid gap-4"
+              className="mt-8 grid gap-4"
               style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px,1fr))' }}
             >
               {project.stages.map((stage) => (
