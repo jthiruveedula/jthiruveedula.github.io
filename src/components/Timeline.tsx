@@ -425,6 +425,10 @@ export default function Timeline() {
                   <div
                     id={detailId}
                     aria-hidden={!isOpen}
+                    // See ProjectCard's identical panel: aria-hidden alone doesn't
+                    // remove the tech-link anchors from the tab order while the
+                    // panel is visually collapsed. `inert` (React 19) does.
+                    inert={!isOpen}
                     className="grid transition-[grid-template-rows] ease-out"
                     style={{
                       gridColumn: '1 / -1',
