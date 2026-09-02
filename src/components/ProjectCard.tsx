@@ -206,6 +206,11 @@ export default function ProjectCard({ project, index, isOpen, onToggle, featured
       <div
         id={panelId}
         aria-hidden={!isOpen}
+        // aria-hidden alone hides this from the accessibility tree but does not
+        // remove its tech-links from the tab order — a keyboard user could tab
+        // into a link inside a panel the AT tree says doesn't exist. `inert`
+        // (React 19) removes it from both focus and the AX tree while collapsed.
+        inert={!isOpen}
         className="grid transition-[grid-template-rows] ease-out"
         style={{
           gridTemplateRows: isOpen ? '1fr' : '0fr',
