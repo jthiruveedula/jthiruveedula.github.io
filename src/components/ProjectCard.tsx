@@ -1,6 +1,7 @@
 import { Fragment } from 'react'
 import type { FeaturedProject, ProjectFlow, ProjectStage } from '@/data/types'
 import { useInView, useReducedMotion } from '@/lib/hooks'
+import { domainSlug, pulseDomainRow, techDomain } from '@/lib/skillMatch'
 
 /** Only these stage kinds get the cyan accent tint — everything else (including the
  *  named Source/Corpus group) reads as neutral. See the Systems section spec: "gray
@@ -219,7 +220,26 @@ export default function ProjectCard({ project, index, isOpen, onToggle }: Projec
             </div>
 
             <p className="mt-8 font-mono text-[10.5px] tracking-[0.08em] text-ink-faint">
-              {project.tech.join('  ·  ')}
+              {project.tech.map((tech, i) => {
+                const domain = techDomain(tech)
+                return (
+                  <Fragment key={tech}>
+                    {i > 0 && '  ·  '}
+                    {domain ? (
+                      <a
+                        href={`#${domainSlug(domain)}`}
+                        className="tech-link"
+                        title={`${domain} in the toolkit`}
+                        onClick={() => pulseDomainRow(domain)}
+                      >
+                        {tech}
+                      </a>
+                    ) : (
+                      tech
+                    )}
+                  </Fragment>
+                )
+              })}
             </p>
           </div>
         </div>

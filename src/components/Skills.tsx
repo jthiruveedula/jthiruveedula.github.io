@@ -6,6 +6,7 @@ import { portfolio } from '@/data/portfolio'
 import type { Skill } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
 import { revealFrom } from '@/lib/motion'
+import { domainSlug } from '@/lib/skillMatch'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -98,7 +99,12 @@ export default function Skills() {
           {DOMAIN_GROUPS.map((group, i) => (
             <li
               key={group.domain}
-              className="skills-row grid gap-x-10 gap-y-3 border-b border-rule py-8 md:grid-cols-[10rem_minmax(0,1fr)] lg:grid-cols-[13rem_minmax(0,1fr)]"
+              id={domainSlug(group.domain)}
+              // Target of the tech chips in Systems (ProjectCard.tsx) — a project's
+              // tech is cross-linked to the domain it belongs to here, and `:target`
+              // (globals.css) gives the arrival highlight with no JS state to wire
+              // between the two sections.
+              className="skills-row relative scroll-mt-24 grid gap-x-10 gap-y-3 border-b border-rule py-8 md:grid-cols-[10rem_minmax(0,1fr)] lg:grid-cols-[13rem_minmax(0,1fr)]"
             >
               <div>
                 <span className="font-mono text-[11px] tracking-[0.1em] text-accent">

@@ -518,6 +518,45 @@ h2 .proper,
   pointer-events: none;
 }
 
+/* ── Systems → Skills cross-link ───────────────────────────────────────
+   A project's tech list (ProjectCard.tsx) links each recognized term to its
+   domain row in Skills. Inline text, not a chip/box — the tech list already
+   reads as plain mono text; a dotted underline is enough to mark it
+   interactive without borrowing the button treatment above. */
+.tech-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--color-rule-2);
+  text-underline-offset: 3px;
+  transition:
+    color 0.2s var(--ease-soft),
+    text-decoration-color 0.2s var(--ease-soft);
+}
+.tech-link:hover,
+.tech-link:focus-visible {
+  color: var(--color-accent);
+  text-decoration-style: solid;
+  text-decoration-color: var(--color-accent);
+}
+
+/* The addressed domain row in Skills — plain `:target`, so the highlight follows
+   the URL hash with no JS state shared between the two sections. One-shot opacity
+   fade on a pseudo-element (never a box added to the layout, never a loop). */
+.skills-row::before {
+  content: '';
+  position: absolute;
+  inset: -0.25rem -1rem;
+  background: oklch(76% 0.17 50 / 0.08);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s var(--ease-soft);
+}
+.skills-row:target::before,
+.skills-row--hit::before {
+  opacity: 1;
+}
+
 /* ── Touch targets ──────────────────────────────────────────────────────
    Wherever the rail is in its touch layout, every control clears 44px —
    768px is an iPad, not a desktop, so the floor tracks the rail's breakpoint
