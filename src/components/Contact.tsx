@@ -26,6 +26,15 @@ function splitLocation(location: string): [string, string] {
   return i === -1 ? [location, ''] : [location.slice(0, i).trim(), location.slice(i + 1).trim()]
 }
 
+/** "Bachelor of Technology, Electrical Engineering — JNTU, 2015, Hyderabad, India" → the
+ *  degree and everything after the em dash. Same split-and-stack the location line
+ *  already uses — an education entry is one long sentence otherwise, next to a
+ *  Certified column that's a terse list; the degree name is the scannable part. */
+function splitEducation(entry: string): [string, string] {
+  const i = entry.indexOf('—')
+  return i === -1 ? [entry, ''] : [entry.slice(0, i).trim(), entry.slice(i + 1).trim()]
+}
+
 export default function Contact() {
   const reduced = useReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
@@ -151,14 +160,17 @@ export default function Contact() {
           {education.length > 0 && (
             <div>
               <p className={LABEL_CLASS}>Education</p>
-              <p className="mt-4 text-sm text-ink-muted">
-                {education.map((line, i) => (
-                  <span key={line}>
-                    {i > 0 && <br />}
-                    {line}
-                  </span>
-                ))}
-              </p>
+              <ul className="mt-4 space-y-3 text-sm">
+                {education.map((entry) => {
+                  const [degree, detail] = splitEducation(entry)
+                  return (
+                    <li key={entry}>
+                      <p className="text-ink-muted">{degree}</p>
+                      {detail && <p className="mt-0.5 text-xs text-ink-faint">{detail}</p>}
+                    </li>
+                  )
+                })}
+              </ul>
             </div>
           )}
 
