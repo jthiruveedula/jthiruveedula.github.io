@@ -334,7 +334,15 @@ h2 .proper,
 
 /* ── Verb landmark ──────────────────────────────────────────────────────
    Exactly one word per headline, always the verb, coloured with the coral
-   chord and underlined by a 1px rule that draws in once and then stays. */
+   chord and underlined by a 1px rule that draws in once and then stays.
+
+   DRAW verb, on entry, not on mount: the hero's verb is armed unconditionally
+   (it's already on screen at t=0), but every other instance sits below the
+   fold behind a lazy-loaded chunk that resolves within a second or two of
+   navigation — an animation timed off mount alone finished before any real
+   visitor had scrolled anywhere near it. `.verb--armed` is added by each
+   consumer once its own heading is actually in view (`useInView`); the rule
+   holds scaleX(0) until then. */
 .verb {
   font-style: normal;
   color: var(--color-accent-2);
@@ -350,7 +358,10 @@ h2 .proper,
   height: 1px;
   background: var(--color-accent-2);
   transform-origin: left;
-  animation: verb-underline 320ms var(--ease-soft) 700ms backwards;
+  transform: scaleX(0);
+}
+.verb--armed::after {
+  animation: verb-underline 320ms var(--ease-soft) 700ms both;
 }
 @keyframes verb-underline {
   from {

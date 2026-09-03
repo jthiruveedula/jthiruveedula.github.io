@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import { ERA_COLORS, type Era, type Experience } from '@/data/types'
-import { useReducedMotion } from '@/lib/hooks'
+import { useInView, useReducedMotion } from '@/lib/hooks'
 import { domainSlug, pulseDomainRow, techDomain } from '@/lib/skillMatch'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
@@ -126,6 +126,7 @@ export default function Timeline() {
   const reducedMotion = useReducedMotion()
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const [verbRef, verbInView] = useInView<HTMLElement>()
 
   useGSAP(
     () => {
@@ -198,7 +199,11 @@ export default function Timeline() {
             <b>02</b> · The ledger
           </p>
           <h2 id="ledger-heading" className="text-[clamp(1.7rem,3.6vw,2.8rem)]">
-            Eleven years, drawn to&nbsp;<em className="verb">scale</em>.
+            Eleven years, drawn to&nbsp;
+            <em ref={verbRef} className={`verb${verbInView ? ' verb--armed' : ''}`}>
+              scale
+            </em>
+            .
           </h2>
           <p className="mt-5 text-[clamp(0.95rem,1.1vw,1.05rem)] leading-[1.62] text-ink-muted">
             One bar per engagement, sized by its term. Hover a row to isolate it.

@@ -1,6 +1,7 @@
 import { worldScenes } from '@/data/scenes'
 import { flightScenes } from '@/data/flight'
 import MeterStrip from '@/components/MeterStrip'
+import { useInView } from '@/lib/hooks'
 
 /**
  * The arc — the flight's argument, restated as a document.
@@ -15,6 +16,8 @@ import MeterStrip from '@/components/MeterStrip'
  * evidence is an imposition; cinema with the evidence one click below it is an offer.
  */
 export default function Sequence() {
+  const [verbRef, verbInView] = useInView<HTMLElement>()
+
   return (
     <>
       <MeterStrip />
@@ -30,7 +33,10 @@ export default function Sequence() {
             </p>
             <h2 className="text-[clamp(1.7rem,3.6vw,2.8rem)]">
               Legacy, cloud, <span className="proper">AI</span> — one system that kept&nbsp;
-              <em className="verb">compounding</em>.
+              <em ref={verbRef} className={`verb${verbInView ? ' verb--armed' : ''}`}>
+                compounding
+              </em>
+              .
             </h2>
             <p className="mt-5 text-[clamp(0.95rem,1.1vw,1.05rem)] leading-[1.62] text-ink-muted">
               Each chapter handed the next one its vocabulary. Reading COBOL in 2015 is
