@@ -40,6 +40,7 @@ export default function Contact() {
         })
         .from('.contact-word', { y: 24, opacity: 0, duration: 0.6, stagger: 0.08 })
         .from('.contact-cta', { y: 24, opacity: 0, duration: 0.5 }, '-=0.3')
+        .from('.contact-summary', { y: 24, opacity: 0, duration: 0.5 }, '-=0.3')
         .from('.contact-grid', { y: 24, opacity: 0, duration: 0.6 }, '-=0.35')
         .from('.contact-footer', { opacity: 0, duration: 0.5 }, '-=0.3')
     },
@@ -79,6 +80,12 @@ export default function Contact() {
             </a>
           )}
         </div>
+
+        {profile.summary && (
+          <p className="contact-summary mt-8 max-w-[62ch] text-[0.95rem] leading-[1.65] text-ink-muted">
+            {profile.summary}
+          </p>
+        )}
 
         <div
           className="contact-grid mt-14 grid gap-x-10 gap-y-10"
