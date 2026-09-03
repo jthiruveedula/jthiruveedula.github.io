@@ -178,7 +178,9 @@ export default function Flight() {
     wordClassName: 'inline-block overflow-clip align-bottom',
     innerClassName: 'inline-block',
     accentClassName: 'inline-block overflow-clip align-bottom',
-    accentInnerClassName: 'verb inline-block',
+    // Always armed: the hero is on screen at t=0, so mount and "in view" are the
+    // same moment here — no useInView needed, unlike every other .verb instance.
+    accentInnerClassName: 'verb verb--armed inline-block',
   })
 
   return (

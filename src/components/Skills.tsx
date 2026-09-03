@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import type { Skill } from '@/data/types'
-import { useReducedMotion } from '@/lib/hooks'
+import { useInView, useReducedMotion } from '@/lib/hooks'
 import { revealFrom } from '@/lib/motion'
 import { domainSlug } from '@/lib/skillMatch'
 
@@ -52,6 +52,7 @@ const TOTAL_DOMAINS = DOMAIN_GROUPS.length
 export default function Skills() {
   const sectionRef = useRef<HTMLElement>(null)
   const reduced = useReducedMotion()
+  const [verbRef, verbInView] = useInView<HTMLElement>()
 
   useGSAP(
     () => {
@@ -86,7 +87,11 @@ export default function Skills() {
             <b>04</b> · The toolkit
           </p>
           <h2 id="skills-heading" className="skills-head text-[clamp(1.7rem,3.6vw,2.8rem)]">
-            {TOTAL_DOMAINS} domains, <em className="verb">stacked</em> by how deep they run.
+            {TOTAL_DOMAINS} domains,{' '}
+            <em ref={verbRef} className={`verb${verbInView ? ' verb--armed' : ''}`}>
+              stacked
+            </em>{' '}
+            by how deep they run.
           </h2>
           <p className="skills-head mt-5 text-[clamp(0.95rem,1.1vw,1.05rem)] leading-[1.62] text-ink-muted">
             {TOTAL_SKILLS} tools, pulled from the same résumé data every other section reads.
