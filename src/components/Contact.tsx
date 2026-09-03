@@ -7,7 +7,7 @@ import { useReducedMotion } from '@/lib/hooks'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
-const { profile, certifications } = portfolio
+const { profile, certifications, education } = portfolio
 
 // The theme already has this label: mono, 11px, uppercase, ink-faint. The old
 // bespoke 9px version was both smaller than the AA floor allows comfortably and a
@@ -147,6 +147,20 @@ export default function Contact() {
             <p className={LABEL_CLASS}>Certified</p>
             <p className="mt-4 text-sm text-ink-muted">{certLine}</p>
           </div>
+
+          {education.length > 0 && (
+            <div>
+              <p className={LABEL_CLASS}>Education</p>
+              <p className="mt-4 text-sm text-ink-muted">
+                {education.map((line, i) => (
+                  <span key={line}>
+                    {i > 0 && <br />}
+                    {line}
+                  </span>
+                ))}
+              </p>
+            </div>
+          )}
 
           <div>
             <p className={LABEL_CLASS}>Next step</p>
