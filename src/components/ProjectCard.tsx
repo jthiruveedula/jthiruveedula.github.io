@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import type { FeaturedProject, ProjectFlow, ProjectStage } from '@/data/types'
 import { useInView, useReducedMotion } from '@/lib/hooks'
 import { domainSlug, pulseDomainRow, techDomain } from '@/lib/skillMatch'
@@ -25,19 +25,34 @@ const FLOW_DURATION: Record<ProjectFlow, string> = {
  *  read as leading (or, on the wrap, as nearly a full lap behind). */
 const GHOST_LAG = 0.12
 
-/** The horizontal baseline + traveling dot(s) + stage nodes. One per card. */
+/** The horizontal baseline + traveling dot(s) + stage nodes. One per card.
+ *
+ * TRACE — a fourth verb alongside the page's CUT/DRAW/SETTLE/GRADE, and the only
+ * one gated on click rather than scroll or load: the accent fill from the wire's
+ * start to whichever node the visitor picked. It answers "trace the path" —
+ * clicking Serve doesn't just show Serve's detail, it lights up Source→Retrieve→
+ * Orchestrate→Serve as the route the data actually took to get there. Direct
+ * manipulation, never ambient: it only ever moves in response to a click, holds
+ * still otherwise, and — like every reveal in this codebase — resting state is
+ * "unselected, fill at zero," which a dead click handler or SSR without JS render
+ * correctly on its own, not "stranded mid-trace."
+ */
 function StagePath({
   flow,
   stages,
   index,
   inView,
   reduced,
+  activeStage,
+  onSelectStage,
 }: {
   flow: ProjectFlow
   stages: ProjectStage[]
   index: number
   inView: boolean
   reduced: boolean
+  activeStage: number | null
+  onSelectStage: (stageIndex: number) => void
 }) {
   const dotCount = flow === 'stream' ? 3 : 1
   const segments = stages.length - 1
@@ -63,6 +78,20 @@ function StagePath({
               }}
             />
           ))}
+        {/* The trace itself — one continuous accent bar from the start to the
+            selected node, above the ambient dots and the neutral segments below
+            it. `width`, not `scaleX`: the trace's origin is fixed at the wire's
+            start regardless of which node is selected, so a transform whose
+            percentage meaning changes with every click would fight its own
+            transition. Reduced motion still gets the trace; only its animation
+            is what reduced-motion strips globally, not the state it represents. */}
+        {segments > 0 && (
+          <span
+            aria-hidden="true"
+            className="absolute top-1/2 left-0 h-[2px] -translate-y-1/2 bg-accent-500 transition-[width] duration-500 ease-out"
+            style={{ width: activeStage === null ? '0%' : `${(activeStage / segments) * 100}%` }}
+          />
+        )}
         {!reduced &&
           Array.from({ length: dotCount }, (_, d) => {
             const delay = index * 0.35 + d * 0.7
@@ -102,30 +131,42 @@ function StagePath({
         {stages.map((stage, j) => {
           const isFirst = j === 0
           const isLast = j === stages.length - 1
+          const selected = activeStage === j
           return (
-            <div
+            <button
               key={stage.step}
-              className="absolute top-0"
+              type="button"
+              // A real button, not a styled div: every node is keyboard-reachable
+              // on its own Tab stop and fires with Enter/Space for free. Five
+              // small stops in reading order needs no roving-tabindex toolbar
+              // pattern on top of that.
+              onClick={() => onSelectStage(j)}
+              aria-pressed={selected}
+              aria-label={`${stage.kind}: ${stage.title}`}
+              className="absolute top-0 -m-2 cursor-pointer p-2 text-left"
               style={{ left: `${(j / (stages.length - 1)) * 100}%` }}
             >
               <span
                 aria-hidden="true"
-                className={`block size-2 rounded-full transition-[transform,opacity] duration-500 ${kindDot(stage.kind)}`}
+                className={`block size-2 rounded-full transition-[transform,opacity] duration-500 ${
+                  selected ? 'bg-accent-500' : kindDot(stage.kind)
+                }`}
                 style={{
-                  transform: inView ? 'scale(1)' : 'scale(0)',
+                  transform: inView ? (selected ? 'scale(1.4)' : 'scale(1)') : 'scale(0)',
                   opacity: inView ? 1 : 0,
                   transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
                   transitionDelay: `${j * 90}ms`,
                 }}
               />
               <span
-                className={`mt-1.5 block whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.1em] ${kindText(stage.kind)} ${
-                  isFirst ? '' : isLast ? '-translate-x-full' : '-translate-x-1/2'
-                }`}
+                aria-hidden="true"
+                className={`mt-1.5 block whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.1em] transition-colors ${
+                  selected ? 'text-accent-500' : kindText(stage.kind)
+                } ${isFirst ? '' : isLast ? '-translate-x-full' : '-translate-x-1/2'}`}
               >
                 {stage.kind}
               </span>
-            </div>
+            </button>
           )
         })}
       </div>
@@ -161,6 +202,23 @@ export default function ProjectCard({
   const reduced = useReducedMotion()
   const spotlight = project.metrics[0]
   const panelId = `stage-detail-${project.id}`
+
+  // Which stage the visitor is tracing, if any. Local rather than lifted: unlike
+  // `isOpen` (one card open at a time, so the parent has to arbitrate), a trace
+  // selection never competes with a sibling card's — each card can hold its own
+  // without anyone else needing to know.
+  const [activeStage, setActiveStage] = useState<number | null>(null)
+  // A closed card with a stale selection would reopen already mid-trace, which
+  // reads as remembering something the visitor never asked it to. Closed is a
+  // clean slate — this is the only thing that resets it.
+  useEffect(() => {
+    if (!isOpen) setActiveStage(null)
+  }, [isOpen])
+
+  const selectStage = (stageIndex: number) => {
+    if (!isOpen) onToggle()
+    setActiveStage(stageIndex)
+  }
 
   return (
     <article
@@ -198,7 +256,15 @@ export default function ProjectCard({
         </p>
       )}
 
-      <StagePath flow={project.flow} stages={project.stages} index={index} inView={inView} reduced={reduced} />
+      <StagePath
+        flow={project.flow}
+        stages={project.stages}
+        index={index}
+        inView={inView}
+        reduced={reduced}
+        activeStage={activeStage}
+        onSelectStage={selectStage}
+      />
 
       <button
         type="button"
@@ -236,8 +302,18 @@ export default function ProjectCard({
               className="mt-8 grid gap-4"
               style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px,1fr))' }}
             >
-              {project.stages.map((stage) => (
-                <div key={stage.step}>
+              {project.stages.map((stage, j) => (
+                <div
+                  key={stage.step}
+                  // outline, not border/ring: it paints outside the box rather than
+                  // consuming layout space, so the trace's highlight can't reflow its
+                  // four siblings by so much as a pixel when it turns on or off.
+                  className={
+                    activeStage === j
+                      ? 'rounded outline outline-2 outline-offset-4 outline-accent-500/50 transition-[outline-color] duration-300'
+                      : 'outline outline-2 outline-offset-4 outline-transparent transition-[outline-color] duration-300'
+                  }
+                >
                   <p className={`font-mono text-[10px] uppercase tracking-[0.1em] ${kindText(stage.kind)}`}>
                     {stage.step}·{stage.kind}
                   </p>
