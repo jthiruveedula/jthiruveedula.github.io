@@ -14,6 +14,10 @@ const Projects = lazy(() => import('@/components/Projects'))
 const Skills = lazy(() => import('@/components/Skills'))
 const Metrics = lazy(() => import('@/components/Metrics'))
 const Contact = lazy(() => import('@/components/Contact'))
+// Lazy for one reason: it reads `portfolio` for the colophon, and importing that
+// eagerly pulled the whole 35 kB dataset out of its own chunk and into the entry
+// bundle. The last frame on the page has no business costing first paint.
+const Curtain = lazy(() => import('@/components/Curtain'))
 
 export default function App() {
   return (
@@ -59,6 +63,9 @@ export default function App() {
           <ErrorBoundary label="contact">
             <Contact />
           </ErrorBoundary>
+        </Suspense>
+        <Suspense fallback={null}>
+          <Curtain />
         </Suspense>
       </main>
     </SmoothScroll>
