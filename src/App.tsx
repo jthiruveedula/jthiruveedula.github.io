@@ -7,6 +7,7 @@ import SectionSkeleton from '@/components/SectionSkeleton'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import SmoothScroll from '@/components/SmoothScroll'
 import Atmosphere from '@/components/Atmosphere'
+import ActBreak from '@/components/ActBreak'
 
 const Timeline = lazy(() => import('@/components/Timeline'))
 const Projects = lazy(() => import('@/components/Projects'))
@@ -29,26 +30,31 @@ export default function App() {
       <main id="main" className="relative z-[1] pt-16 lg:pt-0 lg:pl-[4.25rem]">
         <Flight />
         <Sequence />
+        <ActBreak plate="02-legacy-substrate" index="02" label="the ledger" />
         <Suspense fallback={<SectionSkeleton variant="timeline" label="timeline" />}>
           <ErrorBoundary label="timeline">
             <Timeline />
           </ErrorBoundary>
         </Suspense>
+        <ActBreak plate="04-governed-realtime" index="03" label="systems" />
         <Suspense fallback={<SectionSkeleton variant="projects" label="systems" />}>
           <ErrorBoundary label="systems">
             <Projects />
           </ErrorBoundary>
         </Suspense>
+        <ActBreak plate="05-translation-engine" index="04" label="the toolkit" />
         <Suspense fallback={<SectionSkeleton variant="skills" label="skills" />}>
           <ErrorBoundary label="skills">
             <Skills />
           </ErrorBoundary>
         </Suspense>
+        <ActBreak plate="06-grounded-mind" index="05" label="the index" />
         <Suspense fallback={<SectionSkeleton variant="metrics" label="index" />}>
           <ErrorBoundary label="index">
             <Metrics />
           </ErrorBoundary>
         </Suspense>
+        <ActBreak plate="07-whole-system" index="06" label="contact" />
         <Suspense fallback={<SectionSkeleton variant="contact" label="contact" />}>
           <ErrorBoundary label="contact">
             <Contact />
