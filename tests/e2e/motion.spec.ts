@@ -219,3 +219,76 @@ test.describe('the wash', () => {
     expect(layers.mainZ).toBeGreaterThan(layers.atmosZ)
   })
 })
+
+/**
+ * The wiring trace. Clicking a stage node used to do nothing — the wire was a
+ * decorative diagram, and the only way to read a stage's detail was opening the
+ * whole panel and scanning five cards. Now a node is a real control: it opens the
+ * panel, lights the accent trace up to the segment the data actually took to get
+ * there, and rings the matching detail card so the two views of the same stage are
+ * visibly the same thing.
+ */
+test.describe('the wiring trace', () => {
+  const featuredCard = (page: import('@playwright/test').Page) => page.locator('#systems article').first()
+
+  test('clicking a closed stage opens the panel and traces up to it', async ({ page }) => {
+    await page.goto('/')
+    const card = featuredCard(page)
+    await card.scrollIntoViewIfNeeded()
+
+    const toggle = card.getByRole('button', { name: /open the wiring/i })
+    await expect(toggle).toBeVisible()
+
+    await card.getByRole('button', { name: /^Orchestrate:/ }).click()
+
+    await expect(card.getByRole('button', { name: /hide the build/i })).toBeVisible()
+
+    // Third of five stages selected — the trace should sit at exactly half the
+    // wire (2 of 4 segments): neither the zero-width resting state nor a full trace.
+    const pct = await card.evaluate((el) => {
+      const rail = el.querySelector('.relative.h-4') as HTMLElement
+      const trace = rail.querySelector('.bg-accent-500.h-\\[2px\\]') as HTMLElement
+      // The trace's own inline `width` is already authored as a percentage of the
+      // rail (see StagePath) — read it directly rather than computing pixels.
+      return parseFloat(trace.style.width) || 0
+    })
+    expect(pct).toBeGreaterThan(40)
+    expect(pct).toBeLessThan(60)
+
+    // The corresponding detail card carries a visible ring; the others don't.
+    const detailCards = card.locator('.mt-8.grid > div')
+    await expect(detailCards.nth(2)).toHaveClass(/outline-accent-500/)
+    await expect(detailCards.nth(0)).not.toHaveClass(/outline-accent-500/)
+  })
+
+  test('a keyboard user can reach and activate a stage node', async ({ page }) => {
+    await page.goto('/')
+    const card = featuredCard(page)
+    await card.scrollIntoViewIfNeeded()
+
+    const node = card.getByRole('button', { name: /^Generate:/ })
+    await node.focus()
+    await page.keyboard.press('Enter')
+
+    await expect(card.getByRole('button', { name: /hide the build/i })).toBeVisible()
+    await expect(node.locator('span').first()).toHaveCSS('transform', /matrix/)
+  })
+
+  test('closing the panel resets the trace to a clean slate', async ({ page }) => {
+    await page.goto('/')
+    const card = featuredCard(page)
+    await card.scrollIntoViewIfNeeded()
+
+    await card.getByRole('button', { name: /^Govern:/ }).click()
+    const toggle = card.getByRole('button', { name: /hide the build/i })
+    await expect(toggle).toBeVisible()
+
+    await toggle.click()
+    await expect(card.getByRole('button', { name: /open the wiring/i })).toBeVisible()
+
+    // Reopen via the toggle, not a node — no stage should still be selected.
+    await card.getByRole('button', { name: /open the wiring/i }).click()
+    const detailCards = card.locator('.mt-8.grid > div')
+    await expect(detailCards.nth(4)).not.toHaveClass(/outline-accent-500/)
+  })
+})
