@@ -77,3 +77,41 @@ test.describe('mobile top bar', () => {
     }
   })
 })
+
+/**
+ * The desktop rail's vertical twin of the mobile top-bar test above. Eight
+ * vertical-text destinations no longer fit every viewport height, and the rail
+ * had no scroll fallback on that axis — a real CI failure on the default
+ * 1280x720 viewport caught this: the Search entry rendered past the fixed
+ * rail's bottom edge, genuinely unreachable (not just visually clipped),
+ * because nothing on the page was a scroll container for it. Every desktop
+ * screenshot taken by hand during development used a taller window, so this
+ * survived local testing entirely.
+ */
+test.describe('desktop rail overflow', () => {
+  test('every destination is reachable at a short viewport height', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.goto('/')
+
+    const search = page.getByRole('button', { name: 'Search', exact: true })
+    // The regression was a click timeout, not a wrong result — scrollIntoView
+    // plus a real click is the assertion; a stale/overflowed element fails
+    // Playwright's actionability check the same way it failed a real user.
+    await search.scrollIntoViewIfNeeded()
+    await search.click({ timeout: 5000 })
+    await expect(page.getByRole('dialog')).toBeVisible()
+  })
+
+  test('the rail list scrolls internally rather than spilling past the viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.goto('/')
+
+    const overflow = await page.evaluate(() => {
+      const list = document.querySelector('.rail__list') as HTMLElement
+      return { scrollHeight: list.scrollHeight, clientHeight: list.clientHeight }
+    })
+    // Only meaningful once content actually exceeds the box — this pins the
+    // scenario the bug reproduced in, not just that overflow-y is set to auto.
+    expect(overflow.scrollHeight).toBeGreaterThan(overflow.clientHeight)
+  })
+})
