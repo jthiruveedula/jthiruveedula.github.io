@@ -70,7 +70,8 @@ test.describe('mobile top bar', () => {
       }
     })
 
-    expect(geometry.count).toBe(7)
+    // The seven section destinations plus the command palette's Search entry.
+    expect(geometry.count).toBe(8)
     for (const start of geometry.starts) {
       expect(start).toBeGreaterThanOrEqual(-0.5)
     }

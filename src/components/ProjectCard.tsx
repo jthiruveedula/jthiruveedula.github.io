@@ -165,7 +165,10 @@ export default function ProjectCard({
   return (
     <article
       ref={cardRef}
-      className={`project-card lit-card flex flex-col ${featured ? 'p-8 md:p-12' : 'p-6 md:p-7'}`}
+      // Deep-link target — CommandPalette's project entries jump straight to the
+      // card itself, not just the section it lives in.
+      id={project.id}
+      className={`project-card lit-card flex scroll-mt-24 flex-col ${featured ? 'p-8 md:p-12' : 'p-6 md:p-7'}`}
       style={featured || isOpen || fillRow ? { gridColumn: '1 / -1' } : undefined}
     >
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">

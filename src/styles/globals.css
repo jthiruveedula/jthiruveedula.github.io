@@ -550,6 +550,107 @@ h2 .proper,
   pointer-events: none;
 }
 
+/* ── Command palette ────────────────────────────────────────────────────
+   The only modal on the page, so the only place a scrim exists. Fade + scale
+   on the toggle clock — DUR/EASE tokens, not a new verb, because a dialog
+   opening is UI chrome, not a content reveal. `z-index: 500` is deliberately
+   past everything else authored (the scroll-progress bar's 200 is the next
+   highest) rather than "one more than the rail" — the one thing on the page
+   that must never end up underneath something added later. */
+.cmdk-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: clamp(64px, 14vh, 160px);
+  background: oklch(15% 0.014 265 / 0.72);
+  animation: cmdk-scrim-in var(--dur-fast) var(--ease-out);
+}
+
+.cmdk {
+  width: min(560px, calc(100vw - 40px));
+  max-height: min(60vh, 420px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-rule-2);
+  background: var(--color-paper-2);
+  box-shadow: 0 24px 60px -20px oklch(0% 0 0 / 0.6);
+  animation: cmdk-in var(--dur-reveal) var(--ease-out);
+}
+
+.cmdk__input {
+  min-height: 52px;
+  padding: 0 1.1rem;
+  border: 0;
+  border-bottom: 1px solid var(--color-rule);
+  background: transparent;
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+}
+.cmdk__input:focus {
+  outline: none;
+}
+.cmdk__input::placeholder {
+  color: var(--color-ink-faint);
+}
+
+.cmdk__list {
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem;
+}
+
+.cmdk__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 40px;
+  padding: 0 0.7rem;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+}
+.cmdk__item--active {
+  background: oklch(76% 0.17 215 / 0.1);
+  color: var(--color-ink);
+}
+.cmdk__hint {
+  @apply font-mono;
+  flex-shrink: 0;
+  font-size: 10px;
+  letter-spacing: var(--tracking-micro);
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+.cmdk__empty {
+  padding: 0.9rem 0.7rem;
+  color: var(--color-ink-faint);
+  font-size: 14px;
+}
+
+@keyframes cmdk-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes cmdk-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cmdk-scrim,
+  .cmdk {
+    animation-duration: 0.01ms;
+  }
+}
+
 /* ── Systems → Skills cross-link ───────────────────────────────────────
    A project's tech list (ProjectCard.tsx) links each recognized term to its
    domain row in Skills. Inline text, not a chip/box — the tech list already
