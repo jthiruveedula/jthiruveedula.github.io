@@ -893,6 +893,87 @@ h2 .proper,
   }
 }
 
+/* ── The curtain ────────────────────────────────────────────────────────
+   The last frame. Same construction as an act break — static plate, dissolved
+   edges, the 46% horizon — but taller, and it closes on the plate the film
+   opened on. */
+.curtain {
+  position: relative;
+  display: block;
+  height: clamp(340px, 62svh, 640px);
+  overflow: clip;
+  isolation: isolate;
+  margin-top: clamp(48px, 8vh, 112px);
+}
+
+.curtain picture,
+.curtain img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.curtain img {
+  object-fit: cover;
+  object-position: center 46%;
+  user-select: none;
+}
+
+.curtain__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      oklch(15% 0.014 265) 0%,
+      oklch(15% 0.014 265 / 0.45) 30%,
+      oklch(15% 0.014 265 / 0.86) 88%,
+      oklch(15% 0.014 265) 100%
+    ),
+    radial-gradient(120% 100% at 50% 40%, transparent 22%, oklch(15% 0.014 265 / 0.7) 100%);
+}
+
+.curtain__horizon {
+  position: absolute;
+  inset-inline: 0;
+  top: 46%;
+  height: 1px;
+  z-index: 2;
+  background: var(--color-accent);
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.curtain__inner {
+  position: absolute;
+  z-index: 3;
+  left: clamp(20px, 4vw, 64px);
+  right: clamp(20px, 4vw, 64px);
+  bottom: clamp(28px, 5vh, 56px);
+}
+
+.curtain__name {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.2vw, 2.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.028em;
+  color: var(--color-ink);
+}
+
+.curtain__line {
+  margin-top: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--tracking-micro);
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+.curtain__again {
+  margin-top: clamp(16px, 2.5vh, 28px);
+}
+
 /* ── The act break ──────────────────────────────────────────────────────
    Below the flight the page ran six text screens in a row with nothing to
    punctuate them. These are the punctuation: a short full-bleed band carrying
