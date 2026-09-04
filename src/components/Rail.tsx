@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react'
  * Desktop: fixed 4.25rem vertical strip. Below 1024px it unsticks into a top bar
  * (a fixed vertical gutter is a quarter of a 320px screen).
  */
-const SECTIONS = [
+export const SECTIONS = [
   { id: 'top', label: 'Open' },
   { id: 'arc', label: 'Arc' },
   { id: 'ledger', label: 'Timeline' },
@@ -20,6 +20,10 @@ const SECTIONS = [
   { id: 'index', label: 'Index' },
   { id: 'contact', label: 'Contact' },
 ] as const
+
+/** The event CommandPalette listens for — see its own file. Kept here, next to
+ *  the list it opens onto a view of, rather than in a third shared module. */
+export const OPEN_COMMAND_PALETTE = 'command-palette:open'
 
 export default function Rail() {
   const [active, setActive] = useState<string>('top')
@@ -73,6 +77,19 @@ export default function Rail() {
             </a>
           </li>
         ))}
+        {/* Same visual language as the destinations above it — not a destination
+            itself, so no `aria-current`, and a real `<button>` rather than a
+            fragment-link `<a>` since it opens a dialog instead of navigating. */}
+        <li>
+          <button
+            type="button"
+            className="rail__link"
+            aria-haspopup="dialog"
+            onClick={() => window.dispatchEvent(new Event(OPEN_COMMAND_PALETTE))}
+          >
+            Search
+          </button>
+        </li>
       </ul>
       <span aria-hidden="true" className="rail__mark text-ink-faint">
         2015—
