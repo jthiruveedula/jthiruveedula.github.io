@@ -219,3 +219,47 @@ test.describe('the wash', () => {
     expect(layers.mainZ).toBeGreaterThan(layers.atmosZ)
   })
 })
+
+/**
+ * The act breaks. The contract worth pinning is the resting state: the mark's
+ * rule is authored drawn and only React's `data-in="false"` retracts it, so a
+ * dead observer must leave every rule complete rather than stranded at zero.
+ */
+test.describe('act breaks', () => {
+  test('punctuate the chapters, hidden from assistive tech', async ({ page }) => {
+    await page.goto('/')
+    const breaks = page.locator('.act')
+    await expect(breaks).toHaveCount(5)
+    for (const el of await breaks.all()) {
+      await expect(el).toHaveAttribute('aria-hidden', 'true')
+    }
+  })
+
+  test('every rule is drawn once its band has been scrolled through', async ({ page }) => {
+    await page.goto('/')
+    await page.mouse.move(700, 450)
+
+    // Wheel, not scrollTo. Lenis owns the scroll position and reasserts it every
+    // frame, so a programmatic scrollTo lands the page back where it started —
+    // and a band that never enters the viewport never draws.
+    const atBottom = () =>
+      page.evaluate(
+        () => window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4,
+      )
+    for (let batch = 0; batch < 80 && !(await atBottom()); batch += 1) {
+      for (let step = 0; step < 6; step += 1) {
+        await page.mouse.wheel(0, 500)
+        await page.waitForTimeout(6)
+      }
+    }
+    await page.waitForTimeout(1200)
+
+    const retracted = await page.evaluate(() =>
+      [...document.querySelectorAll('.act')].filter((el) => {
+        const rule = el.querySelector('.act__rule') as HTMLElement
+        return new DOMMatrixReadOnly(getComputedStyle(rule).transform).a < 0.99
+      }).length,
+    )
+    expect(retracted).toBe(0)
+  })
+})
