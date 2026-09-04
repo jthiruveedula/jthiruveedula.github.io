@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -13,11 +13,14 @@ gsap.registerPlugin(useGSAP, ScrollTrigger)
 interface DomainGroup {
   domain: Skill['domain']
   total: number
-  /** Tier 1 — "reached for by default". Everything else is a count, not a list;
-   *  the section's whole argument is depth-by-domain, not a wall of chips. A
-   *  154-item chip table shipped here once already and was cut on visual review. */
+  /** Tier 1 — "reached for by default". Everything else is a count first, a list
+   *  only on request; the row's resting state argues depth-by-domain, not a wall
+   *  of chips. A 154-item chip table shipped here once already and was cut on
+   *  visual review — `rest` is that same tail, just reachable now instead of
+   *  asserted-and-hidden: the count used to be the only trace tier 2/3 skills
+   *  left in the rendered page at all. */
   primary: Skill[]
-  restCount: number
+  rest: Skill[]
   maxYears: number
 }
 
@@ -40,7 +43,7 @@ const DOMAIN_GROUPS: DomainGroup[] = (() => {
       domain,
       total: skills.length,
       primary,
-      restCount: skills.length - primary.length,
+      rest: skills.filter((s) => s.tier !== 1),
       maxYears: Math.max(0, ...skills.map((s) => s.years ?? 0)),
     }
   })
@@ -53,6 +56,10 @@ export default function Skills() {
   const sectionRef = useRef<HTMLElement>(null)
   const reduced = useReducedMotion()
   const [verbRef, verbInView] = useInView<HTMLElement>()
+  // One domain open at a time — same model as the Systems wiring panel and the
+  // ledger's role detail, so "+N more" behaves like every other disclosure on
+  // the page rather than inventing a fourth pattern for the same idea.
+  const [openDomain, setOpenDomain] = useState<Skill['domain'] | null>(null)
 
   useGSAP(
     () => {
@@ -125,10 +132,46 @@ export default function Skills() {
                 <p className="text-[0.95rem] leading-[1.7] text-ink-muted">
                   {group.primary.map((s) => s.name).join('  ·  ')}
                 </p>
-                {group.restCount > 0 ? (
-                  <p className="stat__label mt-3 text-ink-faint">
-                    +{group.restCount} more across the toolkit
-                  </p>
+                {group.rest.length > 0 ? (
+                  (() => {
+                    const isOpen = openDomain === group.domain
+                    const panelId = `skill-rest-${domainSlug(group.domain)}`
+                    return (
+                      <>
+                        <button
+                          type="button"
+                          aria-expanded={isOpen}
+                          aria-controls={panelId}
+                          onClick={() => setOpenDomain(isOpen ? null : group.domain)}
+                          className="stat__label mt-3 text-ink-faint transition-colors hover:text-accent focus-visible:text-accent"
+                        >
+                          {isOpen ? '− show fewer' : `+ ${group.rest.length} more across the toolkit`}
+                        </button>
+                        {/* Same grid-template-rows disclosure as the Systems wiring
+                            panel and the ledger's role detail — 0fr/1fr collapses
+                            without unmounting, so aria-controls resolves to a real
+                            node and a keyboard user's place in the list survives a
+                            toggle. `inert` (React 19) drops the collapsed list from
+                            both focus and the AX tree, matching those two panels. */}
+                        <div
+                          id={panelId}
+                          aria-hidden={!isOpen}
+                          inert={!isOpen}
+                          className="grid transition-[grid-template-rows] ease-out"
+                          style={{
+                            gridTemplateRows: isOpen ? '1fr' : '0fr',
+                            transitionDuration: reduced ? '0.01ms' : '450ms',
+                          }}
+                        >
+                          <div className="overflow-hidden">
+                            <p className="mt-3 text-[0.9rem] leading-[1.7] text-ink-faint">
+                              {group.rest.map((s) => s.name).join('  ·  ')}
+                            </p>
+                          </div>
+                        </div>
+                      </>
+                    )
+                  })()
                 ) : null}
               </div>
             </li>
