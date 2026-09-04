@@ -406,10 +406,27 @@ h2 .proper,
 .rail__list {
   display: grid;
   gap: 0.15rem;
-  align-content: center;
+  /* `safe` is the same fix as the mobile top bar's `justify-content: safe
+     flex-end` below, on the other axis: eight vertical-text destinations no
+     longer fit every viewport height, and `.rail`'s `align-items: center`
+     otherwise centers this list at its natural size with nothing to stop it
+     overflowing past the fixed rail's own top/bottom edges — invisible AND
+     unreachable, since nothing here was a scroll container. `align-self:
+     stretch` fills the 1fr row so `overflow-y: auto` has an actual box to
+     scroll within; `safe center` falls back to start alignment the instant
+     content overflows, so a short viewport scrolls instead of clipping.
+     A CI run at the default 720px height is what caught this — every desktop
+     screenshot taken by hand during development used a taller window. */
+  align-self: stretch;
+  align-content: safe center;
+  overflow-y: auto;
+  scrollbar-width: none;
   list-style: none;
   margin: 0;
   padding: 0;
+}
+.rail__list::-webkit-scrollbar {
+  display: none;
 }
 .rail__link {
   display: grid;
