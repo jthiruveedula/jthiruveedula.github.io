@@ -6,6 +6,7 @@ import ScrollProgress from '@/components/ScrollProgress'
 import SectionSkeleton from '@/components/SectionSkeleton'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import SmoothScroll from '@/components/SmoothScroll'
+import Atmosphere from '@/components/Atmosphere'
 
 const Timeline = lazy(() => import('@/components/Timeline'))
 const Projects = lazy(() => import('@/components/Projects'))
@@ -21,9 +22,11 @@ export default function App() {
         Skip to main content
       </a>
       <Rail />
+      <Atmosphere />
       {/* The rail is a fixed 4.25rem gutter on desktop and a top bar below
           1024px, so the page content is inset rather than overlapped. */}
-      <main id="main" className="pt-16 lg:pt-0 lg:pl-[4.25rem]">
+      {/* z-1 lifts the document off the wash; the wash is the only thing at z-0. */}
+      <main id="main" className="relative z-[1] pt-16 lg:pt-0 lg:pl-[4.25rem]">
         <Flight />
         <Sequence />
         <Suspense fallback={<SectionSkeleton variant="timeline" label="timeline" />}>

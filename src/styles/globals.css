@@ -37,10 +37,15 @@
    visitor feel their input being interpreted). Everything else is on the toggle
    clock and fires once on enter.
 
+   GRADE   the page's ambient light travels with the visitor: two fixed lamps behind
+           <main> crossfade legacy-amber into azure across document progress, on one
+           custom property, transform and opacity only. It grades the room, never the
+           content, and its authored resting value is a real mid-frame.
+
    Transform and opacity only; no layout properties, no filter animation, no
-   cursor tracking, no parallax outside the flight. The authored resting state is
-   always the true, finished state, so a dead timeline, a reverted context, a deep
-   link or JS failing outright still renders the real page.
+   cursor tracking, no parallax outside the flight and the wash. The authored resting
+   state is always the true, finished state, so a dead timeline, a reverted context, a
+   deep link or JS failing outright still renders the real page.
 
    prefers-reduced-motion collapses GEOMETRY, not just animation: the flight's
    runway becomes one screen rather than 420svh. v5 shipped reduced-motion
@@ -812,6 +817,72 @@ h2 .proper,
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── The wash ───────────────────────────────────────────────────────────
+   A fixed light field behind <main>, graded by document progress. Two lamps
+   crossfade legacy-amber → azure across the scroll, and both translate rather
+   than repaint. `--atmos-p` is the only thing scroll writes (Atmosphere.tsx);
+   everything below is calc() off it, so the authored 0.5 is a real frame with
+   no JavaScript, under reduced motion, and after any context revert.
+
+   This is the fourth verb in the motion grammar at the top of this file:
+   GRADE — the page's ambient light is a function of how far you have
+   travelled, never of the pointer, and it never moves content. */
+.atmos {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: clip;
+  contain: strict;
+  --atmos-p: 0.5;
+}
+
+.atmos__lamp {
+  position: absolute;
+  /* Taller than the viewport so the vertical drift never exposes an edge. */
+  inset: -45% 0;
+  display: block;
+  /* The lamp rises as the visitor descends — the parallax of walking past a
+     light source, which is the whole reason this reads as a space rather than
+     a gradient someone left on. */
+  transform: translate3d(0, calc((var(--atmos-p) - 0.5) * -38vh), 0);
+  will-change: transform, opacity;
+}
+
+/* Legacy: the hero's baked-in amber, carried a little way past the film so the
+   two halves of the page share one light. */
+.atmos__lamp--legacy {
+  opacity: calc(1 - var(--atmos-p));
+  background:
+    radial-gradient(68% 34% at 20% 30%, oklch(66% 0.10 58 / 0.14), transparent 70%),
+    radial-gradient(56% 30% at 86% 66%, oklch(60% 0.07 40 / 0.07), transparent 72%);
+}
+
+/* AI: the same azure the accent, the era ramp and the rail already use. */
+.atmos__lamp--ai {
+  opacity: var(--atmos-p);
+  background:
+    radial-gradient(68% 34% at 80% 26%, oklch(76% 0.17 215 / 0.13), transparent 70%),
+    radial-gradient(56% 32% at 14% 70%, oklch(70% 0.12 240 / 0.08), transparent 72%);
+}
+
+/* One film stock for the whole document. Static — a moving grain outside the
+   flight would be a second clock, and it sits *behind* content rather than
+   blending over it, so there is no full-page blending context to composite. */
+.atmos__grain {
+  position: absolute;
+  inset: 0;
+  display: block;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atmos__lamp {
+    transform: none;
   }
 }
 
