@@ -263,3 +263,34 @@ test.describe('act breaks', () => {
     expect(retracted).toBe(0)
   })
 })
+
+/**
+ * The curtain. The colophon moved onto the last frame, so the two things worth
+ * pinning are that it is still printed exactly once and that the frame offers a
+ * live way back to the opening.
+ */
+test.describe('the curtain', () => {
+  test('closes the page on a frame carrying the colophon once', async ({ page }) => {
+    await page.goto('/')
+
+    const name = page.getByText('Jagadeesh Thiruveedula', { exact: true })
+    await expect(name).toHaveCount(1)
+    await expect(page.locator('.curtain')).toHaveCount(1)
+
+    const again = page.locator('.curtain__again')
+    await expect(again).toHaveAttribute('href', '#top')
+
+    // The last element in the document, and taller than a colophon: the page ends
+    // on a frame rather than on a strip of leftover paper.
+    const tail = await page.evaluate(() => {
+      const curtain = document.querySelector('.curtain') as HTMLElement
+      const main = document.getElementById('main') as HTMLElement
+      return {
+        isLast: main.lastElementChild === curtain,
+        height: curtain.offsetHeight,
+      }
+    })
+    expect(tail.isLast).toBe(true)
+    expect(tail.height).toBeGreaterThan(300)
+  })
+})

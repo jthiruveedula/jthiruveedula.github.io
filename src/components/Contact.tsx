@@ -51,7 +51,6 @@ export default function Contact() {
         .from('.contact-cta', { y: 24, opacity: 0, duration: 0.5 }, '-=0.3')
         .from('.contact-summary', { y: 24, opacity: 0, duration: 0.5 }, '-=0.3')
         .from('.contact-grid', { y: 24, opacity: 0, duration: 0.6 }, '-=0.35')
-        .from('.contact-footer', { opacity: 0, duration: 0.5 }, '-=0.3')
     },
     { scope: sectionRef, dependencies: [reduced], revertOnUpdate: true },
   )
@@ -185,11 +184,6 @@ export default function Contact() {
           </div>
         </div>
 
-        <footer className="contact-footer mt-16 border-t border-rule pt-6">
-          <p className="text-xs text-ink-faint">
-            {profile.name} · Legacy → Cloud → Enterprise AI
-          </p>
-        </footer>
       </div>
     </section>
   )
