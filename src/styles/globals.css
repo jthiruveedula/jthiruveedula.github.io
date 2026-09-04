@@ -475,14 +475,21 @@ h2 .proper,
     grid-template-columns: auto;
     min-height: 44px;
     align-content: center;
-    /* Tightened so all six destinations fit a 390px bar without the last one
-       being clipped off the end of a scroll container nobody will discover. */
+    /* Tightened so as many destinations as possible fit a 390px bar before the
+       list has to scroll at all. */
     padding: 0.5rem 0.45rem;
     font-size: 9px;
     letter-spacing: 0.11em;
   }
   .rail__list {
-    justify-content: flex-end;
+    /* `safe` is the whole fix. Seven destinations no longer fit a 390px bar, and
+       a plain `flex-end` on an overflowing scroll container pushes the overflow
+       out of the *start* edge, where scrolling cannot reach it — "Open" sat at
+       x: -26 on a 390px screen, permanently clipped and unreachable. `safe`
+       falls back to start alignment the moment the content overflows, so the
+       list stays right-aligned when it fits and fully scrollable when it does
+       not. */
+    justify-content: safe flex-end;
   }
   .rail__link::before {
     display: none;
