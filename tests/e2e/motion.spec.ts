@@ -219,3 +219,59 @@ test.describe('the wash', () => {
     expect(layers.mainZ).toBeGreaterThan(layers.atmosZ)
   })
 })
+
+/**
+ * Mobile plate calibration. Two of the seven flight plates carry a `mobilePosition`
+ * or `mobileZoom` override in flight.ts because the default crop leaves them mostly
+ * empty on a phone — see the field docs there. The contract worth pinning isn't the
+ * exact numbers (those are a visual judgement call, re-tuned by eye) but that the
+ * mechanism actually reaches the DOM and stays off on desktop.
+ */
+test.describe('mobile plate calibration', () => {
+  test('a plate with mobilePosition gets a non-default object-position on a phone', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/')
+
+    // 07-whole-system is the plate with mobilePosition set — find it by its src
+    // rather than by index, so this survives the scenes being reordered.
+    const position = await page.evaluate(() => {
+      const img = [...document.querySelectorAll('[data-plane] img')].find((el) =>
+        (el as HTMLImageElement).src.includes('07-whole-system'),
+      ) as HTMLImageElement
+      return getComputedStyle(img).objectPosition
+    })
+    // The CSS default is "center 48%" → computed as "50% 48%"; anything else means
+    // the plate's own --mobile-object-position custom property took effect.
+    expect(position).not.toBe('50% 48%')
+  })
+
+  test('a plate with mobileZoom is actually scaled up on a phone', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/')
+
+    const scale = await page.evaluate(() => {
+      const img = [...document.querySelectorAll('[data-plane] img')].find((el) =>
+        (el as HTMLImageElement).src.includes('04-governed-realtime'),
+      ) as HTMLImageElement
+      return new DOMMatrixReadOnly(getComputedStyle(img).transform).a
+    })
+    expect(scale).toBeGreaterThan(1.1)
+  })
+
+  test('both overrides are inert on desktop — the plate keeps its default crop', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto('/')
+
+    const state = await page.evaluate(() => {
+      const byPlate = (needle: string) =>
+        [...document.querySelectorAll('[data-plane] img')].find((el) =>
+          (el as HTMLImageElement).src.includes(needle),
+        ) as HTMLImageElement
+      const position = getComputedStyle(byPlate('07-whole-system')).objectPosition
+      const scale = new DOMMatrixReadOnly(getComputedStyle(byPlate('04-governed-realtime')).transform).a
+      return { position, scale }
+    })
+    expect(state.position).toBe('50% 48%')
+    expect(state.scale).toBe(1)
+  })
+})

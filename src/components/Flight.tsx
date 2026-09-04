@@ -192,7 +192,24 @@ export default function Flight() {
     >
       <div className="flight__stage">
         {flightScenes.map((s, i) => (
-          <div key={s.id} data-plane className="plane" style={{ zIndex: flightScenes.length - i }}>
+          <div
+            key={s.id}
+            data-plane
+            className="plane"
+            style={{
+              zIndex: flightScenes.length - i,
+              // Consumed only inside the mobile media query — desktop's `center 48%`
+              // is untouched. Most plates crop fine at the default; these are the
+              // per-plate calibration knobs for the two that don't, see flight.ts.
+              ...(s.mobilePosition ? { '--mobile-object-position': s.mobilePosition } : {}),
+              ...(s.mobileZoom
+                ? {
+                    '--mobile-zoom': s.mobileZoom.scale,
+                    '--mobile-zoom-origin': s.mobileZoom.origin,
+                  }
+                : {}),
+            }}
+          >
             <picture>
               <source
                 type="image/avif"

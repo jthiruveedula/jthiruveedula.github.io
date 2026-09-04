@@ -25,6 +25,28 @@ export interface FlightScene {
   readings: { value: string; label: string }[]
   /** The line that carries the beat's argument. */
   kicker?: string
+  /**
+   * Mobile-only object-position override, `"X% Y%"`. The default (`center 48%`)
+   * is tuned for the plates' own 16:9 framing, where cropping is horizontal and
+   * the full frame height survives cover-fit into a portrait viewport — which is
+   * exactly the problem on two plates authored with a wide establishing shot's
+   * headroom: that headroom is real image content, not a crop artifact, and no
+   * object-position value can crop away pixels that already fit. Those two set
+   * this field to pull the visible window toward whatever part of the frame
+   * actually carries the subject. Unset means the default already works — most
+   * plates read fine cropped tight, because their subject is already centered.
+   */
+  mobilePosition?: string
+  /**
+   * Mobile-only zoom, for the one plate `mobilePosition` cannot fix: this plate's
+   * cover-fit is height-constrained (the full frame height already fits the
+   * portrait viewport with room to spare on width), so there is no vertical crop
+   * budget for `object-position` to redistribute — the dark headroom above the
+   * equipment is real image content, fully visible, not a crop artifact. Scaling
+   * past the natural cover point trades some of that surplus width for the
+   * vertical crop this plate actually needs.
+   */
+  mobileZoom?: { scale: number; origin: string }
 }
 
 export const flightScenes: FlightScene[] = [
@@ -83,6 +105,9 @@ export const flightScenes: FlightScene[] = [
     eyebrow: 'HCA Healthcare · NRG Energy',
     headline: 'Scale is the easy part. Scale under audit is the job.',
     verb: 'audit',
+    // See `mobileZoom` on the type: object-position has no vertical crop budget to
+    // spend here, so this plate zooms past cover instead, anchored low.
+    mobileZoom: { scale: 1.8, origin: '50% 84%' },
     readings: [
       { value: '50+', label: 'clinical sources, real time' },
       { value: '100%', label: 'data accuracy under HIPAA' },
@@ -130,6 +155,9 @@ export const flightScenes: FlightScene[] = [
     eyebrow: 'Legacy roots · Cloud trunk · AI canopy',
     headline: 'Eleven years. One structure.',
     verb: 'One',
+    // The lit structure sits left-of-centre in this plate; portrait cover-fit
+    // crops mostly on width, and dead-centre crops half the structure away.
+    mobilePosition: '20% 46%',
     readings: [
       { value: '99.9%', label: 'system uptime' },
       { value: '5', label: 'engineers mentored to senior' },

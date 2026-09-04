@@ -1127,6 +1127,14 @@ h2 .proper,
 
 @media (max-width: 899px) {
   .flight { height: 320svh; }
+  /* Per-plate mobile crop, see flight.ts's `mobilePosition` / `mobileZoom`. Falls
+     back to the desktop default for the five plates that don't need either — most
+     of the set crops fine on a phone; this only overrides the two that don't. */
+  .plane img {
+    object-position: var(--mobile-object-position, center 48%);
+    transform: scale(var(--mobile-zoom, 1));
+    transform-origin: var(--mobile-zoom-origin, center 48%);
+  }
   .flight__copy {
     width: 100%;
     padding-left: clamp(20px, 4vw, 64px);
