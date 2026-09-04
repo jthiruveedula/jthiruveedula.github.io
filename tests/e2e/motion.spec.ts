@@ -174,3 +174,48 @@ test.describe('scroll-reveal durability', () => {
     }
   })
 })
+
+/**
+ * The wash. Its only job is to grade the room, so the two things worth pinning
+ * are that it *does* travel with scroll and that it can never sit in front of
+ * content — the two ways an ambient layer turns into a bug.
+ */
+test.describe('the wash', () => {
+  const progress = (page: import('@playwright/test').Page) =>
+    page.evaluate(() => {
+      const el = document.querySelector('.atmos') as HTMLElement | null
+      return el ? Number(getComputedStyle(el).getPropertyValue('--atmos-p')) : NaN
+    })
+
+  test('grades from the authored mid-frame and travels with scroll', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForTimeout(600)
+
+    const top = await progress(page)
+    expect(top).toBeGreaterThanOrEqual(0)
+    expect(top).toBeLessThan(0.2)
+
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+    await page.waitForTimeout(1200)
+
+    const bottom = await progress(page)
+    expect(bottom).toBeGreaterThan(top + 0.5)
+  })
+
+  test('sits behind the document and takes no pointer events', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForTimeout(400)
+
+    const layers = await page.evaluate(() => {
+      const atmos = getComputedStyle(document.querySelector('.atmos') as HTMLElement)
+      const main = getComputedStyle(document.getElementById('main') as HTMLElement)
+      return {
+        atmosZ: Number(atmos.zIndex),
+        atmosEvents: atmos.pointerEvents,
+        mainZ: Number(main.zIndex),
+      }
+    })
+    expect(layers.atmosEvents).toBe('none')
+    expect(layers.mainZ).toBeGreaterThan(layers.atmosZ)
+  })
+})
