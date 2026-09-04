@@ -219,3 +219,61 @@ test.describe('the wash', () => {
     expect(layers.mainZ).toBeGreaterThan(layers.atmosZ)
   })
 })
+
+/**
+ * The index's volumes band. Six figures with no bar to fill the row used to sit
+ * one per full-width row on a 1320px-max container — each with roughly 1100px of
+ * empty track beside it. The fix reflows them into an auto-fill grid; the two
+ * things worth pinning are that it actually reflows at desktop width and that it
+ * still degrades to one honest column when the viewport can't hold two.
+ */
+test.describe('the index volumes band', () => {
+  const volumeTops = (page: import('@playwright/test').Page) =>
+    page.evaluate(() => {
+      const band = [...document.querySelectorAll('#index section')].find((s) =>
+        s.getAttribute('aria-label')?.startsWith('Volumes'),
+      )
+      // Scoped to the <ul> — the band's own caption also carries `.metric-row` as a
+      // shared reveal-selector hook and would otherwise count as a seventh row.
+      const rows = [...(band?.querySelectorAll('ul .metric-row') ?? [])] as HTMLElement[]
+      return [...new Set(rows.map((r) => Math.round(r.getBoundingClientRect().top)))]
+    })
+
+  test('reflows into more than one column at desktop width', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto('/')
+    await page.evaluate(() => document.getElementById('index')?.scrollIntoView())
+    await page.waitForTimeout(300)
+
+    // Fewer distinct row-tops than volume figures means at least two rows share a
+    // line — the grid is laying cards side by side, not stacking them one per row.
+    const tops = await volumeTops(page)
+    expect(tops.length).toBeLessThan(6)
+  })
+
+  test('falls back to one column when the viewport cannot hold two', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/')
+    await page.evaluate(() => document.getElementById('index')?.scrollIntoView())
+    await page.waitForTimeout(300)
+
+    // At 390px every card gets its own row — six distinct tops, one per figure.
+    const tops = await volumeTops(page)
+    expect(tops.length).toBe(6)
+  })
+
+  test('the rates band keeps its full-width bar untouched by the reflow', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto('/')
+    await page.evaluate(() => document.getElementById('index')?.scrollIntoView())
+    await page.waitForTimeout(300)
+
+    const barWidth = await page.evaluate(() => {
+      const bar = document.querySelector('.metric-plot') as HTMLElement
+      return bar.getBoundingClientRect().width
+    })
+    // A card-width bar (reflowed like the volumes) would be well under 300px; the
+    // rate row's bar is authored to max out at 26rem (416px) of the row's own width.
+    expect(barWidth).toBeGreaterThan(300)
+  })
+})

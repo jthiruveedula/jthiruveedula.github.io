@@ -94,10 +94,22 @@ const ORDERED_METRICS = [...headlineMetrics].sort(
  * Same grid template and same hairline rule as the arc's chapter list above, so
  * the two lists read as one document.
  *
+ * Two layouts, not one, because the volumes band has nothing to put in the second
+ * column. A rate row's figure sits beside its bar — the bar needs the row's full
+ * width, so the 13rem-figure / fill-label grid earns its keep. A volume row has no
+ * bar, only a short label and source line, and that same grid template left roughly
+ * 1100px of empty track on a 1320px-max row: six figures, six near-empty screens'
+ * worth of nothing beside them. The volume layout stacks the figure over its label
+ * instead, so `renderList` below can wrap them in a native `auto-fill` grid — cards
+ * that reflow into however many columns the width actually holds, with zero
+ * responsive bookkeeping. Rate and window rows stay in `renderList`'s plain
+ * single-column `<ul>`, where the full-width grid template still applies.
+ *
  * `hidden` is the filter mechanism — every row stays mounted because the count-up
  * holds a ref per label and fires synchronously on the click, before React has
  * re-rendered. Tailwind's preflight gives `[hidden]` `display: none !important`,
- * so the `grid` utility below cannot out-specify it.
+ * so the `grid` utility below cannot out-specify it, and an auto-fill grid closes
+ * the gap a hidden card leaves rather than stranding a blank cell.
  */
 function MetricRow({
   metric,
@@ -116,35 +128,49 @@ function MetricRow({
   // outright rather than leaving the reader to infer a flipped polarity.
   const pct = family === 'rate' ? Math.min(100, Number(number)) : 0
 
+  const figure = (
+    <p className="stat__figure text-[clamp(1.5rem,3vw,2rem)]">
+      {/* Screen readers get the canonical value; the animated digits are decorative. */}
+      <span className="sr-only">{metric.value}</span>
+      <span aria-hidden="true">
+        {prefix ? <span className="text-accent">{prefix}</span> : null}
+        <span ref={(el) => registerNumberRef(metric.label, el)} className="metric-number">
+          {finalText}
+        </span>
+        {suffix ? <span className="text-[0.7em] text-accent">{suffix}</span> : null}
+      </span>
+    </p>
+  )
+
+  const groups = metric.groups?.length ? (
+    <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+      {metric.groups.map((group) => (
+        <li key={group} className="font-mono text-[10.5px] tracking-[0.08em] text-ink-faint proper">
+          {group}
+        </li>
+      ))}
+    </ul>
+  ) : null
+
+  if (family === 'volume') {
+    return (
+      <li hidden={!visible} className="metric-row border-b border-rule py-5">
+        {figure}
+        {groups}
+        <p className="stat__label mt-3">{metric.label}</p>
+        {metric.source ? <p className="mt-1.5 text-[11px] text-ink-faint">{metric.source}</p> : null}
+      </li>
+    )
+  }
+
   return (
     <li
       hidden={!visible}
       className="metric-row grid gap-x-10 gap-y-2 border-b border-rule py-5 md:grid-cols-[13rem_minmax(0,1fr)]"
     >
       <div>
-        <p className="stat__figure text-[clamp(1.5rem,3vw,2rem)]">
-          {/* Screen readers get the canonical value; the animated digits are decorative. */}
-          <span className="sr-only">{metric.value}</span>
-          <span aria-hidden="true">
-            {prefix ? <span className="text-accent">{prefix}</span> : null}
-            <span ref={(el) => registerNumberRef(metric.label, el)} className="metric-number">
-              {finalText}
-            </span>
-            {suffix ? <span className="text-[0.7em] text-accent">{suffix}</span> : null}
-          </span>
-        </p>
-        {metric.groups?.length ? (
-          <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
-            {metric.groups.map((group) => (
-              <li
-                key={group}
-                className="font-mono text-[10.5px] tracking-[0.08em] text-ink-faint proper"
-              >
-                {group}
-              </li>
-            ))}
-          </ul>
-        ) : null}
+        {figure}
+        {groups}
       </div>
 
       <div className="min-w-0">
@@ -363,7 +389,12 @@ export default function Metrics() {
                 <p className="metric-row stat__label border-b border-rule py-3 text-ink-faint">
                   {caption}
                 </p>
-                <ul>
+                {/* auto-fill, not a breakpoint count: the volumes band reflows into
+                    however many 15rem cards the row actually holds — 1 on a phone,
+                    up to 6 at the container's 1320px max — with no md:/lg: tuning
+                    to maintain. Rate and window rows keep the plain single-column
+                    list; their bar needs the row's full width. */}
+                <ul className={family === 'volume' ? 'grid gap-x-8 [grid-template-columns:repeat(auto-fill,minmax(15rem,1fr))]' : undefined}>
                   {rows.map((metric) => {
                     const visible = filter === 'All' || (metric.groups?.includes(filter) ?? false)
                     return (
