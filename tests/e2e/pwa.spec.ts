@@ -46,3 +46,33 @@ test.describe('PWA & mobile metadata', () => {
     expect(body).toContain('View resume')
   })
 })
+
+/**
+ * The top bar. Seven destinations no longer fit a 390px screen, and a plain
+ * `flex-end` on an overflowing scroll container pushes the overflow out of the
+ * start edge where no scroll can reach it. This pins the invariant that broke:
+ * every destination is reachable, whether by fitting or by scrolling.
+ */
+test.describe('mobile top bar', () => {
+  test('no destination is clipped out of reach', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/')
+
+    const geometry = await page.evaluate(() => {
+      const list = document.querySelector('.rail__list') as HTMLElement
+      const links = [...document.querySelectorAll('.rail__link')] as HTMLElement[]
+      const listLeft = list.getBoundingClientRect().left
+      return {
+        // Positions relative to the scroll container's content box, undoing any
+        // scroll offset — a negative value is content behind the start edge.
+        starts: links.map((l) => l.getBoundingClientRect().left - listLeft + list.scrollLeft),
+        count: links.length,
+      }
+    })
+
+    expect(geometry.count).toBe(7)
+    for (const start of geometry.starts) {
+      expect(start).toBeGreaterThanOrEqual(-0.5)
+    }
+  })
+})
