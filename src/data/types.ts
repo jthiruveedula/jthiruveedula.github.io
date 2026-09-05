@@ -126,6 +126,11 @@ export interface EngagementShape {
   duration: string
 }
 
+export interface Testimonial {
+  quote: string
+  attribution: string
+}
+
 export interface PortfolioData {
   profile: Profile
   skills: Skill[]
@@ -136,6 +141,9 @@ export interface PortfolioData {
   education: string[]
   story: { chapters: Chapter[] }
   engagementModel: EngagementShape[]
+  /** Third-party quotes attributed to a former stakeholder. Empty until Jagadeesh
+   *  has real ones in hand — see issue #219; never fill with placeholder text. */
+  testimonials?: Testimonial[]
 }
 
 /**
