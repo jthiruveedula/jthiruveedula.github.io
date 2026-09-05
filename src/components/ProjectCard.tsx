@@ -158,9 +158,15 @@ function StagePath({
                   transitionDelay: `${j * 90}ms`,
                 }}
               />
+              {/* Below sm (640px), five evenly-spaced-by-index labels don't have room
+                  to not overlap — confirmed via elementFromPoint that a mistap actually
+                  resolves to the neighbor node. Hiding the label shrinks the button back
+                  to just the dot's hit area, so taps land on the node under the finger.
+                  aria-hidden already moved the accessible name to the button's aria-label,
+                  so hiding this purely-decorative span costs nothing there. */}
               <span
                 aria-hidden="true"
-                className={`mt-1.5 block whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.1em] transition-colors ${
+                className={`mt-1.5 hidden whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.1em] transition-colors sm:block ${
                   selected ? 'text-accent-500' : kindText(stage.kind)
                 } ${isFirst ? '' : isLast ? '-translate-x-full' : '-translate-x-1/2'}`}
               >
