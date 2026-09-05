@@ -3,9 +3,12 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { flightScenes, SCENE_BOUNDS } from '@/data/flight'
+import { portfolio } from '@/data/portfolio'
 import { splitWordsWithAccent, renderSplitWords } from '@/lib/splitText'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
+
+const { profile } = portfolio
 
 /**
  * The flight — seven rooms passing one lens.
@@ -252,6 +255,20 @@ export default function Flight() {
               </li>
             ))}
           </ul>
+
+          {/* The contact affordance, present at every breakpoint — unlike
+              .flight__skip below, which is desktop-only furniture. A visitor
+              who never scrolls still lands on a working Email/Résumé pair. */}
+          <div className="flight__cta">
+            {profile.email && (
+              <a href={`mailto:${profile.email}`} className="chip chip--primary">
+                Email
+              </a>
+            )}
+            <a href="/resume.html" className="chip">
+              Résumé
+            </a>
+          </div>
         </div>
 
         {/* The year you are standing in — scroll position means "which year", not
