@@ -1261,8 +1261,23 @@ h2 .proper,
     mask-image: none;
   }
   .flight__headline { max-width: 100%; }
-  .flight__kicker { display: none; }
-  .flight__skip { display: none; }
+  /* Mobile still gets the argument, just shortened: the sentence that carries
+     each scene's claim, clamped to two lines instead of erased outright.
+     A max-height clip, not -webkit-line-clamp: the kicker's own text sits
+     inside the reveal animation's `data-cut` span, which is `inline-block`
+     for GSAP's yPercent transform (transform never applies to plain inline
+     boxes) — and an atomic inline-block child is exactly what breaks
+     -webkit-line-clamp, which only clamps wrapped inline text. `overflow:
+     clip` is already set on the base rule for that same reveal mask; 3.2em
+     (line-height 1.6 × 2 lines, in the kicker's own font-size) is the only
+     piece missing to bound it. */
+  .flight__kicker {
+    max-width: 100%;
+    max-height: 3.2em;
+  }
+  /* .flight__skip keeps its base (non-mobile) rules — already a 58px-tall,
+     right-gutter control inside the bottom letterbox bar that .flight__copy's
+     padding-bottom already clears. It only needed to stop being display:none. */
 }
 
 /* Reduced motion collapses the geometry, not just the animation. v5 shipped
