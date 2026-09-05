@@ -32,9 +32,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: Confirm the tag exists
+        env:
+          TAG: ${{ inputs.tag }}
         run: |
-          if ! git rev-parse "refs/tags/${{ inputs.tag }}" >/dev/null 2>&1; then
-            echo "::error::Tag '${{ inputs.tag }}' does not exist in this repo. Check https://github.com/${{ github.repository }}/tags." >&2
+          if ! git rev-parse "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "::error::Tag '$TAG' does not exist in this repo. Check https://github.com/${{ github.repository }}/tags." >&2
             exit 1
           fi
 
@@ -70,16 +72,18 @@ jobs:
         uses: actions/deploy-pages@v4
 
       - name: Post rollback summary
+        env:
+          TAG: ${{ inputs.tag }}
         run: |
           {
             echo "### ⏪ Rolled back"
             echo ""
-            echo "Re-deployed release **${{ inputs.tag }}**."
+            echo "Re-deployed release **$TAG**."
             echo ""
             echo "| | |"
             echo "|---|---|"
-            echo "| Redeployed tag | \`${{ inputs.tag }}\` |"
+            echo "| Redeployed tag | \`$TAG\` |"
             echo "| Live URL | ${{ steps.deployment.outputs.page_url }} |"
             echo ""
-            echo "This did not run the test suite — it redeploys a build that was already verified when \`${{ inputs.tag }}\` was originally released."
+            echo "This did not run the test suite — it redeploys a build that was already verified when \`$TAG\` was originally released."
           } >> "$GITHUB_STEP_SUMMARY"
