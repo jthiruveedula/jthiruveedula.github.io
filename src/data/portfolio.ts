@@ -1681,6 +1681,7 @@ export const portfolio: PortfolioData = {
     { "label": "Release cycles cut", "value": "50%", "numeric": 50, "suffix": "%", "source": "Terraform IaC", "groups": ["Cost", "Reliability"] },
     { "label": "Years across data & AI", "value": "11+", "numeric": 11, "suffix": "+", "source": "2015 — present", "groups": ["Scale"] }
   ],
+  "testimonials": [],
   "certifications": [
     "Google Cloud Professional Data Engineer (GCP PDE)",
     "Talend Data Explorer",
