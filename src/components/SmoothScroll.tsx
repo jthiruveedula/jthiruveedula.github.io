@@ -81,6 +81,20 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
       if (!id || id === '#') return
       e.preventDefault()
       instance.scrollTo(id, { offset: -72 })
+      // Lenis intercepts the click, so native fragment navigation — the browser
+      // moving focus to the target — never fires. Without this, a keyboard
+      // visitor's tab order snaps back to the top of the page after every jump.
+      let dest: Element | null = null
+      try {
+        dest = document.querySelector(id)
+      } catch {
+        // id came straight off an href and can be CSS-invalid (e.g. a numeric
+        // id) even though it's a valid HTML id — don't crash the click handler.
+      }
+      if (dest instanceof HTMLElement) {
+        dest.setAttribute('tabindex', '-1')
+        dest.focus({ preventScroll: true })
+      }
     }
     document.addEventListener('click', handleAnchorClick)
 
