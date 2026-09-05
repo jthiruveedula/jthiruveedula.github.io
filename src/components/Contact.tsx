@@ -7,7 +7,7 @@ import { useReducedMotion } from '@/lib/hooks'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
-const { profile, certifications, education } = portfolio
+const { profile, certifications, education, engagementModel } = portfolio
 
 // The theme already has this label: mono, 11px, uppercase, ink-faint. The old
 // bespoke 9px version was both smaller than the AA floor allows comfortably and a
@@ -51,6 +51,7 @@ export default function Contact() {
         .from('.contact-cta', { y: 24, opacity: 0, duration: 0.5 }, '-=0.3')
         .from('.contact-summary', { y: 24, opacity: 0, duration: 0.5 }, '-=0.3')
         .from('.contact-grid', { y: 24, opacity: 0, duration: 0.6 }, '-=0.35')
+        .from('.contact-engagement', { y: 24, opacity: 0, duration: 0.6 }, '-=0.35')
         .from('.contact-footer', { opacity: 0, duration: 0.5 }, '-=0.3')
     },
     { scope: sectionRef, dependencies: [reduced], revertOnUpdate: true },
@@ -184,6 +185,24 @@ export default function Contact() {
             </a>
           </div>
         </div>
+
+        {engagementModel.length > 0 && (
+          <div className="contact-engagement mt-16 border-t border-rule pt-10">
+            <p className={LABEL_CLASS}>How I work</p>
+            <div
+              className="mt-6 grid gap-x-10 gap-y-8"
+              style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}
+            >
+              {engagementModel.map((shape) => (
+                <div key={shape.name}>
+                  <p className="font-display text-lg text-ink">{shape.name}</p>
+                  <p className="mt-2 text-sm leading-[1.6] text-ink-muted">{shape.description}</p>
+                  <p className="mt-2 text-xs text-ink-faint">{shape.duration}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <footer className="contact-footer mt-16 border-t border-rule pt-6">
           <p className="text-xs text-ink-faint">
