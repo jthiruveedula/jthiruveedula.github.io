@@ -523,6 +523,26 @@ h2 .proper,
   }
 }
 
+/* `.rail__list`'s `overflow-y: auto` above makes the list scrollable once it
+   no longer fits, but the scrollbar is hidden (`scrollbar-width: none`), so a
+   1024×768 or 1280×800 laptop — common heights, both shorter than the rail's
+   ~774px natural height — clips Contact/Search with no cue that more is one
+   scroll away. Shrinking the same properties tightened for the mobile bar
+   above removes the overflow instead of hiding it. */
+@media (min-width: 1024px) and (max-height: 820px) {
+  .rail {
+    padding-block: 0.85rem;
+  }
+  .rail__list {
+    gap: 0.05rem;
+  }
+  .rail__link {
+    padding: 0.45rem 0.3rem;
+    font-size: 8.5px;
+    letter-spacing: 0.13em;
+  }
+}
+
 /* ── Buttons ────────────────────────────────────────────────────────────
    Outlined chip is the primary voice; the accent is a border and a text
    colour, never a filled block. */
