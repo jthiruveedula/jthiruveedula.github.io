@@ -158,9 +158,15 @@ function StagePath({
                   transitionDelay: `${j * 90}ms`,
                 }}
               />
+              {/* Below sm (640px), five evenly-spaced-by-index labels don't have room
+                  to not overlap — confirmed via elementFromPoint that a mistap actually
+                  resolves to the neighbor node. Hiding the label shrinks the button back
+                  to just the dot's hit area, so taps land on the node under the finger.
+                  aria-hidden already moved the accessible name to the button's aria-label,
+                  so hiding this purely-decorative span costs nothing there. */}
               <span
                 aria-hidden="true"
-                className={`mt-1.5 block whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.1em] transition-colors ${
+                className={`mt-1.5 hidden whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.1em] transition-colors sm:block ${
                   selected ? 'text-accent-500' : kindText(stage.kind)
                 } ${isFirst ? '' : isLast ? '-translate-x-full' : '-translate-x-1/2'}`}
               >
@@ -334,6 +340,26 @@ export default function ProjectCard({
                 </p>
               ))}
             </div>
+
+            {(project.tradeoff || project.ownership) && (
+              <div
+                className="mt-8 grid gap-4"
+                style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px,1fr))' }}
+              >
+                {project.tradeoff && (
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-neutral-500">Tradeoff</p>
+                    <p className="mt-1.5 max-w-[52ch] text-xs leading-relaxed text-neutral-400">{project.tradeoff}</p>
+                  </div>
+                )}
+                {project.ownership && (
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-neutral-500">Ownership</p>
+                    <p className="mt-1.5 max-w-[52ch] text-xs leading-relaxed text-neutral-400">{project.ownership}</p>
+                  </div>
+                )}
+              </div>
+            )}
 
             <p className="mt-8 font-mono text-[10.5px] tracking-[0.08em] text-ink-faint">
               {project.tech.map((tech, i) => {
