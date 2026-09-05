@@ -8,7 +8,7 @@ export const portfolio: PortfolioData = {
     "title": "Data & AI Architect | GCP · BigQuery · Vertex AI · RAG · Agents | Legacy → Cloud → Enterprise AI",
     "summary": "Data & AI Architect with 11+ years taking Fortune 500 enterprises from legacy systems through cloud modernization to production GenAI. Delivered $2M+ in cost savings, 500+ TiB of cloud migrations, and 1B+ daily events at 99.9% uptime — then shipped private LLM applications serving 50M+ documents at 95% grounded accuracy. Strong on evaluation, guardrails, and governance: the work that turns a demo into a production system.",
     "email": "jagadeeshthiruveedula77@gmail.com",
-    "linkedin": "https://www.linkedin.com/in/jagadeesh-thiruveedula/",
+    "linkedin": "https://www.linkedin.com/in/jthiruveedula",
     "github": "https://github.com/jthiruveedula",
     "location": "DFW (Dallas Fort Worth), TX · Open to relocation · 50% travel"
   },
