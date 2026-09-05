@@ -28,7 +28,7 @@ export default function App() {
       {/* The rail is a fixed 4.25rem gutter on desktop and a top bar below
           1024px, so the page content is inset rather than overlapped. */}
       {/* z-1 lifts the document off the wash; the wash is the only thing at z-0. */}
-      <main id="main" className="relative z-[1] pt-16 lg:pt-0 lg:pl-[4.25rem]">
+      <main id="main" tabIndex={-1} className="relative z-[1] pt-16 lg:pt-0 lg:pl-[4.25rem]">
         <Flight />
         <Sequence />
         <Suspense fallback={<SectionSkeleton variant="timeline" label="timeline" />}>
