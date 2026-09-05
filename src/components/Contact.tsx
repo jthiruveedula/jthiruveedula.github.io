@@ -116,7 +116,7 @@ export default function Contact() {
                     href={profile.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="transition-colors hover:text-ink"
+                    className="tech-link"
                   >
                     LinkedIn
                     <span className="sr-only"> (opens in a new tab)</span>
@@ -129,7 +129,7 @@ export default function Contact() {
                     href={profile.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="transition-colors hover:text-ink"
+                    className="tech-link"
                   >
                     GitHub
                     <span className="sr-only"> (opens in a new tab)</span>
