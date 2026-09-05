@@ -7,7 +7,7 @@ import { useReducedMotion } from '@/lib/hooks'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
-const { profile, certifications, education } = portfolio
+const { profile, certifications, education, testimonials } = portfolio
 
 // The theme already has this label: mono, 11px, uppercase, ink-faint. The old
 // bespoke 9px version was both smaller than the AA floor allows comfortably and a
@@ -116,7 +116,7 @@ export default function Contact() {
                     href={profile.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="transition-colors hover:text-ink"
+                    className="tech-link"
                   >
                     LinkedIn
                     <span className="sr-only"> (opens in a new tab)</span>
@@ -129,7 +129,7 @@ export default function Contact() {
                     href={profile.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="transition-colors hover:text-ink"
+                    className="tech-link"
                   >
                     GitHub
                     <span className="sr-only"> (opens in a new tab)</span>
@@ -184,6 +184,17 @@ export default function Contact() {
             </a>
           </div>
         </div>
+
+        {testimonials && testimonials.length > 0 && (
+          <ul className="contact-testimonials mt-16 grid gap-x-10 gap-y-8 sm:grid-cols-2">
+            {testimonials.map(({ quote, attribution }) => (
+              <li key={attribution} className="border-l border-rule pl-5">
+                <p className="text-[0.95rem] leading-[1.65] text-ink-muted">“{quote}”</p>
+                <p className="mt-2 text-xs text-ink-faint">— {attribution}</p>
+              </li>
+            ))}
+          </ul>
+        )}
 
         <footer className="contact-footer mt-16 border-t border-rule pt-6">
           <p className="text-xs text-ink-faint">
