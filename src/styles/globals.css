@@ -1206,6 +1206,16 @@ h2 .proper,
 }
 .flight__readings .stat__figure { font-size: clamp(1.15rem, 1.9vw, 1.6rem); }
 
+/* Email + résumé, in the flow of .flight__copy rather than absolutely
+   positioned like .flight__skip — so it is never subject to that element's
+   under-900px `display: none` and shows on every device. */
+.flight__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
 .flight__counter {
   position: absolute;
   z-index: 30;
