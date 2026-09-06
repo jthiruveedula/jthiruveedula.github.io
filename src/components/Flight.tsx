@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { flightScenes, SCENE_BOUNDS } from '@/data/flight'
 import { portfolio } from '@/data/portfolio'
+import { isPlaceholder } from '@/lib/content'
 import { splitWordsWithAccent, renderSplitWords } from '@/lib/splitText'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -260,7 +261,7 @@ export default function Flight() {
               profile-level, not per-scene, so it renders once and never swaps
               with `active`. Same field Contact renders under its headline;
               read from `profile` so the two can never drift (issue #207). */}
-          {profile.availability && (
+          {profile.availability && !isPlaceholder(profile.availability) && (
             <p className="flight__availability">{profile.availability}</p>
           )}
 

@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from 'react'
 import type { FeaturedProject, ProjectFlow, ProjectStage } from '@/data/types'
 import { useInView, useReducedMotion } from '@/lib/hooks'
+import { isPlaceholder } from '@/lib/content'
 import { domainSlug, pulseDomainRow, techDomain } from '@/lib/skillMatch'
 
 /** Only these stage kinds get the cyan accent tint — everything else (including the
@@ -352,18 +353,19 @@ export default function ProjectCard({
               ))}
             </div>
 
-            {(project.tradeoff || project.ownership) && (
+            {((project.tradeoff && !isPlaceholder(project.tradeoff)) ||
+              (project.ownership && !isPlaceholder(project.ownership))) && (
               <div
                 className="mt-8 grid gap-4"
                 style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px,1fr))' }}
               >
-                {project.tradeoff && (
+                {project.tradeoff && !isPlaceholder(project.tradeoff) && (
                   <div>
                     <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-neutral-500">Tradeoff</p>
                     <p className="mt-1.5 max-w-[52ch] text-xs leading-relaxed text-neutral-400">{project.tradeoff}</p>
                   </div>
                 )}
-                {project.ownership && (
+                {project.ownership && !isPlaceholder(project.ownership) && (
                   <div>
                     <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-neutral-500">Ownership</p>
                     <p className="mt-1.5 max-w-[52ch] text-xs leading-relaxed text-neutral-400">{project.ownership}</p>
