@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
-import { OPEN_COMMAND_PALETTE } from '@/components/Rail'
+import { COMMAND_PALETTE_STATE, OPEN_COMMAND_PALETTE } from '@/components/Rail'
 import { useLenis } from '@/components/SmoothScroll'
 import { useReducedMotion } from '@/lib/hooks'
 
@@ -39,6 +39,14 @@ export default function CommandPalette() {
   const restoreFocusRef = useRef<HTMLElement | null>(null)
 
   const close = useCallback(() => setOpen(false), [])
+
+  // Tells the rail's Search button (and anything else that cares) whether the
+  // dialog it opened is actually still open — it closes by several paths this
+  // component owns alone (Escape, a fired command, the overlay), not just a
+  // second click on that button.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent(COMMAND_PALETTE_STATE, { detail: open }))
+  }, [open])
 
   const goTo = useCallback(
     (id: string) => {
