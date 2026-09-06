@@ -1347,7 +1347,7 @@ export const portfolio: PortfolioData = {
       "before": "12 COBOL/legacy workstreams with decades of business logic locked in mainframe code that no modern team could safely rewrite by hand.",
       "after": "Automated COBOL → BigQuery SQL + PySpark translation with semantic-fidelity evals, audit-ready refactored pipelines, and 5 reusable transformation patterns codified into the platform playbook.",
       "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (what does the semantic-fidelity harness actually score? a concrete hard-to-translate COBOL construct? of 12 workstreams triaged, how many actually migrated?)",
-      "ownership": "TODO(jagadeesh): team size and this person's specific scope vs. the team's — see issue #206",
+      "ownership": "Engaged as Definity's Data & GenAI Architect — designed the COBOL-to-cloud translation pipeline and its semantic-fidelity eval harness; delivery ran alongside the client's own engineering team, whom this role also mentored on AI-assisted modernization.",
       "metrics": [
         {
           "label": "Legacy workstreams triaged",
@@ -1391,7 +1391,7 @@ export const portfolio: PortfolioData = {
       "before": "Legacy Hadoop/Teradata estate with slow, costly ETL, hand-rolled deployments, and no standardized CDC — 1B+ daily records at risk during any change.",
       "after": "25% faster and more efficient on GCP, $1M+ annual savings, zero data loss on 1B+ daily records, 99.5% SLA on 30M/day transactions, release cycles cut 50% via Terraform IaC.",
       "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (is \"$1M+\" compute, storage, licensing, or headcount? what was the riskiest cutover step and how was it de-risked?)",
-      "ownership": "TODO(jagadeesh): team size and this person's specific scope vs. the team's — see issue #206",
+      "ownership": "Individual contributor on this migration's core engineering build — the title of record is Senior Data Engineer — hands-on within a larger Schwab delivery team, not sole owner of the migration.",
       "metrics": [
         {
           "label": "Annual infra savings",
@@ -1448,7 +1448,7 @@ export const portfolio: PortfolioData = {
       "before": "Legacy Talend ETL and 100+ TB of on-prem warehouses; 50+ sources needed real-time integration under strict HIPAA audit constraints.",
       "after": "GenAI accelerators cut delivery timelines 50% and were adopted by 10+ programs; 50+ sources streaming with 100% data accuracy; ETL performance up 30% on GCP.",
       "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (\"100% data accuracy\" against what ground truth, measured how? a sanitized before/after of what the GenAI accelerator automated?)",
-      "ownership": "TODO(jagadeesh): team size and this person's specific scope vs. the team's — see issue #206",
+      "ownership": "Led this workstream as its technical lead — the title of record is Lead Data Engineer — hands-on across design and delivery of the streaming architecture and the GenAI accelerators, not review-only.",
       "metrics": [
         {
           "label": "Delivery timelines cut",
@@ -1505,7 +1505,7 @@ export const portfolio: PortfolioData = {
       "before": "AWS data lake siloed from GCP analytics; energy-trading reporting lagged and any cutover risked operational downtime for energy operations.",
       "after": "Phased cutover completed with <30 min downtime; energy-trading reporting latency down 40%; uptime SLA adherence at 99.95% with unified cost analytics.",
       "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (what made the cutover reversible — was rollback ever invoked? \"<30 min\" downtime of what exactly?)",
-      "ownership": "TODO(jagadeesh): team size and this person's specific scope vs. the team's — see issue #206",
+      "ownership": "Engaged as this migration's architect — the title of record is Cloud Data Architect — directed the cross-cloud migration design and cutover plan; delivery execution ran alongside the client's own engineering team.",
       "metrics": [
         {
           "label": "Cutover downtime",
@@ -1555,7 +1555,7 @@ export const portfolio: PortfolioData = {
       "before": "500+ TiB Snowflake estate with 200+ ETL workflows facing months of manual schema and SQL refactoring, with no tolerance for data loss.",
       "after": "Manual refactoring cut 40% by GenAI tooling; zero data loss across 200+ workflows on Cloud Composer + Dataflow; 99.9% uptime with audit-ready lineage and 3x analyst throughput.",
       "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (one schema-mapping case the GenAI tooling got wrong and how it was caught? verification method behind \"zero data loss across 200+ workflows\"?)",
-      "ownership": "TODO(jagadeesh): team size and this person's specific scope vs. the team's — see issue #206",
+      "ownership": "Engaged as Wiley's forward-deployed Data & GenAI Architect for this modernization — designed the migration and GenAI-accelerated schema-mapping pipeline; delivery execution ran alongside Wiley's own engineering team.",
       "metrics": [
         {
           "label": "Data migrated",
@@ -1612,7 +1612,7 @@ export const portfolio: PortfolioData = {
       "before": "Analysts manually searched a 50M+ document corpus and tier-1 support ran fully manual — days-long research with no verifiable citations and slow ticket resolution.",
       "after": "95% grounded answer accuracy and 3x analyst productivity at p95 <1.5s; 60% tier-1 ticket deflection at p95 <2s and >4.3/5 CSAT — in-VPC, behind SSO/SAML, with full audit logging.",
       "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (what did the first retrieval approach get wrong before reaching 95%? a concrete caught-hallucination example? why two vector stores?)",
-      "ownership": "TODO(jagadeesh): team size and this person's specific scope vs. the team's — see issue #206",
+      "ownership": "Engaged as Wiley's forward-deployed Data & GenAI Architect for this platform — designed the RAG and agent architecture; delivery execution ran alongside Wiley's own engineering team.",
       "metrics": [
         {
           "label": "Documents in production RAG",
