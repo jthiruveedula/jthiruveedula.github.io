@@ -105,7 +105,7 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Cache graded scene plates
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: public/scenes
           key: scenes-${{ runner.os }}-${{ hashFiles('scene-sources/**', 'scripts/grade-scenes.mjs') }}
@@ -119,7 +119,7 @@ jobs:
 
       - name: Cache Playwright browser binaries
         id: playwright_cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ runner.os }}-${{ steps.playwright_version.outputs.version }}
