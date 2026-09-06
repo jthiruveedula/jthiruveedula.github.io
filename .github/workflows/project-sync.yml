@@ -67,7 +67,7 @@ jobs:
 
       - name: Checkout
         if: steps.guard.outputs.have_token == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node
         if: steps.guard.outputs.have_token == 'true'
