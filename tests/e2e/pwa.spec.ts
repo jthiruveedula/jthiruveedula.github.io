@@ -106,7 +106,14 @@ test.describe('desktop rail overflow', () => {
   })
 
   test('the rail list scrolls internally rather than spilling past the viewport', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 })
+    // #235's height-tightening media query (max-height: 820px) now closes the
+    // overflow at 1280x720 too, not just the 768/800 heights it targeted — a
+    // genuinely shorter viewport is needed to still reproduce overflow here.
+    // (At 720 the tightened list's natural height ties clientHeight exactly,
+    // 635 === 635, since a box larger than its content reports scrollHeight
+    // equal to clientHeight; below ~715 the box wins the race and this control
+    // fires again.)
+    await page.setViewportSize({ width: 1280, height: 640 })
     await page.goto('/')
 
     const overflow = await page.evaluate(() => {
