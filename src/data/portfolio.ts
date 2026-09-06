@@ -11,7 +11,7 @@ export const portfolio: PortfolioData = {
     "linkedin": "https://www.linkedin.com/in/jthiruveedula",
     "github": "https://github.com/jthiruveedula",
     "location": "DFW (Dallas Fort Worth), TX · Open to relocation · 50% travel",
-    "availability": "TODO(jagadeesh): confirm target role/level and availability — e.g. 'Open to Principal/Staff Data & AI Architect roles and embedded consulting engagements'"
+    "availability": "Open to Principal/Staff Data & AI Architect roles and embedded consulting engagements."
   },
   "skills": [
     {
@@ -1728,18 +1728,18 @@ export const portfolio: PortfolioData = {
   "engagementModel": [
     {
       "name": "Assessment",
-      "description": "TODO(jagadeesh): confirm this description — short, fixed-scope diagnostic of the current data/AI estate.",
-      "duration": "TODO(jagadeesh): confirm typical duration"
+      "description": "Short, fixed-scope diagnostic of the current data/AI estate.",
+      "duration": "1-2 weeks"
     },
     {
       "name": "Build",
-      "description": "TODO(jagadeesh): confirm this description — a defined deliverable shipped on a fixed timeline.",
-      "duration": "TODO(jagadeesh): confirm typical duration"
+      "description": "A defined deliverable shipped on a fixed timeline.",
+      "duration": "6-12 weeks"
     },
     {
       "name": "Embedded",
-      "description": "TODO(jagadeesh): confirm this description — ongoing, forward-deployed alongside the team (matches the Wiley engagement above).",
-      "duration": "TODO(jagadeesh): confirm typical duration"
+      "description": "Ongoing, forward-deployed alongside the team (matches the Wiley engagement above).",
+      "duration": "3-6+ months"
     }
   ]
 }
