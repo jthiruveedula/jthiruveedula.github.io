@@ -82,6 +82,10 @@ export interface FeaturedProject {
    * opening anything.
    */
   shift?: { from: string; to: string }
+  /** What was rejected and why — proves this was a decision, not a default. */
+  tradeoff?: string
+  /** Team size and this person's specific scope vs. what the team did. */
+  ownership?: string
   metrics: Metric[]
   tech: string[]
   /** Data-flow shape animated by the stage-path diagram. */

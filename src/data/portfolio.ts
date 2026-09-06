@@ -1345,6 +1345,8 @@ export const portfolio: PortfolioData = {
       "description": "GenAI-powered code-translation pipeline converting Mainframe/COBOL into BigQuery SQL and PySpark, measured by a semantic-fidelity eval harness and deployed inside the customer's GCP VPC behind their IAM. Discovery across 12 legacy workstreams sequenced the migration by risk and value.",
       "before": "12 COBOL/legacy workstreams with decades of business logic locked in mainframe code that no modern team could safely rewrite by hand.",
       "after": "Automated COBOL → BigQuery SQL + PySpark translation with semantic-fidelity evals, audit-ready refactored pipelines, and 5 reusable transformation patterns codified into the platform playbook.",
+      "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (what does the semantic-fidelity harness actually score? a concrete hard-to-translate COBOL construct? of 12 workstreams triaged, how many actually migrated?)",
+      "ownership": "TODO(jagadeesh): team size and this person's specific scope vs. the team's — see issue #206",
       "metrics": [
         {
           "label": "Legacy workstreams triaged",
@@ -1387,6 +1389,8 @@ export const portfolio: PortfolioData = {
       "description": "Led a multi-petabyte migration from legacy Hadoop/Teradata to GCP with rewritten PySpark/Talend ETL, standardized CDC patterns, a 30M records/day transactional framework, and metadata-driven IaC deployments — later featured in Free Press Journal for frameworks adopted across 10+ enterprise programs.",
       "before": "Legacy Hadoop/Teradata estate with slow, costly ETL, hand-rolled deployments, and no standardized CDC — 1B+ daily records at risk during any change.",
       "after": "25% faster and more efficient on GCP, $1M+ annual savings, zero data loss on 1B+ daily records, 99.5% SLA on 30M/day transactions, release cycles cut 50% via Terraform IaC.",
+      "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (is \"$1M+\" compute, storage, licensing, or headcount? what was the riskiest cutover step and how was it de-risked?)",
+      "ownership": "TODO(jagadeesh): team size and this person's specific scope vs. the team's — see issue #206",
       "metrics": [
         {
           "label": "Annual infra savings",
@@ -1442,6 +1446,8 @@ export const portfolio: PortfolioData = {
       "description": "Real-time Kafka + Pub/Sub streaming architecture for 50+ healthcare data sources with 100% data accuracy under HIPAA governance, alongside custom GenAI accelerators that automated Talend ETL + SQL → PySpark conversion and a 100+ TB on-prem → GCP migration.",
       "before": "Legacy Talend ETL and 100+ TB of on-prem warehouses; 50+ sources needed real-time integration under strict HIPAA audit constraints.",
       "after": "GenAI accelerators cut delivery timelines 50% and were adopted by 10+ programs; 50+ sources streaming with 100% data accuracy; ETL performance up 30% on GCP.",
+      "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (\"100% data accuracy\" against what ground truth, measured how? a sanitized before/after of what the GenAI accelerator automated?)",
+      "ownership": "TODO(jagadeesh): team size and this person's specific scope vs. the team's — see issue #206",
       "metrics": [
         {
           "label": "Delivery timelines cut",
@@ -1497,6 +1503,8 @@ export const portfolio: PortfolioData = {
       "description": "Directed migration of an AWS data lake (S3 + EMR) to GCP Databricks with cross-cloud ingestion and transformation pipelines, integrating BigQuery and Vertex AI for predictive maintenance models, with FinOps optimization of cross-cloud spend.",
       "before": "AWS data lake siloed from GCP analytics; energy-trading reporting lagged and any cutover risked operational downtime for energy operations.",
       "after": "Phased cutover completed with <30 min downtime; energy-trading reporting latency down 40%; uptime SLA adherence at 99.95% with unified cost analytics.",
+      "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (what made the cutover reversible — was rollback ever invoked? \"<30 min\" downtime of what exactly?)",
+      "ownership": "TODO(jagadeesh): team size and this person's specific scope vs. the team's — see issue #206",
       "metrics": [
         {
           "label": "Cutover downtime",
@@ -1545,6 +1553,8 @@ export const portfolio: PortfolioData = {
       "description": "Discovery-led modernization of a 500+ TiB Snowflake estate onto BigQuery using a GenAI-accelerated schema-mapping and SQL-translation pipeline, with redesigned dimensional models, SCD2 and CDC standardization, and event-driven Pub/Sub + Dataflow telemetry pipelines.",
       "before": "500+ TiB Snowflake estate with 200+ ETL workflows facing months of manual schema and SQL refactoring, with no tolerance for data loss.",
       "after": "Manual refactoring cut 40% by GenAI tooling; zero data loss across 200+ workflows on Cloud Composer + Dataflow; 99.9% uptime with audit-ready lineage and 3x analyst throughput.",
+      "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (one schema-mapping case the GenAI tooling got wrong and how it was caught? verification method behind \"zero data loss across 200+ workflows\"?)",
+      "ownership": "TODO(jagadeesh): team size and this person's specific scope vs. the team's — see issue #206",
       "metrics": [
         {
           "label": "Data migrated",
@@ -1600,6 +1610,8 @@ export const portfolio: PortfolioData = {
       "description": "Production RAG over 50M+ enterprise documents (Vertex AI Vector Search + Pinecone, hybrid retrieval + cross-encoder reranking, grounded citations, MCP-based multi-agent orchestration) shipped for CXO reporting — paired with a multi-turn customer service agent with PI-redaction guardrails and A/B routing across GPT-5 / Gemini 3.5 Flash / Gemini 3.5 Pro / Claude Sonnet 5 / Claude Opus 5, all governed by an LLMOps platform (LangSmith, RAGAS, LLM-as-judge, Langfuse, Arize Phoenix) behind VPC-SC and CMEK.",
       "before": "Analysts manually searched a 50M+ document corpus and tier-1 support ran fully manual — days-long research with no verifiable citations and slow ticket resolution.",
       "after": "95% grounded answer accuracy and 3x analyst productivity at p95 <1.5s; 60% tier-1 ticket deflection at p95 <2s and >4.3/5 CSAT — in-VPC, behind SSO/SAML, with full audit logging.",
+      "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (what did the first retrieval approach get wrong before reaching 95%? a concrete caught-hallucination example? why two vector stores?)",
+      "ownership": "TODO(jagadeesh): team size and this person's specific scope vs. the team's — see issue #206",
       "metrics": [
         {
           "label": "Documents in production RAG",
