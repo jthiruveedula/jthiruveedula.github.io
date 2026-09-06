@@ -10,7 +10,8 @@ export const portfolio: PortfolioData = {
     "email": "jagadeeshthiruveedula77@gmail.com",
     "linkedin": "https://www.linkedin.com/in/jthiruveedula",
     "github": "https://github.com/jthiruveedula",
-    "location": "DFW (Dallas Fort Worth), TX · Open to relocation · 50% travel"
+    "location": "DFW (Dallas Fort Worth), TX · Open to relocation · 50% travel",
+    "availability": "TODO(jagadeesh): confirm target role/level and availability — e.g. 'Open to Principal/Staff Data & AI Architect roles and embedded consulting engagements'"
   },
   "skills": [
     {

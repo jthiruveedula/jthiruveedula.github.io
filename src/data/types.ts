@@ -116,6 +116,11 @@ export interface Profile {
   linkedin?: string
   github?: string
   location?: string
+  /** Positioning/availability line — rendered verbatim in the hero and again under the
+   *  Contact headline, single source of truth so the two can never drift. Placeholder
+   *  copy pending Jagadeesh's confirmation of target role/level and availability
+   *  (see issue #207) — do not treat the current value as final copy. */
+  availability?: string
 }
 
 /** One of the three shapes a client engagement can take — rendered in Contact's
