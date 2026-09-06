@@ -17,7 +17,7 @@ interface Command {
   run: () => void
 }
 
-function useCommands(goTo: (id: string) => void, onClose: () => void): Command[] {
+function useCommands(goTo: (id: string) => void): Command[] {
   return useMemo(() => {
     const { profile, featuredProjects } = portfolio
 
@@ -44,7 +44,6 @@ function useCommands(goTo: (id: string) => void, onClose: () => void): Command[]
         hint: 'Contact',
         run: () => {
           window.location.href = `mailto:${profile.email}`
-          onClose()
         },
       })
     }
@@ -53,10 +52,7 @@ function useCommands(goTo: (id: string) => void, onClose: () => void): Command[]
         id: 'linkedin',
         label: 'Open LinkedIn',
         hint: 'Contact',
-        run: () => {
-          window.open(profile.linkedin, '_blank', 'noopener,noreferrer')
-          onClose()
-        },
+        run: () => window.open(profile.linkedin, '_blank', 'noopener,noreferrer'),
       })
     }
     if (profile.github) {
@@ -64,10 +60,7 @@ function useCommands(goTo: (id: string) => void, onClose: () => void): Command[]
         id: 'github',
         label: 'Open GitHub',
         hint: 'Contact',
-        run: () => {
-          window.open(profile.github, '_blank', 'noopener,noreferrer')
-          onClose()
-        },
+        run: () => window.open(profile.github, '_blank', 'noopener,noreferrer'),
       })
     }
     contactCommands.push({
@@ -76,12 +69,11 @@ function useCommands(goTo: (id: string) => void, onClose: () => void): Command[]
       hint: 'Contact',
       run: () => {
         window.location.href = '/resume.html'
-        onClose()
       },
     })
 
     return [...sectionCommands, ...projectCommands, ...contactCommands]
-  }, [goTo, onClose])
+  }, [goTo])
 }
 
 export default function CommandPaletteBody({
@@ -96,7 +88,7 @@ export default function CommandPaletteBody({
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
 
-  const commands = useCommands(goTo, onClose)
+  const commands = useCommands(goTo)
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
