@@ -28,7 +28,10 @@ export default function ScrollProgress() {
     // Fallback for reduced-motion / no Lenis.
     let raf = 0
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update)
+      if (!raf) raf = requestAnimationFrame(() => {
+        raf = 0
+        update()
+      })
     }
     update()
     window.addEventListener('scroll', onScroll, { passive: true })
