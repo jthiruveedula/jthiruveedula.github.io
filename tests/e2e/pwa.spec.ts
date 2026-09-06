@@ -21,9 +21,12 @@ test.describe('PWA & mobile metadata', () => {
   test('declares iOS home-screen + theme-color metadata', async ({ page }) => {
     await page.goto('/')
 
+    // iOS ignores SVG here and falls back to a screenshot of the page — this must
+    // be a raster icon. Was `/favicon.svg$/`, which locked in the exact defect
+    // this asset fixed (see #197 / public/apple-touch-icon.png).
     await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute(
       'href',
-      /favicon\.svg$/,
+      /apple-touch-icon\.png$/,
     )
     await expect(page.locator('meta[name="apple-mobile-web-app-capable"]')).toHaveAttribute(
       'content',
