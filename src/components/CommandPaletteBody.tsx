@@ -17,7 +17,7 @@ interface Command {
   run: () => void
 }
 
-function useCommands(goTo: (id: string) => void): Command[] {
+function useCommands(goTo: (id: string) => void, onClose: () => void): Command[] {
   return useMemo(() => {
     const { profile, featuredProjects } = portfolio
 
@@ -44,6 +44,7 @@ function useCommands(goTo: (id: string) => void): Command[] {
         hint: 'Contact',
         run: () => {
           window.location.href = `mailto:${profile.email}`
+          onClose()
         },
       })
     }
@@ -52,7 +53,10 @@ function useCommands(goTo: (id: string) => void): Command[] {
         id: 'linkedin',
         label: 'Open LinkedIn',
         hint: 'Contact',
-        run: () => window.open(profile.linkedin, '_blank', 'noopener,noreferrer'),
+        run: () => {
+          window.open(profile.linkedin, '_blank', 'noopener,noreferrer')
+          onClose()
+        },
       })
     }
     if (profile.github) {
@@ -60,7 +64,10 @@ function useCommands(goTo: (id: string) => void): Command[] {
         id: 'github',
         label: 'Open GitHub',
         hint: 'Contact',
-        run: () => window.open(profile.github, '_blank', 'noopener,noreferrer'),
+        run: () => {
+          window.open(profile.github, '_blank', 'noopener,noreferrer')
+          onClose()
+        },
       })
     }
     contactCommands.push({
@@ -69,11 +76,12 @@ function useCommands(goTo: (id: string) => void): Command[] {
       hint: 'Contact',
       run: () => {
         window.location.href = '/resume.html'
+        onClose()
       },
     })
 
     return [...sectionCommands, ...projectCommands, ...contactCommands]
-  }, [goTo])
+  }, [goTo, onClose])
 }
 
 export default function CommandPaletteBody({
@@ -88,7 +96,7 @@ export default function CommandPaletteBody({
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
 
-  const commands = useCommands(goTo)
+  const commands = useCommands(goTo, onClose)
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
