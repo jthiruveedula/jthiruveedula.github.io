@@ -4,10 +4,18 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import { useReducedMotion } from '@/lib/hooks'
+import { isPlaceholder } from '@/lib/content'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
 const { profile, certifications, education, engagementModel, testimonials } = portfolio
+
+// Only show an engagement shape once its copy is real — a scaffolded shape's
+// description/duration carry an honest `TODO(jagadeesh): ...` marker for him,
+// never meant to render to a site visitor (see issue #209).
+const readyEngagementShapes = engagementModel.filter(
+  (shape) => !isPlaceholder(shape.description) && !isPlaceholder(shape.duration),
+)
 
 // The theme already has this label: mono, 11px, uppercase, ink-faint. The old
 // bespoke 9px version was both smaller than the AA floor allows comfortably and a
@@ -92,7 +100,7 @@ export default function Contact() {
           )}
         </div>
 
-        {profile.availability && (
+        {profile.availability && !isPlaceholder(profile.availability) && (
           <p className="contact-availability mt-4 max-w-[62ch] font-mono text-xs tracking-[0.1em] uppercase text-ink-faint">
             {profile.availability}
           </p>
@@ -193,14 +201,14 @@ export default function Contact() {
           </div>
         </div>
 
-        {engagementModel.length > 0 && (
+        {readyEngagementShapes.length > 0 && (
           <div className="contact-engagement mt-16 border-t border-rule pt-10">
             <p className={LABEL_CLASS}>How I work</p>
             <div
               className="mt-6 grid gap-x-10 gap-y-8"
               style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}
             >
-              {engagementModel.map((shape) => (
+              {readyEngagementShapes.map((shape) => (
                 <div key={shape.name}>
                   <p className="font-display text-lg text-ink">{shape.name}</p>
                   <p className="mt-2 text-sm leading-[1.6] text-ink-muted">{shape.description}</p>
