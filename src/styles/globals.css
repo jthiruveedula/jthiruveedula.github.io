@@ -528,8 +528,18 @@ h2 .proper,
    1024×768 or 1280×800 laptop — common heights, both shorter than the rail's
    ~774px natural height — clips Contact/Search with no cue that more is one
    scroll away. Shrinking the same properties tightened for the mobile bar
-   above removes the overflow instead of hiding it. */
-@media (min-width: 1024px) and (max-height: 820px) {
+   above removes the overflow instead of hiding it.
+
+   The cutoff is 900px, not the ~774px the tightened list actually needs:
+   this was originally 820px, which fixed 768/800px laptops but opened a
+   *worse* gap from 821-879px — right above the cutoff, styles snap back to
+   the untightened (larger) sizing while the available track is still short,
+   so the list overflows again and collides with the "2015—" mark below it
+   (confirmed up to 50px of actual text overlap at 821px). 900px gives the
+   tightened rules enough range that the untightened list already fits again
+   by the time this query stops applying, with margin instead of a second
+   cliff. */
+@media (min-width: 1024px) and (max-height: 900px) {
   .rail {
     padding-block: 0.85rem;
   }
