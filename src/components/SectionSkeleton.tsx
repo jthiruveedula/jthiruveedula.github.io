@@ -198,6 +198,7 @@ export default function SectionSkeleton({ variant, label }: SectionSkeletonProps
       aria-label={`Loading ${label}`}
       aria-busy="true"
     >
+      <span className="sr-only">Loading {label}…</span>
       <Skeleton />
     </section>
   )

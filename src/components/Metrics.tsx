@@ -309,7 +309,7 @@ export default function Metrics() {
           <h2 id="index-heading" className="index-head text-[clamp(1.7rem,3.6vw,2.8rem)]">
             Measured, not claimed.
           </h2>
-          <p className="index-head lede mt-5 text-[clamp(0.95rem,1.1vw,1.05rem)] leading-[1.62] text-ink-muted">
+          <p className="index-head mt-5 text-[clamp(0.95rem,1.1vw,1.05rem)] leading-[1.62] text-ink-muted">
             Thirteen figures, each one carrying the system it came from. Cut the list down
             to the ones you care about.
           </p>
@@ -320,7 +320,7 @@ export default function Metrics() {
             primary groups while the pills counted every group. Each row now carries its
             own categories, which is where that information is actually actionable. */}
         <div
-          role="group"
+          role="radiogroup"
           aria-label="Filter figures by category"
           className="index-head mt-10 flex flex-wrap gap-2"
         >
@@ -330,8 +330,9 @@ export default function Metrics() {
               <button
                 key={name}
                 type="button"
+                role="radio"
                 onClick={() => selectFilter(name)}
-                aria-pressed={active}
+                aria-checked={active}
                 className={active ? 'chip chip--primary' : 'chip'}
               >
                 {name}
@@ -358,11 +359,15 @@ export default function Metrics() {
             const anyVisible = rows.some(
               (m) => filter === 'All' || (m.groups?.includes(filter) ?? false),
             )
+            const headingId = `band-${family}-heading`
             return (
-              <section key={family} hidden={!anyVisible} aria-label={caption}>
-                <p className="metric-row stat__label border-b border-rule py-3 text-ink-faint">
+              <section key={family} hidden={!anyVisible} aria-labelledby={headingId}>
+                <h3
+                  id={headingId}
+                  className="metric-row stat__label border-b border-rule py-3 text-ink-faint"
+                >
                   {caption}
-                </p>
+                </h3>
                 <ul>
                   {rows.map((metric) => {
                     const visible = filter === 'All' || (metric.groups?.includes(filter) ?? false)
