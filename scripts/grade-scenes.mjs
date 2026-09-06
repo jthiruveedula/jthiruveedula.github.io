@@ -1,9 +1,10 @@
 /**
- * Bake the brass grade into the scene plates.
+ * Bake the azure grade into the scene plates.
  *
  * The seven stills were generated in the v3–v5 era palette (amber #f59e0b legacy /
- * cyan #22d3ee cloud / violet #a78bfa AI). The site's accent is now molten brass
- * oklch(76% 0.17 50). Rather than re-render them, we regrade: these images are
+ * cyan #22d3ee cloud / violet #a78bfa AI). The site's accent is now azure
+ * oklch(76% 0.17 215) (rehued in v7.4 from the v6 molten-brass oklch(76% 0.17 50) —
+ * see globals.css). Rather than re-render them, we regrade: these images are
  * essentially a luminance map with one narrow-band hue painted on, so throwing the
  * hue away leaves a complete picture that can be remapped through any ramp.
  *
@@ -13,7 +14,7 @@
  *
  * What NOT to do, both tested and rejected:
  *   - `hue-rotate()` is a linear sRGB matrix — it cannot move cyan without moving
- *     everything else by the same angle. At the rotation that takes cyan to brass,
+ *     everything else by the same angle. At the rotation that takes cyan to azure,
  *     01's amber machines turn blue, 07's amber base turns blue-violet and 06 goes
  *     green.
  *   - The `sepia() saturate() hue-rotate()` chain crushes these near-clipped
@@ -37,11 +38,11 @@ const OUT = path.join(ROOT, 'public', 'scenes')
 /** 4-stop luminance gradient maps. Stops are [luminance, r, g, b]. */
 const RAMPS = {
   // Six of the seven scenes. 0.72 stop is --color-accent exactly.
-  brass: [
+  azure: [
     [0.0, 14, 13, 26], // cool-violet shadow === oklch(15% 0.014 265) === --color-paper
-    [0.35, 92, 42, 20], // deep brass
-    [0.72, 255, 140, 63], // oklch(76% 0.17 50) === --color-accent
-    [1.0, 255, 232, 205], // hot cream highlight
+    [0.35, 0, 102, 126], // deep azure === oklch(46% 0.11 215) === --color-accent-800
+    [0.72, 0, 202, 244], // oklch(76% 0.17 215) === --color-accent
+    [1.0, 214, 241, 248], // cool highlight === oklch(94% 0.03 215)
   ],
   // The exception. Six scenes are one hue; on the seventh idea — the grounded RAG,
   // the eval harness, the thing he is actually being hired for — a second colour
@@ -65,16 +66,16 @@ const RAMPS = {
  * old-left/new-right, and 07's three era bands would collapse into one.
  */
 const SCENES = [
-  { file: '01-ingress', ramp: 'brass' },
-  { file: '02-legacy-substrate', ramp: 'brass' },
-  { file: '03-great-migration', split: { axis: 'x', at: 0.47, feather: 0.15, a: 'brass', b: 'coral' } },
-  { file: '04-governed-realtime', ramp: 'brass' },
-  { file: '05-translation-engine', ramp: 'brass' },
+  { file: '01-ingress', ramp: 'azure' },
+  { file: '02-legacy-substrate', ramp: 'azure' },
+  { file: '03-great-migration', split: { axis: 'x', at: 0.47, feather: 0.15, a: 'azure', b: 'coral' } },
+  { file: '04-governed-realtime', ramp: 'azure' },
+  { file: '05-translation-engine', ramp: 'azure' },
   { file: '06-grounded-mind', ramp: 'coral' },
-  // Brass only, deliberately. A split here would keep the three era bands separate,
+  // Azure only, deliberately. A split here would keep the three era bands separate,
   // but this is the finale and the line it carries is "one structure" — resolving
   // the whole tower into a single material is the point, not a loss.
-  { file: '07-whole-system', ramp: 'brass' },
+  { file: '07-whole-system', ramp: 'azure' },
 ]
 
 const WIDTHS = [2048, 1280]

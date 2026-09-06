@@ -12,7 +12,7 @@
     background:
       linear-gradient(oklch(96% 0.006 262 / 0.045) 1px, transparent 1px) 0 0 / 48px 48px,
       linear-gradient(90deg, oklch(96% 0.006 262 / 0.045) 1px, transparent 1px) 0 0 / 48px 48px,
-      radial-gradient(52% 46% at 80% 34%, oklch(76% 0.17 50 / 0.10) 0%, transparent 66%),
+      radial-gradient(52% 46% at 80% 34%, oklch(76% 0.17 215 / 0.10) 0%, transparent 66%),
       oklch(15% 0.014 265);
     color: oklch(80% 0.009 262);
     font-family: 'Geist', system-ui, sans-serif;
@@ -24,7 +24,7 @@
     font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.1em;
     text-transform: uppercase; color: oklch(64% 0.010 262);
   }
-  .eyebrow b { color: oklch(76% 0.17 50); font-weight: 500; }
+  .eyebrow b { color: oklch(76% 0.17 215); font-weight: 500; }
   .figure {
     font-family: 'Instrument Serif', Georgia, serif; font-weight: 400;
     font-size: 132px; line-height: 0.9; letter-spacing: -0.03em;
@@ -68,8 +68,8 @@
   svg.app { position: absolute; right: 96px; top: 178px; width: 300px; height: 300px; overflow: visible; }
   .edge { stroke: oklch(38% 0.013 265); stroke-width: 1; fill: none; }
   .node { fill: oklch(18.5% 0.015 265); stroke: oklch(38% 0.013 265); stroke-width: 1; }
-  .core { fill: oklch(76% 0.17 50 / 0.10); stroke: oklch(76% 0.17 50); }
-  .glow { fill: oklch(80% 0.16 50 / 0.16); }
+  .core { fill: oklch(76% 0.17 215 / 0.10); stroke: oklch(76% 0.17 215); }
+  .glow { fill: oklch(80% 0.16 215 / 0.16); }
   .lbl {
     font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.08em;
     text-transform: uppercase; fill: oklch(64% 0.010 262);
@@ -116,7 +116,7 @@
     })
     add('circle', { class: 'glow', cx: CX, cy: CY, r: 52 })
     add('circle', { class: 'node core', cx: CX, cy: CY, r: 40 })
-    add('text', { class: 'lbl', x: CX, y: CY - 2, 'text-anchor': 'middle', fill: 'oklch(76% 0.17 50)' }, 'GOVERNED')
+    add('text', { class: 'lbl', x: CX, y: CY - 2, 'text-anchor': 'middle', fill: 'oklch(76% 0.17 215)' }, 'GOVERNED')
     add('text', { class: 'lbl', x: CX, y: CY + 12, 'text-anchor': 'middle' }, 'PLANE')
     for (const [label, a] of NODES) {
       const [x, y] = at(a, R)

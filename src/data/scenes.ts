@@ -8,8 +8,9 @@ import type { Era, Metric } from './types'
  * shared style preamble so the whole flight reads as one world — see SCENE_PLAN.md
  * for the prompts and ASSET_MANIFEST.md for the asset mapping.
  *
- * `era` drives the accent tint; the flight crossfades amber → cyan → violet so no
- * scene boundary is a hard colour cut.
+ * `era` drives the accent tint; the flight crossfades grey → grey → azure (legacy
+ * and cloud are grey steps, AI carries the single accent hue) so no scene boundary
+ * is a hard colour cut.
  */
 export interface WorldScene {
   id: string
@@ -43,9 +44,9 @@ export interface WorldScene {
 }
 
 export const ACCENT: Record<Era, string> = {
-  legacy: '#f59e0b',
-  cloud: '#22d3ee',
-  ai: '#a78bfa',
+  legacy: '#66696f', // oklch(52% 0.011 263) === --color-legacy
+  cloud: '#9b9ea4', // oklch(70% 0.009 262) === --color-cloud
+  ai: '#00caf4', // oklch(76% 0.17 215) === --color-accent / --color-ai
 }
 
 export const worldScenes: WorldScene[] = [
@@ -53,7 +54,7 @@ export const worldScenes: WorldScene[] = [
     id: 'ingress',
     label: 'Origin',
     era: 'cloud',
-    accent: '#22d3ee',
+    accent: '#9b9ea4',
     still: '/scenes/01-ingress.jpg',
     stillMobile: '/scenes/01-ingress@sm.jpg',
     eyebrow: 'Jagadeesh Thiruveedula · Dallas–Fort Worth, TX',
@@ -81,7 +82,7 @@ export const worldScenes: WorldScene[] = [
     id: 'legacy-substrate',
     label: 'Legacy',
     era: 'legacy',
-    accent: '#f59e0b',
+    accent: '#66696f',
     still: '/scenes/02-legacy-substrate.jpg',
     stillMobile: '/scenes/02-legacy-substrate@sm.jpg',
     eyebrow: '2015 – 2019 · Legacy Systems',
@@ -100,7 +101,7 @@ export const worldScenes: WorldScene[] = [
     id: 'great-migration',
     label: 'Migration',
     era: 'cloud',
-    accent: '#22d3ee',
+    accent: '#9b9ea4',
     still: '/scenes/03-great-migration.jpg',
     stillMobile: '/scenes/03-great-migration@sm.jpg',
     eyebrow: '2019 – 2022 · Charles Schwab',
@@ -119,7 +120,7 @@ export const worldScenes: WorldScene[] = [
     id: 'governed-realtime',
     label: 'Realtime',
     era: 'cloud',
-    accent: '#22d3ee',
+    accent: '#9b9ea4',
     still: '/scenes/04-governed-realtime.jpg',
     stillMobile: '/scenes/04-governed-realtime@sm.jpg',
     eyebrow: '2022 – 2024 · HCA Healthcare · NRG Energy',
@@ -138,7 +139,7 @@ export const worldScenes: WorldScene[] = [
     id: 'translation-engine',
     label: 'Translation',
     era: 'ai',
-    accent: '#a78bfa',
+    accent: '#00caf4',
     still: '/scenes/05-translation-engine.jpg',
     stillMobile: '/scenes/05-translation-engine@sm.jpg',
     eyebrow: '2024 – 2025 · Definity',
@@ -155,7 +156,7 @@ export const worldScenes: WorldScene[] = [
     id: 'grounded-mind',
     label: 'Grounded AI',
     era: 'ai',
-    accent: '#a78bfa',
+    accent: '#00caf4',
     still: '/scenes/06-grounded-mind.jpg',
     stillMobile: '/scenes/06-grounded-mind@sm.jpg',
     eyebrow: '2025 – present · John Wiley & Sons',
