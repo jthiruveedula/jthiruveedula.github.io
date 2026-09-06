@@ -49,6 +49,7 @@ export default function Contact() {
         })
         .from('.contact-word', { y: 24, opacity: 0, duration: 0.6, stagger: 0.08 })
         .from('.contact-cta', { y: 24, opacity: 0, duration: 0.5 }, '-=0.3')
+        .from('.contact-availability', { y: 24, opacity: 0, duration: 0.5 }, '-=0.3')
         .from('.contact-summary', { y: 24, opacity: 0, duration: 0.5 }, '-=0.3')
         .from('.contact-grid', { y: 24, opacity: 0, duration: 0.6 }, '-=0.35')
         .from('.contact-engagement', { y: 24, opacity: 0, duration: 0.6 }, '-=0.35')
@@ -90,6 +91,12 @@ export default function Contact() {
             </a>
           )}
         </div>
+
+        {profile.availability && (
+          <p className="contact-availability mt-4 max-w-[62ch] font-mono text-xs tracking-[0.1em] uppercase text-ink-faint">
+            {profile.availability}
+          </p>
+        )}
 
         {profile.summary && (
           <p className="contact-summary mt-8 max-w-[62ch] text-[0.95rem] leading-[1.65] text-ink-muted">

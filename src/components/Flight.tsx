@@ -256,6 +256,14 @@ export default function Flight() {
             ))}
           </ul>
 
+          {/* Positioning/availability — static, unlike the kicker above: it is
+              profile-level, not per-scene, so it renders once and never swaps
+              with `active`. Same field Contact renders under its headline;
+              read from `profile` so the two can never drift (issue #207). */}
+          {profile.availability && (
+            <p className="flight__availability">{profile.availability}</p>
+          )}
+
           {/* The contact affordance, present at every breakpoint — unlike
               .flight__skip below, which is desktop-only furniture. A visitor
               who never scrolls still lands on a working Email/Résumé pair. */}
