@@ -1,0 +1,42 @@
+# Jagadeesh Thiruveedula
+
+> Data & AI Architect | GCP · BigQuery · Vertex AI · RAG · Agents | Legacy → Cloud → Enterprise AI
+> Dallas–Fort Worth (DFW), TX · Open to relocation · 50% travel
+
+Data & AI Architect with 11+ years taking Fortune 500 enterprises from legacy
+systems through cloud modernization to production GenAI. Delivered $2M+ in
+cost savings, 500+ TiB of cloud migrations, and 1B+ daily events at 99.9%
+uptime — then shipped private LLM applications serving 50M+ documents at 95%
+grounded accuracy. Strong on evaluation, guardrails, and governance: the work
+that turns a demo into a production system.
+
+Site: https://jthiruveedula.github.io/
+Resume: https://jthiruveedula.github.io/resume.html
+LinkedIn: https://www.linkedin.com/in/jthiruveedula
+GitHub: https://github.com/jthiruveedula
+
+## Featured projects
+
+### GenAI COBOL → Cloud Code Translation (Definity)
+Decades of mainframe business logic, translated to governed cloud pipelines by LLMs.
+Metrics: 12 legacy workstreams triaged · 5 reusable patterns codified
+
+### Multi-Petabyte Hadoop/Teradata → GCP Migration (Charles Schwab)
+1B+ daily records moved to cloud with zero data loss at a Fortune 500 brokerage.
+Metrics: $1M+ annual infra savings · 1B+ daily records, zero loss · 25% efficiency improvement · 50% release cycles cut
+
+### HIPAA Real-Time Streaming & GenAI Accelerators (HCA Healthcare)
+50+ healthcare data sources streaming in real time under full audit governance.
+Metrics: 50% delivery timelines cut · 100+ TB migrated under HIPAA · 50+ sources streamed real-time · 100% data accuracy
+
+### AWS → GCP Cross-Cloud Migration (NRG Energy)
+Phased cross-cloud cutover with under 30 minutes of downtime.
+Metrics: <30 min cutover downtime · 40% reporting latency reduction · 99.95% uptime SLA
+
+### 500+ TiB Snowflake → BigQuery Modernization (John Wiley & Sons)
+GenAI-accelerated schema mapping and SQL translation at half a petabyte scale.
+Metrics: 500+ TiB data migrated · 200+ ETL workflows, zero loss · 40% manual refactoring cut · 99.9% uptime
+
+### Private LLM Research Assistant & Agent Platform (John Wiley & Sons)
+RAG over 50M+ documents at 95% grounded accuracy, plus agents deflecting 60% of tier-1 tickets.
+Metrics: 50M+ documents in production RAG · 95% grounded answer accuracy · 60% tier-1 ticket deflection · 3x analyst productivity
