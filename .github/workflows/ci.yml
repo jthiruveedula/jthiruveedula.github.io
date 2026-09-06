@@ -133,7 +133,7 @@ jobs:
 
       - name: Run E2E tests
         id: e2e
-        run: npx playwright test --project=chromium --reporter=line
+        run: npm run test:e2e:all -- --reporter=line
         continue-on-error: true
         timeout-minutes: 8
 
