@@ -93,7 +93,7 @@ jobs:
 
       - id: e2e_tests
         name: E2E tests
-        run: npx playwright test --project=chromium --reporter=line
+        run: npm run test:e2e:all -- --reporter=line
         timeout-minutes: 10
 
       - name: Upload failure artifacts
