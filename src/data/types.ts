@@ -114,6 +114,14 @@ export interface Profile {
   location?: string
 }
 
+/** One of the three shapes a client engagement can take — rendered in Contact's
+ *  "How I work" block. Exactly 3 entries: Assessment, Build, Embedded. */
+export interface EngagementShape {
+  name: string
+  description: string
+  duration: string
+}
+
 export interface PortfolioData {
   profile: Profile
   skills: Skill[]
@@ -123,6 +131,7 @@ export interface PortfolioData {
   certifications: string[]
   education: string[]
   story: { chapters: Chapter[] }
+  engagementModel: EngagementShape[]
 }
 
 /**

@@ -1710,5 +1710,22 @@ export const portfolio: PortfolioData = {
         "blurb": "Now the same estates want GenAI. Production RAG and multi-agent systems running inside the customer's own VPC — where the model is never the hard part. Proving the answer is grounded, the data never left, and someone can audit it tomorrow: that is the work."
       }
     ]
-  }
+  },
+  "engagementModel": [
+    {
+      "name": "Assessment",
+      "description": "TODO(jagadeesh): confirm this description — short, fixed-scope diagnostic of the current data/AI estate.",
+      "duration": "TODO(jagadeesh): confirm typical duration"
+    },
+    {
+      "name": "Build",
+      "description": "TODO(jagadeesh): confirm this description — a defined deliverable shipped on a fixed timeline.",
+      "duration": "TODO(jagadeesh): confirm typical duration"
+    },
+    {
+      "name": "Embedded",
+      "description": "TODO(jagadeesh): confirm this description — ongoing, forward-deployed alongside the team (matches the Wiley engagement above).",
+      "duration": "TODO(jagadeesh): confirm typical duration"
+    }
+  ]
 }
