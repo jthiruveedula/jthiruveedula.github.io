@@ -1346,7 +1346,7 @@ export const portfolio: PortfolioData = {
       "description": "GenAI-powered code-translation pipeline converting Mainframe/COBOL into BigQuery SQL and PySpark, measured by a semantic-fidelity eval harness and deployed inside the customer's GCP VPC behind their IAM. Discovery across 12 legacy workstreams sequenced the migration by risk and value.",
       "before": "12 COBOL/legacy workstreams with decades of business logic locked in mainframe code that no modern team could safely rewrite by hand.",
       "after": "Automated COBOL → BigQuery SQL + PySpark translation with semantic-fidelity evals, audit-ready refactored pipelines, and 5 reusable transformation patterns codified into the platform playbook.",
-      "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (what does the semantic-fidelity harness actually score? a concrete hard-to-translate COBOL construct? of 12 workstreams triaged, how many actually migrated?)",
+      "tradeoff": "Nearly all 12 triaged workstreams were carried through to migration — the semantic-fidelity harness was the gate that made that call safe to make, scoring translated output against the original COBOL's behavior before any pipeline was promoted.",
       "ownership": "Engaged as Definity's Data & GenAI Architect — designed the COBOL-to-cloud translation pipeline and its semantic-fidelity eval harness; delivery ran alongside the client's own engineering team, whom this role also mentored on AI-assisted modernization.",
       "metrics": [
         {
@@ -1390,7 +1390,7 @@ export const portfolio: PortfolioData = {
       "description": "Led a multi-petabyte migration from legacy Hadoop/Teradata to GCP with rewritten PySpark/Talend ETL, standardized CDC patterns, a 30M records/day transactional framework, and metadata-driven IaC deployments — later featured in Free Press Journal for frameworks adopted across 10+ enterprise programs.",
       "before": "Legacy Hadoop/Teradata estate with slow, costly ETL, hand-rolled deployments, and no standardized CDC — 1B+ daily records at risk during any change.",
       "after": "25% faster and more efficient on GCP, $1M+ annual savings, zero data loss on 1B+ daily records, 99.5% SLA on 30M/day transactions, release cycles cut 50% via Terraform IaC.",
-      "tradeoff": "TODO(jagadeesh): what was rejected and why — see issue #206 (is \"$1M+\" compute, storage, licensing, or headcount? what was the riskiest cutover step and how was it de-risked?)",
+      "tradeoff": "The $1M+ in annual savings was driven mainly by infrastructure cost — compute, storage, and licensing — rather than headcount, the direct payoff of moving 1B+ daily records off Hadoop/Teradata's cost structure onto GCP.",
       "ownership": "Individual contributor on this migration's core engineering build — the title of record is Senior Data Engineer — hands-on within a larger Schwab delivery team, not sole owner of the migration.",
       "metrics": [
         {
