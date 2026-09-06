@@ -49,6 +49,9 @@ jobs:
 
       - name: Generate build metadata
         id: meta
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
           {
             echo "### Build summary"
@@ -70,10 +73,10 @@ jobs:
             if [ "${{ github.event_name }}" = "pull_request" ]; then
               echo "| Field | Value |"
               echo "|---|---|"
-              echo "| Source branch | \`${{ github.head_ref }}\` |"
+              echo "| Source branch | \`${HEAD_REF}\` |"
               echo "| Target branch | \`${{ github.base_ref }}\` |"
               echo "| PR | #${{ github.event.pull_request.number }} |"
-              echo "| Title | ${{ github.event.pull_request.title }} |"
+              echo "| Title | ${PR_TITLE} |"
               echo ""
               echo "### Files changed (top 30)"
               echo ""
