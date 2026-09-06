@@ -14,7 +14,7 @@
     "test:e2e:mobile": "playwright test --project=mobile",
     "test:e2e:all": "playwright test --project=chromium --project=mobile",
     "grade": "node scripts/grade-scenes.mjs",
-    "prebuild": "node scripts/grade-scenes.mjs"
+    "prebuild": "node scripts/grade-scenes.mjs && node scripts/stamp-sitemap.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
