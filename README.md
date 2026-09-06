@@ -210,9 +210,9 @@ stamp at the top of `src/styles/globals.css` is the durable record and
 - `public/robots.txt` and `public/sitemap.xml` are published to the site root for crawler discovery.
 - `public/og-image.png` (1200×630) backs the OpenGraph + Twitter `summary_large_image`
   cards declared in `index.html`. It is a raster on purpose — LinkedIn, X, Slack, WhatsApp
-  and Facebook all render a blank card for an SVG. `public/og-image.svg` is the editable
-  source of record and `public/og-image.source.html` is the live-webfont render the PNG is
-  captured from.
+  and Facebook all render a blank card for an SVG. `public/og-image.source.html` is the
+  editable source of record — a live-webfont HTML page screenshotted at exactly 1200x630
+  to produce the PNG.
 
 ## Customization (swap in your own data)
 
