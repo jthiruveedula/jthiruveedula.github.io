@@ -147,11 +147,12 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- Always-rendered (not gated behind <noscript>): the one name-bearing h1 every
+    <!-- Always-rendered (not gated behind <noscript>): the one name-bearing summary every
          crawler — JS-executing or not — sees. The scroll-flight's own h1 is a narrative
-         line and never contains the name; this is the indexable summary instead. -->
+         line and never contains the name, and it's the page's one true h1 — so this
+         summary is a <p>, not a heading, to avoid a second h1 on the page. -->
     <div class="crawler-summary">
-      <h1>Jagadeesh Thiruveedula</h1>
+      <p>Jagadeesh Thiruveedula</p>
       <p>Data &amp; AI Architect | GCP · BigQuery · Vertex AI · RAG · Agents | Legacy → Cloud → Enterprise AI</p>
       <p>Dallas–Fort Worth (DFW), TX</p>
       <ul>
