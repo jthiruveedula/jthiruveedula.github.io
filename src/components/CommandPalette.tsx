@@ -33,14 +33,19 @@ export default function CommandPalette() {
   const reduced = useReducedMotion()
   const lenis = useLenis()
   // Focus returns to whatever opened the palette — the rail's Search button, or
-  // wherever a keyboard user was when they pressed ⌘K — rather than the page
-  // silently losing its focus position when the dialog closes.
+  // wherever a keyboard user was when they pressed ⌘K — but only when the dialog
+  // is *dismissed*. A command that navigates clears this: focus belongs in the
+  // place the visitor asked to go, not back on the button they left behind.
   const restoreFocusRef = useRef<HTMLElement | null>(null)
 
   const close = useCallback(() => setOpen(false), [])
 
   const goTo = useCallback(
     (id: string) => {
+      // This is a navigation, not a dismissal — suppress the close effect's
+      // restore so it can't drag focus back to the opener a frame before the
+      // destination below claims it.
+      restoreFocusRef.current = null
       setOpen(false)
       // Five of the seven sections this can target (and every project card) are
       // behind React.lazy — their chunk starts fetching on first render, not on
@@ -69,6 +74,14 @@ export default function CommandPalette() {
             lenis.scrollTo(`#${id}`, { offset: -72 })
           } else {
             target?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
+          }
+          // Nothing here is a fragment navigation, so the browser never moves
+          // focus to the destination on its own — same gap SmoothScroll's anchor
+          // handler closes, closed the same way. `preventScroll` leaves the
+          // scroll above (Lenis or native smooth) to finish undisturbed.
+          if (target) {
+            target.setAttribute('tabindex', '-1')
+            target.focus({ preventScroll: true })
           }
         })
       }
@@ -101,10 +114,39 @@ export default function CommandPalette() {
     }
   }, [])
 
+  // `aria-modal="true"` is a promise to assistive tech, not an implementation:
+  // on its own it left every link in the page still tabbable behind the dialog,
+  // and the page still scrolling under it. Freeze both for the duration.
+  //
+  // `inert` (React 19 / the DOM property) rather than a Tab-cycling trap: it is
+  // the same tool this codebase already uses for collapsed panels
+  // (ProjectCard/Skills/Timeline), and it takes the background out of pointer
+  // and AT reach too, which a keydown trap never does. Everything focusable on
+  // the page lives in one of these three — the rest of the shell (Atmosphere,
+  // ScrollProgress) is `aria-hidden` decoration with nothing to focus.
+  useEffect(() => {
+    if (!open) return
+    lenis?.stop()
+    const background = document.querySelectorAll<HTMLElement>('#main, .rail, .skip-link')
+    background.forEach((el) => {
+      el.inert = true
+    })
+    return () => {
+      // Before the restore below fires: focus() on an inert element is a no-op,
+      // so un-inerting has to land first. React runs every cleanup in a commit
+      // ahead of every effect body, which is exactly that order.
+      background.forEach((el) => {
+        el.inert = false
+      })
+      lenis?.start()
+    }
+  }, [open, lenis])
+
   useEffect(() => {
     if (open) return
     // Runs on the transition back to closed, never on first mount — the ref
-    // starts null, so there is nothing to restore focus to yet.
+    // starts null, so there is nothing to restore focus to yet. `goTo` nulls it
+    // too, so a navigation lands in its destination instead of bouncing back.
     restoreFocusRef.current?.focus()
   }, [open])
 

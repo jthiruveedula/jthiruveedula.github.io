@@ -95,6 +95,58 @@ test.describe('the command palette', () => {
     await expect(trigger).toBeFocused()
   })
 
+  test('the page behind it is inert, and tabbable again once it closes', async ({ page }) => {
+    await page.goto('/')
+    const background = page.locator('#main, .rail, .skip-link')
+    await openWithKeyboard(page)
+
+    // `aria-modal="true"` says the background is out of reach; `inert` is what
+    // actually puts it out of reach, for the tab order and the pointer alike.
+    for (const el of await background.all()) await expect(el).toHaveJSProperty('inert', true)
+
+    await page.keyboard.press('Escape')
+    await expect(page.locator('.cmdk')).toHaveCount(0)
+    for (const el of await background.all()) await expect(el).toHaveJSProperty('inert', false)
+  })
+
+  test('Tab cannot leave the dialog', async ({ page }) => {
+    await page.goto('/')
+    await openWithKeyboard(page)
+
+    await page.keyboard.press('Tab')
+    await expect(page.locator('.cmdk__input')).toBeFocused()
+    await page.keyboard.press('Shift+Tab')
+    await expect(page.locator('.cmdk__input')).toBeFocused()
+  })
+
+  test('the page does not scroll under the open dialog', async ({ page }) => {
+    await page.goto('/')
+    await openWithKeyboard(page)
+
+    const before = await page.evaluate(() => window.scrollY)
+    await page.mouse.wheel(0, 800)
+    // Lenis animates, so a scroll that did get through would need a beat to
+    // show up — give it one rather than reading back in the same frame.
+    await page.waitForTimeout(500)
+    expect(await page.evaluate(() => window.scrollY)).toBe(before)
+  })
+
+  test('a section command leaves focus in the destination, not on the trigger', async ({ page }) => {
+    await page.goto('/')
+    const trigger = page.getByRole('button', { name: 'Search', exact: true })
+    await trigger.click()
+    await expect(page.getByRole('dialog')).toBeVisible()
+
+    await page.keyboard.type('contact')
+    await expect(page.locator('.cmdk__item').first()).toHaveText(/Go to Contact/)
+    await page.keyboard.press('Enter')
+
+    // Navigating is not dismissing: the next Tab should continue from where the
+    // visitor asked to go, not from the button they left behind in the rail.
+    await expect(page.locator('#contact')).toBeFocused({ timeout: 10000 })
+    await expect(trigger).not.toBeFocused()
+  })
+
   test('arrow keys move the active selection without a mouse', async ({ page }) => {
     await page.goto('/')
     await openWithKeyboard(page)

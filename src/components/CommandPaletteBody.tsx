@@ -125,6 +125,16 @@ export default function CommandPaletteBody({
     } else if (e.key === 'Enter') {
       e.preventDefault()
       runActive()
+    } else if (e.key === 'Tab') {
+      // The shell makes the rest of the page `inert` while this is open, so Tab
+      // can no longer walk off into the document behind the dialog — but it
+      // could still walk out to browser chrome and strand the palette with no
+      // focused control, which is the same bug wearing a different hat. This
+      // input is the dialog's only focusable element (the options are
+      // `aria-activedescendant`, not tab stops), so holding focus here *is* the
+      // complete ring. Give the dialog a second focusable control and this has
+      // to become a real first/last cycle.
+      e.preventDefault()
     }
   }
 
