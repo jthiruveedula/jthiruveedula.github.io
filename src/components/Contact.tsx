@@ -230,6 +230,9 @@ export default function Contact() {
           <p className="text-xs text-ink-faint">
             {profile.name} · Legacy → Cloud → Enterprise AI
           </p>
+          <p className="mt-2 text-xs text-ink-faint">
+            The model is never the hard part — proving the answer is grounded is the work.
+          </p>
         </footer>
       </div>
     </section>
