@@ -24,6 +24,7 @@ export default function Sequence() {
 
       <section
         id="arc"
+        aria-labelledby="arc-heading"
         className="relative scroll-mt-24 px-[clamp(20px,4vw,64px)] py-[clamp(64px,10vh,120px)]"
       >
         <div className="mx-auto max-w-[1320px]">
@@ -31,7 +32,7 @@ export default function Sequence() {
             <p className="eyebrow">
               <b>01</b> · The arc
             </p>
-            <h2 className="text-[clamp(1.7rem,3.6vw,2.8rem)]">
+            <h2 id="arc-heading" className="text-[clamp(1.7rem,3.6vw,2.8rem)]">
               Legacy, cloud, <span className="proper">AI</span> — one system that kept&nbsp;
               <em ref={verbRef} className={`verb${verbInView ? ' verb--armed' : ''}`}>
                 compounding

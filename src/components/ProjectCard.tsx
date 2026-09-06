@@ -45,6 +45,8 @@ function StagePath({
   reduced,
   activeStage,
   onSelectStage,
+  panelOpen,
+  panelId,
 }: {
   flow: ProjectFlow
   stages: ProjectStage[]
@@ -53,6 +55,11 @@ function StagePath({
   reduced: boolean
   activeStage: number | null
   onSelectStage: (stageIndex: number) => void
+  /** Every node can expand the same shared detail panel below (selecting any
+   *  node opens it if it isn't already), so all five report that panel's
+   *  state — not a toggle of their own. */
+  panelOpen: boolean
+  panelId: string
 }) {
   const dotCount = flow === 'stream' ? 3 : 1
   const segments = stages.length - 1
@@ -142,6 +149,8 @@ function StagePath({
               // pattern on top of that.
               onClick={() => onSelectStage(j)}
               aria-pressed={selected}
+              aria-expanded={panelOpen}
+              aria-controls={panelId}
               aria-label={`${stage.kind}: ${stage.title}`}
               className="absolute top-0 -m-2 cursor-pointer p-2 text-left"
               style={{ left: `${(j / (stages.length - 1)) * 100}%` }}
@@ -273,6 +282,8 @@ export default function ProjectCard({
         reduced={reduced}
         activeStage={activeStage}
         onSelectStage={selectStage}
+        panelOpen={isOpen}
+        panelId={panelId}
       />
 
       <button

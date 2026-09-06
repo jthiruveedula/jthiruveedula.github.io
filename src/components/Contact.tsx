@@ -104,10 +104,7 @@ export default function Contact() {
           </p>
         )}
 
-        <div
-          className="contact-grid mt-14 grid gap-x-10 gap-y-10"
-          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))' }}
-        >
+        <div className="contact-grid mt-14 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <p className={LABEL_CLASS}>Direct</p>
             <ul className="contact-links mt-4 text-sm text-ink-muted">
@@ -182,7 +179,10 @@ export default function Contact() {
             </div>
           )}
 
-          <div>
+          {/* Fixed column count above (not auto-fit) so 4 regular items always
+              fill exactly one row at sm/lg; this one spans the full row on its
+              own beneath them instead of leaving a ragged, partially-empty row. */}
+          <div className="sm:col-span-2 lg:col-span-4">
             <p className={LABEL_CLASS}>Next step</p>
             <a
               href="/resume.html"
@@ -222,7 +222,11 @@ export default function Contact() {
           </ul>
         )}
 
-        <footer className="contact-footer mt-16 border-t border-rule pt-6">
+        {/* role="contentinfo" is load-bearing here, not decoration: this footer's
+            nearest sectioning ancestor is the <section> above, so per HTML-AAM it
+            would otherwise compute to the generic role — and without it the page
+            has zero contentinfo landmarks. */}
+        <footer role="contentinfo" className="contact-footer mt-16 border-t border-rule pt-6">
           <p className="text-xs text-ink-faint">
             {profile.name} · Legacy → Cloud → Enterprise AI
           </p>

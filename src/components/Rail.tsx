@@ -25,8 +25,15 @@ export const SECTIONS = [
  *  the list it opens onto a view of, rather than in a third shared module. */
 export const OPEN_COMMAND_PALETTE = 'command-palette:open'
 
+/** The reverse of the above: CommandPalette dispatches this (detail: open/closed)
+ *  whenever its own open state changes, so the Search button that requested it
+ *  can report `aria-expanded` truthfully instead of assuming its own click always
+ *  wins (Escape, an outside click, or a fired command all close it independently). */
+export const COMMAND_PALETTE_STATE = 'command-palette:state'
+
 export default function Rail() {
   const [active, setActive] = useState<string>('top')
+  const [paletteOpen, setPaletteOpen] = useState(false)
 
   useEffect(() => {
     // Deliberately not an IntersectionObserver: four of the six sections are
@@ -60,6 +67,12 @@ export default function Rail() {
     }
   }, [])
 
+  useEffect(() => {
+    const onState = (e: Event) => setPaletteOpen((e as CustomEvent<boolean>).detail)
+    window.addEventListener(COMMAND_PALETTE_STATE, onState)
+    return () => window.removeEventListener(COMMAND_PALETTE_STATE, onState)
+  }, [])
+
   return (
     <nav className="rail" aria-label="Sections">
       <a href="#top" className="rail__mark proper" aria-label="Jagadeesh Thiruveedula — top of page">
@@ -85,6 +98,7 @@ export default function Rail() {
             type="button"
             className="rail__link"
             aria-haspopup="dialog"
+            aria-expanded={paletteOpen}
             onClick={() => window.dispatchEvent(new Event(OPEN_COMMAND_PALETTE))}
           >
             Search
