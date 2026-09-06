@@ -156,13 +156,14 @@ export default function CommandPaletteBody({
           className="cmdk__input"
           role="combobox"
           aria-expanded="true"
+          aria-autocomplete="list"
           aria-controls="cmdk-list"
           aria-activedescendant={filtered[activeIndex] ? `cmdk-opt-${filtered[activeIndex].id}` : undefined}
           autoComplete="off"
           spellCheck={false}
         />
         <ul id="cmdk-list" ref={listRef} role="listbox" className="cmdk__list">
-          {filtered.length === 0 && <li className="cmdk__empty">No match.</li>}
+          {filtered.length === 0 && <li role="presentation" />}
           {filtered.map((cmd, i) => (
             <li
               key={cmd.id}
@@ -179,6 +180,9 @@ export default function CommandPaletteBody({
             </li>
           ))}
         </ul>
+        <p className="cmdk__status" role="status">
+          {filtered.length === 0 ? 'No matches.' : `${filtered.length} result${filtered.length === 1 ? '' : 's'}.`}
+        </p>
       </div>
     </div>
   )

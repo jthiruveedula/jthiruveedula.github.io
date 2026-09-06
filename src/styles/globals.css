@@ -631,9 +631,6 @@ h2 .proper,
   font-family: var(--font-body);
   font-size: 15px;
 }
-.cmdk__input:focus {
-  outline: none;
-}
 .cmdk__input::placeholder {
   color: var(--color-ink-faint);
 }
@@ -667,7 +664,7 @@ h2 .proper,
   text-transform: uppercase;
   color: var(--color-ink-faint);
 }
-.cmdk__empty {
+.cmdk__status {
   padding: 0.9rem 0.7rem;
   color: var(--color-ink-faint);
   font-size: 14px;
