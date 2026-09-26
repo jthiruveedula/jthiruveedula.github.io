@@ -1,0 +1,173 @@
+/* Career-journey skyline — layout only. Colors/type ride on the tokens already
+ * declared in src/styles/globals.css (imported alongside this file), so the
+ * journey never forks the palette. */
+
+.journey {
+  position: relative;
+  min-height: 100dvh;
+  background: var(--color-void);
+  color: var(--color-ink);
+}
+
+.journey-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 3rem;
+  padding: 0 1.25rem;
+  background: oklch(15% 0.014 265 / 0.82);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid oklch(96% 0.006 262 / 0.08);
+  pointer-events: none;
+}
+.journey-header__mark {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--color-ink);
+  border: 1px solid var(--color-ink-faint);
+  padding: 0.2rem 0.5rem;
+  pointer-events: auto;
+}
+.journey-header__title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-ink-faint);
+}
+
+/* ---- Scrubbed 3D scene ---- */
+.journey-scroller {
+  position: relative;
+}
+.journey-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.journey-chapter {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 6rem 1.5rem 3rem;
+}
+.journey-chapter__panel {
+  max-width: 34rem;
+  padding: 1.75rem 2rem;
+  background: oklch(15% 0.014 265 / 0.72);
+  backdrop-filter: blur(6px);
+  border-left: 2px solid var(--color-ink-faint);
+  opacity: 0.55;
+  transform: translateY(8px);
+  transition:
+    opacity 0.5s var(--ease-out, ease),
+    transform 0.5s var(--ease-out, ease),
+    border-color 0.5s ease;
+}
+.journey-chapter.is-active .journey-chapter__panel {
+  opacity: 1;
+  transform: translateY(0);
+  border-left-color: var(--color-accent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .journey-chapter__panel {
+    transition: none;
+  }
+}
+
+.journey-chapter__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+.journey-chapter__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+  margin-top: 0.4rem;
+  color: var(--color-ink);
+}
+.journey-chapter__roles {
+  margin-top: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-accent-soft, var(--color-accent));
+}
+.journey-chapter__body {
+  margin-top: 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+}
+
+.journey-metrics {
+  margin-top: 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem 1rem;
+}
+.journey-metric dt {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-faint);
+}
+.journey-metric dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+}
+
+.journey-cta {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* ---- Static fallback (reduced motion / no WebGL) ---- */
+.journey--static .journey-skyline {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding: 0 2rem 0;
+  opacity: 0.55;
+}
+.journey-skyline__district {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.25rem;
+  height: 70vh;
+}
+.journey-skyline__building {
+  flex: 1;
+  background: linear-gradient(to top, var(--district-color), transparent);
+  opacity: 0.8;
+}
+.journey-static__chapters {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 640px) {
+  .journey-chapter__panel {
+    max-width: 100%;
+    padding: 1.25rem 1.25rem;
+  }
+}

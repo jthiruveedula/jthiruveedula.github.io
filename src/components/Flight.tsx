@@ -277,6 +277,9 @@ export default function Flight() {
             <a href="/resume.html" className="chip">
               Résumé
             </a>
+            <a href="/journey/" className="chip">
+              The journey, in 3D
+            </a>
           </div>
         </div>
 

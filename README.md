@@ -91,6 +91,29 @@ public/scenes/         # Graded AVIF plates, generated on prebuild (gitignored).
 Sections below the hero are `React.lazy` code-split; GSAP ships as its own chunk
 (`manualChunks` in `vite.config.ts`).
 
+## The career journey (`/journey/`)
+
+A second, independent static page — its own Vite entry (`journey/index.html` →
+`src/journey/main.tsx`), not a route inside the main SPA — so `three` (the one
+dependency it needs) never reaches the main bundle's chunk graph. Source lives in
+`src/journey/`:
+
+```
+journey/index.html      # second Vite entry, output to out/journey/index.html
+src/journey/
+  main.tsx                 # mounts JourneyApp into #journey-root
+  JourneyApp.tsx            # reduced-motion / no-WebGL branch, ScrollTrigger wiring
+  City.ts                   # plain three.js scene — instanced buildings/windows/packets
+  webgl-detect.ts           # feature-detect, kept dependency-free of `three`
+  chapters.ts               # the five career chapters, sourced from portfolio.ts facts
+  journey.css               # layout only — colors/type ride on globals.css tokens
+```
+
+`City.ts` is dynamically imported only when `!prefers-reduced-motion && hasWebGL()`;
+everyone else gets a static CSS skyline with the same chapter text and no scrub. The
+main page links to it from the hero CTA row, the contact section, and the command
+palette (`/journey/`).
+
 ## The page shape
 
 **A corridor, then a document.**
