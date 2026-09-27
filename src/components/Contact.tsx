@@ -95,7 +95,7 @@ export default function Contact() {
               href={`mailto:${profile.email}`}
               className="contact-cta chip chip--primary shrink-0"
             >
-              Open a conversation
+              Start with your hardest data problem
             </a>
           )}
         </div>

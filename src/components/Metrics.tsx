@@ -176,6 +176,7 @@ function MetricRow({
 
 export default function Metrics() {
   const sectionRef = useRef<HTMLElement>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
   const reducedMotion = useReducedMotion()
   const [filter, setFilter] = useState<Filter>('All')
   const numberRefs = useRef(new Map<string, HTMLSpanElement>())
@@ -261,11 +262,22 @@ export default function Metrics() {
           // Replayable, so a rebuilt GSAP context can run the reveal again instead of
           // sitting on a consumed trigger with the from-state still applied.
           toggleActions: 'play none none none',
-          onEnter: () => {
-            if (counted.current) return
-            counted.current = true
-            animateCounts('All', 0.05)
-          },
+        },
+      })
+
+      // The count-up fires when the grid itself enters — not the section top. The
+      // header and filter pills sit ~500px above the first row, so the old
+      // section-level trigger played the whole count while the rows were still
+      // below the fold and the figures read as static. (Filter clicks still
+      // replay the count freely; only this scroll-entry firing is one-shot.)
+      ScrollTrigger.create({
+        trigger: gridRef.current,
+        start: 'top 78%',
+        toggleActions: 'play none none none',
+        onEnter: () => {
+          if (counted.current) return
+          counted.current = true
+          animateCounts('All', 0.05)
         },
       })
 
@@ -348,7 +360,10 @@ export default function Metrics() {
           {shownCount} of {TOTAL_COUNT} figures shown
         </p>
 
-        <div className="relative mt-8 border-t border-rule">
+        {/* The figure grid itself — the one-shot count-up trigger above watches
+            this element, not the section top, so the numbers animate while the
+            rows are actually in view. */}
+        <div ref={gridRef} className="relative mt-8 border-t border-rule">
           <span
             ref={gridSweepRef}
             aria-hidden="true"

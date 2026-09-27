@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 /**
  * The toolkit's "+N more" disclosure. Tier 2/3 skills used to be asserted only
- * as a count — "+14 more across the toolkit" — with no way to actually see them.
+ * as a count — "+14 more in this domain" — with no way to actually see them.
  * A project's tech chip (ProjectCard.tsx) can cross-link straight to a domain row
  * expecting to confirm a specific tool is there, and until this, the row had
  * nothing to show past its top few. This locks in that the count is now a real
@@ -36,7 +36,7 @@ test.describe('the toolkit disclosure', () => {
     await expect(panel).toBeVisible()
     const revealed = (await panel.textContent()) ?? ''
     expect(revealed.length).toBeGreaterThan(10)
-    expect(revealed).not.toMatch(/more across the toolkit/)
+    expect(revealed).not.toMatch(/more in this domain/)
   })
 
   test('opening a second domain closes the first — one open at a time', async ({ page }) => {
@@ -52,7 +52,7 @@ test.describe('the toolkit disclosure', () => {
     await expect(second).toHaveText(/show fewer/)
     // The first reverted to its collapsed count rather than staying open —
     // this is a single shared `openDomain`, not one flag per row.
-    await expect(first).toHaveText(/more across the toolkit/)
+    await expect(first).toHaveText(/more in this domain/)
   })
 
   test('the collapsed panel is removed from the tab order (inert)', async ({ page }) => {

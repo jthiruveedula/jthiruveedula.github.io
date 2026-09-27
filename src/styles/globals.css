@@ -1280,7 +1280,10 @@ h2 .proper,
 
 /* The opt-out, in the first viewport. A visitor who wants the spec sheet is
    one click from it, which is what turns cinema from an imposition into an
-   offer. */
+   offer. Standard chip chrome, not a borderless faint label: the old
+   borderless treatment read as a caption in the corner and visitors scrolled
+   past it. Still quiet — ink-faint, bottom letterbox bar — but visibly a
+   control now. */
 .flight__skip {
   position: absolute;
   z-index: 30;
@@ -1288,13 +1291,10 @@ h2 .proper,
   bottom: 0;
   height: max(7svh, 58px);
   min-height: 0;
-  border: 0;
-  padding-inline: 0;
   color: var(--color-ink-faint);
 }
 .flight__skip:hover,
 .flight__skip:focus-visible {
-  border: 0;
   color: var(--color-accent);
 }
 

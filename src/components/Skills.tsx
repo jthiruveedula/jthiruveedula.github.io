@@ -145,7 +145,7 @@ export default function Skills() {
                           onClick={() => setOpenDomain(isOpen ? null : group.domain)}
                           className="stat__label mt-3 text-ink-faint transition-colors hover:text-accent focus-visible:text-accent"
                         >
-                          {isOpen ? '− show fewer' : `+ ${group.rest.length} more across the toolkit`}
+                          {isOpen ? '− show fewer' : `+ ${group.rest.length} more in this domain`}
                         </button>
                         {/* Same grid-template-rows disclosure as the Systems wiring
                             panel and the ledger's role detail — 0fr/1fr collapses
