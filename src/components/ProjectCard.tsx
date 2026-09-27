@@ -317,7 +317,30 @@ export default function ProjectCard({
       >
         <div className="overflow-hidden">
           <div className="mt-8 border-t border-rule pt-6">
-            <p className="max-w-[62ch] text-sm leading-relaxed text-ink-muted">{project.description}</p>
+            {/* The transformation as a picture, not a paragraph: the engagement's
+                two states side by side, muted past resolving into the accent-lit
+                outcome. `description` is intentionally not rendered — before/after
+                plus the stage cards plus the metrics below already carry its
+                substance, and the section's aim is less prose, more picture. */}
+            {project.before && project.after && !isPlaceholder(project.before) && !isPlaceholder(project.after) && (
+              <div className="grid items-stretch gap-3 md:grid-cols-[1fr_auto_1fr]">
+                <div className="rounded-md border border-rule p-5">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-neutral-500">
+                    Before
+                  </p>
+                  <p className="mt-2.5 text-sm leading-relaxed text-ink-muted">{project.before}</p>
+                </div>
+                <div aria-hidden="true" className="flex items-center justify-center">
+                  <span className="text-2xl text-accent max-md:rotate-90">→</span>
+                </div>
+                <div className="rounded-md border border-accent-500/35 bg-accent-500/[0.07] p-5">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-accent-500">
+                    After
+                  </p>
+                  <p className="mt-2.5 text-sm leading-relaxed text-ink">{project.after}</p>
+                </div>
+              </div>
+            )}
 
             <div
               className="mt-8 grid gap-4"

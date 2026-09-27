@@ -33,4 +33,16 @@ test.describe('portfolio smoke', () => {
       await expect(page.locator(href!)).toHaveCount(1)
     }
   })
+
+  test('an opened case study shows its before/after strip, not a description paragraph', async ({
+    page,
+  }) => {
+    await page.goto('/')
+    await page.locator('#systems').scrollIntoViewIfNeeded()
+    // Open the first case study's wiring panel.
+    await page.getByRole('button', { name: '+ Open the wiring' }).first().click()
+    const panel = page.locator('#systems article').first()
+    await expect(panel.getByText('Before', { exact: true })).toBeVisible()
+    await expect(panel.getByText('After', { exact: true })).toBeVisible()
+  })
 })

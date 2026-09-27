@@ -51,6 +51,9 @@ const DOMAIN_GROUPS: DomainGroup[] = (() => {
 
 const TOTAL_SKILLS = portfolio.skills.length
 const TOTAL_DOMAINS = DOMAIN_GROUPS.length
+/** Longest-running domain — the depth bars below are scaled against this, so the
+ *  header's "stacked by how deep they run" reads as a picture, not a claim. */
+const DOMAIN_MAX_YEARS = Math.max(1, ...DOMAIN_GROUPS.map((g) => g.maxYears))
 
 export default function Skills() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -102,8 +105,6 @@ export default function Skills() {
           </h2>
           <p className="skills-head mt-5 text-[clamp(0.95rem,1.1vw,1.05rem)] leading-[1.62] text-ink-muted">
             {TOTAL_SKILLS} tools, pulled from the same résumé data every other section reads.
-            Each row leads with what gets reached for by default — the rest of the stack
-            follows as a count.
           </p>
         </header>
 
@@ -126,6 +127,18 @@ export default function Skills() {
                 <p className="stat__label mt-1.5">
                   {group.total} tools{group.maxYears ? ` · ${group.maxYears}+ yrs` : ''}
                 </p>
+                {/* Depth as a picture: each domain's bar is its longest-running
+                    tool count against the deepest domain on the page. Purely
+                    decorative — the label above already states the years, so
+                    screen readers get nothing new here (aria-hidden). */}
+                {group.maxYears > 0 && (
+                  <span aria-hidden="true" className="mt-3 block h-[3px] w-full max-w-[10rem] bg-neutral-800">
+                    <span
+                      className="block h-full bg-accent-500/70"
+                      style={{ width: `${(group.maxYears / DOMAIN_MAX_YEARS) * 100}%` }}
+                    />
+                  </span>
+                )}
               </div>
 
               <div className="min-w-0">
