@@ -10,9 +10,15 @@ test.describe('depth-charge 3D tilt (systems cards)', () => {
     const card = page.locator('#systems article').first()
     await expect(card).toBeVisible()
 
-    // Tilt is armed only while the card is open (and motion is allowed with a
-    // fine pointer); the armed article carries the marker attribute.
-    await expect(card).toHaveAttribute('data-tilt', 'armed')
+    // Tilt is armed only while the card is open AND motion is allowed with a
+    // fine pointer — on touch-only viewports (the mobile project) the armed
+    // marker is intentionally absent, which this assertion covers both ways.
+    const finePointer = await page.evaluate(() => window.matchMedia('(pointer: fine)').matches)
+    if (finePointer) {
+      await expect(card).toHaveAttribute('data-tilt', 'armed')
+    } else {
+      await expect(card).not.toHaveAttribute('data-tilt')
+    }
 
     // Stage nodes are queryable via data-stage-node within the expanded card.
     const nodes = card.locator('[data-stage-node]')
