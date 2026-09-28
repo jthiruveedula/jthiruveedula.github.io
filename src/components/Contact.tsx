@@ -198,6 +198,12 @@ export default function Contact() {
             >
               View résumé
             </a>
+            <a
+              href="/journey/"
+              className="chip mt-4 ml-3 inline-flex transition-colors hover:bg-ink/10"
+            >
+              See the career journey
+            </a>
           </div>
         </div>
 

@@ -79,6 +79,15 @@ function useCommands(goTo: (id: string) => void, onClose: () => void): Command[]
         onClose()
       },
     })
+    contactCommands.push({
+      id: 'journey',
+      label: 'See the career journey (3D skyline)',
+      hint: 'Explore',
+      run: () => {
+        window.location.href = '/journey/'
+        onClose()
+      },
+    })
 
     return [...sectionCommands, ...projectCommands, ...contactCommands]
   }, [goTo, onClose])
