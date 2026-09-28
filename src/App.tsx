@@ -14,6 +14,7 @@ const Projects = lazy(() => import('@/components/Projects'))
 const Skills = lazy(() => import('@/components/Skills'))
 const Metrics = lazy(() => import('@/components/Metrics'))
 const Contact = lazy(() => import('@/components/Contact'))
+const DustField = lazy(() => import('@/components/DustField'))
 
 export default function App() {
   return (
@@ -30,6 +31,11 @@ export default function App() {
       {/* z-1 lifts the document off the wash; the wash is the only thing at z-0. */}
       <main id="main" tabIndex={-1} className="relative z-[1] pt-16 lg:pt-0 lg:pl-[4.25rem]">
         <Flight />
+        <Suspense fallback={null}>
+          <ErrorBoundary label="dust">
+            <DustField />
+          </ErrorBoundary>
+        </Suspense>
         <Sequence />
         <Suspense fallback={<SectionSkeleton variant="timeline" label="timeline" />}>
           <ErrorBoundary label="timeline">

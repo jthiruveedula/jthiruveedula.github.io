@@ -142,8 +142,100 @@ export default function Flight() {
         })
 
         draw(trigger.progress)
+
+        // ── Pointer parallax (depth charge) ─────────────────────────────
+        // GPU-composited x/y offsets layered over the scrub. draw(t) only
+        // writes 'scale' and 'opacity', so quickTo x/y merges on the same
+        // element's transform without fighting the camera.
+        const MAX_SHIFT = 26
+        const plateCount = planes.length
+        const plateX = planes.map((p) =>
+          gsap.quickTo(p, 'x', { duration: 0.7, ease: 'power3.out' }),
+        )
+        const plateY = planes.map((p) =>
+          gsap.quickTo(p, 'y', { duration: 0.7, ease: 'power3.out' }),
+        )
+        const copyInner = runway.querySelector<HTMLElement>('[data-parallax-copy]')
+        const copyX = copyInner
+          ? gsap.quickTo(copyInner, 'x', { duration: 0.7, ease: 'power3.out' })
+          : null
+        const copyY = copyInner
+          ? gsap.quickTo(copyInner, 'y', { duration: 0.7, ease: 'power3.out' })
+          : null
+        const COPY_SHIFT = MAX_SHIFT * 1.4
+
+        // Depth factor from the authored zIndex: zIndex_j = plateCount - j,
+        // so the front plate moves most and the deepest plate barely does.
+        const applyParallax = (nx: number, ny: number) => {
+          for (let j = 0; j < plateCount; j++) {
+            const shift = MAX_SHIFT * ((plateCount - j) / plateCount)
+            plateX[j](nx * shift)
+            plateY[j](ny * shift)
+          }
+          copyX?.(nx * COPY_SHIFT)
+          copyY?.(ny * COPY_SHIFT)
+        }
+
+        // Desktop only: skip entirely on coarse pointers / hover:none.
+        const stage = runway.querySelector<HTMLElement>('.flight__stage')
+        const onMouseMove = (e: MouseEvent) => {
+          const rect = stage?.getBoundingClientRect()
+          if (!rect || !rect.width || !rect.height) return
+          const clamp = (v: number) => Math.max(-0.5, Math.min(0.5, v))
+          applyParallax(
+            clamp((e.clientX - rect.left) / rect.width - 0.5),
+            clamp((e.clientY - rect.top) / rect.height - 0.5),
+          )
+        }
+        if (
+          stage &&
+          !window.matchMedia('(pointer: coarse)').matches &&
+          !window.matchMedia('(hover: none)').matches
+        ) {
+          stage.addEventListener('mousemove', onMouseMove)
+        }
+
+        // Tilt parallax — phones have no hover, but they have a gyroscope.
+        // Small and safe: null axes clamp to zero, iOS asks once on first tap.
+        let onTilt: ((e: DeviceOrientationEvent) => void) | null = null
+        let armTilt: (() => void) | null = null
+        try {
+          if (typeof DeviceOrientationEvent !== 'undefined') {
+            onTilt = (e: DeviceOrientationEvent) => {
+              const clamp = (v: number) => Math.max(-0.5, Math.min(0.5, v))
+              applyParallax(clamp((e.gamma ?? 0) / 90), clamp((e.beta ?? 0) / 90))
+            }
+            const ctor = DeviceOrientationEvent as unknown as {
+              requestPermission?: () => Promise<'granted' | 'denied'>
+            }
+            if (typeof ctor.requestPermission === 'function') {
+              armTilt = () => {
+                ctor
+                  .requestPermission!()
+                  .then((result) => {
+                    if (result === 'granted' && onTilt)
+                      window.addEventListener('deviceorientation', onTilt)
+                  })
+                  .catch(() => {})
+                window.removeEventListener('pointerdown', armTilt!)
+              }
+              window.addEventListener('pointerdown', armTilt)
+            } else if (onTilt) {
+              window.addEventListener('deviceorientation', onTilt)
+            }
+          }
+        } catch {
+          // Orientation API missing or blocked — the pointer path still applies.
+        }
+
         return () => {
           for (const p of planes) p.style.willChange = 'auto'
+          stage?.removeEventListener('mousemove', onMouseMove)
+          if (onTilt) window.removeEventListener('deviceorientation', onTilt)
+          if (armTilt) window.removeEventListener('pointerdown', armTilt)
+          for (const qt of [...plateX, ...plateY]) qt.tween.kill()
+          copyX?.tween.kill()
+          copyY?.tween.kill()
         }
       })
 
@@ -224,62 +316,67 @@ export default function Flight() {
         <span aria-hidden="true" className="flight__grain" />
 
         <div className="flight__copy" ref={copyRef}>
-          <p className="eyebrow flight__eyebrow">
-            <span data-cut className="inline-block">
-              {scene.eyebrow}
-            </span>
-          </p>
-
-          <h1 className="flight__headline">
-            {words.map((w) => (
-              <span key={w.key} className={w.outerClassName}>
-                <span data-cut className={w.innerClassName}>
-                  {w.text}
-                </span>
-              </span>
-            ))}
-          </h1>
-
-          {scene.kicker ? (
-            <p className="flight__kicker">
+          {/* Parallax wrapper: rides with the largest depth factor, layered
+              over the scrub. The headline cut animation clearProps its own
+              [data-cut] spans, never this wrapper, so the two never fight. */}
+          <div data-parallax-copy>
+            <p className="eyebrow flight__eyebrow">
               <span data-cut className="inline-block">
-                {scene.kicker}
+                {scene.eyebrow}
               </span>
             </p>
-          ) : null}
 
-          <ul className="flight__readings">
-            {scene.readings.map((r) => (
-              <li key={r.label}>
-                <span className="stat__figure">{r.value}</span>
-                <span className="stat__label">{r.label}</span>
-              </li>
-            ))}
-          </ul>
+            <h1 className="flight__headline">
+              {words.map((w) => (
+                <span key={w.key} className={w.outerClassName}>
+                  <span data-cut className={w.innerClassName}>
+                    {w.text}
+                  </span>
+                </span>
+              ))}
+            </h1>
 
-          {/* Positioning/availability — static, unlike the kicker above: it is
-              profile-level, not per-scene, so it renders once and never swaps
-              with `active`. Same field Contact renders under its headline;
-              read from `profile` so the two can never drift (issue #207). */}
-          {profile.availability && !isPlaceholder(profile.availability) && (
-            <p className="flight__availability">{profile.availability}</p>
-          )}
+            {scene.kicker ? (
+              <p className="flight__kicker">
+                <span data-cut className="inline-block">
+                  {scene.kicker}
+                </span>
+              </p>
+            ) : null}
 
-          {/* The contact affordance, present at every breakpoint — unlike
-              .flight__skip below, which is desktop-only furniture. A visitor
-              who never scrolls still lands on a working Email/Résumé pair. */}
-          <div className="flight__cta">
-            {profile.email && (
-              <a href={`mailto:${profile.email}`} className="chip chip--primary">
-                Email
-              </a>
+            <ul className="flight__readings">
+              {scene.readings.map((r) => (
+                <li key={r.label}>
+                  <span className="stat__figure">{r.value}</span>
+                  <span className="stat__label">{r.label}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* Positioning/availability — static, unlike the kicker above: it is
+                profile-level, not per-scene, so it renders once and never swaps
+                with `active`. Same field Contact renders under its headline;
+                read from `profile` so the two can never drift (issue #207). */}
+            {profile.availability && !isPlaceholder(profile.availability) && (
+              <p className="flight__availability">{profile.availability}</p>
             )}
-            <a href="/resume.html" className="chip">
-              Résumé
-            </a>
-            <a href="/journey/" className="chip">
-              The journey, in 3D
-            </a>
+
+            {/* The contact affordance, present at every breakpoint — unlike
+                .flight__skip below, which is desktop-only furniture. A visitor
+                who never scrolls still lands on a working Email/Résumé pair. */}
+            <div className="flight__cta">
+              {profile.email && (
+                <a href={`mailto:${profile.email}`} className="chip chip--primary">
+                  Email
+                </a>
+              )}
+              <a href="/resume.html" className="chip">
+                Résumé
+              </a>
+              <a href="/journey/" className="chip">
+                The journey, in 3D
+              </a>
+            </div>
           </div>
         </div>
 

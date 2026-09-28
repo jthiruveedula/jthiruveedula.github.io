@@ -80,6 +80,36 @@ export default function Skills() {
       })
       revealFrom(tl, '.skills-head', { y: 24, duration: 0.6, stagger: 0.08 }, 0)
       revealFrom(tl, '.skills-row', { y: 20, duration: 0.6, stagger: 0.05 }, 0.15)
+      // Shine sweep across each depth bar's fill. The bands are parked
+      // off-band here so pre-trigger they read as a clean bar, not a static
+      // highlight sitting mid-fill.
+      gsap.set('.depth-shine', { xPercent: -160 })
+      tl.fromTo(
+        '.depth-shine',
+        { xPercent: -160 },
+        { xPercent: 480, duration: 1.1, ease: 'power2.inOut', stagger: 0.06 },
+        0.4,
+      )
+      // Years count-up — mirrors Metrics' animateCounts. The authored markup
+      // already holds the final number, so no-JS / reduced-motion readers see
+      // the true value; the tween just replays it upward for everyone else.
+      gsap.utils.toArray<HTMLElement>('.depth-years').forEach((el, i) => {
+        const years = Number(el.dataset.years)
+        if (!Number.isFinite(years) || years <= 0) return
+        const proxy = { value: 0 }
+        tl.to(
+          proxy,
+          {
+            value: years,
+            duration: 0.9,
+            ease: 'power2.out',
+            onUpdate: () => {
+              el.textContent = String(Math.round(proxy.value))
+            },
+          },
+          0.4 + i * 0.06,
+        )
+      })
     },
     { scope: sectionRef, dependencies: [reduced], revertOnUpdate: true },
   )
@@ -125,18 +155,40 @@ export default function Skills() {
                 </span>
                 <h3 className="mt-2 max-w-[16ch] text-[1.05rem] text-ink">{group.domain}</h3>
                 <p className="stat__label mt-1.5">
-                  {group.total} tools{group.maxYears ? ` · ${group.maxYears}+ yrs` : ''}
+                  {group.total} tools
+                  {group.maxYears > 0 ? (
+                    <>
+                      {' '}·{' '}
+                      <span className="depth-years" data-years={group.maxYears}>
+                        {group.maxYears}
+                      </span>
+                      + yrs
+                    </>
+                  ) : null}
                 </p>
                 {/* Depth as a picture: each domain's bar is its longest-running
                     tool count against the deepest domain on the page. Purely
                     decorative — the label above already states the years, so
-                    screen readers get nothing new here (aria-hidden). */}
+                    screen readers get nothing new here (aria-hidden).
+                    Pseudo-3D: the track reads recessed, the fill reads raised,
+                    via inset shadow bevels only. */}
                 {group.maxYears > 0 && (
-                  <span aria-hidden="true" className="mt-3 block h-[3px] w-full max-w-[10rem] bg-neutral-800">
+                  <span
+                    aria-hidden="true"
+                    className="mt-3 block h-1 w-full max-w-[10rem] bg-neutral-800 shadow-[inset_0_1px_0_rgba(0,0,0,0.65),0_1px_0_rgba(255,255,255,0.07)]"
+                  >
                     <span
-                      className="block h-full bg-accent-500/70"
+                      className="relative block h-full overflow-hidden bg-accent-500/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(0,0,0,0.35)]"
                       style={{ width: `${(group.maxYears / DOMAIN_MAX_YEARS) * 100}%` }}
-                    />
+                    >
+                      {/* Shine sweep band — a real child span (GSAP can't target
+                          pseudo-elements), parked off-band by the timeline's
+                          initial set and swept across on reveal. */}
+                      <span
+                        aria-hidden="true"
+                        className="depth-shine absolute inset-y-0 left-0 w-1/3 bg-[linear-gradient(100deg,transparent,rgba(255,255,255,0.55),transparent)]"
+                      />
+                    </span>
                   </span>
                 )}
               </div>

@@ -1,8 +1,9 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import type { FeaturedProject, ProjectFlow, ProjectStage } from '@/data/types'
 import { useInView, useReducedMotion } from '@/lib/hooks'
 import { isPlaceholder } from '@/lib/content'
 import { domainSlug, pulseDomainRow, techDomain } from '@/lib/skillMatch'
+import gsap from 'gsap'
 
 /** Only these stage kinds get the cyan accent tint — everything else (including the
  *  named Source/Corpus group) reads as neutral. See the Systems section spec: "gray
@@ -135,7 +136,10 @@ function StagePath({
           })}
       </div>
 
-      <div className="relative mt-3 min-h-10">
+      {/* Perspective on the node container so each stage button's hover
+          translateZ (via the data-stage-node handlers below) renders as a real
+          z-lift instead of a flat scale — no CSS file edits. */}
+      <div className="relative mt-3 min-h-10" style={{ perspective: '600px' }}>
         {stages.map((stage, j) => {
           const isFirst = j === 0
           const isLast = j === stages.length - 1
@@ -144,11 +148,25 @@ function StagePath({
             <button
               key={stage.step}
               type="button"
+              data-stage-node
               // A real button, not a styled div: every node is keyboard-reachable
               // on its own Tab stop and fires with Enter/Space for free. Five
               // small stops in reading order needs no roving-tabindex toolbar
               // pattern on top of that.
               onClick={() => onSelectStage(j)}
+              // Gentle z-lift on hover — translateZ only; the button itself has
+              // no inline transform, and the inner dot span's scale() is never
+              // touched. Motion-safe only: reduced motion skips the handlers.
+              onMouseEnter={
+                reduced
+                  ? undefined
+                  : (e) => gsap.to(e.currentTarget, { z: 10, duration: 0.35, ease: 'power2.out' })
+              }
+              onMouseLeave={
+                reduced
+                  ? undefined
+                  : (e) => gsap.to(e.currentTarget, { z: 0, duration: 0.35, ease: 'power2.out' })
+              }
               aria-pressed={selected}
               aria-expanded={panelOpen}
               aria-controls={panelId}
@@ -216,8 +234,57 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   const [cardRef, inView] = useInView<HTMLElement>()
   const reduced = useReducedMotion()
+  // Tilt needs its own handle on the article element alongside the inView ref;
+  // a callback ref feeds both so useInView keeps working untouched.
+  const tiltRef = useRef<HTMLElement | null>(null)
+  const setCardRef = useCallback((node: HTMLElement | null) => {
+    cardRef.current = node
+    tiltRef.current = node
+  }, [cardRef])
   const spotlight = project.metrics[0]
   const panelId = `stage-detail-${project.id}`
+
+  // 3D card tilt while the wiring panel is open: mousemove drives rotateX/Y
+  // (max ±6°) through gsap.quickTo with transformPerspective: 1200 for a
+  // smooth GPU-composited tilt; mouseleave eases back to flat. Armed only when
+  // the card is open, motion is allowed, and the pointer is fine-grained
+  // (touch/stylus never get a hover-following tilt). data-tilt="armed" marks
+  // the armed article for e2e assertions. Cleanup kills tweens, removes the
+  // listeners, clears the marker, and resets rotation to 0.
+  useEffect(() => {
+    const el = tiltRef.current
+    if (!el) return
+    if (!isOpen || reduced || !window.matchMedia('(pointer: fine)').matches) {
+      el.removeAttribute('data-tilt')
+      gsap.set(el, { rotationX: 0, rotationY: 0 })
+      return
+    }
+    gsap.set(el, { transformPerspective: 1200 })
+    el.setAttribute('data-tilt', 'armed')
+    const tiltX = gsap.quickTo(el, 'rotationX', { duration: 0.4, ease: 'power2.out' })
+    const tiltY = gsap.quickTo(el, 'rotationY', { duration: 0.4, ease: 'power2.out' })
+    const onMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect()
+      if (rect.width === 0 || rect.height === 0) return
+      const px = (e.clientX - rect.left) / rect.width - 0.5
+      const py = (e.clientY - rect.top) / rect.height - 0.5
+      tiltY(px * 12)
+      tiltX(-py * 12)
+    }
+    const onLeave = () => {
+      tiltX(0)
+      tiltY(0)
+    }
+    el.addEventListener('mousemove', onMove)
+    el.addEventListener('mouseleave', onLeave)
+    return () => {
+      el.removeEventListener('mousemove', onMove)
+      el.removeEventListener('mouseleave', onLeave)
+      el.removeAttribute('data-tilt')
+      gsap.killTweensOf(el)
+      gsap.set(el, { rotationX: 0, rotationY: 0 })
+    }
+  }, [isOpen, reduced])
 
   // Which stage the visitor is tracing, if any. Local rather than lifted: unlike
   // `isOpen` (one card open at a time, so the parent has to arbitrate), a trace
@@ -238,7 +305,7 @@ export default function ProjectCard({
 
   return (
     <article
-      ref={cardRef}
+      ref={setCardRef}
       // Deep-link target — CommandPalette's project entries jump straight to the
       // card itself, not just the section it lives in.
       id={project.id}

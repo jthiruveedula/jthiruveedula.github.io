@@ -115,6 +115,11 @@ function MetricRow({
   // so a shorter bar is the better outcome — which the "of 30 min" label states
   // outright rather than leaving the reader to infer a flipped polarity.
   const pct = family === 'rate' ? Math.min(100, Number(number)) : 0
+  // Isometric stack height for volume rows. Deliberately derived from the LABEL
+  // length, never the value: volumes don't share an axis, so sizing the stack by
+  // value would fabricate a comparison. The stack is pure weight — a decorative
+  // presence marker, one to three blocks per row.
+  const cubeCount = (metric.label.length % 3) + 1
 
   return (
     <li
@@ -144,6 +149,46 @@ function MetricRow({
               </li>
             ))}
           </ul>
+        ) : null}
+
+        {/* VOLUME — isometric block stack. Aria-hidden decoration: volumes carry
+            no shared axis, so nothing here encodes magnitude against a scale.
+            The stack sits in flow BELOW the figure so it never nudges the
+            figure or the label, and renders at its final assembled resting
+            state in the markup — the JS assembly tween below only ever plays it
+            forward (fromTo, never .from), so reduced-motion / no-JS visitors
+            see the same assembled stack. */}
+        {family === 'volume' ? (
+          <div className="pointer-events-none mt-4" aria-hidden="true">
+            {Array.from({ length: cubeCount }).map((_, i) => (
+              <div
+                key={i}
+                className={`iso-block relative h-[3.25rem] w-10${i > 0 ? ' -mt-6' : ''}`}
+              >
+                {/* top face — the isometric lozenge */}
+                <div className="absolute left-0 top-0 h-10 w-10 bg-accent-500/25 [transform:rotateX(55deg)_rotateZ(45deg)]" />
+                {/* side faces — two skewed strips suggesting depth */}
+                <div className="absolute left-[0.35rem] top-[1.3rem] h-6 w-[0.65rem] -skew-y-[14deg] bg-accent-500/40" />
+                <div className="absolute right-[0.35rem] top-[1.3rem] h-6 w-[0.65rem] skew-y-[14deg] bg-accent-500/15" />
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        {/* WINDOW — radar dial. Aria-hidden decoration for the single `<30 min`
+            bound. The conic sweep rotates forever; the text beside it still says
+            the bound honestly (an upper bound is never plotted as a filled bar,
+            per the section's design rule). The small dot is static — only the
+            sweep rotates, and only when motion is allowed. */}
+        {family === 'window' ? (
+          <div
+            className="pointer-events-none relative mt-4 size-16 overflow-hidden rounded-full border border-rule"
+            aria-hidden="true"
+          >
+            <div className="radar-sweep absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,rgba(34,211,238,0.55),transparent_70deg)]" />
+            <span className="absolute left-1/2 top-[38%] size-1.5 -translate-x-1/2 rounded-full bg-cyan-400/80" />
+            <span className="absolute left-1/2 top-1/2 size-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent" />
+          </div>
         ) : null}
       </div>
 
@@ -298,6 +343,31 @@ export default function Metrics() {
           0.3 + i * 0.05,
         )
       })
+
+      // Isometric blocks assemble on the same scroll entry as the rows — NOT
+      // scrubbed, so toggling filters (which hide/show rows) never leaves the
+      // stacks mid-animation. fromTo with an explicit resting end state, never
+      // .from(): the markup's authored state IS the assembled state, and the
+      // reduced-motion path skips this whole block so cubes simply appear assembled.
+      tl.fromTo(
+        '.iso-block',
+        { y: 26, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', stagger: 0.05 },
+        0.35,
+      )
+
+      // Radar sweep: one infinite decorative rotation for the window dial. Lives
+      // outside the timeline so it never pauses with it, and is explicitly
+      // killed on context cleanup so a rebuilt context can't stack rotors.
+      const sweep = gsap.to('.radar-sweep', {
+        rotation: '+=360',
+        duration: 4,
+        repeat: -1,
+        ease: 'none',
+      })
+      return () => {
+        sweep.kill()
+      }
     },
     { scope: sectionRef, dependencies: [reducedMotion], revertOnUpdate: true },
   )
