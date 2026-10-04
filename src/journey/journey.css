@@ -51,9 +51,11 @@
   width: 100%;
   height: 100%;
   display: block;
+  touch-action: pan-y;
 }
 
 .journey-chapter {
+  pointer-events: none;
   position: relative;
   z-index: 1;
   min-height: 100vh;
@@ -67,6 +69,7 @@
   background: oklch(15% 0.014 265 / 0.72);
   backdrop-filter: blur(6px);
   border-left: 2px solid var(--color-ink-faint);
+  pointer-events: auto;
   opacity: 0.55;
   transform: translateY(8px);
   transition:
@@ -170,4 +173,131 @@
     max-width: 100%;
     padding: 1.25rem 1.25rem;
   }
+}
+
+/* ---- Built in this chapter ---- */
+.journey-built {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid oklch(96% 0.006 262 / 0.1);
+}
+.journey-built__title {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-ink-faint);
+}
+.journey-built__list {
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+.journey-built__link {
+  display: block;
+  padding: 0.55rem 0.75rem;
+  border-left: 2px solid var(--color-ink-faint);
+  overflow-wrap: anywhere;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.journey-built__link:hover {
+  border-left-color: var(--color-accent);
+  background: oklch(96% 0.006 262 / 0.05);
+}
+.journey-built__link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.journey-built__name {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--color-ink);
+}
+.journey-built__sub {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--color-ink-muted);
+}
+
+/* ---- Landmark hover card ---- */
+.landmark-card {
+  position: fixed;
+  z-index: 20;
+  width: min(20rem, calc(100vw - 16px));
+  padding: 0.9rem 1.1rem;
+  background: oklch(15% 0.014 265 / 0.92);
+  backdrop-filter: blur(6px);
+  border-left: 2px solid var(--color-accent);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.landmark-card.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .landmark-card {
+    transition: none;
+    transform: none;
+  }
+}
+.landmark-card p {
+  margin: 0;
+}
+.landmark-card__name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--color-ink);
+}
+.landmark-card__sub {
+  margin-top: 0.25rem !important;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--color-ink-muted);
+}
+.landmark-card__metric {
+  margin-top: 0.6rem !important;
+}
+.landmark-card__metric b {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--color-accent);
+}
+.landmark-card__metric span {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-faint);
+}
+.landmark-card__tech {
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.landmark-card__tech li {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--color-ink-faint);
+  color: var(--color-ink-muted);
+}
+.landmark-card__hint {
+  margin-top: 0.7rem !important;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-faint);
 }

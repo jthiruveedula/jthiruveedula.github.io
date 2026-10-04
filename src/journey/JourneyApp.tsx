@@ -6,6 +6,9 @@ import { useReducedMotion, useInView } from '@/lib/hooks'
 import { chapters, ERA_COLOR, type Chapter } from './chapters'
 import { hasWebGL } from './webgl-detect'
 import type { City as CityInstance } from './City'
+import { journeyProjects } from './projects'
+import type { LandmarkHover } from './landmarks'
+import LandmarkCard from './LandmarkCard'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -21,6 +24,31 @@ function ChapterMetrics({ chapter }: { chapter: Chapter }) {
         </div>
       ))}
     </dl>
+  )
+}
+
+function BuiltHere({ chapterId }: { chapterId: string }) {
+  const items = journeyProjects.filter((p) => p.chapterId === chapterId)
+  if (!items.length) return null
+  return (
+    <div className="journey-built">
+      <h3 className="journey-built__title" id={`${chapterId}-built`}>
+        Built in this chapter
+      </h3>
+      <ul aria-labelledby={`${chapterId}-built`} className="journey-built__list">
+        {items.map((p) => (
+          <li key={p.id}>
+            <a href={p.href} className="journey-built__link">
+              <span className="journey-built__name">{p.name}</span>
+              <span className="journey-built__sub">
+                {p.client ? `${p.client} · ` : ''}
+                {p.tagline}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }
 
@@ -58,6 +86,7 @@ function ChapterSection({
         <p className="journey-chapter__roles">{chapter.roles}</p>
         <p className="journey-chapter__body">{chapter.body}</p>
         <ChapterMetrics chapter={chapter} />
+        <BuiltHere chapterId={chapter.id} />
         {index === chapters.length - 1 && (
           <div className="journey-cta">
             <a href="mailto:jagadeeshthiruveedula77@gmail.com" className="chip chip--primary">
@@ -116,6 +145,8 @@ function JourneyScene() {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const cityRef = useRef<CityInstance | null>(null)
+  const [hover, setHover] = useState<LandmarkHover>({ id: null, x: 0, y: 0 })
+  const [touch, setTouch] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -127,6 +158,14 @@ function JourneyScene() {
       const city = new City(canvasRef.current)
       cityRef.current = city
       city.start()
+      city.setLandmarks(journeyProjects.map(({ id, district }) => ({ id, district })))
+      city.setLandmarkHandlers({
+        onHover: setHover,
+        onSelect: (id) => {
+          const project = journeyProjects.find((p) => p.id === id)
+          if (project) window.location.assign(project.href)
+        },
+      })
 
       trigger = ScrollTrigger.create({
         trigger: containerRef.current,
@@ -155,17 +194,29 @@ function JourneyScene() {
       trigger?.kill()
       cityRef.current?.dispose()
       cityRef.current = null
+      setHover({ id: null, x: 0, y: 0 })
     }
   }, [])
 
   return (
     <div className="journey journey--scene">
       <div ref={containerRef} className="journey-scroller" style={{ height: `${chapters.length * 100}vh` }}>
-        <canvas ref={canvasRef} className="journey-canvas" aria-hidden="true" />
+        <canvas
+          ref={canvasRef}
+          className="journey-canvas"
+          aria-hidden="true"
+          onPointerDown={(e) => setTouch(e.pointerType === 'touch')}
+        />
         {chapters.map((chapter, i) => (
           <ChapterSection key={chapter.id} chapter={chapter} index={i} />
         ))}
       </div>
+      <LandmarkCard
+        project={journeyProjects.find((p) => p.id === hover.id) ?? null}
+        x={hover.x}
+        y={hover.y}
+        hint={touch ? 'Tap again to open' : 'Click to open case study'}
+      />
     </div>
   )
 }
