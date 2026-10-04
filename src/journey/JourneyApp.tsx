@@ -7,7 +7,7 @@ import { chapters, ERA_COLOR, type Chapter } from './chapters'
 import { hasWebGL } from './webgl-detect'
 import type { City as CityInstance } from './City'
 import { journeyProjects } from './projects'
-import type { LandmarkApi, LandmarkHover } from './landmarks'
+import type { LandmarkHover } from './landmarks'
 import LandmarkCard from './LandmarkCard'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -158,18 +158,12 @@ function JourneyScene() {
       const city = new City(canvasRef.current)
       cityRef.current = city
       city.start()
-      // City gains these methods separately; the lead will tidy the cast.
-      const api = city as unknown as Partial<LandmarkApi>
-      api.setLandmarks?.(journeyProjects.map(({ id, district }) => ({ id, district })))
-      api.setLandmarkHandlers?.({
-        onHover: (e) => {
-          setHover(e)
-          if (e.id) setTouch(false)
-        },
-        onSelect: (id, via) => {
+      city.setLandmarks(journeyProjects.map(({ id, district }) => ({ id, district })))
+      city.setLandmarkHandlers({
+        onHover: setHover,
+        onSelect: (id) => {
           const project = journeyProjects.find((p) => p.id === id)
           if (project) window.location.assign(project.href)
-          if (via === 'touch') setTouch(true)
         },
       })
 
@@ -207,7 +201,12 @@ function JourneyScene() {
   return (
     <div className="journey journey--scene">
       <div ref={containerRef} className="journey-scroller" style={{ height: `${chapters.length * 100}vh` }}>
-        <canvas ref={canvasRef} className="journey-canvas" aria-hidden="true" />
+        <canvas
+          ref={canvasRef}
+          className="journey-canvas"
+          aria-hidden="true"
+          onPointerDown={(e) => setTouch(e.pointerType === 'touch')}
+        />
         {chapters.map((chapter, i) => (
           <ChapterSection key={chapter.id} chapter={chapter} index={i} />
         ))}
