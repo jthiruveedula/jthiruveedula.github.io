@@ -56,6 +56,22 @@ test.describe('the career journey', () => {
     await expect(page.locator('#foundations h2')).toHaveText('Data foundations')
   })
 
+  const withProjects = ['cloud-at-scale', 'genai-accelerators', 'forward-deployed', 'applied-genai']
+  for (const reduced of [false, true]) {
+    test(`chapters list built projects with deep links (${reduced ? 'static' : 'normal'})`, async ({ page }) => {
+      if (reduced) await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.goto('/journey/')
+      for (const id of withProjects) {
+        const links = page.locator(`#${id} .journey-built__link`)
+        expect(await links.count()).toBeGreaterThan(0)
+        for (const href of await links.evaluateAll((els) => els.map((e) => e.getAttribute('href')))) {
+          expect(href).toMatch(/^\/#/)
+        }
+      }
+      await expect(page.locator('#foundations .journey-built')).toHaveCount(0)
+    })
+  }
+
   test('the main site links to the journey', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('a[href="/journey/"]').first()).toBeAttached()
