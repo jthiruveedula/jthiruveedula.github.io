@@ -75,7 +75,7 @@ export const worldScenes: WorldScene[] = [
       label: 'Get in touch',
       href: 'mailto:jagadeeshthiruveedula77@gmail.com',
       secondaryLabel: 'See the work',
-      secondaryHref: '#projects',
+      secondaryHref: '#systems',
     },
   },
   {

@@ -147,6 +147,14 @@ function DustScene() {
 
     const init = async () => {
       try {
+        // Decorative: wait for idle so the 700 kB three chunk never competes
+        // with the hero's first paint.
+        await new Promise<void>((resolve) =>
+          'requestIdleCallback' in window
+            ? window.requestIdleCallback(() => resolve(), { timeout: 3000 })
+            : setTimeout(resolve, 1500),
+        )
+        if (cancelled) return
         const THREE = await import('three')
         if (cancelled || !canvasRef.current) return
 

@@ -365,7 +365,7 @@ export default function Timeline() {
                       onClick={() => setOpenIndex(isOpen ? null : i)}
                       onFocus={() => setHoveredIndex(i)}
                       onBlur={() => setHoveredIndex(null)}
-                      className="hud-label mt-1.5 text-ink-faint transition-colors hover:text-accent focus-visible:text-accent"
+                      className="hud-label -mx-2 mt-0.5 inline-flex min-h-11 items-center px-2 text-ink-faint transition-colors hover:text-accent focus-visible:text-accent"
                     >
                       {isOpen ? '− hide' : '+ the build'}
                     </button>

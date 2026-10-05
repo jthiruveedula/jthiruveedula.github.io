@@ -152,14 +152,14 @@ export interface PortfolioData {
 }
 
 /**
- * Era → design-token color hex (mirrors globals.css @theme).
+ * Era → design-token color (resolves the globals.css @theme variable).
  * v5 redesign: the story is no longer color-coded by era (amber/cyan/violet) —
  * it's a single cyan accent against a grayscale ground. Legacy/cloud read as
  * neutral gray steps that resolve into the accent for the AI era, matching the
  * Timeline's era-band legend (Legacy → Cloud → Enterprise AI).
  */
 export const ERA_COLORS: Record<Era, string> = {
-  legacy: '#808a91',
-  cloud: '#a6aeb4',
-  ai: '#46c9f0',
+  legacy: 'var(--color-legacy)',
+  cloud: 'var(--color-cloud)',
+  ai: 'var(--color-ai)',
 }

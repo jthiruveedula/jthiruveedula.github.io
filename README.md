@@ -44,11 +44,12 @@ To see the full detail (bio, all metrics, tech stacks per project), open `src/da
 | Build     | Vite 7 (static output to `out/`)              |
 | UI        | React 19 + TypeScript (strict)                |
 | Animation | GSAP 3 (ScrollTrigger) via `@gsap/react`      |
+| 3D        | three.js (lazy, WebGL-gated, optional)        |
 | Scroll    | Lenis (smooth scroll, reduced-motion aware)   |
 | Styling   | Tailwind CSS v4 (`@theme` design tokens)      |
 | E2E       | Playwright (chromium + mobile projects)       |
 
-No WebGL. Earlier versions shipped a Three.js scroll-world; v6 is DOM, SVG and CSS only.
+WebGL is optional and lazy-loaded: the hero dust field (`DustField`) and the `/journey/` skyline use three.js. Both are gated on WebGL support and `prefers-reduced-motion`; the DOM/CSS flight is the complete fallback.
 
 ## Setup
 
