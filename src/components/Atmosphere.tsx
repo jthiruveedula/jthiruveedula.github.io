@@ -2,6 +2,8 @@ import { useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
+import { getPointer, subscribePointer } from '@/lib/pointer'
+import '@/styles/hero-track.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -51,7 +53,23 @@ export default function Atmosphere() {
           },
         })
         el.style.setProperty('--atmos-p', trigger.progress.toFixed(4))
+
+        // TRACK: lamps drift up to 14px toward the cursor (x/y vars -> transform in
+        // hero-track.css). Inactive on coarse pointers / reduced motion via pointer.ts.
+        const DRIFT = 14
+        const ease = { duration: 1.4, ease: 'power3.out' }
+        const toX = gsap.quickTo(el, '--atmos-dx', ease)
+        const toY = gsap.quickTo(el, '--atmos-dy', ease)
+        const unsubscribe = subscribePointer(() => {
+          const s = getPointer()
+          toX(s.active ? s.x * DRIFT : 0)
+          toY(s.active ? s.y * DRIFT : 0)
+        })
         return () => {
+          unsubscribe()
+          gsap.killTweensOf(el, '--atmos-dx,--atmos-dy')
+          el.style.removeProperty('--atmos-dx')
+          el.style.removeProperty('--atmos-dy')
           // Back to the authored mid-frame rather than wherever the scroll left it.
           el.style.removeProperty('--atmos-p')
         }

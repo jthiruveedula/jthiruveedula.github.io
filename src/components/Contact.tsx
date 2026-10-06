@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { enterJourney, useMagnetic } from '@/components/JourneyPortal'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -46,6 +47,8 @@ function splitEducation(entry: string): [string, string] {
 export default function Contact() {
   const reduced = useReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
+  const ctaRef = useRef<HTMLSpanElement>(null)
+  useMagnetic(ctaRef)
 
   useGSAP(
     () => {
@@ -91,12 +94,11 @@ export default function Contact() {
             </h2>
           </div>
           {profile.email && (
-            <a
-              href={`mailto:${profile.email}`}
-              className="contact-cta chip chip--primary shrink-0"
-            >
-              Start with your hardest data problem
-            </a>
+            <span ref={ctaRef} className="inline-flex shrink-0">
+              <a href={`mailto:${profile.email}`} className="contact-cta chip chip--primary">
+                Start with your hardest data problem
+              </a>
+            </span>
           )}
         </div>
 
@@ -200,6 +202,7 @@ export default function Contact() {
             </a>
             <a
               href="/journey/"
+              onClick={(e) => enterJourney(e, '/journey/')}
               className="chip mt-4 ml-3 inline-flex transition-colors hover:bg-ink/10"
             >
               See the career journey

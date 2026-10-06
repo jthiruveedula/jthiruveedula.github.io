@@ -18,7 +18,7 @@
  */
 
 /* ── Motion grammar (whole page) ────────────────────────────────────────
-   Three verbs and no more. Anything that does not fit one of them does not
+   Four verbs and no more (CUT, DRAW, SETTLE on the toggle clock; GRADE and TRACK ambient). Anything that does not fit one of them does not
    animate.
 
    CUT     the flight's headline swaps hard at the crossfade midpoint, then plays
@@ -31,6 +31,14 @@
            visibility — that combination has stranded content three times here.
    SETTLE  type and rows arrive on y + opacity via revealFrom(), 0.6s, small
            stagger. Per line or per word, never per character.
+
+   TRACK   the fourth input verb: the page answers the pointer. State lives in
+           src/lib/pointer.ts (one passive pointermove, normalized -1..1, no RAF;
+           consumers read it on their own RAF/gsap.ticker). Transform and opacity
+           only, always eased toward the pointer and back. Disabled on
+           (pointer: coarse) and prefers-reduced-motion, where the store stays
+           inactive. The authored resting state IS the finished state: TRACK only
+           offsets from it and returns to it, so no pointer means the real page.
 
    Two clocks, never mixed. The scrub clock belongs to the flight's camera alone
    (ease:'none' — scroll is the clock, and easing a scrubbed camera makes the
@@ -851,118 +859,6 @@ h2 .proper,
 }
 [data-pulse] {
   animation: om-pulse 1.8s ease-out infinite;
-}
-@keyframes om-travel {
-  0% {
-    left: 0%;
-    opacity: 0;
-  }
-  8% {
-    opacity: 1;
-  }
-  92% {
-    opacity: 1;
-  }
-  100% {
-    left: 100%;
-    opacity: 0;
-  }
-}
-@keyframes om-travel-stream {
-  0% {
-    left: 0%;
-    opacity: 0;
-  }
-  6% {
-    opacity: 1;
-  }
-  88% {
-    opacity: 1;
-  }
-  100% {
-    left: 100%;
-    opacity: 0;
-  }
-}
-@keyframes om-travel-batch {
-  0% {
-    left: 0%;
-    opacity: 0;
-  }
-  4% {
-    opacity: 1;
-  }
-  22% {
-    left: 0%;
-  }
-  28% {
-    left: 25%;
-  }
-  47% {
-    left: 25%;
-  }
-  53% {
-    left: 50%;
-  }
-  72% {
-    left: 50%;
-  }
-  78% {
-    left: 75%;
-  }
-  94% {
-    left: 100%;
-    opacity: 1;
-  }
-  100% {
-    left: 100%;
-    opacity: 0;
-  }
-}
-@keyframes om-travel-roundtrip {
-  0% {
-    left: 0%;
-    opacity: 0;
-  }
-  6% {
-    opacity: 1;
-  }
-  44% {
-    left: 100%;
-  }
-  50% {
-    left: 100%;
-    opacity: 1;
-  }
-  94% {
-    left: 0%;
-  }
-  100% {
-    left: 0%;
-    opacity: 0;
-  }
-}
-@keyframes om-travel-gate {
-  0% {
-    left: 0%;
-    opacity: 0;
-  }
-  6% {
-    opacity: 1;
-  }
-  38% {
-    left: 50%;
-  }
-  58% {
-    left: 50%;
-  }
-  96% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-    opacity: 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

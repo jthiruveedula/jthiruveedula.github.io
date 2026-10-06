@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
+import '@/styles/instrument.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -52,6 +53,22 @@ export default function MeterStrip() {
             scrollTrigger: { trigger: stripRef.current, start: 'top 85%', once: true },
           },
         )
+        const scan = stripRef.current?.querySelector('.meter__scan')
+        if (scan) {
+          // One pass, edge to edge, then gone. Explicit fromTo; resting state is invisible.
+          gsap.fromTo(
+            scan,
+            { x: 0, opacity: 1 },
+            {
+              x: () => stripRef.current!.offsetWidth,
+              opacity: 0,
+              immediateRender: false,
+              duration: 0.9,
+              ease: 'power3.out',
+              scrollTrigger: { trigger: stripRef.current, start: 'top 85%', once: true },
+            },
+          )
+        }
       })
       return () => mm.revert()
     },
@@ -67,6 +84,7 @@ export default function MeterStrip() {
         ))}
       </div>
       <p className="meter__label">accuracy under HIPAA · 100%</p>
+      <span className="meter__scan" aria-hidden="true" />
     </aside>
   )
 }

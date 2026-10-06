@@ -1,0 +1,46 @@
+/* TRACK for the hero cluster. transform + opacity only; resting state is the
+   authored state (vars default to 0), so dead JS renders the same page. */
+
+/* Atmosphere lamps drift toward the cursor, opposite signs for depth. */
+.atmos .atmos__lamp {
+  transform: translate3d(
+    calc(var(--atmos-dx, 0) * 1px),
+    calc((var(--atmos-p) - 0.5) * -38vh + var(--atmos-dy, 0) * 1px),
+    0
+  );
+}
+.atmos .atmos__lamp--ai {
+  transform: translate3d(
+    calc(var(--atmos-dx, 0) * -0.6px),
+    calc((var(--atmos-p) - 0.5) * -38vh + var(--atmos-dy, 0) * -0.6px),
+    0
+  );
+}
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  .atmos .atmos__lamp,
+  .atmos .atmos__lamp--ai {
+    transform: translate3d(0, calc((var(--atmos-p) - 0.5) * -38vh), 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atmos .atmos__lamp,
+  .atmos .atmos__lamp--ai {
+    transform: none;
+  }
+}
+
+/* Scroll-progress velocity glow: a blurred twin of the bar, opacity only. */
+.scroll-progress::after {
+  content: '';
+  position: absolute;
+  inset: -3px 0;
+  background: var(--color-accent);
+  filter: blur(4px);
+  opacity: calc(var(--scroll-glow, 0) * 0.6);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress::after {
+    display: none;
+  }
+}

@@ -1,0 +1,113 @@
+/* Scroll storytelling — #ledger era GRADE + node pulse, #skills constellation.
+   Opacity/transform only; authored resting state is the finished state. */
+
+/* ── Ledger: era tint (GRADE, section-scoped) ───────────────────────── */
+.ledger-tint {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+.ledger-tint span {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 700ms var(--ease-soft);
+}
+.ledger-tint [data-tint='legacy'] {
+  background: radial-gradient(60% 40% at 15% 50%, color-mix(in oklab, var(--color-legacy) 12%, transparent), transparent 70%);
+}
+.ledger-tint [data-tint='cloud'] {
+  background: radial-gradient(60% 40% at 50% 50%, color-mix(in oklab, var(--color-cloud) 12%, transparent), transparent 70%);
+}
+.ledger-tint [data-tint='ai'] {
+  background: radial-gradient(60% 40% at 85% 50%, color-mix(in oklab, var(--color-ai) 14%, transparent), transparent 70%);
+}
+#ledger[data-era='legacy'] [data-tint='legacy'],
+#ledger[data-era='cloud'] [data-tint='cloud'],
+#ledger[data-era='ai'] [data-tint='ai'] {
+  opacity: 1;
+}
+
+/* ── Ledger: start node, rings once when its row becomes active ────── */
+.ledger-node {
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+.ledger-node::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid currentColor;
+  opacity: 0;
+}
+.ledger-row--on .ledger-node::after {
+  animation: ledger-node 700ms var(--ease-out) 1 both;
+}
+@keyframes ledger-node {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+/* ── Skills: constellation highlight ────────────────────────────────── */
+.skill {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: bottom;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+  /* Outline stays out of the transition list: focus ring is instant. */
+  transition:
+    opacity 200ms var(--ease-soft),
+    color 200ms var(--ease-soft);
+}
+.skill--self {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-underline-offset: 0.25em;
+}
+.skill--on {
+  color: var(--color-ink);
+}
+.skills-lit .skill:not(.skill--self):not(.skill--on) {
+  opacity: 0.6;
+}
+@media (hover: hover) and (pointer: fine) {
+  .skill:hover {
+    color: var(--color-accent);
+  }
+}
+@media (pointer: coarse) {
+  /* Tap target to 44px without changing the prose flow. overflow:hidden on
+     .skill would clip a pseudo hit area, so coarse pointers get padding-free
+     line-height instead. */
+  .skill {
+    line-height: 2.75rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skill {
+    transition-duration: 0.01ms;
+  }
+  .ledger-tint span {
+    transition-duration: 150ms;
+  }
+  .ledger-row--on .ledger-node::after {
+    animation: none;
+  }
+}

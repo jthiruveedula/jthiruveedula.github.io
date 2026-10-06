@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { portfolio } from '@/data/portfolio'
 import { SECTIONS } from '@/components/Rail'
+import { enterJourney } from '@/components/JourneyPortal'
 
 /**
  * The palette's actual content — deliberately the lazy half of CommandPalette.
@@ -84,7 +85,8 @@ function useCommands(goTo: (id: string) => void, onClose: () => void): Command[]
       label: 'See the career journey (3D skyline)',
       hint: 'Explore',
       run: () => {
-        window.location.href = '/journey/'
+        enterJourney(null, '/journey/')
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
         onClose()
       },
     })

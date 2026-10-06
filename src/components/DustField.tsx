@@ -25,6 +25,8 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import type * as ThreeNS from 'three'
 import { useReducedMotion } from '@/lib/hooks'
+import { getPointer, subscribePointer } from '@/lib/pointer'
+import '@/styles/dust-track.css'
 import { hasWebGL } from '@/journey/webgl-detect'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -40,12 +42,24 @@ const VERTEX_SHADER = /* glsl */ `
   attribute float aSeed;
   uniform float uTime;
   uniform float uPixelRatio;
+  uniform vec2 uPtr;   // TRACK: lagged pointer, NDC (-1..1, y up)
+  uniform vec2 uView;  // half-extent of the view at depth 1: (tan(fov/2)*aspect, tan(fov/2))
+  uniform float uInfl; // 0 = TRACK off (field identical to untracked)
   varying float vDepth;
   void main() {
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
     // Gentle lateral drift so the field feels alive between scrolls.
     mv.x += sin(uTime * 0.35 + aSeed * 6.2831) * 0.4;
     mv.y += cos(uTime * 0.27 + aSeed * 4.7124) * 0.3;
+    // TRACK: part particles around the cursor with eased falloff, measured at
+    // each particle's own depth so the radius reads constant on screen.
+    if (uInfl > 0.001) {
+      vec2 ptr = uPtr * uView * max(0.1, -mv.z);
+      vec2 away = mv.xy - ptr;
+      float reach = 0.26 * uView.y * max(0.1, -mv.z);
+      float fall = smoothstep(reach, 0.0, length(away));
+      mv.xy += normalize(away + vec2(1e-4)) * fall * fall * reach * 0.6 * uInfl;
+    }
     vDepth = clamp(-mv.z / ${FIELD_DEPTH.toFixed(1)}, 0.0, 1.0);
     gl_PointSize = aSize * uPixelRatio * (170.0 / max(0.1, -mv.z));
     gl_Position = projectionMatrix * mv;
@@ -74,6 +88,7 @@ const FRAGMENT_SHADER = /* glsl */ `
  *  flight section leaves the viewport or the tab hides. */
 function DustScene() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const bloomRef = useRef<HTMLDivElement | null>(null)
   const progressRef = useRef(0)
   const [stage, setStage] = useState<HTMLElement | null>(null)
 
@@ -92,6 +107,10 @@ function DustScene() {
     let raf = 0
     let running = false
     let last = 0
+    let bloomEl: HTMLDivElement | null = null
+    let unsubPointer: (() => void) | null = null
+    // Lagged pointer (TRACK): eased toward the live pointer each frame.
+    const lag = { x: 0, y: 0, infl: 0 }
 
     const start = () => {
       if (running) return
@@ -134,6 +153,18 @@ function DustScene() {
         arr[ix + 2] = z
       }
       pos.needsUpdate = true
+
+      // TRACK: ease toward the pointer (frame-rate independent), fade in/out.
+      const p = getPointer()
+      lag.x += (p.x - lag.x) * (1 - Math.exp(-dt * 6))
+      lag.y += (p.y - lag.y) * (1 - Math.exp(-dt * 6))
+      lag.infl += ((p.active ? 1 : 0) - lag.infl) * (1 - Math.exp(-dt * 4))
+      material.uniforms.uPtr.value.set(lag.x, -lag.y)
+      material.uniforms.uInfl.value = lag.infl
+      if (bloomEl && (p.active || lag.infl > 0.001)) {
+        bloomEl.style.transform = `translate3d(${((lag.x + 1) / 2) * window.innerWidth}px, ${((lag.y + 1) / 2) * window.innerHeight}px, 0)`
+        bloomEl.style.opacity = String(lag.infl * 0.9)
+      }
 
       material.uniforms.uTime.value = now / 1000
       material.uniforms.uProgress.value = progressRef.current
@@ -192,6 +223,9 @@ function DustScene() {
             uTime: { value: 0 },
             uProgress: { value: 0 },
             uPixelRatio: { value: 1 },
+            uPtr: { value: new THREE.Vector2(0, 0) },
+            uView: { value: new THREE.Vector2(1, Math.tan(Math.PI / 6)) },
+            uInfl: { value: 0 },
           },
           vertexShader: VERTEX_SHADER,
           fragmentShader: FRAGMENT_SHADER,
@@ -211,6 +245,10 @@ function DustScene() {
           rendererCamera.aspect = w / h
           rendererCamera.updateProjectionMatrix()
           material.uniforms.uPixelRatio.value = dpr
+          material.uniforms.uView.value.set(
+            Math.tan(Math.PI / 6) * rendererCamera.aspect,
+            Math.tan(Math.PI / 6),
+          )
         }
         window.addEventListener('resize', resize)
         resize()
@@ -228,6 +266,10 @@ function DustScene() {
           onToggle: updateRunning,
         })
         document.addEventListener('visibilitychange', onVisibility)
+        // Keep the shared pointer listener alive while the field exists; the
+        // store itself stays inert on coarse pointers / reduced motion.
+        bloomEl = bloomRef.current
+        unsubPointer = subscribePointer(() => {})
 
         // If the section is already in view at mount, start the loop now.
         updateRunning()
@@ -251,6 +293,8 @@ function DustScene() {
       stop()
       document.removeEventListener('visibilitychange', onVisibility)
       removeResize?.()
+      unsubPointer?.()
+      bloomEl = null
       trigger?.kill()
       trigger = null
       geometry?.dispose()
@@ -279,6 +323,7 @@ function DustScene() {
         overflow: 'hidden',
       }}
     >
+      <div ref={bloomRef} className="dust-bloom" />
       <canvas
         ref={canvasRef}
         data-dust
