@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useMagnetic } from '@/components/JourneyPortal'
 
 /**
  * N3 side-rail nav — replaces the v5 top bar.
@@ -30,6 +31,16 @@ export const OPEN_COMMAND_PALETTE = 'command-palette:open'
  *  can report `aria-expanded` truthfully instead of assuming its own click always
  *  wins (Escape, an outside click, or a fired command all close it independently). */
 export const COMMAND_PALETTE_STATE = 'command-palette:state'
+
+function RailItem({ href, label, current }: { href: string; label: string; current: boolean }) {
+  const ref = useRef<HTMLAnchorElement>(null)
+  useMagnetic(ref, { strength: 0.2, radius: 60 })
+  return (
+    <a ref={ref} href={href} className="rail__link" aria-current={current ? 'true' : undefined}>
+      {label}
+    </a>
+  )
+}
 
 export default function Rail() {
   const [active, setActive] = useState<string>('top')
@@ -81,13 +92,7 @@ export default function Rail() {
       <ul className="rail__list">
         {SECTIONS.map((section) => (
           <li key={section.id}>
-            <a
-              href={`#${section.id}`}
-              className="rail__link"
-              aria-current={active === section.id ? 'true' : undefined}
-            >
-              {section.label}
-            </a>
+            <RailItem href={`#${section.id}`} label={section.label} current={active === section.id} />
           </li>
         ))}
         {/* Same visual language as the destinations above it — not a destination

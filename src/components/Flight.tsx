@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react'
 import { flightScenes, SCENE_BOUNDS } from '@/data/flight'
 import { portfolio } from '@/data/portfolio'
 import { isPlaceholder } from '@/lib/content'
+import { getPointer, subscribePointer } from '@/lib/pointer'
 import { splitWordsWithAccent, renderSplitWords } from '@/lib/splitText'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -127,6 +128,7 @@ export default function Flight() {
           }
         }
 
+        let onScrub: ((self: ScrollTrigger) => void) | null = null
         const trigger = ScrollTrigger.create({
           trigger: runway,
           // `clamp()` is specifically the fix for scrub jumping on load at the top.
@@ -134,7 +136,10 @@ export default function Flight() {
           end: () => '+=' + (runway.offsetHeight - window.innerHeight),
           scrub: 0.55,
           invalidateOnRefresh: true,
-          onUpdate: (self) => draw(self.progress),
+          onUpdate: (self) => {
+            draw(self.progress)
+            onScrub?.(self)
+          },
           onToggle: (self) => {
             // Lease will-change only while the flight is on screen.
             for (const p of planes) p.style.willChange = self.isActive ? 'transform, opacity' : 'auto'
@@ -143,60 +148,41 @@ export default function Flight() {
 
         draw(trigger.progress)
 
-        // ── Pointer parallax (depth charge) ─────────────────────────────
-        // GPU-composited x/y offsets layered over the scrub. draw(t) only
-        // writes 'scale' and 'opacity', so quickTo x/y merges on the same
-        // element's transform without fighting the camera.
+        // ── TRACK: pointer parallax (depth charge) ──────────────────────
+        // x/y only, layered over the scrub (draw() writes scale/opacity).
+        // Fine pointers only: pointer.ts keeps the store inactive on coarse pointers
+        // and reduced motion, so nothing subscribes-and-moves there. While the camera
+        // is actually travelling (scroll velocity) the offsets ease back to 0 so the
+        // layer never fights the scrub; they resume once scroll settles.
         const MAX_SHIFT = 26
         const plateCount = planes.length
-        const plateX = planes.map((p) =>
-          gsap.quickTo(p, 'x', { duration: 0.7, ease: 'power3.out' }),
-        )
-        const plateY = planes.map((p) =>
-          gsap.quickTo(p, 'y', { duration: 0.7, ease: 'power3.out' }),
-        )
+        const ease = { duration: 0.7, ease: 'power3.out' }
+        const plateX = planes.map((p) => gsap.quickTo(p, 'x', ease))
+        const plateY = planes.map((p) => gsap.quickTo(p, 'y', ease))
         const copyInner = runway.querySelector<HTMLElement>('[data-parallax-copy]')
-        const copyX = copyInner
-          ? gsap.quickTo(copyInner, 'x', { duration: 0.7, ease: 'power3.out' })
-          : null
-        const copyY = copyInner
-          ? gsap.quickTo(copyInner, 'y', { duration: 0.7, ease: 'power3.out' })
-          : null
-        const COPY_SHIFT = MAX_SHIFT * 1.4
+        const copyX = copyInner ? gsap.quickTo(copyInner, 'x', ease) : null
+        const copyY = copyInner ? gsap.quickTo(copyInner, 'y', ease) : null
 
-        // Depth factor from the authored zIndex: zIndex_j = plateCount - j,
-        // so the front plate moves most and the deepest plate barely does.
+        let calm = true
+        // Depth factor from the authored zIndex: the front plate moves most.
         const applyParallax = (nx: number, ny: number) => {
+          const k = calm ? 1 : 0
           for (let j = 0; j < plateCount; j++) {
-            const shift = MAX_SHIFT * ((plateCount - j) / plateCount)
+            const shift = MAX_SHIFT * ((plateCount - j) / plateCount) * k
             plateX[j](nx * shift)
             plateY[j](ny * shift)
           }
-          copyX?.(nx * COPY_SHIFT)
-          copyY?.(ny * COPY_SHIFT)
+          copyX?.(nx * MAX_SHIFT * 1.4 * k)
+          copyY?.(ny * MAX_SHIFT * 1.4 * k)
         }
+        const syncPointer = () => {
+          const s = getPointer()
+          // Store is -1..1; the original parallax took -0.5..0.5.
+          applyParallax(s.active ? s.x * 0.5 : 0, s.active ? s.y * 0.5 : 0)
+        }
+        const unsubscribe = subscribePointer(syncPointer)
 
-        // Desktop only: skip entirely on coarse pointers / hover:none.
-        const stage = runway.querySelector<HTMLElement>('.flight__stage')
-        const onMouseMove = (e: MouseEvent) => {
-          const rect = stage?.getBoundingClientRect()
-          if (!rect || !rect.width || !rect.height) return
-          const clamp = (v: number) => Math.max(-0.5, Math.min(0.5, v))
-          applyParallax(
-            clamp((e.clientX - rect.left) / rect.width - 0.5),
-            clamp((e.clientY - rect.top) / rect.height - 0.5),
-          )
-        }
-        if (
-          stage &&
-          !window.matchMedia('(pointer: coarse)').matches &&
-          !window.matchMedia('(hover: none)').matches
-        ) {
-          stage.addEventListener('mousemove', onMouseMove)
-        }
-
-        // Tilt parallax — phones have no hover, but they have a gyroscope.
-        // Small and safe: null axes clamp to zero, iOS asks once on first tap.
+        // Tilt parallax: phones have no hover but have a gyroscope. iOS asks once on first tap.
         let onTilt: ((e: DeviceOrientationEvent) => void) | null = null
         let armTilt: (() => void) | null = null
         try {
@@ -213,8 +199,7 @@ export default function Flight() {
                 ctor
                   .requestPermission!()
                   .then((result) => {
-                    if (result === 'granted' && onTilt)
-                      window.addEventListener('deviceorientation', onTilt)
+                    if (result === 'granted' && onTilt) window.addEventListener('deviceorientation', onTilt)
                   })
                   .catch(() => {})
                 window.removeEventListener('pointerdown', armTilt!)
@@ -225,12 +210,29 @@ export default function Flight() {
             }
           }
         } catch {
-          // Orientation API missing or blocked — the pointer path still applies.
+          // Orientation API missing or blocked: the pointer path still applies.
+        }
+
+        const SCRUB_VELOCITY = 120 // px/s; above this the camera is travelling
+        // onUpdate stops firing once the scrub settles, so re-arm `calm` on a short debounce.
+        const settle = gsap
+          .delayedCall(0.2, () => {
+            calm = true
+            syncPointer()
+          })
+          .pause()
+        onScrub = (self) => {
+          const next = Math.abs(self.getVelocity()) < SCRUB_VELOCITY
+          if (!next) settle.restart(true)
+          if (next === calm) return
+          calm = next
+          syncPointer()
         }
 
         return () => {
           for (const p of planes) p.style.willChange = 'auto'
-          stage?.removeEventListener('mousemove', onMouseMove)
+          unsubscribe()
+          settle.kill()
           if (onTilt) window.removeEventListener('deviceorientation', onTilt)
           if (armTilt) window.removeEventListener('pointerdown', armTilt)
           for (const qt of [...plateX, ...plateY]) qt.tween.kill()

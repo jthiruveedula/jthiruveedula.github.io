@@ -1,0 +1,27 @@
+/* TRACK bloom for DustField: a soft light that trails the pointer with lag.
+   Resting state is opacity 0 (identical to the no-pointer field). JS drives
+   transform + opacity only. */
+.dust-bloom {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 38vmin;
+  height: 38vmin;
+  margin: -19vmin 0 0 -19vmin;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-accent-500) 22%, transparent) 0%,
+    color-mix(in oklab, var(--color-accent-500) 8%, transparent) 40%,
+    transparent 70%
+  );
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  .dust-bloom {
+    display: none;
+  }
+}

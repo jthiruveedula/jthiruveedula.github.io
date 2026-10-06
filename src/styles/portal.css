@@ -1,0 +1,34 @@
+/* Spatial transition into /journey/. Authored resting state: no veil exists in
+ * the DOM; it is mounted only on a qualifying click and removed on pageshow. */
+.portal-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--color-accent-300) 0%,
+    var(--color-accent) 18%,
+    var(--color-void) 62%
+  );
+  transform: scale(0.6);
+  animation: portal-in 460ms var(--ease-out) forwards;
+}
+@keyframes portal-in {
+  to {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portal-veil {
+    transform: none;
+    animation: portal-fade 150ms linear forwards;
+  }
+  @keyframes portal-fade {
+    to {
+      opacity: 1;
+    }
+  }
+}

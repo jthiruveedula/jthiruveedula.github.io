@@ -1,0 +1,33 @@
+/* PIPELINE-AS-SCROLL: DRAW extension. Packets ride the already-drawn stage line once,
+   then settle parked at the target end. Resting state (no JS / reduced motion) is the
+   finished state: packet at the end, dimmed. transform + opacity only. */
+.pipe-track {
+  container-type: inline-size;
+}
+.pipe-packet {
+  --pipe-end: calc(100cqw - 6px);
+  transform: translateX(var(--pipe-end));
+  opacity: 0.6;
+}
+.pipe-packet--ghost {
+  opacity: 0.3;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pipe-packet.is-flowing {
+    animation: pipe-run 1.4s var(--ease-out) var(--pipe-delay, 0s) both;
+  }
+}
+@keyframes pipe-run {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  12%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(var(--pipe-end));
+    opacity: 0.6;
+  }
+}

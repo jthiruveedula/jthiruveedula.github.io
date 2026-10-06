@@ -6,6 +6,7 @@ import { portfolio } from '@/data/portfolio'
 import { ERA_COLORS, type Era, type Experience } from '@/data/types'
 import { useInView, useReducedMotion } from '@/lib/hooks'
 import { domainSlug, pulseDomainRow, techDomain } from '@/lib/skillMatch'
+import '@/styles/story.css'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -178,6 +179,35 @@ export default function Timeline() {
           )
           .to('.era-boundary-flash', { scale: 1, opacity: 0.55, duration: 0.45, ease: 'power2.out' }, '-=0.1')
       }
+
+      // Travelling through time: each bar draws from its start, and the row
+      // crossing the reading line sets the section's active era (GRADE tint,
+      // opacity only in story.css) and pulses its start node once.
+      gsap.utils.toArray<HTMLElement>('.ledger-row').forEach((row) => {
+        const bar = row.querySelector('.ledger-bar')
+        if (bar) {
+          gsap.fromTo(
+            bar,
+            { scaleX: 0 },
+            { scaleX: 1, duration: 0.8, ease: 'power2.out', scrollTrigger: { trigger: row, start: 'top 88%', toggleActions: 'play none none none' } },
+          )
+        }
+        ScrollTrigger.create({
+          trigger: row,
+          start: 'top 55%',
+          end: 'bottom 55%',
+          onToggle: (self) => {
+            row.classList.toggle('ledger-row--on', self.isActive)
+            if (self.isActive) sectionRef.current?.setAttribute('data-era', row.dataset.era ?? '')
+          },
+        })
+      })
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: 'top bottom',
+        end: 'bottom top',
+        onToggle: (self) => !self.isActive && sectionRef.current?.removeAttribute('data-era'),
+      })
     },
     { scope: sectionRef, dependencies: [reducedMotion], revertOnUpdate: true },
   )
@@ -189,7 +219,13 @@ export default function Timeline() {
       aria-labelledby="ledger-heading"
       className="relative scroll-mt-24 px-[clamp(20px,4vw,64px)] py-[clamp(64px,10vh,120px)]"
     >
-      <div className="mx-auto max-w-[1320px]">
+      {/* GRADE: one lamp per era, only the active era's is lit (opacity). */}
+      <div aria-hidden="true" className="ledger-tint">
+        {ERA_BANDS.map((band) => (
+          <span key={band.id} data-tint={band.id} />
+        ))}
+      </div>
+      <div className="relative mx-auto max-w-[1320px]">
         {/* Same head geometry as #arc: mono eyebrow stacked directly above the
             heading, in the same column. The v5 version was a flex-wrap header with
             no eyebrow and a heavier 2px top border — it read as a different species
@@ -341,6 +377,7 @@ export default function Timeline() {
               return (
               <li
                 key={`${row.role.company}-${row.role.start}`}
+                data-era={row.role.era}
                 className={`ledger-row grid ${GRID_COLS} items-center gap-4 transition-[opacity,transform] duration-300`}
                 style={{
                   opacity: hoveredIndex === null || hoveredIndex === i ? 1 : 0.32,
@@ -384,14 +421,18 @@ export default function Timeline() {
                     style={{ left: `${NOW_LEFT_PCT}%` }}
                   />
                   <span
-                    className="absolute top-1/2 rounded-[1px] transition-[height] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                    className="ledger-bar absolute top-1/2 origin-left -translate-y-1/2 rounded-[1px] transition-[height] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
                     style={{
                       left: `${row.left}%`,
                       width: `${row.width}%`,
                       height: hoveredIndex === i ? '18px' : '12px',
-                      transform: 'translateY(-50%)',
                       background: row.barColor,
                     }}
+                  />
+                  <span
+                    aria-hidden="true"
+                    className="ledger-node"
+                    style={{ left: `${row.left}%`, background: row.barColor, color: row.barColor }}
                   />
                   {row.isCurrent ? (
                     <span

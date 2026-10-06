@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -6,6 +6,7 @@ import { portfolio } from '@/data/portfolio'
 import type { Metric } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
 import { revealFrom } from '@/lib/motion'
+import '@/styles/instrument.css'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -133,7 +134,15 @@ function MetricRow({
           <span aria-hidden="true">
             {prefix ? <span className="text-accent">{prefix}</span> : null}
             <span ref={(el) => registerNumberRef(metric.label, el)} className="metric-number">
-              {finalText}
+              {finalText.split('').map((ch, i) =>
+                /\d/.test(ch) ? (
+                  <span key={i} className="dg">
+                    <span className="dg__c">{ch}</span>
+                  </span>
+                ) : (
+                  ch
+                ),
+              )}
             </span>
             {suffix ? <span className="text-[0.7em] text-accent">{suffix}</span> : null}
           </span>
@@ -225,7 +234,7 @@ export default function Metrics() {
   const reducedMotion = useReducedMotion()
   const [filter, setFilter] = useState<Filter>('All')
   const numberRefs = useRef(new Map<string, HTMLSpanElement>())
-  const activeTweens = useRef(new Map<string, gsap.core.Tween>())
+  const activeTweens = useRef(new Map<string, { tl: gsap.core.Timeline; restore: () => void }>())
   const gridSweepRef = useRef<HTMLSpanElement>(null)
   /** The reveal trigger below is replayable by design, so scrolling past #index and
    *  back would otherwise re-zero all thirteen figures. Explicit filter clicks still
@@ -243,28 +252,57 @@ export default function Metrics() {
    *  to replay on every filter click — the grid stays mounted across clicks, so
    *  this is the only thing that re-fires. Kills any tween still in flight for a
    *  given metric first so two rapid filter clicks can't race the same textContent. */
+  /** Kill a metric's in-flight roll AND restore its real digits (kill never fires onComplete). */
+  const stopCount = (label: string) => {
+    const a = activeTweens.current.get(label)
+    if (!a) return
+    a.tl.kill()
+    a.restore()
+    activeTweens.current.delete(label)
+  }
+
+  // Unmount / reduced-motion flip: these timelines live outside the useGSAP context.
+  useEffect(
+    () => () => {
+      for (const label of [...activeTweens.current.keys()]) stopCount(label)
+    },
+    [reducedMotion],
+  )
+
   const animateCounts = (target: Filter, staggerEach: number) => {
     if (reducedMotion) return
     const list = target === 'All' ? headlineMetrics : headlineMetrics.filter((m) => m.groups?.includes(target))
     list.forEach((m, i) => {
       const el = numberRefs.current.get(m.label)
       if (!el) return
-      const { number, decimals } = parseValue(m.value)
-      const numericTarget = Number(number)
-      if (!Number.isFinite(numericTarget)) return
-      activeTweens.current.get(m.label)?.kill()
-      const proxy = { value: 0 }
-      el.textContent = proxy.value.toFixed(decimals)
-      const tween = gsap.to(proxy, {
-        value: numericTarget,
-        duration: 1.1,
-        delay: i * staggerEach,
-        ease: 'power2.out',
-        onUpdate: () => {
-          el.textContent = proxy.value.toFixed(decimals)
-        },
+      stopCount(m.label)
+      // Each digit column rolls 0..d on a transform-only strip overlaid on the real
+      // digit, which stays in the DOM and is restored on complete or kill.
+      const cols = Array.from(el.querySelectorAll<HTMLElement>('.dg'))
+      const tl = gsap.timeline({ delay: i * staggerEach })
+      cols.forEach((col, ci) => {
+        const d = Number(col.textContent)
+        if (!Number.isFinite(d)) return
+        const strip = document.createElement('span')
+        strip.className = 'dg__strip'
+        strip.setAttribute('aria-hidden', 'true')
+        strip.innerHTML = Array.from({ length: 10 }, (_, n) => `<span>${n}</span>`).join('')
+        col.appendChild(strip)
+        col.classList.add('is-rolling')
+        tl.fromTo(
+          strip,
+          { yPercent: 0 },
+          { yPercent: -d * 10, duration: 0.7 + ci * 0.12, ease: 'power3.out' },
+          0,
+        )
       })
-      activeTweens.current.set(m.label, tween)
+      const restore = () =>
+        cols.forEach((col) => {
+          col.classList.remove('is-rolling')
+          col.querySelector('.dg__strip')?.remove()
+        })
+      tl.eventCallback('onComplete', restore)
+      activeTweens.current.set(m.label, { tl, restore })
     })
   }
 
@@ -279,9 +317,10 @@ export default function Metrics() {
     gsap.killTweensOf(bar)
     gsap.fromTo(
       bar,
-      { scaleX: 0, opacity: 1 },
+      { scaleX: 0, y: 0, opacity: 1 },
       {
         scaleX: 1,
+        y: 0,
         duration: 0.5,
         ease: 'power3.out',
         onComplete: () => gsap.to(bar, { opacity: 0, duration: 0.4, ease: 'power1.in' }),
@@ -323,6 +362,16 @@ export default function Metrics() {
           if (counted.current) return
           counted.current = true
           animateCounts('All', 0.05)
+          // One-time scanline travelling down the readout as it boots.
+          const bar = gridSweepRef.current
+          if (bar && gridRef.current) {
+            gsap.killTweensOf(bar)
+            gsap.fromTo(
+              bar,
+              { scaleX: 1, y: 0, opacity: 1 },
+              { y: gridRef.current.offsetHeight, opacity: 0, duration: 1.4, ease: 'power3.out' },
+            )
+          }
         },
       })
 

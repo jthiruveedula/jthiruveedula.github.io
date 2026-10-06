@@ -1,9 +1,10 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent, type SyntheticEvent } from 'react'
 import type { FeaturedProject, ProjectFlow, ProjectStage } from '@/data/types'
 import { useInView, useReducedMotion } from '@/lib/hooks'
 import { isPlaceholder } from '@/lib/content'
 import { domainSlug, pulseDomainRow, techDomain } from '@/lib/skillMatch'
 import gsap from 'gsap'
+import '@/styles/pipeline.css'
 
 /** Only these stage kinds get the cyan accent tint — everything else (including the
  *  named Source/Corpus group) reads as neutral. See the Systems section spec: "gray
@@ -11,21 +12,6 @@ import gsap from 'gsap'
 const ACCENT_KINDS = new Set(['Target', 'Serve', 'Govern'])
 const kindText = (kind: string) => (ACCENT_KINDS.has(kind) ? 'text-accent-500' : 'text-neutral-500')
 const kindDot = (kind: string) => (ACCENT_KINDS.has(kind) ? 'bg-accent-500' : 'bg-neutral-500')
-
-/** Exact per-flow loop durations for the om-travel-* keyframes (globals.css). */
-const FLOW_DURATION: Record<ProjectFlow, string> = {
-  roundtrip: '4.6s',
-  batch: '5.2s',
-  gate: '4.2s',
-  stream: '2.6s',
-}
-
-/** Small fixed lag (seconds) so the ghost trail copy reads as behind the lead dot,
- *  not ahead of it. A *larger* animation-delay starts an identical infinite-loop
- *  animation later, so at any shared instant its progress along the same keyframes
- *  is behind the lead dot's by exactly this amount — a negative delay would instead
- *  read as leading (or, on the wrap, as nearly a full lap behind). */
-const GHOST_LAG = 0.12
 
 /** The horizontal baseline + traveling dot(s) + stage nodes. One per card.
  *
@@ -42,7 +28,6 @@ const GHOST_LAG = 0.12
 function StagePath({
   flow,
   stages,
-  index,
   inView,
   reduced,
   activeStage,
@@ -52,7 +37,6 @@ function StagePath({
 }: {
   flow: ProjectFlow
   stages: ProjectStage[]
-  index: number
   inView: boolean
   reduced: boolean
   activeStage: number | null
@@ -65,10 +49,19 @@ function StagePath({
 }) {
   const dotCount = flow === 'stream' ? 3 : 1
   const segments = stages.length - 1
+  // Bumping `run` remounts the packets so their one-pass animation restarts.
+  const [run, setRun] = useState(0)
+  const busy = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(busy.current), [])
+  const replay = (e: SyntheticEvent) => {
+    if (reduced || busy.current !== undefined || !inView || (e as PointerEvent<HTMLElement>).pointerType === 'touch') return
+    setRun((r) => r + 1)
+    busy.current = window.setTimeout(() => (busy.current = undefined), 1800)
+  }
 
   return (
-    <div className="mt-6">
-      <div className="relative h-4">
+    <div className="mt-6" onPointerEnter={replay} onFocus={replay}>
+      <div className="pipe-track relative h-4">
         <span aria-hidden="true" className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-rule" />
         {/* Per-segment draw-in, keyed to match each stage node's own reveal delay
             (j * 90ms below) so the line visibly reaches a node as it pops in,
@@ -101,35 +94,21 @@ function StagePath({
             style={{ width: activeStage === null ? '0%' : `${(activeStage / segments) * 100}%` }}
           />
         )}
-        {!reduced &&
-          Array.from({ length: dotCount }, (_, d) => {
-            const delay = index * 0.35 + d * 0.7
+        {Array.from({ length: dotCount }, (_, d) => {
+            const flowing = !reduced && (inView || run > 0)
+            const delay = 0.2 + d * 0.22
             return (
-              <Fragment key={d}>
-                {/* Fading ghost copy, offset a touch behind the lead dot along the same
-                    path — reads as a signal pulse traveling a wire, not a teleporting
-                    dot. Pure CSS (shared keyframes, no per-frame JS), no box-shadow. */}
+              <Fragment key={`${d}-${run}`}>
+                {/* Ghost trails the lead packet along the same line. */}
                 <span
                   aria-hidden="true"
-                  className="absolute top-1/2 size-1 -translate-y-1/2 rounded-full bg-accent-500/35"
-                  style={{
-                    animationName: `om-travel-${flow}`,
-                    animationDuration: FLOW_DURATION[flow],
-                    animationTimingFunction: 'linear',
-                    animationIterationCount: 'infinite',
-                    animationDelay: `${delay + GHOST_LAG}s`,
-                  }}
+                  className={`pipe-packet pipe-packet--ghost absolute top-1/2 left-0 size-1 -translate-y-1/2 rounded-full bg-accent-500 ${flowing ? 'is-flowing' : ''}`}
+                  style={{ '--pipe-delay': `${delay + 0.12}s` } as CSSProperties}
                 />
                 <span
                   aria-hidden="true"
-                  className="absolute top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-accent-500"
-                  style={{
-                    animationName: `om-travel-${flow}`,
-                    animationDuration: FLOW_DURATION[flow],
-                    animationTimingFunction: 'linear',
-                    animationIterationCount: 'infinite',
-                    animationDelay: `${delay}s`,
-                  }}
+                  className={`pipe-packet absolute top-1/2 left-0 size-1.5 -translate-y-1/2 rounded-full bg-accent-500 ${flowing ? 'is-flowing' : ''}`}
+                  style={{ '--pipe-delay': `${delay}s` } as CSSProperties}
                 />
               </Fragment>
             )
@@ -345,7 +324,6 @@ export default function ProjectCard({
       <StagePath
         flow={project.flow}
         stages={project.stages}
-        index={index}
         inView={inView}
         reduced={reduced}
         activeStage={activeStage}

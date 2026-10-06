@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { Fragment, useRef, useState, type KeyboardEvent } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -7,6 +7,7 @@ import type { Skill } from '@/data/types'
 import { useInView, useReducedMotion } from '@/lib/hooks'
 import { revealFrom } from '@/lib/motion'
 import { domainSlug } from '@/lib/skillMatch'
+import '@/styles/story.css'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -49,6 +50,31 @@ const DOMAIN_GROUPS: DomainGroup[] = (() => {
   })
 })()
 
+/** Constellation: two skills are related when they appear together in the same role's
+ *  or project's tech list — derived from the résumé data, never hand-authored. */
+const norm = (t: string) => t.toLowerCase().replace(/[^a-z0-9]/g, '')
+const RELATED = (() => {
+  const names = portfolio.skills.map((s) => s.name)
+  const keys = names.map(norm)
+  const resolve = (tech: string) => {
+    const n = norm(tech)
+    if (n.length < 3) return null
+    // Same two-step match as skillMatch.findDomain: exact, then contained in a compound name.
+    const i = keys.indexOf(n)
+    return i >= 0 ? names[i] : (names[keys.findIndex((k) => k.includes(n))] ?? null)
+  }
+  const map = new Map<string, Set<string>>()
+  const lists = [...portfolio.experience.map((e) => e.tech), ...portfolio.featuredProjects.map((p) => p.tech)]
+  for (const list of lists) {
+    const hit = [...new Set((list ?? []).map(resolve).filter((x): x is string => !!x))]
+    for (const a of hit) {
+      if (!map.has(a)) map.set(a, new Set())
+      for (const b of hit) if (a !== b) map.get(a)!.add(b)
+    }
+  }
+  return map
+})()
+
 const TOTAL_SKILLS = portfolio.skills.length
 const TOTAL_DOMAINS = DOMAIN_GROUPS.length
 /** Longest-running domain — the depth bars below are scaled against this, so the
@@ -63,6 +89,43 @@ export default function Skills() {
   // ledger's role detail, so "+N more" behaves like every other disclosure on
   // the page rather than inventing a fourth pattern for the same idea.
   const [openDomain, setOpenDomain] = useState<Skill['domain'] | null>(null)
+  const [active, setActive] = useState<string | null>(null)
+  const related = active ? RELATED.get(active) : undefined
+
+  /** Skill names as focusable spans: one tab stop per list (roving), arrows walk it. */
+  const renderSkills = (list: Skill[]) =>
+    list.map((s, i) => (
+      <Fragment key={s.name}>
+        {i > 0 && '  ·  '}
+        <span
+          tabIndex={i === 0 ? 0 : -1}
+          data-skill=""
+          aria-describedby="skills-related"
+          className={`skill${active === s.name ? ' skill--self' : related?.has(s.name) ? ' skill--on' : ''}`}
+          onPointerEnter={(e) => e.pointerType === 'mouse' && setActive(s.name)}
+          onPointerLeave={(e) => e.pointerType === 'mouse' && setActive(null)}
+          onFocus={() => setActive(s.name)}
+          onBlur={() => setActive(null)}
+          onClick={() => setActive(s.name)}
+          onKeyDown={walk}
+        >
+          {s.name}
+        </span>
+      </Fragment>
+    ))
+
+  function walk(e: KeyboardEvent<HTMLElement>) {
+    if (e.key === 'Escape') return setActive(null)
+    const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
+    if (!d) return
+    const all = Array.from(e.currentTarget.parentElement!.querySelectorAll<HTMLElement>('[data-skill]'))
+    const next = all[all.indexOf(e.currentTarget) + d]
+    if (!next) return
+    e.preventDefault()
+    all.forEach((el) => (el.tabIndex = -1))
+    next.tabIndex = 0
+    next.focus()
+  }
 
   useGSAP(
     () => {
@@ -138,7 +201,11 @@ export default function Skills() {
           </p>
         </header>
 
-        <ol className="mt-14 border-t border-rule">
+        <p id="skills-related" role="status" className="sr-only">
+          {active && related?.size ? `Related: ${[...related].join(', ')}` : ''}
+        </p>
+
+        <ol className={`mt-14 border-t border-rule${active && related?.size ? ' skills-lit' : ''}`}>
           {DOMAIN_GROUPS.map((group, i) => (
             <li
               key={group.domain}
@@ -195,7 +262,7 @@ export default function Skills() {
 
               <div className="min-w-0">
                 <p className="text-[0.95rem] leading-[1.7] text-ink-muted">
-                  {group.primary.map((s) => s.name).join('  ·  ')}
+                  {renderSkills(group.primary)}
                 </p>
                 {group.rest.length > 0 ? (
                   (() => {
@@ -230,7 +297,7 @@ export default function Skills() {
                         >
                           <div className="overflow-hidden">
                             <p className="mt-3 text-[0.9rem] leading-[1.7] text-ink-faint">
-                              {group.rest.map((s) => s.name).join('  ·  ')}
+                              {renderSkills(group.rest)}
                             </p>
                           </div>
                         </div>

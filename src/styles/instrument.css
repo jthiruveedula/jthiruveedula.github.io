@@ -1,0 +1,32 @@
+/* INSTRUMENT BOOT — cosmetic readout roll + scanline. The real digit is always in the
+   DOM; the roll strip is an aria-hidden overlay that exists only while animating. */
+.dg {
+  position: relative;
+  display: inline-block;
+  clip-path: inset(0);
+}
+.dg.is-rolling .dg__c {
+  visibility: hidden;
+}
+.dg__strip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+/* One-time scanline across the meter strip. */
+.meter {
+  position: relative;
+}
+.meter__scan {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 1px;
+  background: var(--color-accent);
+  opacity: 0;
+  pointer-events: none;
+}
