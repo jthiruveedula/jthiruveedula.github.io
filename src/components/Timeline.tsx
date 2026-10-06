@@ -7,6 +7,7 @@ import { ERA_COLORS, type Era, type Experience } from '@/data/types'
 import { useInView, useReducedMotion } from '@/lib/hooks'
 import { domainSlug, pulseDomainRow, techDomain } from '@/lib/skillMatch'
 import '@/styles/story.css'
+import '@/styles/openers.css'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -217,7 +218,7 @@ export default function Timeline() {
       ref={sectionRef}
       id="ledger"
       aria-labelledby="ledger-heading"
-      className="relative scroll-mt-24 px-[clamp(20px,4vw,64px)] py-[clamp(64px,10vh,120px)]"
+      className="relative scroll-mt-24 px-[clamp(20px,4vw,64px)] opener-quiet"
     >
       {/* GRADE: one lamp per era, only the active era's is lit (opacity). */}
       <div aria-hidden="true" className="ledger-tint">

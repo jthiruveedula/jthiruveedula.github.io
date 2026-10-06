@@ -27,6 +27,16 @@ function AppErrorFallback() {
   )
 }
 
+try {
+  console.info(
+    '%cHello, curious one.%c Press Ctrl/Cmd+K to jump around. Built by hand; the source is public.',
+    'font-weight:600',
+    'font-weight:400',
+  )
+} catch {
+  /* console unavailable */
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary label="app" fallback={<AppErrorFallback />}>

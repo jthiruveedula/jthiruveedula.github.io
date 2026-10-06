@@ -5,7 +5,7 @@ import type { ReactElement, ReactNode } from 'react'
  *
  * Instead of a generic "loading…" pulse, each variant mirrors the final
  * section's layout so the page keeps its structure while chunks stream in.
- * Shimmer bands move across the HUD surfaces to signal activity.
+ * Each placeholder is a hairline row (see .skeleton-shimmer in globals.css).
  */
 
 type SkeletonVariant = 'timeline' | 'skills' | 'projects' | 'metrics' | 'contact'
@@ -14,7 +14,7 @@ function Shimmer({ className }: { className?: string }) {
   return (
     <span
       aria-hidden="true"
-      className={`skeleton-shimmer block rounded ${className ?? ''}`}
+      className={`skeleton-shimmer block ${className ?? ''}`}
     />
   )
 }
@@ -32,7 +32,7 @@ function HeaderBlock() {
 
 function GlassCard({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-xl border border-panel-edge/60 bg-panel/40 p-5 md:p-6 ${className ?? ''}`}>
+    <div className={`border border-rule bg-paper-2 p-5 md:p-6 ${className ?? ''}`}>
       {children}
     </div>
   )
@@ -43,7 +43,7 @@ function TimelineSkeleton() {
     <div className="mx-auto w-full max-w-6xl px-6 py-24 md:py-32">
       <HeaderBlock />
       <div className="relative mt-16 md:mt-20">
-        <div className="pointer-events-none absolute inset-y-0 left-5 w-0.5 -translate-x-1/2 bg-panel-edge/70 md:left-1/2" />
+        <div className="pointer-events-none absolute inset-y-0 left-5 w-0.5 -translate-x-1/2 bg-rule-2 md:left-1/2" />
         <div className="space-y-10 md:space-y-14">
           {[0, 1, 2].map((i) => (
             <div
@@ -52,7 +52,7 @@ function TimelineSkeleton() {
                 i % 2 === 0 ? 'md:mr-auto' : 'md:ml-auto'
               }`}
             >
-              <span className="absolute top-6 left-5 z-10 h-3.5 w-3.5 -translate-x-1/2 rounded-full border-2 border-void bg-panel-edge md:left-1/2" />
+              <span className="absolute top-6 left-5 z-10 h-3.5 w-3.5 -translate-x-1/2 border-2 border-paper bg-rule-2 md:left-1/2" />
               <GlassCard className="space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <Shimmer className="h-5 w-20" />
@@ -78,11 +78,11 @@ function SkillsSkeleton() {
   return (
     <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
       <HeaderBlock />
-      <div className="mt-14 border-t border-panel-edge/60">
+      <div className="mt-14 border-t border-rule">
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="grid gap-x-10 gap-y-3 border-b border-panel-edge/60 py-8 md:grid-cols-[10rem_minmax(0,1fr)] lg:grid-cols-[13rem_minmax(0,1fr)]"
+            className="grid gap-x-10 gap-y-3 border-b border-rule py-8 md:grid-cols-[10rem_minmax(0,1fr)] lg:grid-cols-[13rem_minmax(0,1fr)]"
           >
             <div className="space-y-2">
               <Shimmer className="h-3 w-16" />
@@ -109,14 +109,14 @@ function ProjectsSkeleton() {
         {Array.from({ length: 4 }).map((_, i) => (
           <GlassCard key={i} className="space-y-4">
             <div className="flex items-center justify-between">
-              <Shimmer className="h-5 w-20 rounded-full" />
+              <Shimmer className="h-5 w-20" />
               <Shimmer className="h-4 w-24" />
             </div>
             <Shimmer className="h-7 w-3/4" />
             <Shimmer className="h-4 w-full" />
             <Shimmer className="h-4 w-5/6" />
-            <div className="aspect-[16/10] w-full overflow-hidden rounded-lg border border-panel-edge/40 bg-panel/50">
-              <Shimmer className="h-full w-full rounded-none" />
+            <div className="aspect-[16/10] w-full overflow-hidden border border-rule bg-paper-2">
+              <Shimmer className="h-full w-full" />
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
               <Shimmer className="h-6 w-16" />
@@ -137,8 +137,8 @@ function MetricsSkeleton() {
       <HeaderBlock />
       <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <li key={i} className="rounded-xl border border-panel-edge/60 bg-panel/40 p-5 md:p-6">
-            <Shimmer className="ml-auto h-9 w-9 rounded-full" />
+          <li key={i} className="border border-rule bg-paper-2 p-5 md:p-6">
+            <Shimmer className="ml-auto h-9 w-9" />
             <Shimmer className="mt-3 h-10 w-2/3" />
             <Shimmer className="mt-3 h-3 w-1/2" />
           </li>
@@ -148,7 +148,7 @@ function MetricsSkeleton() {
         <Shimmer className="h-3 w-32" />
         <div className="mt-4 flex flex-wrap gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Shimmer key={i} className="h-7 w-28 rounded-full" />
+            <Shimmer key={i} className="h-7 w-28" />
           ))}
         </div>
       </div>

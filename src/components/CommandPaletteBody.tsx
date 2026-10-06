@@ -18,6 +18,31 @@ interface Command {
   run: () => void
 }
 
+/** Exact-match-only easter eggs: never listed, never fuzzy. Content from portfolio.ts. */
+function useEggs(onClose: () => void): Record<string, Command> {
+  return useMemo(() => {
+    const { profile, certifications } = portfolio
+    const info = (id: string, label: string): Command => ({ id, label, hint: 'Easter egg', run: onClose })
+    const eggs: Record<string, Command> = {
+      whoami: info('egg-whoami', `${profile.name} — ${profile.title}`),
+      'ls certs': info('egg-certs', certifications.join(' · ')),
+    }
+    if (profile.location) eggs.pwd = info('egg-pwd', profile.location.split('·')[0].trim())
+    if (profile.email) {
+      eggs['sudo hire me'] = {
+        id: 'egg-hire',
+        label: 'Permission granted. Opening a drafted email…',
+        hint: 'Easter egg',
+        run: () => {
+          window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent('Hello from your portfolio')}`
+          onClose()
+        },
+      }
+    }
+    return eggs
+  }, [onClose])
+}
+
 function useCommands(goTo: (id: string) => void, onClose: () => void): Command[] {
   return useMemo(() => {
     const { profile, featuredProjects } = portfolio
@@ -109,11 +134,14 @@ export default function CommandPaletteBody({
 
   const commands = useCommands(goTo, onClose)
 
+  const eggs = useEggs(onClose)
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return commands
+    if (Object.prototype.hasOwnProperty.call(eggs, q)) return [eggs[q]]
     return commands.filter((c) => `${c.label} ${c.hint} ${c.keywords ?? ''}`.toLowerCase().includes(q))
-  }, [commands, query])
+  }, [commands, eggs, query])
 
   useEffect(() => {
     setActiveIndex(0)

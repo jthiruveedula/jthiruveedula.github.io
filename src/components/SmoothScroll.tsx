@@ -6,6 +6,9 @@ import { useReducedMotion } from '@/lib/hooks'
 
 gsap.registerPlugin(ScrollTrigger)
 
+/** Sticky-header clearance for every programmatic jump (anchors, palette, deep links). */
+export const HEADER_OFFSET = 72
+
 const LenisContext = createContext<Lenis | null>(null)
 
 export function useLenis(): Lenis | null {
@@ -66,7 +69,7 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     const hash = window.location.hash
     const raf = requestAnimationFrame(() => {
       if (hash && document.querySelector(hash)) {
-        instance.scrollTo(hash, { immediate: true, offset: -72 })
+        instance.scrollTo(hash, { immediate: true, offset: -HEADER_OFFSET })
       }
       ScrollTrigger.refresh()
     })
@@ -80,7 +83,7 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
       const id = target.getAttribute('href')
       if (!id || id === '#') return
       e.preventDefault()
-      instance.scrollTo(id, { offset: -72 })
+      instance.scrollTo(id, { offset: -HEADER_OFFSET })
       // Lenis intercepts the click, so native fragment navigation — the browser
       // moving focus to the target — never fires. Without this, a keyboard
       // visitor's tab order snaps back to the top of the page after every jump.

@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { COMMAND_PALETTE_STATE, OPEN_COMMAND_PALETTE } from '@/components/Rail'
-import { useLenis } from '@/components/SmoothScroll'
+import { HEADER_OFFSET, useLenis } from '@/components/SmoothScroll'
 import { useReducedMotion } from '@/lib/hooks'
 
 const CommandPaletteBody = lazy(() => import('@/components/CommandPaletteBody'))
@@ -70,7 +70,12 @@ export default function CommandPalette() {
             attempt(framesLeft - 1)
             return
           }
-          if (lenis) {
+          if (target?.classList.contains('project-card')) {
+            // Case studies deep-link: set the hash and let Projects open the
+            // panel and scroll (one owner for the layout-shifting jump).
+            history.replaceState(null, '', `#${id}`)
+            window.dispatchEvent(new HashChangeEvent('hashchange'))
+          } else if (lenis) {
             // A target that just mounted (the poll above exists for exactly this)
             // can still leave Lenis's cached content height stale for one more
             // frame while a sibling lazy section is still expanding the page
@@ -79,7 +84,7 @@ export default function CommandPalette() {
             // that is actually on screen right now, not whatever it was when
             // Lenis last measured.
             lenis.resize()
-            lenis.scrollTo(`#${id}`, { offset: -72 })
+            lenis.scrollTo(`#${id}`, { offset: -HEADER_OFFSET })
           } else {
             target?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
           }

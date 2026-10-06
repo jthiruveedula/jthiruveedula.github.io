@@ -1,4 +1,5 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import '@/styles/contact2.css'
 import { enterJourney, useMagnetic } from '@/components/JourneyPortal'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -26,6 +27,63 @@ const LABEL_CLASS = 'stat__label'
 // Word-split for the headline's staggered entrance (rendered as .contact-word spans
 // below) — keep the apostrophe as a real U+2019 char since it's no longer emitted as a
 // JSX &rsquo; entity.
+// Owner-editable prefill. Plain, claim-free opener.
+const MAIL_SUBJECT = 'Hello from your portfolio'
+const MAIL_BODY = 'Hi Jagadeesh,\n\nI came across your portfolio and wanted to reach out about '
+const mailtoHref = (email: string) =>
+  `mailto:${email}?subject=${encodeURIComponent(MAIL_SUBJECT)}&body=${encodeURIComponent(MAIL_BODY)}`
+
+/** Time only, in Dallas–Fort Worth. Empty until mounted so server/first paint match. */
+function useDfwTime(): string {
+  const [t, setT] = useState('')
+  useEffect(() => {
+    const fmt = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Chicago',
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZoneName: 'short',
+    })
+    const tick = () => setT(fmt.format(new Date()))
+    tick()
+    const id = window.setInterval(tick, 15000)
+    return () => window.clearInterval(id)
+  }, [])
+  return t
+}
+
+function EmailLine({ email }: { email: string }) {
+  const [msg, setMsg] = useState('')
+  const timer = useRef<number | undefined>(undefined)
+  const time = useDfwTime()
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(email)
+      setMsg('Email address copied.')
+    } catch {
+      setMsg('Could not copy — select the address instead.')
+    }
+    window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(() => setMsg(''), 3000)
+  }
+  return (
+    <div className="contact-mail">
+      <a href={mailtoHref(email)} className="contact-mail__link">
+        {email}
+      </a>
+      <div className="contact-mail__row">
+        <button type="button" onClick={copy} className="chip contact-mail__copy">
+          Copy email
+        </button>
+        <span className="contact-mail__status" role="status" aria-live="polite">
+          {msg}
+        </span>
+        {time && <span className="contact-mail__time">DFW local time · {time}</span>}
+      </div>
+    </div>
+  )
+}
+
 const HEADLINE_WORDS = ['Let’s', 'build', 'the', 'next', 'one.']
 
 /** "DFW (Dallas Fort Worth), TX · Open to relocation · 50% travel" → the city line and
@@ -95,12 +153,14 @@ export default function Contact() {
           </div>
           {profile.email && (
             <span ref={ctaRef} className="inline-flex shrink-0">
-              <a href={`mailto:${profile.email}`} className="contact-cta chip chip--primary">
+              <a href={mailtoHref(profile.email)} className="contact-cta chip chip--primary">
                 Start with your hardest data problem
               </a>
             </span>
           )}
         </div>
+
+        {profile.email && <EmailLine email={profile.email} />}
 
         {profile.availability && !isPlaceholder(profile.availability) && (
           <p className="contact-availability mt-4 max-w-[62ch] font-mono text-xs tracking-[0.1em] uppercase text-ink-faint">

@@ -8,6 +8,7 @@ import { useInView, useReducedMotion } from '@/lib/hooks'
 import { revealFrom } from '@/lib/motion'
 import { domainSlug } from '@/lib/skillMatch'
 import '@/styles/story.css'
+import '@/styles/openers.css'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -182,7 +183,7 @@ export default function Skills() {
       ref={sectionRef}
       id="skills"
       aria-labelledby="skills-heading"
-      className="relative scroll-mt-24 px-[clamp(20px,4vw,64px)] py-[clamp(64px,10vh,120px)]"
+      className="relative scroll-mt-24 px-[clamp(20px,4vw,64px)] py-[clamp(64px,10vh,120px)] opener-seam"
     >
       <div className="mx-auto max-w-[1320px]">
         <header className="max-w-[46ch]">

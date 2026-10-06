@@ -152,7 +152,19 @@
   --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
+/* One token for the top bar's height: 44px links + 0.6rem padding twice + 1px rule.
+   Zero where the rail is a side strip. */
+:root {
+  --rail-bar-h: 0px;
+}
+@media (max-width: 1023px) {
+  :root {
+    --rail-bar-h: calc(44px + 1.2rem + 1px);
+  }
+}
+
 html {
+  scroll-padding-top: var(--rail-bar-h);
   scroll-behavior: smooth;
   scrollbar-color: oklch(30% 0.012 265) oklch(15% 0.014 265);
   background: oklch(15% 0.014 265);
@@ -315,16 +327,24 @@ h2 .proper,
    silently stop working the moment a card had been revealed. `translate`
    composes with `transform` and the reveal never writes it. Still a
    compositor-only property, so the transform-and-opacity rule holds. */
-.lit-card:hover,
 .lit-card:focus-within {
-  translate: 0 -4px;
   border-color: var(--color-rule-2);
   background:
     radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 215 / 0.11) 0%, transparent 62%),
     var(--color-paper-2);
 }
-.lit-card:active {
-  translate: 0 -1px;
+/* Lift is hover-only: on touch, :hover sticks after a tap and the card stays raised. */
+@media (hover: hover) and (pointer: fine) {
+  .lit-card:hover {
+    translate: 0 -4px;
+    border-color: var(--color-rule-2);
+    background:
+      radial-gradient(120% 90% at 12% 0%, oklch(76% 0.17 215 / 0.11) 0%, transparent 62%),
+      var(--color-paper-2);
+  }
+  .lit-card:active {
+    translate: 0 -1px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .lit-card:hover,
@@ -460,10 +480,15 @@ h2 .proper,
     width 0.22s var(--ease-soft),
     background 0.22s var(--ease-soft);
 }
-.rail__link:hover,
 .rail__link:focus-visible {
   color: var(--color-ink);
   text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .rail__link:hover {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
 }
 .rail__link[aria-current='true'] {
   color: var(--color-accent);
@@ -499,6 +524,11 @@ h2 .proper,
     gap: 0.15rem;
     overflow-x: auto;
     scrollbar-width: none;
+    /* Edge fade: cue that the list scrolls. Inline padding equals the fade width
+       so the resting first/last links sit fully clear of it. */
+    padding-inline: 0.75rem;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 0.75rem, #000 calc(100% - 0.75rem), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 0.75rem, #000 calc(100% - 0.75rem), transparent);
   }
   .rail__link {
     writing-mode: horizontal-tb;
@@ -507,9 +537,10 @@ h2 .proper,
     align-content: center;
     /* Tightened so as many destinations as possible fit a 390px bar before the
        list has to scroll at all. */
-    padding: 0.5rem 0.45rem;
-    font-size: 9px;
-    letter-spacing: 0.11em;
+    padding: 0.5rem 0.7rem;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
   }
   .rail__list {
     /* `safe` is the whole fix. Seven destinations no longer fit a 390px bar, and
@@ -586,11 +617,17 @@ h2 .proper,
     color 0.2s var(--ease-soft),
     background 0.2s var(--ease-soft);
 }
-.chip:hover,
 .chip:focus-visible {
   border-color: var(--color-accent);
   color: var(--color-accent);
   text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .chip:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    text-decoration: none;
+  }
 }
 .chip:active {
   transform: translateY(1px);
@@ -600,9 +637,13 @@ h2 .proper,
   color: var(--color-accent);
   background: oklch(76% 0.17 215 / 0.07);
 }
-.chip--primary:hover,
 .chip--primary:focus-visible {
   background: oklch(76% 0.17 215 / 0.14);
+}
+@media (hover: hover) and (pointer: fine) {
+  .chip--primary:hover {
+    background: oklch(76% 0.17 215 / 0.14);
+  }
 }
 .chip[aria-disabled='true'] {
   opacity: 0.45;
@@ -722,11 +763,17 @@ h2 .proper,
     color 0.2s var(--ease-soft),
     text-decoration-color 0.2s var(--ease-soft);
 }
-.tech-link:hover,
 .tech-link:focus-visible {
   color: var(--color-accent);
   text-decoration-style: solid;
   text-decoration-color: var(--color-accent);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tech-link:hover {
+    color: var(--color-accent);
+    text-decoration-style: solid;
+    text-decoration-color: var(--color-accent);
+  }
 }
 
 /* The addressed domain row in Skills — plain `:target`, so the highlight follows
@@ -816,29 +863,32 @@ h2 .proper,
   translate: none;
 }
 
-/* Skeleton shimmer — neutral, no accent streak. */
+/* Skeleton — Lumen hairline rows: a 1px rule-coloured bar, no fill, no shimmer
+   band. Boxes keep their height utilities (min-heights hold, no CLS); the bar is
+   a centred hairline plus a faint opacity breath. */
 .skeleton-shimmer {
-  background: linear-gradient(
-    90deg,
-    oklch(30% 0.012 265 / 0.5) 0%,
-    oklch(38% 0.013 265 / 0.75) 45%,
-    oklch(30% 0.012 265 / 0.5) 100%
-  );
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  position: relative;
+  background: none;
 }
-@keyframes skeleton-shimmer {
-  0% {
-    background-position: 200% 0;
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 50% 0 auto 0;
+  height: 1px;
+  background: var(--color-rule-2);
+  animation: skeleton-breath 1.8s var(--ease-soft) infinite alternate;
+}
+@keyframes skeleton-breath {
+  from {
+    opacity: 0.35;
   }
-  100% {
-    background-position: -200% 0;
+  to {
+    opacity: 1;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .skeleton-shimmer {
+  .skeleton-shimmer::after {
     animation: none;
-    background: oklch(30% 0.012 265 / 0.6);
   }
 }
 
@@ -1191,9 +1241,13 @@ h2 .proper,
   min-height: 0;
   color: var(--color-ink-faint);
 }
-.flight__skip:hover,
 .flight__skip:focus-visible {
   color: var(--color-accent);
+}
+@media (hover: hover) and (pointer: fine) {
+  .flight__skip:hover {
+    color: var(--color-accent);
+  }
 }
 
 @media (max-width: 899px) {
@@ -1265,9 +1319,13 @@ h2 .proper,
   opacity: 0.55;
   transition: opacity 0.3s var(--ease-soft);
 }
-[data-station]:hover .arc-plate img,
 [data-station]:focus-within .arc-plate img {
   opacity: 0.92;
+}
+@media (hover: hover) and (pointer: fine) {
+  [data-station]:hover .arc-plate img {
+    opacity: 0.92;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .arc-plate img {
