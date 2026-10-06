@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -6,6 +6,7 @@ import { portfolio } from '@/data/portfolio'
 import { useReducedMotion } from '@/lib/hooks'
 import { revealFrom } from '@/lib/motion'
 import ProjectCard from '@/components/ProjectCard'
+import { HEADER_OFFSET, useLenis } from '@/components/SmoothScroll'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -25,9 +26,71 @@ export default function Projects() {
   )
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
-  const toggle = useCallback((index: number) => {
-    setOpenIndex((current) => (current === index ? null : index))
-  }, [])
+  const lenis = useLenis()
+  const lenisRef = useRef(lenis)
+  lenisRef.current = lenis
+
+  // Open state mirrors into the hash with replaceState (no history entries, no
+  // hashchange). Closing clears it only if it still names this card.
+  const toggle = useCallback(
+    (index: number) => {
+      const id = projects[index].id
+      const opening = openIndex !== index
+      setOpenIndex(opening ? index : null)
+      if (opening) history.replaceState(null, '', `#${id}`)
+      else if (window.location.hash === `#${id}`)
+        history.replaceState(null, '', window.location.pathname + window.location.search)
+    },
+    [openIndex],
+  )
+
+  // Deep link: a hash naming a case study opens it and scrolls to it, on load and
+  // on hashchange. Scroll waits two frames — opening spans the card across the
+  // grid, so its position is only final after that reflow.
+  useEffect(() => {
+    let r1 = 0
+    let r2 = 0
+    const open = (immediate: boolean) => {
+      let id: string
+      try {
+        id = decodeURIComponent(window.location.hash.slice(1))
+      } catch {
+        return // malformed hash (e.g. #100%)
+      }
+      const index = projects.findIndex((p) => p.id === id)
+      if (index < 0) return
+      setOpenIndex(index)
+      cancelAnimationFrame(r1)
+      cancelAnimationFrame(r2)
+      r1 = requestAnimationFrame(() => {
+        r2 = requestAnimationFrame(() => {
+          const el = document.getElementById(id)
+          if (!el) return
+          if (!immediate) {
+            // Move focus to the opened card (not on load, so it never steals focus).
+            if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1')
+            el.focus({ preventScroll: true })
+          }
+          const l = lenisRef.current
+          if (l) {
+            l.resize()
+            l.scrollTo(el, { offset: -HEADER_OFFSET, immediate })
+          } else {
+            const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET
+            window.scrollTo({ top, behavior: immediate || reduced ? 'auto' : 'smooth' })
+          }
+        })
+      })
+    }
+    open(true)
+    const onHash = () => open(false)
+    window.addEventListener('hashchange', onHash)
+    return () => {
+      cancelAnimationFrame(r1)
+      cancelAnimationFrame(r2)
+      window.removeEventListener('hashchange', onHash)
+    }
+  }, [reduced])
 
   useGSAP(
     () => {

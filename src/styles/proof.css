@@ -1,0 +1,38 @@
+/* PROOF strip under the hero CTA. SETTLE reveal: opacity + translateY only, via a
+   CSS animation that ends on the authored state — no JS, and a dead animation
+   still shows the finished strip. Delayed so it never races the first headline cut. */
+.proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+  animation: proof-settle 600ms var(--ease-out) 900ms both;
+}
+.proof__chip {
+  white-space: nowrap;
+  gap: 0.7rem;
+  max-width: 100%;
+}
+.proof__figure {
+  font-size: 1.1rem;
+  color: var(--color-ink);
+}
+.proof__source {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-ink-faint);
+}
+.proof__chip:hover .proof__source,
+.proof__chip:focus-visible .proof__source {
+  color: var(--color-accent);
+}
+
+@keyframes proof-settle {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .proof { animation: none; }
+}

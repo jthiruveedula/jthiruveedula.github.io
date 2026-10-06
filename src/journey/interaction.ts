@@ -6,6 +6,10 @@ export interface HoverEvent {
   y: number
 }
 export interface Interaction {
+  /** Light the tower for a landmark id (keyboard focus on its link); null clears. */
+  highlight(id: string | null): void
+  /** Drop the current hover (sheet dismissed) so the next tap re-selects instead of opening. */
+  clearHover(): void
   dispose(): void
 }
 
@@ -59,6 +63,7 @@ export function createInteraction(o: {
 
   let hoverId: string | null = null
   let hoverIdx = -1
+  let focusIdx = -1
   let lastX = 0
   let lastY = 0
   let px = 0
@@ -98,7 +103,7 @@ export function createInteraction(o: {
     const id = hit ? hit.id : null
     const moved = Math.abs(x - lastX) > MOVE_EPS_PX || Math.abs(y - lastY) > MOVE_EPS_PX
     if (id === hoverId && !(id && moved)) return
-    if (hoverIdx >= 0 && id !== hoverId) paint(hoverIdx, false)
+    if (hoverIdx >= 0 && id !== hoverId) paint(hoverIdx, hoverIdx === focusIdx)
     if (hit && hit.idx >= 0 && id !== hoverId) paint(hit.idx, true)
     hoverId = id
     hoverIdx = hit ? hit.idx : -1
@@ -175,6 +180,17 @@ export function createInteraction(o: {
   window.addEventListener('scroll', onScroll, { passive: true })
 
   return {
+    highlight(id) {
+      let idx = -1
+      if (id) instanceIds.forEach((v, k) => v === id && (idx = k))
+      if (focusIdx >= 0 && focusIdx !== hoverIdx) paint(focusIdx, false)
+      focusIdx = idx
+      if (idx >= 0) paint(idx, true)
+    },
+    clearHover() {
+      lastX = lastY = -1e4
+      setHover(null, 0, 0)
+    },
     dispose() {
       canvas.removeEventListener('pointermove', onMove)
       canvas.removeEventListener('pointerleave', onLeave)

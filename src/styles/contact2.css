@@ -1,0 +1,50 @@
+/* Contact: big email line, copy control, DFW clock. Tokens only; transform/opacity motion. */
+.contact-mail { margin-top: 2rem; }
+.contact-mail__link {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  font-family: var(--font-display, inherit);
+  font-size: clamp(0.95rem, 4.4vw, 2.25rem);
+  line-height: 1.2;
+  color: var(--color-ink);
+  padding-block: 0.25rem;
+}
+.contact-mail__link::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 320ms var(--ease-soft);
+}
+.contact-mail__link:hover::after,
+.contact-mail__link:focus-visible::after { transform: scaleX(1); }
+.contact-mail__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-top: 0.75rem;
+}
+.contact-mail__copy { white-space: nowrap; cursor: pointer; }
+.contact-mail__status,
+.contact-mail__time {
+  font-family: var(--font-mono, inherit);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+.contact-mail__status { color: var(--color-ink-muted); animation: contact-mail-in 200ms var(--ease-out) both; }
+@keyframes contact-mail-in { from { opacity: 0; } to { opacity: 1; } }
+@media (pointer: coarse) {
+  .contact-mail__link, .contact-mail__copy { min-height: 44px; display: inline-flex; align-items: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-mail__link::after { transition: none; }
+  .contact-mail__status { animation: none; }
+}

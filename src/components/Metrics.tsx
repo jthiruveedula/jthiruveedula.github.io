@@ -7,6 +7,7 @@ import type { Metric } from '@/data/types'
 import { useReducedMotion } from '@/lib/hooks'
 import { revealFrom } from '@/lib/motion'
 import '@/styles/instrument.css'
+import '@/styles/openers.css'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -429,18 +430,18 @@ export default function Metrics() {
       ref={sectionRef}
       id="index"
       aria-labelledby="index-heading"
-      className="relative isolate scroll-mt-24 px-[clamp(20px,4vw,64px)] py-[clamp(64px,10vh,120px)]"
+      className="relative isolate scroll-mt-24 px-[clamp(20px,4vw,64px)] opener-loud"
     >
 
       <div className="mx-auto max-w-[1320px]">
-        <header className="max-w-[46ch]">
+        <header className="opener-loud__head">
           <p className="index-head eyebrow">
             <b>05</b> · The index
           </p>
-          <h2 id="index-heading" className="index-head text-[clamp(1.7rem,3.6vw,2.8rem)]">
+          <h2 id="index-heading" className="index-head opener-loud__title">
             Measured, not claimed.
           </h2>
-          <p className="index-head mt-5 text-[clamp(0.95rem,1.1vw,1.05rem)] leading-[1.62] text-ink-muted">
+          <p className="index-head opener-loud__lede text-[clamp(0.95rem,1.1vw,1.05rem)] leading-[1.62] text-ink-muted">
             Thirteen figures, each one carrying the system it came from. Cut the list down
             to the ones you care about.
           </p>

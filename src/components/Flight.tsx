@@ -7,10 +7,21 @@ import { portfolio } from '@/data/portfolio'
 import { isPlaceholder } from '@/lib/content'
 import { getPointer, subscribePointer } from '@/lib/pointer'
 import { splitWordsWithAccent, renderSplitWords } from '@/lib/splitText'
+import '@/styles/proof.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 const { profile } = portfolio
+
+/** First three headline figures that trace to a featured project (same value in its
+ *  own metrics) — derived from data, so a chip can never link to a card that doesn't
+ *  carry the number. Aggregates with no single source project (e.g. "$2M+") drop out. */
+const proofChips = portfolio.headlineMetrics
+  .flatMap((m) => {
+    const project = portfolio.featuredProjects.find((p) => p.metrics.some((x) => x.value === m.value))
+    return project ? [{ ...m, projectId: project.id }] : []
+  })
+  .slice(0, 3)
 
 /**
  * The flight — seven rooms passing one lens.
@@ -379,6 +390,31 @@ export default function Flight() {
                 The journey, in 3D
               </a>
             </div>
+
+            {/* Proof-first strip: the figures, each linking to the card that earned it.
+                Static markup; proof.css settles it in after the hero is read. */}
+            {proofChips.length > 0 && (
+              <ul className="proof" aria-label="Headline figures, linked to their projects">
+                {proofChips.map((m) => (
+                  <li key={m.label}>
+                    <a
+                      href={`#${m.projectId}`}
+                      onClick={() => {
+                        // Lenis preventDefaults anchor clicks, so no native hashchange; Projects
+                        // listens for it (and reads the hash on mount if still lazy-loading).
+                        history.replaceState(null, '', `#${m.projectId}`)
+                        window.dispatchEvent(new HashChangeEvent('hashchange'))
+                      }}
+                      className="chip proof__chip"
+                      aria-label={`${m.label}: ${m.value}, ${m.source}`}
+                    >
+                      <span className="stat__figure proof__figure">{m.value}</span>
+                      <span className="proof__source">{m.source}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
 
@@ -390,7 +426,7 @@ export default function Flight() {
           <span className="flight__counter-year">{scene.year}</span>
         </p>
 
-        <a href="#arc" className="flight__skip chip">
+        <a href="#systems" className="flight__skip chip">
           Skip the film
         </a>
       </div>

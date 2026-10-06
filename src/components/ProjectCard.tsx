@@ -5,6 +5,7 @@ import { isPlaceholder } from '@/lib/content'
 import { domainSlug, pulseDomainRow, techDomain } from '@/lib/skillMatch'
 import gsap from 'gsap'
 import '@/styles/pipeline.css'
+import '@/styles/cards2.css'
 
 /** Only these stage kinds get the cyan accent tint — everything else (including the
  *  named Source/Corpus group) reads as neutral. See the Systems section spec: "gray
@@ -277,6 +278,22 @@ export default function ProjectCard({
     if (!isOpen) setActiveStage(null)
   }, [isOpen])
 
+  // Copy-link chip: the live region is always mounted so the announcement fires.
+  const [copied, setCopied] = useState(false)
+  const copyTimer = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(copyTimer.current), [])
+  const copyLink = async () => {
+    const url = `${window.location.origin}${window.location.pathname}${window.location.search}#${project.id}`
+    try {
+      await navigator.clipboard.writeText(url)
+    } catch {
+      return // clipboard blocked: stay silent rather than claim a copy
+    }
+    setCopied(true)
+    window.clearTimeout(copyTimer.current)
+    copyTimer.current = window.setTimeout(() => setCopied(false), 2000)
+  }
+
   const selectStage = (stageIndex: number) => {
     if (!isOpen) onToggle()
     setActiveStage(stageIndex)
@@ -332,15 +349,25 @@ export default function ProjectCard({
         panelId={panelId}
       />
 
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-controls={panelId}
-        className="chip mt-6 w-fit"
-      >
-        {isOpen ? '− Hide the build' : '+ Open the wiring'}
-      </button>
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={isOpen}
+          aria-controls={panelId}
+          className="chip w-fit"
+        >
+          {isOpen ? '− Hide the build' : '+ Open the wiring'}
+        </button>
+        {isOpen && (
+          <button type="button" onClick={copyLink} className="chip w-fit">
+            {copied ? 'Link copied' : 'Copy link'}
+          </button>
+        )}
+        <span role="status" aria-live="polite" className="sr-only">
+          {copied ? 'Link copied' : ''}
+        </span>
+      </div>
 
       {/* Always mounted so aria-controls resolves to a real node and the reveal can
           animate — grid-template-rows 0fr→1fr collapses/expands the row, the inner

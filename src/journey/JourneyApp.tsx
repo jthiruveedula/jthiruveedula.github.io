@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import SmoothScroll from '@/components/SmoothScroll'
@@ -27,7 +27,7 @@ function ChapterMetrics({ chapter }: { chapter: Chapter }) {
   )
 }
 
-function BuiltHere({ chapterId }: { chapterId: string }) {
+function BuiltHere({ chapterId, onHighlight }: { chapterId: string; onHighlight?: (id: string | null) => void }) {
   const items = journeyProjects.filter((p) => p.chapterId === chapterId)
   if (!items.length) return null
   return (
@@ -38,7 +38,12 @@ function BuiltHere({ chapterId }: { chapterId: string }) {
       <ul aria-labelledby={`${chapterId}-built`} className="journey-built__list">
         {items.map((p) => (
           <li key={p.id}>
-            <a href={p.href} className="journey-built__link">
+            <a
+              href={p.href}
+              className="journey-built__link"
+              onFocus={() => onHighlight?.(p.id)}
+              onBlur={() => onHighlight?.(null)}
+            >
               <span className="journey-built__name">{p.name}</span>
               <span className="journey-built__sub">
                 {p.client ? `${p.client} · ` : ''}
@@ -62,10 +67,12 @@ function ChapterSection({
   chapter,
   index,
   static: isStatic = false,
+  onHighlight,
 }: {
   chapter: Chapter
   index: number
   static?: boolean
+  onHighlight?: (id: string | null) => void
 }) {
   const [ref, inView] = useInView<HTMLElement>('-30% 0px -30% 0px')
   const active = isStatic || inView
@@ -86,7 +93,7 @@ function ChapterSection({
         <p className="journey-chapter__roles">{chapter.roles}</p>
         <p className="journey-chapter__body">{chapter.body}</p>
         <ChapterMetrics chapter={chapter} />
-        <BuiltHere chapterId={chapter.id} />
+        <BuiltHere chapterId={chapter.id} onHighlight={onHighlight} />
         {index === chapters.length - 1 && (
           <div className="journey-cta">
             <a href="mailto:jagadeeshthiruveedula77@gmail.com" className="chip chip--primary">
@@ -105,12 +112,10 @@ function ChapterSection({
   )
 }
 
-/** Static, non-scrubbed skyline — used for prefers-reduced-motion and for
- *  browsers/contexts with no WebGL. Same chapters, same text, no canvas, no
- *  ScrollTrigger: the city is drawn once as a resting CSS silhouette. */
-function JourneyStatic() {
+/** Resting CSS silhouette of the city. Static fallback shows it permanently; the
+ *  3D scene shows it as the loading placeholder and fades it on the first frame. */
+function Skyline() {
   return (
-    <div className="journey journey--static">
       <div className="journey-skyline" aria-hidden="true">
         {chapters.map((chapter, i) => (
           <div
@@ -128,6 +133,16 @@ function JourneyStatic() {
           </div>
         ))}
       </div>
+  )
+}
+
+/** Static, non-scrubbed skyline — used for prefers-reduced-motion and for
+ *  browsers/contexts with no WebGL. Same chapters, same text, no canvas, no
+ *  ScrollTrigger: the city is drawn once as a resting CSS silhouette. */
+function JourneyStatic() {
+  return (
+    <div className="journey journey--static">
+      <Skyline />
       <div className="journey-static__chapters">
         {chapters.map((chapter, i) => (
           <ChapterSection key={chapter.id} chapter={chapter} index={i} static />
@@ -141,23 +156,33 @@ function JourneyStatic() {
  *  is available. Owns the ScrollTrigger that drives the camera and the
  *  IntersectionObserver-driven pause when the canvas leaves the viewport or
  *  the tab is hidden. */
-function JourneyScene() {
+function JourneyScene({ onFail }: { onFail: () => void }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const cityRef = useRef<CityInstance | null>(null)
   const [hover, setHover] = useState<LandmarkHover>({ id: null, x: 0, y: 0 })
   const [touch, setTouch] = useState(false)
+  const [ready, setReady] = useState(false)
+  const [chapterIdx, setChapterIdx] = useState(0)
 
   useEffect(() => {
     let cancelled = false
     let trigger: ScrollTrigger | undefined
     let cleanupVisibility: (() => void) | undefined
+    const canvas = canvasRef.current
+    const onLost = (e: Event) => {
+      e.preventDefault()
+      onFail()
+    }
+    canvas?.addEventListener('webglcontextlost', onLost)
 
     import('./City').then(({ City }) => {
       if (cancelled || !canvasRef.current || !containerRef.current) return
       const city = new City(canvasRef.current)
       cityRef.current = city
       city.start()
+      // Two frames: the first paints the city, the second is safe to cross-fade onto.
+      requestAnimationFrame(() => requestAnimationFrame(() => !cancelled && setReady(true)))
       city.setLandmarks(journeyProjects.map(({ id, district }) => ({ id, district })))
       city.setLandmarkHandlers({
         onHover: setHover,
@@ -172,7 +197,10 @@ function JourneyScene() {
         start: 'top top',
         end: 'bottom bottom',
         scrub: 0.4,
-        onUpdate: (self) => city.setProgress(self.progress),
+        onUpdate: (self) => {
+          city.setProgress(self.progress)
+          setChapterIdx(Math.round(self.progress * (chapters.length - 1)))
+        },
       })
 
       const onVisibility = () => (document.hidden ? city.pause() : city.start())
@@ -186,20 +214,21 @@ function JourneyScene() {
         document.removeEventListener('visibilitychange', onVisibility)
         io.disconnect()
       }
-    })
+    }).catch(() => !cancelled && onFail()) // chunk 404 / offline / WebGL init throw -> static page
 
     return () => {
       cancelled = true
+      canvas?.removeEventListener('webglcontextlost', onLost)
       cleanupVisibility?.()
       trigger?.kill()
       cityRef.current?.dispose()
       cityRef.current = null
       setHover({ id: null, x: 0, y: 0 })
     }
-  }, [])
+  }, [onFail])
 
   return (
-    <div className="journey journey--scene">
+    <div className={`journey journey--scene${ready ? ' is-ready' : ''}`}>
       <div ref={containerRef} className="journey-scroller" style={{ height: `${chapters.length * 100}vh` }}>
         <canvas
           ref={canvasRef}
@@ -207,15 +236,25 @@ function JourneyScene() {
           aria-hidden="true"
           onPointerDown={(e) => setTouch(e.pointerType === 'touch')}
         />
+        <Skyline />
         {chapters.map((chapter, i) => (
-          <ChapterSection key={chapter.id} chapter={chapter} index={i} />
+          <ChapterSection
+            key={chapter.id}
+            chapter={chapter}
+            index={i}
+            onHighlight={(id) => cityRef.current?.highlight(id)}
+          />
         ))}
       </div>
+      <p className="journey-sr" role="status" aria-live="polite">
+        Chapter {chapterIdx + 1} of {chapters.length}: {chapters[chapterIdx].title}
+      </p>
       <LandmarkCard
         project={journeyProjects.find((p) => p.id === hover.id) ?? null}
         x={hover.x}
         y={hover.y}
         hint={touch ? 'Tap again to open' : 'Click to open case study'}
+        onDismiss={() => cityRef.current?.clearHover()}
       />
     </div>
   )
@@ -224,6 +263,8 @@ function JourneyScene() {
 export default function JourneyApp() {
   const reduced = useReducedMotion()
   const [webgl, setWebgl] = useState<boolean | null>(null)
+  const [failed, setFailed] = useState(false)
+  const onFail = useCallback(() => setFailed(true), [])
 
   useEffect(() => {
     setWebgl(hasWebGL())
@@ -231,7 +272,7 @@ export default function JourneyApp() {
 
   // webgl === null is the one-tick SSR-safe "not yet checked" state — render
   // the static path until the check resolves so there is never a blank frame.
-  const useScene = !reduced && webgl === true
+  const useScene = !reduced && webgl === true && !failed
 
   return (
     <SmoothScroll>
@@ -242,9 +283,9 @@ export default function JourneyApp() {
         <a href="/" className="journey-header__mark">
           JT
         </a>
-        <p className="journey-header__title">Career journey — a skyline built from eleven years of work</p>
+        <h1 className="journey-header__title">Career journey — a skyline built from eleven years of work</h1>
       </header>
-      <main id="main">{useScene ? <JourneyScene /> : <JourneyStatic />}</main>
+      <main id="main">{useScene ? <JourneyScene onFail={onFail} /> : <JourneyStatic />}</main>
     </SmoothScroll>
   )
 }

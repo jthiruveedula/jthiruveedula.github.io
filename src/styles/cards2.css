@@ -1,0 +1,8 @@
+/* Case-study cards, wave 2: 44px stage-node hit areas on coarse pointers.
+   Padding grows, margin offsets it, so the dot stays where it was drawn. */
+@media (pointer: coarse) {
+  .project-card [data-stage-node] {
+    padding: 18px;
+    margin: -18px;
+  }
+}

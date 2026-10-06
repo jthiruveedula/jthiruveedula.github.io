@@ -341,6 +341,14 @@ export class City implements LandmarkApi {
     })
   }
 
+  highlight(id: string | null) {
+    this.interaction?.highlight(id)
+  }
+
+  clearHover() {
+    this.interaction?.clearHover()
+  }
+
   private arcCurve(a: THREE.Vector3, b: THREE.Vector3, lift: number) {
     const mid = a.clone().add(b).multiplyScalar(0.5)
     mid.y = Math.max(a.y, b.y) + lift

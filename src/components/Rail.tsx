@@ -45,6 +45,20 @@ function RailItem({ href, label, current }: { href: string; label: string; curre
 export default function Rail() {
   const [active, setActive] = useState<string>('top')
   const [paletteOpen, setPaletteOpen] = useState(false)
+  const listRef = useRef<HTMLUListElement>(null)
+
+  // Top-bar layout only: keep the active link inside the scrolling list. Scrolls
+  // the list itself (never the page), and only when the list overflows sideways.
+  useEffect(() => {
+    const list = listRef.current
+    const link = list?.querySelector<HTMLElement>('[aria-current="true"]')
+    if (!list || !link || list.scrollWidth <= list.clientWidth) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    list.scrollTo({
+      left: link.offsetLeft - (list.clientWidth - link.offsetWidth) / 2,
+      behavior: reduce ? 'auto' : 'smooth',
+    })
+  }, [active])
 
   useEffect(() => {
     // Deliberately not an IntersectionObserver: four of the six sections are
@@ -89,7 +103,7 @@ export default function Rail() {
       <a href="#top" className="rail__mark proper" aria-label="Jagadeesh Thiruveedula — top of page">
         JT
       </a>
-      <ul className="rail__list">
+      <ul ref={listRef} className="rail__list">
         {SECTIONS.map((section) => (
           <li key={section.id}>
             <RailItem href={`#${section.id}`} label={section.label} current={active === section.id} />
@@ -104,6 +118,7 @@ export default function Rail() {
             className="rail__link"
             aria-haspopup="dialog"
             aria-expanded={paletteOpen}
+            aria-keyshortcuts="Meta+K Control+K"
             onClick={() => window.dispatchEvent(new Event(OPEN_COMMAND_PALETTE))}
           >
             Search
