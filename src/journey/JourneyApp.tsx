@@ -27,7 +27,7 @@ function ChapterMetrics({ chapter }: { chapter: Chapter }) {
   )
 }
 
-function BuiltHere({ chapterId, onHighlight }: { chapterId: string; onHighlight?: (id: string | null) => void }) {
+function BuiltHere({ chapterId, onHighlight }: { chapterId: string; onHighlight?: (id: string | null, anchor?: HTMLElement) => void }) {
   const items = journeyProjects.filter((p) => p.chapterId === chapterId)
   if (!items.length) return null
   return (
@@ -41,7 +41,7 @@ function BuiltHere({ chapterId, onHighlight }: { chapterId: string; onHighlight?
             <a
               href={p.href}
               className="journey-built__link"
-              onFocus={() => onHighlight?.(p.id)}
+              onFocus={(e) => onHighlight?.(p.id, e.currentTarget)}
               onBlur={() => onHighlight?.(null)}
             >
               <span className="journey-built__name">{p.name}</span>
@@ -72,7 +72,7 @@ function ChapterSection({
   chapter: Chapter
   index: number
   static?: boolean
-  onHighlight?: (id: string | null) => void
+  onHighlight?: (id: string | null, anchor?: HTMLElement) => void
 }) {
   const [ref, inView] = useInView<HTMLElement>('-30% 0px -30% 0px')
   const active = isStatic || inView
@@ -165,6 +165,21 @@ function JourneyScene({ onFail }: { onFail: () => void }) {
   const [ready, setReady] = useState(false)
   const [chapterIdx, setChapterIdx] = useState(0)
 
+  // Keyboard/SR path: focusing a "Built in this chapter" link lights its tower and,
+  // on fine pointers only (the coarse sheet would steal focus), shows its card by the link.
+  // The card is placed once, so any scroll dismisses it rather than leaving it stranded.
+  const offScroll = useRef<() => void>(() => {})
+  const onHighlight = useCallback((id: string | null, anchor?: HTMLElement) => {
+    cityRef.current?.highlight(id)
+    offScroll.current()
+    if (!id || !anchor || window.matchMedia('(pointer: coarse)').matches) return setHover({ id: null, x: 0, y: 0 })
+    const r = anchor.getBoundingClientRect()
+    setHover({ id, x: r.right, y: r.top })
+    const clear = () => setHover({ id: null, x: 0, y: 0 })
+    window.addEventListener('scroll', clear, { once: true, passive: true })
+    offScroll.current = () => window.removeEventListener('scroll', clear)
+  }, [])
+
   useEffect(() => {
     let cancelled = false
     let trigger: ScrollTrigger | undefined
@@ -242,7 +257,7 @@ function JourneyScene({ onFail }: { onFail: () => void }) {
             key={chapter.id}
             chapter={chapter}
             index={i}
-            onHighlight={(id) => cityRef.current?.highlight(id)}
+            onHighlight={onHighlight}
           />
         ))}
       </div>

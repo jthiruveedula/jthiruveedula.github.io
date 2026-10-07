@@ -174,7 +174,7 @@ function StagePath({
                   so hiding this purely-decorative span costs nothing there. */}
               <span
                 aria-hidden="true"
-                className={`mt-1.5 hidden whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.1em] transition-colors sm:block ${
+                className={`mt-1.5 hidden whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.1em] transition-colors sm:block md:hidden lg:block ${
                   selected ? 'text-accent-500' : kindText(stage.kind)
                 } ${isFirst ? '' : isLast ? '-translate-x-full' : '-translate-x-1/2'}`}
               >
