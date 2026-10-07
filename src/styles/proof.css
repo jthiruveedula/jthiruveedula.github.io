@@ -10,10 +10,33 @@
   list-style: none;
   animation: proof-settle 600ms var(--ease-out) 900ms both;
 }
+.proof {
+  align-items: baseline;
+  gap: 0.4rem 1.4rem;
+}
+.proof__lead {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+/* Quiet text links, not buttons: the CTA row above owns the button shape. */
 .proof__chip {
-  white-space: nowrap;
-  gap: 0.7rem;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0;
   max-width: 100%;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule-2);
+  text-underline-offset: 0.35em;
+}
+.proof__chip:hover,
+.proof__chip:focus-visible {
+  text-decoration-color: var(--color-accent);
 }
 .proof__figure {
   font-size: 1.1rem;

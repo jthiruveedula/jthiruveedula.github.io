@@ -395,6 +395,7 @@ export default function Flight() {
                 Static markup; proof.css settles it in after the hero is read. */}
             {proofChips.length > 0 && (
               <ul className="proof" aria-label="Headline figures, linked to their projects">
+                <li className="proof__lead" aria-hidden="true">Evidence</li>
                 {proofChips.map((m) => (
                   <li key={m.label}>
                     <a
@@ -405,7 +406,7 @@ export default function Flight() {
                         history.replaceState(null, '', `#${m.projectId}`)
                         window.dispatchEvent(new HashChangeEvent('hashchange'))
                       }}
-                      className="chip proof__chip"
+                      className="proof__chip"
                       aria-label={`${m.label}: ${m.value}, ${m.source}`}
                     >
                       <span className="stat__figure proof__figure">{m.value}</span>
