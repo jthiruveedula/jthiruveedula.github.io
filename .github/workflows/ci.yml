@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["**"]
+    branches: [master]
   pull_request:
     branches: [master]
   workflow_dispatch:
@@ -112,6 +112,20 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Bundle size budget (gzip)
+        # ponytail: aggregate ceiling over out/assets; ~1.7x headroom over the
+        # size when written (js 356 KB, css 13 KB). Tighten or go per-chunk if needed.
+        env:
+          JS_BUDGET_KB: "600"
+          CSS_BUDGET_KB: "60"
+        run: |
+          js=$(cat out/assets/*.js | gzip -c | wc -c)
+          css=$(cat out/assets/*.css | gzip -c | wc -c)
+          echo "gzip js=${js}B (budget ${JS_BUDGET_KB}KB) css=${css}B (budget ${CSS_BUDGET_KB}KB)"
+          echo "Bundle gzip: js $((js/1024)) KB / ${JS_BUDGET_KB}, css $((css/1024)) KB / ${CSS_BUDGET_KB}" >> "$GITHUB_STEP_SUMMARY"
+          [ "$js" -le $((JS_BUDGET_KB*1024)) ] || { echo "::error::JS gzip budget exceeded"; exit 1; }
+          [ "$css" -le $((CSS_BUDGET_KB*1024)) ] || { echo "::error::CSS gzip budget exceeded"; exit 1; }
 
       - name: Get installed Playwright version
         id: playwright_version

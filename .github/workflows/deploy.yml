@@ -54,6 +54,18 @@ jobs:
         name: Install dependencies
         run: npm ci --no-audit --no-fund --prefer-offline
 
+      - id: tag_check
+        name: Release tag must match package.json version
+        if: github.event_name == 'release'
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          pkg="v$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$pkg" ]; then
+            echo "::error::Release tag $TAG != package.json version $pkg. Bump the version (or retag) and re-release."
+            exit 1
+          fi
+
       - id: lint
         name: Lint
         run: npm run lint
@@ -65,6 +77,20 @@ jobs:
       - id: build
         name: Build
         run: npm run build
+
+      - name: Bundle size budget (gzip)
+        # ponytail: aggregate ceiling over out/assets; ~1.7x headroom over the
+        # size when written (js 356 KB, css 13 KB). Tighten or go per-chunk if needed.
+        env:
+          JS_BUDGET_KB: "600"
+          CSS_BUDGET_KB: "60"
+        run: |
+          js=$(cat out/assets/*.js | gzip -c | wc -c)
+          css=$(cat out/assets/*.css | gzip -c | wc -c)
+          echo "gzip js=${js}B (budget ${JS_BUDGET_KB}KB) css=${css}B (budget ${CSS_BUDGET_KB}KB)"
+          echo "Bundle gzip: js $((js/1024)) KB / ${JS_BUDGET_KB}, css $((css/1024)) KB / ${CSS_BUDGET_KB}" >> "$GITHUB_STEP_SUMMARY"
+          [ "$js" -le $((JS_BUDGET_KB*1024)) ] || { echo "::error::JS gzip budget exceeded"; exit 1; }
+          [ "$css" -le $((CSS_BUDGET_KB*1024)) ] || { echo "::error::CSS gzip budget exceeded"; exit 1; }
 
       - id: playwright_version
         name: Get installed Playwright version
@@ -96,6 +122,12 @@ jobs:
         run: npm run test:e2e:all -- --reporter=line
         timeout-minutes: 10
 
+      - id: upload_pages
+        name: Upload verified build for deploy
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
@@ -114,6 +146,7 @@ jobs:
           failed_stage=""
           declare -A LABELS=(
             [checkout]="Checkout"
+            [tag_check]="Release tag check"
             [setup_node]="Set up Node"
             [install]="Install dependencies"
             [lint]="Lint"
@@ -124,6 +157,7 @@ jobs:
           )
           declare -A OUTCOMES=(
             [checkout]="${{ steps.checkout.outcome }}"
+            [tag_check]="${{ steps.tag_check.outcome }}"
             [setup_node]="${{ steps.setup_node.outcome }}"
             [install]="${{ steps.install.outcome }}"
             [lint]="${{ steps.lint.outcome }}"
@@ -132,7 +166,7 @@ jobs:
             [install_browsers]="${{ steps.install_browsers.outcome }}"
             [e2e_tests]="${{ steps.e2e_tests.outcome }}"
           )
-          for id in checkout setup_node install lint typecheck build install_browsers e2e_tests; do
+          for id in checkout tag_check setup_node install lint typecheck build install_browsers e2e_tests; do
             if [ "${OUTCOMES[$id]}" = "failure" ]; then
               failed_stage="${LABELS[$id]}"
               break
@@ -151,25 +185,7 @@ jobs:
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - uses: actions/configure-pages@v5
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./out
-
+      # No checkout/build: deploys the exact artifact verify built and tested.
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
