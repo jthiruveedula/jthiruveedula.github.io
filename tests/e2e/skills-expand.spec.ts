@@ -23,7 +23,7 @@ test.describe('the toolkit disclosure', () => {
     const row = domainRow(page, 0)
     await row.scrollIntoViewIfNeeded()
 
-    const toggle = row.getByRole('button')
+    const toggle = row.locator('button[aria-controls]')
     await expect(toggle).toHaveText(/^\+\s*\d+ more/)
 
     await toggle.click()
@@ -41,8 +41,8 @@ test.describe('the toolkit disclosure', () => {
 
   test('opening a second domain closes the first — one open at a time', async ({ page }) => {
     await page.goto('/')
-    const first = domainRow(page, 0).getByRole('button')
-    const second = domainRow(page, 1).getByRole('button')
+    const first = domainRow(page, 0).locator('button[aria-controls]')
+    const second = domainRow(page, 1).locator('button[aria-controls]')
     await second.scrollIntoViewIfNeeded()
 
     await first.click()
@@ -60,7 +60,7 @@ test.describe('the toolkit disclosure', () => {
     const row = domainRow(page, 0)
     await row.scrollIntoViewIfNeeded()
 
-    const toggle = row.getByRole('button')
+    const toggle = row.locator('button[aria-controls]')
     const panelId = await toggle.getAttribute('aria-controls')
     const panel = page.locator(`#${panelId}`)
 

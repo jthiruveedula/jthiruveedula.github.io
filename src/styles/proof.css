@@ -52,6 +52,10 @@
   color: var(--color-accent);
 }
 
+@media (max-width: 420px) {
+  .proof__lead { flex-basis: 100%; }
+}
+
 @keyframes proof-settle {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: none; }
