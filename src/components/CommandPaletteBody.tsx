@@ -98,7 +98,7 @@ function useCommands(goTo: (id: string) => void, onClose: () => void): Command[]
     }
     contactCommands.push({
       id: 'resume',
-      label: 'View résumé',
+      label: 'View resume',
       hint: 'Contact',
       run: () => {
         window.location.href = '/resume.html'

@@ -258,7 +258,7 @@ export default function Contact() {
               href="/resume.html"
               className="chip mt-4 inline-flex transition-colors hover:bg-ink/10"
             >
-              View résumé
+              View resume
             </a>
             <a
               href="/journey/"
