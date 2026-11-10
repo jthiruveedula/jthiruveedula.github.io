@@ -25,3 +25,20 @@
     display: none;
   }
 }
+
+/* The dust wrapper (DustField.tsx). In the flight it sits over the plates; below the
+   hero it is moved into .atmos (fixed, behind <main>) as a thinner, quieter field. */
+.dust-air {
+  position: absolute;
+  inset: 0;
+  z-index: 21;
+  pointer-events: none;
+  overflow: hidden;
+}
+.dust-air--page {
+  z-index: auto;
+  opacity: 0.7;
+}
+.dust-air--page .dust-bloom {
+  display: none;
+}

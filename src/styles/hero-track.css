@@ -94,5 +94,59 @@
       from { translate: 0 -7%; }
       to { translate: 0 7%; }
     }
+    /* Touch has no hover and no torch: scroll is the torch. The tile crossing the
+       middle of the screen is the lit one; it settles back as it leaves. */
+    @media (hover: none) {
+      .arc-plate img {
+        animation: plate-drift linear both, plate-lit linear both;
+        animation-timeline: view(), view();
+        animation-range: cover 0% cover 100%, entry 60% exit 40%;
+      }
+      @keyframes plate-lit {
+        0%, 100% { opacity: 0.5; }
+        42%, 58% { opacity: 0.95; }
+      }
+    }
   }
+}
+
+/* ── Rooms: each section stands in its plate ──────────────────────────────
+   GRADE. The film's rooms carried down the page at walking pace, one at a time,
+   in film order. Opacity only; the mask is static. Resting state is opacity 0
+   (flat paper), so a dead script or an unmounted room is the finished page.
+   Reduced motion: the global 0.01ms rule turns the crossfade into a CUT. */
+.atmos__room {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-soft);
+  /* Right 55% only: the text column stays on clean paper. */
+  -webkit-mask-image: linear-gradient(to right, transparent 45%, #000 78%);
+  mask-image: linear-gradient(to right, transparent 45%, #000 78%);
+}
+html[data-section='arc'] .atmos__room[data-room='02'],
+html[data-section='ledger'] .atmos__room[data-room='03'],
+html[data-section='systems'] .atmos__room[data-room='04'],
+html[data-section='skills'] .atmos__room[data-room='05'],
+html[data-section='index'] .atmos__room[data-room='06'] {
+  opacity: 0.14;
+}
+html[data-section='contact'] .atmos__room[data-room='07'] {
+  opacity: 0.2;
+}
+/* The ledger follows the era of the row being read (Timeline sets data-era).
+   Separate rules: without :has() support these drop and the ledger keeps 03. */
+html[data-section='ledger']:has(#ledger[data-era='legacy']) .atmos__room[data-room='03'],
+html[data-section='ledger']:has(#ledger[data-era='ai']) .atmos__room[data-room='03'] {
+  opacity: 0;
+}
+html[data-section='ledger']:has(#ledger[data-era='legacy']) .atmos__room[data-room='02'],
+html[data-section='ledger']:has(#ledger[data-era='ai']) .atmos__room[data-room='06'] {
+  opacity: 0.14;
+}
+@media (max-width: 767px) {
+  .atmos__room { display: none; }
 }

@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import type { Metric } from '@/data/types'
+import { followEvidence, sourceProjectId } from '@/lib/content'
 import { useReducedMotion } from '@/lib/hooks'
 import { revealFrom } from '@/lib/motion'
 import '@/styles/instrument.css'
@@ -122,6 +123,8 @@ function MetricRow({
   // value would fabricate a comparison. The stack is pure weight — a decorative
   // presence marker, one to three blocks per row.
   const cubeCount = (metric.label.length % 3) + 1
+  const projectId = sourceProjectId(metric)
+  const projectName = portfolio.featuredProjects.find((p) => p.id === projectId)?.name
 
   return (
     <li
@@ -206,7 +209,23 @@ function MetricRow({
 
       <div className="min-w-0">
         <p className="stat__label">{metric.label}</p>
-        {metric.source ? <p className="mt-1.5 text-[11px] text-ink-faint">{metric.source}</p> : null}
+        {metric.source ? (
+          <p className="mt-1.5 text-[11px] text-ink-faint">
+            {projectId ? (
+              // Evidence trail: the source line walks to the case study that earned it.
+              <a
+                href={`#${projectId}`}
+                onClick={() => followEvidence(projectId, metric.value)}
+                className="evidence-link"
+                aria-label={`${metric.source}: open the ${projectName} case study`}
+              >
+                {metric.source}
+              </a>
+            ) : (
+              metric.source
+            )}
+          </p>
+        ) : null}
 
         {/* The bar is the encoding; the figure beside it is the exact read. Length
             only — one hue, because colour here would be a second encoding of the

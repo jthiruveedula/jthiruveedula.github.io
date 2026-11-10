@@ -1284,6 +1284,14 @@ h2 .proper,
   opacity: 0.6;
   transition: opacity 0.3s var(--ease-soft);
 }
+/* The big first tile reads as a window, not a void: brighter plate, lighter top scrim
+   (the copy sits at the bottom, over the unchanged paper end of the gradient). */
+.bento--arc > :first-child .arc-plate img {
+  opacity: 0.82;
+}
+.bento--arc > :first-child .arc-plate::after {
+  background: linear-gradient(to top, var(--color-paper-2) 0%, var(--color-paper-scrim) 52%, oklch(18.5% 0.015 265 / 0.2) 100%);
+}
 [data-station]:focus-within .arc-plate img {
   opacity: 0.95;
 }

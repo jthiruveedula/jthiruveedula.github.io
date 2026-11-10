@@ -21,6 +21,8 @@ html[data-view='compact'] *::after {
   animation: none !important;
 }
 html[data-view='compact'] .atmos,
+html[data-view='compact'] .atmos__room,
+html[data-view='compact'] .dust-air,
 html[data-view='compact'] .scroll-progress,
 html[data-view='compact'] .meter,
 html[data-view='compact'] .lit-card::after,
