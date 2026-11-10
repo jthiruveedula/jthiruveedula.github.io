@@ -6,6 +6,7 @@ import { flightScenes, SCENE_BOUNDS } from '@/data/flight'
 import { portfolio } from '@/data/portfolio'
 import { isPlaceholder } from '@/lib/content'
 import { getPointer, subscribePointer } from '@/lib/pointer'
+import { COMPACT, MOTION_QUERY } from '@/lib/view'
 import { splitWordsWithAccent, renderSplitWords } from '@/lib/splitText'
 import '@/styles/proof.css'
 
@@ -65,7 +66,7 @@ export default function Flight() {
 
       const mm = gsap.matchMedia()
 
-      mm.add('(prefers-reduced-motion: no-preference)', () => {
+      mm.add(MOTION_QUERY, () => {
         const planes = gsap.utils.toArray<HTMLElement>('[data-plane]', runway)
         if (!planes.length) return
 
@@ -264,7 +265,8 @@ export default function Flight() {
   useGSAP(
     () => {
       const el = copyRef.current
-      if (!el) return
+      // Compact: the headline is a static page header; scene 1 never cuts.
+      if (!el || COMPACT) return
       const parts = el.querySelectorAll<HTMLElement>('[data-cut]')
       if (!parts.length) return
       gsap.fromTo(

@@ -3,6 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- View bootstrap (showcase | compact), before any stylesheet so the first paint is
+         already in the right mode. ?view= (valid values only) > localStorage > showcase.
+         Print always renders compact. See src/lib/view.ts. -->
+    <script>
+      (function (d) {
+        var v = 'showcase'
+        var q = new URLSearchParams(location.search).get('view')
+        try {
+          if (q === 'compact' || q === 'showcase') localStorage.setItem('view', q)
+          else q = localStorage.getItem('view')
+        } catch (e) {}
+        if (q === 'compact') v = q
+        d.dataset.view = v
+        addEventListener('beforeprint', function () { d.dataset.view = 'compact' })
+        addEventListener('afterprint', function () { d.dataset.view = v })
+      })(document.documentElement)
+    </script>
     <title>Jagadeesh Thiruveedula — Senior Data &amp; AI Architect · Legacy → Cloud → AI</title>
     <meta
       name="description"

@@ -14,8 +14,8 @@
  */
 
 /* ── Motion grammar (whole page) ────────────────────────────────────────
-   Four verbs and no more (CUT, DRAW, SETTLE on the toggle clock; GRADE and TRACK ambient). Anything that does not fit one of them does not
-   animate.
+   Five verbs and no more (CUT, DRAW, SETTLE on the toggle clock; GRADE and TRACK
+   ambient). Anything that does not fit one of them does not animate.
 
    CUT     the flight's headline swaps hard at the crossfade midpoint, then plays
            a per-line mask stagger. Type is never scrubbed — a scrubbed word is
@@ -28,7 +28,7 @@
    SETTLE  type and rows arrive on y + opacity via revealFrom(), 0.6s, small
            stagger. Per line or per word, never per character.
 
-   TRACK   the fourth input verb: the page answers the pointer. State lives in
+   TRACK   the input verb: the page answers the pointer. State lives in
            src/lib/pointer.ts (one passive pointermove, normalized -1..1, no RAF;
            consumers read it on their own RAF/gsap.ticker). Transform and opacity
            only, always eased toward the pointer and back. Disabled on
@@ -46,14 +46,19 @@
            custom property, transform and opacity only. It grades the room, never the
            content, and its authored resting value is a real mid-frame.
 
-   Transform and opacity only; no layout properties, no filter animation, no
-   cursor tracking, no parallax outside the flight and the wash. The authored resting
+   TRACK and scroll-driven GRADE are allowed outside the flight (the cursor torch,
+   lamp drift, plate drift); each still returns to its authored rest.
+
+   Transform and opacity only; no layout properties, no filter animation. The authored resting
    state is always the true, finished state, so a dead timeline, a reverted context, a
    deep link or JS failing outright still renders the real page.
 
    prefers-reduced-motion collapses GEOMETRY, not just animation: the flight's
    runway becomes one screen rather than 420svh. v5 shipped reduced-motion
-   visitors the full 13,284px with none of the payoff, which is the worst of both. */
+   visitors the full 13,284px with none of the payoff, which is the worst of both.
+
+   Compact view (html[data-view='compact'], styles/compact.css) disables all five:
+   static header, no plates, no dust, no torch, no entrances. */
 
 @import 'tailwindcss';
 
@@ -505,6 +510,36 @@ h2 .proper,
 @media (max-width: 1023px) {
   .rail {
     padding-inline: 0.95rem 0.2rem;
+  }
+}
+/* Showcase/compact switch (ViewSwitch.tsx) in the pill's trailing column. Not a
+   .rail__link: it changes the view, it is not one of the eight destinations. */
+.rail__view {
+  /* Block + line-height, not grid: grid would stack the label's text node and
+     its " view" span as two items. 28px + 2 x 0.5rem = 44px target. */
+  display: block;
+  line-height: 28px;
+  padding: 0.5rem 0.75rem;
+  border-left: 1px solid var(--color-rule);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-ink-muted);
+  transition: color 0.2s var(--ease-soft);
+}
+.rail__view:focus-visible {
+  color: var(--color-accent);
+}
+@media (hover: hover) and (pointer: fine) {
+  .rail__view:hover {
+    color: var(--color-accent);
+  }
+}
+@media (max-width: 479px) {
+  .view-switch__long {
+    display: none;
   }
 }
 
@@ -1354,6 +1389,11 @@ h2 .proper,
   margin-top: clamp(1.25rem, 2.4vw, 2rem);
   font-size: 0.8125rem;
   color: var(--color-ink-faint);
+}
+.mast__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
 }
 .mast__band a {
   display: inline-flex;

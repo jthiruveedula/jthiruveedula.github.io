@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client'
 import App from './App'
 import ErrorBoundary from './components/ErrorBoundary'
 import './styles/globals.css'
+// After globals so it lands in the same render-blocking stylesheet (an @import at
+// the end of globals.css would be invalid CSS).
+import './styles/compact.css'
 
 /** Last-resort fallback: if any unhandled render error escapes the per-section
  *  boundaries, show a recoverable screen instead of a blank white page. */

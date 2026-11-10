@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMagnetic } from '@/components/JourneyPortal'
+import ViewSwitch from '@/components/ViewSwitch'
+import { prefersCalm } from '@/lib/view'
 
 /**
  * N5 floating-pill nav — replaces the v5 top bar.
@@ -53,7 +55,7 @@ export default function Rail() {
     const list = listRef.current
     const link = list?.querySelector<HTMLElement>('[aria-current="true"]')
     if (!list || !link || list.scrollWidth <= list.clientWidth) return
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduce = prefersCalm()
     list.scrollTo({
       left: link.offsetLeft - (list.clientWidth - link.offsetWidth) / 2,
       behavior: reduce ? 'auto' : 'smooth',
@@ -78,6 +80,8 @@ export default function Rail() {
         if (el.getBoundingClientRect().top <= line) current = section.id
       }
       setActive(current)
+      // Read by the palette's view switch so it reloads at the same section.
+      document.documentElement.dataset.section = current
     }
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(measure)
@@ -125,6 +129,8 @@ export default function Rail() {
           </button>
         </li>
       </ul>
+      {/* Trailing grid column: the showcase/compact switch (ViewSwitch.tsx). */}
+      <ViewSwitch section={active} className="rail__view" />
     </nav>
   )
 }

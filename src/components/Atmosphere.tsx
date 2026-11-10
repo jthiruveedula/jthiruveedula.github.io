@@ -3,6 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { getPointer, subscribePointer } from '@/lib/pointer'
+import { MOTION_QUERY } from '@/lib/view'
 import '@/styles/hero-track.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -42,7 +43,7 @@ export default function Atmosphere() {
 
       const mm = gsap.matchMedia()
 
-      mm.add('(prefers-reduced-motion: no-preference)', () => {
+      mm.add(MOTION_QUERY, () => {
         const trigger = ScrollTrigger.create({
           trigger: document.documentElement,
           start: 'top top',

@@ -1,10 +1,11 @@
 import gsap from 'gsap'
+import { COMPACT } from '@/lib/view'
 
 /**
  * TRACK — the pointer-reactive verb in the motion grammar (globals.css header).
  * One passive pointermove listener on window, no RAF: subscribers read
  * getPointer() from their own RAF / gsap.ticker. Disabled entirely on coarse
- * pointers and under prefers-reduced-motion (store stays at rest: 0,0, inactive).
+ * pointers, under prefers-reduced-motion and in compact view (store stays at rest: 0,0, inactive).
  */
 export interface PointerState {
   /** Normalized viewport position, -1..1 (0 = centre). */
@@ -23,7 +24,7 @@ let attached = false
 let mqCoarse: MediaQueryList | null = null
 let mqReduced: MediaQueryList | null = null
 
-const allowed = () => !!mqCoarse && !!mqReduced && !mqCoarse.matches && !mqReduced.matches
+const allowed = () => !COMPACT && !!mqCoarse && !!mqReduced && !mqCoarse.matches && !mqReduced.matches
 
 function reset() {
   state.x = state.y = state.vx = state.vy = 0

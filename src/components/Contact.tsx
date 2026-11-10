@@ -7,6 +7,7 @@ import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import { useReducedMotion } from '@/lib/hooks'
 import { isPlaceholder } from '@/lib/content'
+import ViewSwitch from '@/components/ViewSwitch'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -324,7 +325,10 @@ export default function Contact() {
           <div className="mast__band">
             <p>Legacy → Cloud → Enterprise AI</p>
             <p>The model is never the hard part — proving the answer is grounded is the work.</p>
-            <a href="#top">Back to top ↑</a>
+            <p className="mast__links">
+              <ViewSwitch section="contact" className="mast__view" />
+              <a href="#top">Back to top ↑</a>
+            </p>
           </div>
         </footer>
       </div>
