@@ -26,10 +26,10 @@ export default function App() {
       <Rail />
       <Atmosphere />
       <CommandPalette />
-      {/* The rail is a fixed 4.25rem gutter on desktop and a top bar below
-          1024px, so the page content is inset rather than overlapped. */}
+      {/* The nav is a floating pill that sits inside the flight's top letterbox
+          bar, so the page runs full-bleed beneath it — no inset. */}
       {/* z-1 lifts the document off the wash; the wash is the only thing at z-0. */}
-      <main id="main" tabIndex={-1} className="relative z-[1] pt-16 lg:pt-0 lg:pl-[4.25rem]">
+      <main id="main" tabIndex={-1} className="relative z-[1]">
         <Flight />
         <Suspense fallback={null}>
           <ErrorBoundary label="dust">

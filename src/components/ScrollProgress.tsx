@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useLenis } from '@/components/SmoothScroll'
+import { prefersCalm } from '@/lib/view'
 import '@/styles/hero-track.css'
 
 /** Thin top-of-page bar reflecting scroll progress through the document.
@@ -10,7 +11,6 @@ export default function ScrollProgress() {
 
   useEffect(() => {
     // Velocity glow: spikes with scroll speed, decays per frame; stops its RAF at 0.
-    const mqStill = window.matchMedia('(prefers-reduced-motion: reduce)')
     let lastY = window.scrollY
     let glow = 0
     let glowRaf = 0
@@ -21,7 +21,7 @@ export default function ScrollProgress() {
       glowRaf = glow ? requestAnimationFrame(decay) : 0
     }
     const pulse = () => {
-      if (mqStill.matches) return
+      if (prefersCalm()) return
       const y = window.scrollY
       glow = Math.max(glow, Math.min(1, Math.abs(y - lastY) / 80))
       lastY = y

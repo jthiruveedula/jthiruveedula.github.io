@@ -5,7 +5,7 @@
  * can move to another project without dragging Tailwind along. Keep the two in
  * sync — globals.css is the source of truth.
  *
- * Axes — paper band: dark · display style: classical-serif · accent hue: cool (215°)
+ * Axes — paper band: dark · display style: grotesque · accent hue: cool (215°)
  */
 
 :root {
@@ -36,8 +36,13 @@
   --color-glow-2: oklch(80% 0.16 215 / 0.16);
   --color-paper-emit: oklch(76% 0.17 215 / 0.045);
 
+  /* Tiles — bento surfaces */
+  --color-paper-scrim: oklch(18.5% 0.015 265 / 0.84);
+  --radius-tile: 1.25rem;
+  --gap-bento: clamp(0.75rem, 1.4vw, 1.25rem);
+
   /* Type — three families, no fourth. */
-  --font-display: 'Instrument Serif', 'Tiempos Headline', ui-serif, Georgia, serif;
+  --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'Geist', 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
   --tracking-micro: 0.1em;

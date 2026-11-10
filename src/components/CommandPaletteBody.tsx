@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { portfolio } from '@/data/portfolio'
 import { SECTIONS } from '@/components/Rail'
 import { enterJourney } from '@/components/JourneyPortal'
+import { COMPACT, prefersCalm, viewHref } from '@/lib/view'
 
 /**
  * The palette's actual content — deliberately the lazy half of CommandPalette.
@@ -66,7 +67,8 @@ function useCommands(goTo: (id: string) => void, onClose: () => void): Command[]
     if (profile.email) {
       contactCommands.push({
         id: 'email',
-        label: `Email ${profile.email}`,
+        // Never render the address: it stays hidden until a visitor clicks for it.
+        label: 'Email me',
         hint: 'Contact',
         run: () => {
           window.location.href = `mailto:${profile.email}`
@@ -111,12 +113,24 @@ function useCommands(goTo: (id: string) => void, onClose: () => void): Command[]
       hint: 'Explore',
       run: () => {
         enterJourney(null, '/journey/')
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+        if (prefersCalm()) return
         onClose()
       },
     })
 
-    return [...sectionCommands, ...projectCommands, ...contactCommands]
+    const viewCommand: Command = {
+      id: 'view',
+      label: COMPACT ? 'Switch to showcase view' : 'Switch to compact view',
+      hint: 'View',
+      keywords: 'professional recruiter plain simple print film',
+      // Reloads into the other mode at the section Rail last marked active.
+      run: () => {
+        window.location.href = viewHref(COMPACT ? 'showcase' : 'compact', document.documentElement.dataset.section ?? 'top')
+      },
+    }
+
+    // Right after the sections so "view" + Enter picks it over "View resume".
+    return [...sectionCommands, viewCommand, ...projectCommands, ...contactCommands]
   }, [goTo, onClose])
 }
 

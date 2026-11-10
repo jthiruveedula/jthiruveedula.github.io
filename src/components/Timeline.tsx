@@ -276,7 +276,7 @@ export default function Timeline() {
                   // track width for every year — a dozen 3-char labels crammed into
                   // ~240px overlap into an unreadable smear. Thinning to every other
                   // year is "simplify," not "cram," per the responsive spec.
-                  className={`hud-label absolute top-0 -translate-x-1/2 text-[10px] ${i % 2 === 0 ? '' : 'hidden sm:inline'}`}
+                  className={`hud-label absolute top-0 -translate-x-1/2 ${i % 2 === 0 && i !== AXIS_YEARS.length - 1 ? '' : 'hidden sm:inline'}`}
                   style={{ left: `${((year - T0) / TSPAN) * 100}%` }}
                 >
                   '{String(year).slice(-2)}

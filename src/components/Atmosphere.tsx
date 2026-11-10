@@ -1,11 +1,38 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { getPointer, subscribePointer } from '@/lib/pointer'
+import { flightScenes } from '@/data/flight'
+import { COMPACT, MOTION_QUERY } from '@/lib/view'
 import '@/styles/hero-track.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
+
+/** Rooms 02-07: the film's plates carried down the page, one behind each section
+ *  (hero-track.css keys them off html[data-section]). The @sm URLs are the ones the
+ *  arc tiles and flight already fetch, so this adds no image bytes. */
+const ROOMS = flightScenes.slice(1).map((s) => ({ id: s.plate.slice(0, 2), src: `/scenes/${s.plate}@sm.avif` }))
+
+/** Mount rooms once the visitor has left the hero (never on the hero's critical
+ *  path), only at >= 768px (decoded plates are memory) and never in compact. */
+function useRoomsMounted(): boolean {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    if (COMPACT) return
+    const root = document.documentElement
+    const check = () => {
+      if ((root.dataset.section ?? 'top') === 'top' || !window.matchMedia('(min-width: 768px)').matches) return
+      setMounted(true)
+      observer.disconnect()
+    }
+    const observer = new MutationObserver(check)
+    observer.observe(root, { attributes: true, attributeFilter: ['data-section'] })
+    check()
+    return () => observer.disconnect()
+  }, [])
+  return mounted
+}
 
 /**
  * The wash — one lamp, travelling the length of the document.
@@ -34,6 +61,7 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
  */
 export default function Atmosphere() {
   const ref = useRef<HTMLDivElement>(null)
+  const rooms = useRoomsMounted()
 
   useGSAP(
     () => {
@@ -42,7 +70,7 @@ export default function Atmosphere() {
 
       const mm = gsap.matchMedia()
 
-      mm.add('(prefers-reduced-motion: no-preference)', () => {
+      mm.add(MOTION_QUERY, () => {
         const trigger = ScrollTrigger.create({
           trigger: document.documentElement,
           start: 'top top',
@@ -65,7 +93,38 @@ export default function Atmosphere() {
           toX(s.active ? s.x * DRIFT : 0)
           toY(s.active ? s.y * DRIFT : 0)
         })
+        // TRACK: a torch under the cursor. Page torch (fixed blob) lights the gaps;
+        // the hovered tile gets its own blob via --tx/--ty (translate only, CSS).
+        const torch = el.querySelector<HTMLElement>('.atmos__torch')
+        const torchX = torch ? gsap.quickTo(torch, 'x', { duration: 0.6, ease: 'power3.out' }) : null
+        const torchY = torch ? gsap.quickTo(torch, 'y', { duration: 0.6, ease: 'power3.out' }) : null
+        const BLOB = 420
+        let card: HTMLElement | null = null
+        const unTorch = subscribePointer((s) => {
+          const px = ((s.x + 1) / 2) * window.innerWidth
+          const py = ((s.y + 1) / 2) * window.innerHeight
+          if (torch) {
+            torch.style.opacity = s.active ? '1' : '0'
+            torchX?.(px - BLOB / 2)
+            torchY?.(py - BLOB / 2)
+          }
+          const next = s.active
+            ? document.elementFromPoint(px, py)?.closest<HTMLElement>('.lit-card') ?? null
+            : null
+          if (next !== card) {
+            card?.style.removeProperty('--tl')
+            card = next
+          }
+          if (card) {
+            const r = card.getBoundingClientRect()
+            card.style.setProperty('--tx', `${px - r.left - BLOB / 2}px`)
+            card.style.setProperty('--ty', `${py - r.top - BLOB / 2}px`)
+            card.style.setProperty('--tl', '1')
+          }
+        })
         return () => {
+          unTorch()
+          card?.style.removeProperty('--tl')
           unsubscribe()
           gsap.killTweensOf(el, '--atmos-dx,--atmos-dy')
           el.style.removeProperty('--atmos-dx')
@@ -82,8 +141,13 @@ export default function Atmosphere() {
 
   return (
     <div ref={ref} aria-hidden="true" className="atmos">
+      {rooms &&
+        ROOMS.map((r) => (
+          <img key={r.id} className="atmos__room" data-room={r.id} src={r.src} alt="" decoding="async" draggable={false} />
+        ))}
       <span className="atmos__lamp atmos__lamp--legacy" />
       <span className="atmos__lamp atmos__lamp--ai" />
+      <span className="atmos__torch" />
       <span className="atmos__grain" />
     </div>
   )

@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import type { Metric } from '@/data/types'
+import { followEvidence, sourceProjectId } from '@/lib/content'
 import { useReducedMotion } from '@/lib/hooks'
 import { revealFrom } from '@/lib/motion'
 import '@/styles/instrument.css'
@@ -122,14 +123,18 @@ function MetricRow({
   // value would fabricate a comparison. The stack is pure weight — a decorative
   // presence marker, one to three blocks per row.
   const cubeCount = (metric.label.length % 3) + 1
+  const projectId = sourceProjectId(metric)
+  const projectName = portfolio.featuredProjects.find((p) => p.id === projectId)?.name
 
   return (
     <li
       hidden={!visible}
-      className="metric-row grid gap-x-10 gap-y-2 border-b border-rule py-5 md:grid-cols-[13rem_minmax(0,1fr)]"
+      // Tile reads label-first, figure-last; DOM order stays figure-first so a
+      // screen reader still hears the value before its caption.
+      className="metric-row lit-card flex flex-col-reverse justify-between gap-6 p-6"
     >
       <div>
-        <p className="stat__figure text-[clamp(1.5rem,3vw,2rem)]">
+        <p className="stat__figure text-[clamp(2.5rem,4.4vw,3.75rem)] leading-none">
           {/* Screen readers get the canonical value; the animated digits are decorative. */}
           <span className="sr-only">{metric.value}</span>
           <span aria-hidden="true">
@@ -204,7 +209,23 @@ function MetricRow({
 
       <div className="min-w-0">
         <p className="stat__label">{metric.label}</p>
-        {metric.source ? <p className="mt-1.5 text-[11px] text-ink-faint">{metric.source}</p> : null}
+        {metric.source ? (
+          <p className="mt-1.5 text-[11px] text-ink-faint">
+            {projectId ? (
+              // Evidence trail: the source line walks to the case study that earned it.
+              <a
+                href={`#${projectId}`}
+                onClick={() => followEvidence(projectId, metric.value)}
+                className="evidence-link"
+                aria-label={`${metric.source}: open the ${projectName} case study`}
+              >
+                {metric.source}
+              </a>
+            ) : (
+              metric.source
+            )}
+          </p>
+        ) : null}
 
         {/* The bar is the encoding; the figure beside it is the exact read. Length
             only — one hue, because colour here would be a second encoding of the
@@ -483,7 +504,7 @@ export default function Metrics() {
         {/* The figure grid itself — the one-shot count-up trigger above watches
             this element, not the section top, so the numbers animate while the
             rows are actually in view. */}
-        <div ref={gridRef} className="relative mt-8 border-t border-rule">
+        <div ref={gridRef} className="relative mt-8">
           <span
             ref={gridSweepRef}
             aria-hidden="true"
@@ -499,11 +520,11 @@ export default function Metrics() {
               <section key={family} hidden={!anyVisible} aria-labelledby={headingId}>
                 <h3
                   id={headingId}
-                  className="metric-row stat__label border-b border-rule py-3 text-ink-faint"
+                  className="metric-row stat__label pt-8 pb-3 text-ink-faint"
                 >
                   {caption}
                 </h3>
-                <ul>
+                <ul className="bento bento--index">
                   {rows.map((metric) => {
                     const visible = filter === 'All' || (metric.groups?.includes(filter) ?? false)
                     return (

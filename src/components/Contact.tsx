@@ -7,6 +7,7 @@ import { useGSAP } from '@gsap/react'
 import { portfolio } from '@/data/portfolio'
 import { useReducedMotion } from '@/lib/hooks'
 import { isPlaceholder } from '@/lib/content'
+import ViewSwitch from '@/components/ViewSwitch'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -51,8 +52,10 @@ function useDfwTime(): string {
   return t
 }
 
+/** The address is never printed or put in an href until a visitor asks for it. */
 function EmailLine({ email }: { email: string }) {
   const [msg, setMsg] = useState('')
+  const [shown, setShown] = useState(false)
   const timer = useRef<number | undefined>(undefined)
   const time = useDfwTime()
   useEffect(() => () => window.clearTimeout(timer.current), [])
@@ -68,10 +71,20 @@ function EmailLine({ email }: { email: string }) {
   }
   return (
     <div className="contact-mail">
-      <a href={mailtoHref(email)} className="contact-mail__link">
-        {email}
-      </a>
       <div className="contact-mail__row">
+        <button
+          type="button"
+          onClick={() => setShown((s) => !s)}
+          aria-expanded={shown}
+          className="chip contact-mail__copy"
+        >
+          {shown ? 'Hide email' : 'Show email'}
+        </button>
+        {shown && (
+          <a href={mailtoHref(email)} className="contact-mail__link">
+            {email}
+          </a>
+        )}
         <button type="button" onClick={copy} className="chip contact-mail__copy">
           Copy email
         </button>
@@ -131,14 +144,14 @@ export default function Contact() {
   const certLine = certifications.join(' · ')
 
   return (
-    <section ref={sectionRef} id="contact" aria-labelledby="contact-heading" className="px-6 py-24 md:py-32">
+    <section ref={sectionRef} id="contact" aria-labelledby="contact-heading" className="px-[clamp(20px,4vw,64px)] py-24 md:py-32">
       <div className="mx-auto max-w-[1320px]">
         <p className="eyebrow">
           <b>06</b> · Contact
         </p>
-        <div className="contact-headline flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="contact-headline flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="relative">
-            <h2 id="contact-heading" className="font-display text-[clamp(2rem,5vw,3.6rem)] text-ink">
+            <h2 id="contact-heading" className="font-display text-[clamp(1.9rem,4.4vw,3.5rem)] text-ink">
               {HEADLINE_WORDS.map((word, i) => (
                 // The trailing space must live OUTSIDE the inline-block span — a browser
                 // collapses whitespace at the end of an inline-block's own content, which
@@ -152,10 +165,14 @@ export default function Contact() {
             </h2>
           </div>
           {profile.email && (
-            <span ref={ctaRef} className="inline-flex shrink-0">
-              <a href={mailtoHref(profile.email)} className="contact-cta chip chip--primary">
+            <span ref={ctaRef} className="inline-flex max-w-full">
+              <button
+                type="button"
+                onClick={() => (window.location.href = mailtoHref(profile.email ?? ''))}
+                className="contact-cta chip chip--primary"
+              >
                 Start with your hardest data problem
-              </a>
+              </button>
             </span>
           )}
         </div>
@@ -174,17 +191,10 @@ export default function Contact() {
           </p>
         )}
 
-        <div className="contact-grid mt-14 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
+        <div className="contact-grid mt-14 grid gap-[var(--gap-bento)] sm:grid-cols-2 lg:grid-cols-4">
+          <div className="lit-card p-6">
             <p className={LABEL_CLASS}>Direct</p>
             <ul className="contact-links mt-4 text-sm text-ink-muted">
-              {profile.email && (
-                <li>
-                  <a href={`mailto:${profile.email}`} className="transition-colors hover:text-ink">
-                    {profile.email}
-                  </a>
-                </li>
-              )}
               {profile.linkedin && (
                 <li>
                   <a
@@ -214,7 +224,7 @@ export default function Contact() {
             </ul>
           </div>
 
-          <div>
+          <div className="lit-card p-6">
             <p className={LABEL_CLASS}>Based</p>
             <p className="mt-4 text-sm text-ink-muted">
               {locationLine}
@@ -227,13 +237,13 @@ export default function Contact() {
             </p>
           </div>
 
-          <div>
+          <div className="lit-card p-6">
             <p className={LABEL_CLASS}>Certified</p>
             <p className="mt-4 text-sm text-ink-muted">{certLine}</p>
           </div>
 
           {education.length > 0 && (
-            <div>
+            <div className="lit-card p-6">
               <p className={LABEL_CLASS}>Education</p>
               <ul className="mt-4 space-y-3 text-sm">
                 {education.map((entry) => {
@@ -252,7 +262,7 @@ export default function Contact() {
           {/* Fixed column count above (not auto-fit) so 4 regular items always
               fill exactly one row at sm/lg; this one spans the full row on its
               own beneath them instead of leaving a ragged, partially-empty row. */}
-          <div className="sm:col-span-2 lg:col-span-4">
+          <div className="lit-card p-6 sm:col-span-2 lg:col-span-4">
             <p className={LABEL_CLASS}>Next step</p>
             <a
               href="/resume.html"
@@ -271,14 +281,14 @@ export default function Contact() {
         </div>
 
         {readyEngagementShapes.length > 0 && (
-          <div className="contact-engagement mt-16 border-t border-rule pt-10">
+          <div className="contact-engagement mt-16">
             <p className={LABEL_CLASS}>How I work</p>
             <div
-              className="mt-6 grid gap-x-10 gap-y-8"
+              className="mt-6 grid gap-[var(--gap-bento)]"
               style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}
             >
               {readyEngagementShapes.map((shape) => (
-                <div key={shape.name}>
+                <div key={shape.name} className="lit-card p-6">
                   <p className="font-display text-lg text-ink">{shape.name}</p>
                   <p className="mt-2 text-sm leading-[1.6] text-ink-muted">{shape.description}</p>
                   <p className="mt-2 text-xs text-ink-faint">{shape.duration}</p>
@@ -303,13 +313,23 @@ export default function Contact() {
             nearest sectioning ancestor is the <section> above, so per HTML-AAM it
             would otherwise compute to the generic role — and without it the page
             has zero contentinfo landmarks. */}
-        <footer role="contentinfo" className="contact-footer mt-16 border-t border-rule pt-6">
-          <p className="text-xs text-ink-faint">
-            {profile.name} · Legacy → Cloud → Enterprise AI
+        <footer role="contentinfo" className="contact-footer mast mt-20">
+          {/* Mast: the name at display scale, one word per line. The space between
+              the spans is a real text node so the name still reads as two words to
+              a screen reader and a crawler. */}
+          <p className="mast__word">
+            {profile.name.split(' ').map((word, i) => (
+              <span key={word + i}>{word} </span>
+            ))}
           </p>
-          <p className="mt-2 text-xs text-ink-faint">
-            The model is never the hard part — proving the answer is grounded is the work.
-          </p>
+          <div className="mast__band">
+            <p>Legacy → Cloud → Enterprise AI</p>
+            <p>The model is never the hard part — proving the answer is grounded is the work.</p>
+            <p className="mast__links">
+              <ViewSwitch section="contact" className="mast__view" />
+              <a href="#top">Back to top ↑</a>
+            </p>
+          </div>
         </footer>
       </div>
     </section>

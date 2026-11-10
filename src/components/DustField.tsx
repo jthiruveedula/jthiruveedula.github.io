@@ -36,6 +36,11 @@ const FIELD_DEPTH = 60
 const FIELD_HALF_WIDTH = 30
 const FIELD_HALF_HEIGHT = 17
 const BASE_SPEED = 6 // world units/sec at scroll progress 0; up to 3x at progress 1
+/** Below the hero the same field keeps drifting behind the document, thinner and slower. */
+const PAGE_COUNT = 450
+const PAGE_SPEED = 0.35
+/** Page-level air only where there is a fine pointer and room for gutters. */
+const PAGE_QUERY = '(pointer: fine) and (min-width: 900px)'
 
 const VERTEX_SHADER = /* glsl */ `
   attribute float aSize;
@@ -91,10 +96,23 @@ function DustScene() {
   const bloomRef = useRef<HTMLDivElement | null>(null)
   const progressRef = useRef(0)
   const [stage, setStage] = useState<HTMLElement | null>(null)
+  // Stable wrapper owned outside React: the portal renders INTO it, and the wrapper
+  // itself is moved between .flight__stage and .atmos with appendChild. A DOM move
+  // keeps the WebGL context; a React re-portal would remount the canvas and lose it.
+  const [wrap] = useState(() => {
+    const el = document.createElement('div')
+    el.className = 'dust-air'
+    el.setAttribute('aria-hidden', 'true')
+    return el
+  })
 
   useEffect(() => {
-    setStage(document.querySelector<HTMLElement>('#top .flight__stage'))
-  }, [])
+    const el = document.querySelector<HTMLElement>('#top .flight__stage')
+    if (!el) return
+    el.appendChild(wrap)
+    setStage(el)
+    return () => wrap.remove()
+  }, [wrap])
 
   useEffect(() => {
     if (!stage) return
@@ -109,6 +127,10 @@ function DustScene() {
     let last = 0
     let bloomEl: HTMLDivElement | null = null
     let unsubPointer: (() => void) | null = null
+    let resize: (() => void) | null = null
+    // 'hero' = full field in the flight; 'page' = thin field in .atmos below it.
+    let mode: 'hero' | 'page' = 'hero'
+    let count = PARTICLE_COUNT
     // Lagged pointer (TRACK): eased toward the live pointer each frame.
     const lag = { x: 0, y: 0, infl: 0 }
 
@@ -122,10 +144,25 @@ function DustScene() {
       running = false
       cancelAnimationFrame(raf)
     }
+    // Past the flight = its bottom edge above the viewport. Not `!trigger.isActive`:
+    // ScrollTrigger reports inactive at scroll 0 too (exactly on `start`).
+    const pastHero = () => (document.getElementById('top')?.getBoundingClientRect().bottom ?? 1) <= 0
+    const place = () => {
+      const atmos = document.querySelector<HTMLElement>('.atmos')
+      const next = trigger && pastHero() && atmos && window.matchMedia(PAGE_QUERY).matches ? 'page' : 'hero'
+      if (next === mode) return
+      mode = next
+      ;(next === 'page' ? atmos! : stage).appendChild(wrap)
+      wrap.classList.toggle('dust-air--page', next === 'page')
+      count = next === 'page' ? PAGE_COUNT : PARTICLE_COUNT
+      geometry?.setDrawRange(0, count)
+      resize?.()
+    }
     const updateRunning = () => {
-      // Pause the rAF loop entirely when the flight section is off-screen or
-      // the tab is hidden — zero GPU work while invisible.
-      if (trigger && trigger.isActive && !document.hidden) start()
+      // Pause the rAF loop entirely when the field is off-screen (hero mode with
+      // the flight scrolled past) or the tab is hidden — zero GPU work while invisible.
+      place()
+      if (trigger && (mode === 'page' || !pastHero()) && !document.hidden) start()
       else stop()
     }
     const onVisibility = () => updateRunning()
@@ -136,12 +173,18 @@ function DustScene() {
       const dt = Math.min(0.05, Math.max(0, (now - last) / 1000))
       last = now
 
-      // Speed accelerates as scroll progress deepens (0 → 1 across the flight).
-      const speed = BASE_SPEED * (0.5 + progressRef.current * 2.5)
+      // Hero: speed accelerates as flight progress deepens (0 → 1). Page: progress is
+      // the whole document's, and the field moves at a fraction of the hero's pace.
+      let progress = progressRef.current
+      if (mode === 'page') {
+        const max = document.documentElement.scrollHeight - window.innerHeight
+        progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 1
+      }
+      const speed = BASE_SPEED * (0.5 + progress * 2.5) * (mode === 'page' ? PAGE_SPEED : 1)
       const step = speed * dt
       const pos = geometry.attributes.position as ThreeNS.BufferAttribute
       const arr = pos.array as Float32Array
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
+      for (let i = 0; i < count; i++) {
         const ix = i * 3
         let z = arr[ix + 2] + step
         if (z > 0.5) {
@@ -167,7 +210,7 @@ function DustScene() {
       }
 
       material.uniforms.uTime.value = now / 1000
-      material.uniforms.uProgress.value = progressRef.current
+      material.uniforms.uProgress.value = progress
       renderer.render(rendererScene, rendererCamera)
     }
 
@@ -235,7 +278,7 @@ function DustScene() {
         points.frustumCulled = false
         rendererScene.add(points)
 
-        const resize = () => {
+        resize = () => {
           if (!renderer || !material) return
           const w = canvasRef.current?.clientWidth || 1
           const h = canvasRef.current?.clientHeight || 1
@@ -252,6 +295,7 @@ function DustScene() {
         }
         window.addEventListener('resize', resize)
         resize()
+        const onResize = resize
 
         // Independent scrubbed trigger on the same section Flight uses — no
         // pinning anywhere. onUpdate feeds the speed/color ref.
@@ -275,7 +319,7 @@ function DustScene() {
         updateRunning()
 
         return () => {
-          window.removeEventListener('resize', resize)
+          window.removeEventListener('resize', onResize)
         }
       } catch {
         // Zero-cost failure: context creation or the dynamic import failed —
@@ -297,32 +341,25 @@ function DustScene() {
       bloomEl = null
       trigger?.kill()
       trigger = null
+      resize = null
+      // The wrapper itself is detached by the mount effect above.
       geometry?.dispose()
       material?.dispose()
       renderer?.dispose()
       renderer = null
     }
-  }, [stage])
+  }, [stage, wrap])
 
   if (!stage) return null
 
-  // Portaled INTO .flight__stage so the wrapper shares its stacking context
-  // (it has `isolation: isolate`). Stage children: planes z 1–7, vignette 15,
-  // grain 18, horizon line 20, letterbox bars 25, copy/counter/skip 30 — so
-  // z-index 21 sits above every plate and the horizon but below the letterbox
-  // chrome and all copy/furniture. Absolute + inset-0 inside the sticky stage
-  // contributes zero layout shift; pointer-events none; decorative only.
+  // Portaled INTO the wrapper, which lives in .flight__stage (sharing its
+  // `isolation: isolate` stacking context) or, below the hero, in .atmos. Stage
+  // children: planes z 1–7, vignette 15, grain 18, horizon line 20, letterbox bars
+  // 25, copy/counter/skip 30 — so the wrapper's z-index 21 (dust-track.css) sits
+  // above every plate and the horizon but below the letterbox chrome and all copy.
+  // Absolute + inset-0 contributes zero layout shift; pointer-events none.
   return createPortal(
-    <div
-      aria-hidden="true"
-      style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 21,
-        pointerEvents: 'none',
-        overflow: 'hidden',
-      }}
-    >
+    <>
       <div ref={bloomRef} className="dust-bloom" />
       <canvas
         ref={canvasRef}
@@ -330,8 +367,8 @@ function DustScene() {
         aria-hidden="true"
         style={{ display: 'block', width: '100%', height: '100%' }}
       />
-    </div>,
-    stage,
+    </>,
+    wrap,
   )
 }
 

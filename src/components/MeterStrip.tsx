@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
+import { MOTION_QUERY } from '@/lib/view'
 import '@/styles/instrument.css'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -39,7 +40,7 @@ export default function MeterStrip() {
   useGSAP(
     () => {
       const mm = gsap.matchMedia()
-      mm.add('(prefers-reduced-motion: no-preference)', () => {
+      mm.add(MOTION_QUERY, () => {
         const bars = gsap.utils.toArray<HTMLElement>('[data-bar]', stripRef.current)
         if (!bars.length) return
         gsap.fromTo(

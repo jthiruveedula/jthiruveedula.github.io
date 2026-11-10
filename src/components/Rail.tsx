@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMagnetic } from '@/components/JourneyPortal'
+import ViewSwitch from '@/components/ViewSwitch'
+import { prefersCalm } from '@/lib/view'
 
 /**
- * N3 side-rail nav — replaces the v5 top bar.
+ * N5 floating-pill nav — replaces the v5 top bar.
  *
  * The old header exposed two destinations (Timeline, Contact) for a page that
  * has five sections, so Systems and Index were only reachable by scrolling past
  * everything else. The rail lists all five and marks the active one, which is
  * the whole reason to have persistent chrome on a single-page site.
  *
- * Desktop: fixed 4.25rem vertical strip. Below 1024px it unsticks into a top bar
- * (a fixed vertical gutter is a quarter of a 320px screen).
+ * One floating pill at every width (globals.css `.rail`); below 1024px the list
+ * scrolls inside it and the trailing mark is dropped.
  */
 export const SECTIONS = [
   { id: 'top', label: 'Open' },
@@ -53,7 +55,7 @@ export default function Rail() {
     const list = listRef.current
     const link = list?.querySelector<HTMLElement>('[aria-current="true"]')
     if (!list || !link || list.scrollWidth <= list.clientWidth) return
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduce = prefersCalm()
     list.scrollTo({
       left: link.offsetLeft - (list.clientWidth - link.offsetWidth) / 2,
       behavior: reduce ? 'auto' : 'smooth',
@@ -78,6 +80,8 @@ export default function Rail() {
         if (el.getBoundingClientRect().top <= line) current = section.id
       }
       setActive(current)
+      // Read by the palette's view switch so it reloads at the same section.
+      document.documentElement.dataset.section = current
     }
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(measure)
@@ -125,9 +129,8 @@ export default function Rail() {
           </button>
         </li>
       </ul>
-      <span aria-hidden="true" className="rail__mark text-ink-faint">
-        2015—
-      </span>
+      {/* Trailing grid column: the showcase/compact switch (ViewSwitch.tsx). */}
+      <ViewSwitch section={active} className="rail__view" />
     </nav>
   )
 }

@@ -105,23 +105,22 @@ test.describe('desktop rail overflow', () => {
     await expect(page.getByRole('dialog')).toBeVisible()
   })
 
-  test('the rail list scrolls internally rather than spilling past the viewport', async ({ page }) => {
-    // #235's height-tightening media query (max-height: 820px) now closes the
-    // overflow at 1280x720 too, not just the 768/800 heights it targeted — a
-    // genuinely shorter viewport is needed to still reproduce overflow here.
-    // (At 720 the tightened list's natural height ties clientHeight exactly,
-    // 635 === 635, since a box larger than its content reports scrollHeight
-    // equal to clientHeight; below ~715 the box wins the race and this control
-    // fires again.)
-    await page.setViewportSize({ width: 1280, height: 640 })
+  test('the pill nav fits every destination at the narrowest desktop width', async ({ page }) => {
+    // The nav is a horizontal pill now, so viewport height no longer squeezes
+    // it — width does. 1024px is the narrowest width that still shows the
+    // trailing mark, and the shortest laptop height is kept from the old rail
+    // test: nothing may be clipped or pushed out of the viewport on either axis.
+    await page.setViewportSize({ width: 1024, height: 640 })
     await page.goto('/')
 
-    const overflow = await page.evaluate(() => {
-      const list = document.querySelector('.rail__list') as HTMLElement
-      return { scrollHeight: list.scrollHeight, clientHeight: list.clientHeight }
-    })
-    // Only meaningful once content actually exceeds the box — this pins the
-    // scenario the bug reproduced in, not just that overflow-y is set to auto.
-    expect(overflow.scrollHeight).toBeGreaterThan(overflow.clientHeight)
+    const clipped = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('.rail__link')).filter((el) => {
+        const r = el.getBoundingClientRect()
+        return r.left < 0 || r.top < 0 || r.right > window.innerWidth || r.bottom > window.innerHeight
+      }).length,
+    )
+    expect(clipped).toBe(0)
+    const list = page.locator('.rail__list')
+    expect(await list.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true)
   })
 })

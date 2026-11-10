@@ -4,8 +4,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { flightScenes, SCENE_BOUNDS } from '@/data/flight'
 import { portfolio } from '@/data/portfolio'
-import { isPlaceholder } from '@/lib/content'
+import { followEvidence, isPlaceholder, sourceProjectId } from '@/lib/content'
 import { getPointer, subscribePointer } from '@/lib/pointer'
+import { COMPACT, MOTION_QUERY } from '@/lib/view'
 import { splitWordsWithAccent, renderSplitWords } from '@/lib/splitText'
 import '@/styles/proof.css'
 
@@ -13,13 +14,12 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 const { profile } = portfolio
 
-/** First three headline figures that trace to a featured project (same value in its
- *  own metrics) — derived from data, so a chip can never link to a card that doesn't
- *  carry the number. Aggregates with no single source project (e.g. "$2M+") drop out. */
+/** First three headline figures that trace to a featured project (lib/content.ts
+ *  sourceProjectId) — a chip can never link to a card that doesn't carry the number. */
 const proofChips = portfolio.headlineMetrics
   .flatMap((m) => {
-    const project = portfolio.featuredProjects.find((p) => p.metrics.some((x) => x.value === m.value))
-    return project ? [{ ...m, projectId: project.id }] : []
+    const projectId = sourceProjectId(m)
+    return projectId ? [{ ...m, projectId }] : []
   })
   .slice(0, 3)
 
@@ -65,7 +65,7 @@ export default function Flight() {
 
       const mm = gsap.matchMedia()
 
-      mm.add('(prefers-reduced-motion: no-preference)', () => {
+      mm.add(MOTION_QUERY, () => {
         const planes = gsap.utils.toArray<HTMLElement>('[data-plane]', runway)
         if (!planes.length) return
 
@@ -264,7 +264,8 @@ export default function Flight() {
   useGSAP(
     () => {
       const el = copyRef.current
-      if (!el) return
+      // Compact: the headline is a static page header; scene 1 never cuts.
+      if (!el || COMPACT) return
       const parts = el.querySelectorAll<HTMLElement>('[data-cut]')
       if (!parts.length) return
       gsap.fromTo(
@@ -379,9 +380,13 @@ export default function Flight() {
                 who never scrolls still lands on a working Email/Résumé pair. */}
             <div className="flight__cta">
               {profile.email && (
-                <a href={`mailto:${profile.email}`} className="chip chip--primary">
+                <button
+                  type="button"
+                  onClick={() => (window.location.href = `mailto:${profile.email}`)}
+                  className="chip chip--primary"
+                >
                   Email
-                </a>
+                </button>
               )}
               <a href="/resume.html" className="chip">
                 Resume
@@ -400,12 +405,8 @@ export default function Flight() {
                   <li key={m.label}>
                     <a
                       href={`#${m.projectId}`}
-                      onClick={() => {
-                        // Lenis preventDefaults anchor clicks, so no native hashchange; Projects
-                        // listens for it (and reads the hash on mount if still lazy-loading).
-                        history.replaceState(null, '', `#${m.projectId}`)
-                        window.dispatchEvent(new HashChangeEvent('hashchange'))
-                      }}
+                      // Projects also reads the hash on mount if it is still lazy-loading.
+                      onClick={() => followEvidence(m.projectId, m.value)}
                       className="proof__chip"
                       aria-label={`${m.label}: ${m.value}, ${m.source}`}
                     >

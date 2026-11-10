@@ -333,7 +333,7 @@ export default function ProjectCard({
       )}
       {spotlight && (
         <p className="mt-4">
-          <span className={`stat__figure ${featured ? 'text-[1.9rem]' : 'text-[1.35rem]'}`}>{spotlight.value}</span>
+          <span data-figure={spotlight.value} className={`stat__figure ${featured ? 'text-[1.9rem]' : 'text-[1.35rem]'}`}>{spotlight.value}</span>
           <span className="stat__label ml-2">{spotlight.label}</span>
         </p>
       )}
@@ -442,7 +442,7 @@ export default function ProjectCard({
             <div className="mt-8 flex flex-wrap items-baseline gap-x-8 gap-y-3">
               {project.metrics.map((m) => (
                 <p key={m.label} className="min-w-0">
-                  <span className="stat__figure text-[1.35rem]">{m.value}</span>
+                  <span data-figure={m.value} className="stat__figure text-[1.35rem]">{m.value}</span>
                   <span className="stat__label ml-2">{m.label}</span>
                 </p>
               ))}

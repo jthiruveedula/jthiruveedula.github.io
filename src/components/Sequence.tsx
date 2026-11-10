@@ -45,46 +45,40 @@ export default function Sequence() {
             </p>
           </header>
 
-          <ol className="mt-14 border-t border-rule">
+          <ol className="bento bento--arc mt-14">
             {worldScenes.map((scene, i) => (
-              <li
-                key={scene.id}
-                data-station={scene.id}
-                className="grid gap-x-10 gap-y-4 border-b border-rule py-9 md:grid-cols-[10rem_minmax(0,1fr)] lg:grid-cols-[13rem_minmax(0,1fr)]"
-              >
-                <div className="flex items-baseline gap-3 md:flex-col md:gap-2">
-                  <span className="font-mono text-[11px] tracking-[0.1em] text-accent">
+              <li key={scene.id} data-station={scene.id} className="arc-tile lit-card">
+                {/* The chapter's own plate as the tile's ground (globals.css
+                    .arc-plate): the arc is the fast scannable version you reach by
+                    clicking "skip the film", and this anchors each chapter to its
+                    scene. Lazy and @sm on purpose — no reason to wait. Ordering
+                    matches flightScenes 1:1 for the first six chapters. */}
+                {flightScenes[i] ? (
+                  <picture className="arc-plate">
+                    <source
+                      type="image/avif"
+                      srcSet={`/scenes/${flightScenes[i].plate}@sm.avif`}
+                    />
+                    <img
+                      src={`/scenes/${flightScenes[i].plate}@sm.avif`}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                      draggable={false}
+                    />
+                  </picture>
+                ) : null}
+
+                <div className="flex items-baseline gap-3">
+                  <span className="font-mono text-[12px] tracking-[0.1em] text-accent">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <span className="stat__label proper">{scene.eyebrow}</span>
-
-                  {/* The chapter's own plate, in the column that was already holding
-                      an ordinal and a label in 13rem of otherwise empty track. Small
-                      and lazy on purpose: the arc's job is to be the fast scannable
-                      version you reach by clicking "skip the film", so this anchors
-                      it to the film visually without adding a row of height or a
-                      reason to wait. Ordering matches flightScenes 1:1 for the first
-                      six chapters. */}
-                  {flightScenes[i] ? (
-                    <picture className="arc-plate mt-1 hidden md:block">
-                      <source
-                        type="image/avif"
-                        srcSet={`/scenes/${flightScenes[i].plate}@sm.avif`}
-                      />
-                      <img
-                        src={`/scenes/${flightScenes[i].plate}@sm.avif`}
-                        alt=""
-                        aria-hidden="true"
-                        loading="lazy"
-                        decoding="async"
-                        draggable={false}
-                      />
-                    </picture>
-                  ) : null}
                 </div>
 
-                <div className="min-w-0">
-                  <h3 className="max-w-[26ch] text-[clamp(1.25rem,2.2vw,1.75rem)]">
+                <div className="mt-3 min-w-0">
+                  <h3 className="max-w-[26ch] text-[clamp(1.35rem,2.2vw,1.75rem)]">
                     {scene.title}
                   </h3>
                   <p className="mt-3 max-w-[68ch] text-[0.95rem] leading-[1.65] text-ink-muted">

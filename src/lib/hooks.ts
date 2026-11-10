@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
+import { COMPACT } from '@/lib/view'
 
-/** True when the user prefers reduced motion — gate all non-essential animation on this. */
+/** True when the user prefers reduced motion, or the page is in compact view — gate all non-essential animation on this. */
 export function useReducedMotion(): boolean {
   const [reduced, setReduced] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    () => COMPACT || (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches),
   )
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const onChange = () => setReduced(mq.matches)
+    const onChange = () => setReduced(COMPACT || mq.matches)
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
   }, [])

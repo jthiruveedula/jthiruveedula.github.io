@@ -63,3 +63,35 @@
 @media (prefers-reduced-motion: reduce) {
   .proof { animation: none; }
 }
+
+/* ── Evidence trails ───────────────────────────────────────────────────────
+   A figure in #index whose number traces to one case study links to it (Metrics.tsx).
+   Static underline, same quiet-link language as the chips above. */
+.evidence-link {
+  display: inline-block;
+  padding-block: 0.3rem;
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule-2);
+  text-underline-offset: 0.3em;
+}
+.evidence-link:hover,
+.evidence-link:focus-visible {
+  color: var(--color-accent);
+  text-decoration-color: var(--color-accent);
+}
+/* DRAW: on arrival the same number inside the card underlines once. The resting
+   state is drawn (no animation = present: reduced motion, compact). */
+.is-cited {
+  position: relative;
+}
+.is-cited::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.12em;
+  height: 2px;
+  background: var(--color-accent-2);
+  transform-origin: left;
+  animation: verb-underline 420ms var(--ease-soft) 600ms both;
+}

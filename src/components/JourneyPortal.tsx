@@ -1,5 +1,6 @@
 import { useEffect, type RefObject } from 'react'
 import { magnetize } from '@/lib/pointer'
+import { prefersCalm } from '@/lib/view'
 import '@/styles/portal.css'
 
 const DURATION = 480
@@ -11,7 +12,7 @@ const DURATION = 480
  */
 export function enterJourney(e: { preventDefault(): void; metaKey?: boolean; ctrlKey?: boolean; shiftKey?: boolean; altKey?: boolean; button?: number } | null, href: string) {
   if (e && (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || (e.button ?? 0) !== 0)) return
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (prefersCalm()) {
     if (!e) window.location.href = href
     return
   }

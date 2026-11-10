@@ -1,0 +1,318 @@
+/* ── Compact view ───────────────────────────────────────────────────────
+   Same DOM, same content, same ids as the showcase; CSS owns the whole layout.
+   html[data-view] is set before first paint by index.html's head script, and
+   JS gating (src/lib/view.ts) only stops work that would be invisible here.
+
+   Every selector is prefixed html[data-view='compact']: unlayered, so it beats
+   Tailwind's layered utilities, and specific enough to beat the lazy-chunk
+   stylesheets (story.css, openers.css, contact2.css) that load after this one.
+   Type selectors add #main so they outrank globals' `.bento--arc > :nth-child(1) h3`.
+   Nothing here is above 2rem. */
+
+/* ── Global: flat paper, no ambient motion ─────────────────────────────── */
+html[data-view='compact'] {
+  --gap-bento: 0.75rem;
+  --radius-tile: 0.5rem;
+  scroll-behavior: auto;
+}
+html[data-view='compact'] *,
+html[data-view='compact'] *::before,
+html[data-view='compact'] *::after {
+  animation: none !important;
+}
+html[data-view='compact'] .atmos,
+html[data-view='compact'] .atmos__room,
+html[data-view='compact'] .dust-air,
+html[data-view='compact'] .scroll-progress,
+html[data-view='compact'] .meter,
+html[data-view='compact'] .lit-card::after,
+html[data-view='compact'] .depth-shine,
+html[data-view='compact'] .ledger-tint {
+  display: none;
+}
+html[data-view='compact'] .lit-card,
+html[data-view='compact'] .lit-card:hover,
+html[data-view='compact'] .lit-card:focus-within {
+  translate: none;
+}
+/* Verb underlines rest drawn (their entrance is an animation, now off). */
+html[data-view='compact'] .verb::after {
+  transform: none;
+}
+
+/* Type scale */
+html[data-view='compact'] #main h1 {
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+}
+html[data-view='compact'] #main h2 {
+  font-size: 1.375rem;
+  line-height: 1.15;
+  max-width: none;
+}
+html[data-view='compact'] #main h3:not(.stat__label) {
+  font-size: 1.0625rem;
+}
+html[data-view='compact'] #main header p:not(.eyebrow) {
+  margin-top: 0.75rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+html[data-view='compact'] #main .stat__figure {
+  font-size: 1.125rem;
+}
+
+/* Rhythm: one 68rem column, 2.5rem between sections */
+html[data-view='compact'] #main [class*='max-w-[1320px]'] {
+  max-width: 68rem;
+}
+html[data-view='compact'] #main > section:not(#top),
+html[data-view='compact'] #arc,
+html[data-view='compact'] #ledger,
+html[data-view='compact'] #systems,
+html[data-view='compact'] #skills,
+html[data-view='compact'] #index,
+html[data-view='compact'] #contact {
+  padding-block: 2.5rem;
+}
+html[data-view='compact'] #main section[id]:not(#top) + section[id] {
+  border-top: 1px solid var(--color-rule);
+}
+html[data-view='compact'] #main .bento {
+  margin-top: 1.5rem;
+}
+
+/* ── #top: a static page header ─────────────────────────────────────────── */
+html[data-view='compact'] .flight {
+  height: auto;
+}
+html[data-view='compact'] .flight__stage {
+  position: static;
+  height: auto;
+  overflow: visible;
+}
+html[data-view='compact'] .flight__stage::before,
+html[data-view='compact'] .flight__stage::after,
+html[data-view='compact'] .flight__copy::before,
+html[data-view='compact'] [data-plane],
+html[data-view='compact'] .flight__horizon,
+html[data-view='compact'] .flight__vignette,
+html[data-view='compact'] .flight__grain,
+html[data-view='compact'] .flight__counter,
+html[data-view='compact'] .flight__skip {
+  display: none;
+}
+html[data-view='compact'] .flight__copy {
+  position: static;
+  width: auto;
+  max-width: calc(68rem + 2 * clamp(20px, 4vw, 64px));
+  margin-inline: auto;
+  padding: calc(var(--rail-bar-h) + 2rem) clamp(20px, 4vw, 64px) 2.5rem;
+}
+html[data-view='compact'] [data-parallax-copy] {
+  transform: none !important;
+}
+html[data-view='compact'] .flight__headline {
+  max-width: 34ch;
+  text-shadow: none;
+}
+html[data-view='compact'] .flight__kicker {
+  max-width: 62ch;
+  max-height: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+html[data-view='compact'] .flight__readings {
+  margin-top: 1.25rem;
+}
+html[data-view='compact'] .flight__readings .stat__figure {
+  font-size: 1.125rem;
+}
+html[data-view='compact'] .flight__cta {
+  margin-top: 1.25rem;
+}
+
+/* ── #arc: six chapters, uniform tiles, no plates ───────────────────────── */
+html[data-view='compact'] .arc-plate {
+  display: none;
+}
+html[data-view='compact'] .arc-tile {
+  min-height: 0;
+  justify-content: flex-start;
+  padding: 1.25rem;
+}
+html[data-view='compact'] .arc-tile .mt-6 {
+  margin-top: 1rem;
+}
+html[data-view='compact'] .arc-tile .mt-5 {
+  margin-top: 0.75rem;
+}
+@media (min-width: 768px) {
+  html[data-view='compact'] .bento--arc {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  html[data-view='compact'] .bento--arc > * {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+/* ── #systems ───────────────────────────────────────────────────────────── */
+html[data-view='compact'] .project-card {
+  padding: 1.25rem;
+}
+
+/* ── #skills ────────────────────────────────────────────────────────────── */
+html[data-view='compact'] .skills-row {
+  gap: 0.75rem;
+  padding: 1.25rem;
+}
+
+/* ── #index: dense figure grid, decoration off ──────────────────────────── */
+html[data-view='compact'] .opener-loud {
+  padding-block: 2.5rem;
+}
+html[data-view='compact'] #index .opener-loud__lede {
+  margin-top: 0.75rem;
+}
+html[data-view='compact'] #index [role='radiogroup'] {
+  margin-top: 1.25rem;
+}
+html[data-view='compact'] #index .metric-row .pointer-events-none[aria-hidden='true'] {
+  display: none;
+}
+html[data-view='compact'] #index .metric-row.lit-card {
+  gap: 0.5rem;
+  padding: 1rem;
+}
+html[data-view='compact'] #index h3.metric-row {
+  padding-top: 1.25rem;
+  padding-bottom: 0.5rem;
+}
+html[data-view='compact'] #index .metric-row .stat__figure {
+  font-size: 1.5rem;
+}
+html[data-view='compact'] #index .bento--index {
+  margin-top: 0;
+}
+html[data-view='compact'] #index .bento--index {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 1024px) {
+  html[data-view='compact'] #index .bento--index {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ── #contact: denser cards, one-line footer ────────────────────────────── */
+html[data-view='compact'] #contact .contact-grid,
+html[data-view='compact'] #contact .contact-engagement,
+html[data-view='compact'] #contact .contact-testimonials {
+  margin-top: 1.5rem;
+}
+html[data-view='compact'] #contact .contact-grid {
+  align-items: start;
+}
+html[data-view='compact'] #contact .contact-summary {
+  margin-top: 1rem;
+}
+html[data-view='compact'] #contact .lit-card {
+  padding: 1.25rem;
+}
+html[data-view='compact'] .mast {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 2rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+}
+html[data-view='compact'] .mast__word {
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+html[data-view='compact'] .mast__word > span {
+  display: inline;
+}
+html[data-view='compact'] .mast__band {
+  flex: 1 1 0;
+  min-width: min(100%, 20rem);
+  margin-top: 0;
+  gap: 0 1.25rem;
+  font-size: 0.75rem;
+}
+
+/* ── Print (either mode): ink on white ───────────────────────────────────
+   index.html flips data-view to compact on beforeprint, so the layout above
+   applies too. The email address never prints: it is not in the DOM until a
+   visitor clicks Show email, and that control is hidden here. */
+@media print {
+  html {
+    --color-paper: #fff;
+    --color-paper-2: #fff;
+    --color-paper-3: #fff;
+    --color-paper-scrim: #fff;
+    --color-ground: #fff;
+    --color-ground-2: #fff;
+    --color-void: #fff;
+    --color-surface: #fff;
+    --color-panel: #fff;
+    --color-panel-edge: #ccc;
+    --color-ink: #111;
+    --color-ink-muted: #333;
+    --color-ink-faint: #555;
+    --color-rule: #ccc;
+    --color-rule-2: #ccc;
+    --color-accent: #0b5c7a;
+    --color-accent-2: #0b5c7a;
+    background: #fff !important;
+    color-scheme: light;
+  }
+  html body {
+    background: #fff;
+    color: #333;
+  }
+  html .rail,
+  html .cmdk-scrim,
+  html .scroll-progress,
+  html .skip-link,
+  html .atmos,
+  html .meter,
+  html .flight__skip,
+  html .mast__view,
+  html #index [role='radiogroup'],
+  html #index [aria-live='polite'],
+  html .contact-mail,
+  html [aria-controls^='skill-rest-'] {
+    display: none !important;
+  }
+  html .lit-card,
+  html .arc-tile,
+  html .project-card,
+  html .metric-row,
+  html #ledger li {
+    break-inside: avoid;
+    box-shadow: none;
+    border-color: #ccc;
+  }
+  html #main h1,
+  html #main h2,
+  html #main h3 {
+    break-after: avoid;
+    text-shadow: none;
+  }
+  html .flight__copy {
+    padding-top: 0;
+  }
+  html a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+    color: #555;
+    overflow-wrap: anywhere;
+  }
+  /* Skills' "+N more" lists print open (inline style needs !important). */
+  html [id^='skill-rest-'] {
+    grid-template-rows: 1fr !important;
+  }
+}
