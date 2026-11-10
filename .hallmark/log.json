@@ -1,5 +1,17 @@
 [
   {
+    "date": "2026-11-09",
+    "genre": "atmospheric",
+    "macrostructure": "Bento Grid",
+    "theme": "night-foundry",
+    "drop": "night",
+    "theme_axes": "dark / grotesque / cool-215",
+    "nav": "N5 floating pill",
+    "footer": "Ft1 mast-headed",
+    "enrichment": "scene plates reused as tile grounds in the arc bento",
+    "brief": "jthiruveedula.github.io v8 \u2014 below-hero sections read flat; rebuilt as plate-backed bento tiles with a Bricolage Grotesque display face, brighter 12px labels, floating pill nav and a mast footer"
+  },
+  {
     "date": "2026-09-01",
     "genre": "atmospheric",
     "macrostructure": "Corridor",

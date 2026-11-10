@@ -379,9 +379,13 @@ export default function Flight() {
                 who never scrolls still lands on a working Email/Résumé pair. */}
             <div className="flight__cta">
               {profile.email && (
-                <a href={`mailto:${profile.email}`} className="chip chip--primary">
+                <button
+                  type="button"
+                  onClick={() => (window.location.href = `mailto:${profile.email}`)}
+                  className="chip chip--primary"
+                >
                   Email
-                </a>
+                </button>
               )}
               <a href="/resume.html" className="chip">
                 Resume

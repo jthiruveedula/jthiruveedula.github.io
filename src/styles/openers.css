@@ -2,27 +2,27 @@
    ledger tightens, the toolkit gets a hairline seam, and the index is the one
    oversized statement. Tokens only; no motion here, so the resting state is final. */
 .opener-quiet {
-  padding-block: clamp(48px, 7vh, 88px);
+  padding-block: clamp(64px, 10vh, 120px);
 }
 .opener-seam {
   border-top: 1px solid var(--color-rule);
 }
 .opener-loud {
-  padding-block: clamp(96px, 18vh, 200px);
-  border-top: 1px solid var(--color-rule-2);
+  padding-block: clamp(64px, 10vh, 120px);
+  border-top: 1px solid var(--color-rule);
 }
 .opener-loud__title {
-  max-width: 12ch;
-  font-size: clamp(2.6rem, 9vw, 7.5rem);
-  line-height: 0.98;
-  letter-spacing: -0.04em;
+  max-width: 22ch;
+  font-size: clamp(1.9rem, 4.4vw, 3.5rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
 }
 .opener-loud__lede {
   max-width: 46ch;
-  margin-top: clamp(24px, 4vh, 48px);
+  margin-top: 1.25rem;
 }
 @media (max-width: 480px) {
   .opener-loud__title {
-    font-size: clamp(2.2rem, 13vw, 3rem);
+    font-size: clamp(1.75rem, 8vw, 2.2rem);
   }
 }

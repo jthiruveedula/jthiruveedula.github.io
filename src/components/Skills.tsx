@@ -82,6 +82,9 @@ const TOTAL_DOMAINS = DOMAIN_GROUPS.length
  *  header's "stacked by how deep they run" reads as a picture, not a claim. */
 const DOMAIN_MAX_YEARS = Math.max(1, ...DOMAIN_GROUPS.map((g) => g.maxYears))
 
+// Cells left over in the last row of the three-column bento (0, 1 or 2).
+const SPARE_CELLS = (3 - (DOMAIN_GROUPS.length % 3)) % 3
+
 export default function Skills() {
   const sectionRef = useRef<HTMLElement>(null)
   const reduced = useReducedMotion()
@@ -206,7 +209,7 @@ export default function Skills() {
           {active && related?.size ? `Related: ${[...related].join(', ')}` : ''}
         </p>
 
-        <ol className={`mt-14 border-t border-rule${active && related?.size ? ' skills-lit' : ''}`}>
+        <ol className={`bento bento--skills mt-14${active && related?.size ? ' skills-lit' : ''}`}>
           {DOMAIN_GROUPS.map((group, i) => (
             <li
               key={group.domain}
@@ -215,13 +218,19 @@ export default function Skills() {
               // tech is cross-linked to the domain it belongs to here, and `:target`
               // (globals.css) gives the arrival highlight with no JS state to wire
               // between the two sections.
-              className="skills-row relative scroll-mt-24 grid gap-x-10 gap-y-3 border-b border-rule py-8 md:grid-cols-[10rem_minmax(0,1fr)] lg:grid-cols-[13rem_minmax(0,1fr)]"
+              // Three-column bento: widen the first tile (and the last, if two cells
+              // are spare) so the final row always closes instead of leaving a hole.
+              className={`skills-row lit-card relative scroll-mt-24 flex flex-col gap-5 p-6 md:p-7${
+                (SPARE_CELLS >= 1 && i === 0) || (SPARE_CELLS === 2 && i === DOMAIN_GROUPS.length - 1)
+                  ? ' xl:col-span-2'
+                  : ''
+              }`}
             >
               <div>
-                <span className="font-mono text-[11px] tracking-[0.1em] text-accent">
+                <span className="font-mono text-[12px] tracking-[0.1em] text-accent">
                   {String(i + 1).padStart(2, '0')}
                 </span>
-                <h3 className="mt-2 max-w-[16ch] text-[1.05rem] text-ink">{group.domain}</h3>
+                <h3 className="mt-2 text-[1.4rem] text-ink">{group.domain}</h3>
                 <p className="stat__label mt-1.5">
                   {group.total} tools
                   {group.maxYears > 0 ? (
@@ -243,7 +252,7 @@ export default function Skills() {
                 {group.maxYears > 0 && (
                   <span
                     aria-hidden="true"
-                    className="mt-3 block h-1 w-full max-w-[10rem] bg-neutral-800 shadow-[inset_0_1px_0_rgba(0,0,0,0.65),0_1px_0_rgba(255,255,255,0.07)]"
+                    className="mt-4 block h-1.5 w-full bg-neutral-800 shadow-[inset_0_1px_0_rgba(0,0,0,0.65),0_1px_0_rgba(255,255,255,0.07)]"
                   >
                     <span
                       className="relative block h-full overflow-hidden bg-accent-500/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(0,0,0,0.35)]"

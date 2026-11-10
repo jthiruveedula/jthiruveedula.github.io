@@ -22,7 +22,10 @@ test.describe('skills depth bars (depth charge)', () => {
     await page.goto('/')
     await page.locator('#skills').scrollIntoViewIfNeeded()
 
-    // Wait out the count-up tween — DOM only, no animation-state assumptions.
+    // The markup already holds the final number, so "text === data" is also true
+    // *before* the tween starts. Let the ScrollTrigger fire and the 0.9s count-up
+    // (plus its stagger) finish first, or the check can sample mid-tween.
+    await page.waitForTimeout(2000)
     await page.waitForFunction(() => {
       const els = Array.from(document.querySelectorAll('#skills .depth-years'))
       return (

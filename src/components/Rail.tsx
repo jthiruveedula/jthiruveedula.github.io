@@ -2,15 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import { useMagnetic } from '@/components/JourneyPortal'
 
 /**
- * N3 side-rail nav — replaces the v5 top bar.
+ * N5 floating-pill nav — replaces the v5 top bar.
  *
  * The old header exposed two destinations (Timeline, Contact) for a page that
  * has five sections, so Systems and Index were only reachable by scrolling past
  * everything else. The rail lists all five and marks the active one, which is
  * the whole reason to have persistent chrome on a single-page site.
  *
- * Desktop: fixed 4.25rem vertical strip. Below 1024px it unsticks into a top bar
- * (a fixed vertical gutter is a quarter of a 320px screen).
+ * One floating pill at every width (globals.css `.rail`); below 1024px the list
+ * scrolls inside it and the trailing mark is dropped.
  */
 export const SECTIONS = [
   { id: 'top', label: 'Open' },
@@ -125,9 +125,6 @@ export default function Rail() {
           </button>
         </li>
       </ul>
-      <span aria-hidden="true" className="rail__mark text-ink-faint">
-        2015—
-      </span>
     </nav>
   )
 }

@@ -126,10 +126,12 @@ function MetricRow({
   return (
     <li
       hidden={!visible}
-      className="metric-row grid gap-x-10 gap-y-2 border-b border-rule py-5 md:grid-cols-[13rem_minmax(0,1fr)]"
+      // Tile reads label-first, figure-last; DOM order stays figure-first so a
+      // screen reader still hears the value before its caption.
+      className="metric-row lit-card flex flex-col-reverse justify-between gap-6 p-6"
     >
       <div>
-        <p className="stat__figure text-[clamp(1.5rem,3vw,2rem)]">
+        <p className="stat__figure text-[clamp(2.5rem,4.4vw,3.75rem)] leading-none">
           {/* Screen readers get the canonical value; the animated digits are decorative. */}
           <span className="sr-only">{metric.value}</span>
           <span aria-hidden="true">
@@ -483,7 +485,7 @@ export default function Metrics() {
         {/* The figure grid itself — the one-shot count-up trigger above watches
             this element, not the section top, so the numbers animate while the
             rows are actually in view. */}
-        <div ref={gridRef} className="relative mt-8 border-t border-rule">
+        <div ref={gridRef} className="relative mt-8">
           <span
             ref={gridSweepRef}
             aria-hidden="true"
@@ -499,11 +501,11 @@ export default function Metrics() {
               <section key={family} hidden={!anyVisible} aria-labelledby={headingId}>
                 <h3
                   id={headingId}
-                  className="metric-row stat__label border-b border-rule py-3 text-ink-faint"
+                  className="metric-row stat__label pt-8 pb-3 text-ink-faint"
                 >
                   {caption}
                 </h3>
-                <ul>
+                <ul className="bento bento--index">
                   {rows.map((metric) => {
                     const visible = filter === 'All' || (metric.groups?.includes(filter) ?? false)
                     return (

@@ -6,8 +6,12 @@
   max-width: 100%;
   white-space: nowrap;
   font-family: var(--font-display, inherit);
-  font-size: clamp(0.95rem, 4.4vw, 2.25rem);
+  font-size: clamp(1rem, 4.2vw, 1.5rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   line-height: 1.2;
+  white-space: normal;
+  overflow-wrap: anywhere;
   color: var(--color-ink);
   padding-block: 0.25rem;
 }
@@ -31,6 +35,7 @@
   margin-top: 0.75rem;
 }
 .contact-mail__copy { white-space: nowrap; cursor: pointer; }
+.contact-cta { white-space: normal; text-align: center; }
 .contact-mail__status,
 .contact-mail__time {
   font-family: var(--font-mono, inherit);
