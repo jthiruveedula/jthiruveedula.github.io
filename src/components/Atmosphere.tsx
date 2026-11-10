@@ -65,7 +65,38 @@ export default function Atmosphere() {
           toX(s.active ? s.x * DRIFT : 0)
           toY(s.active ? s.y * DRIFT : 0)
         })
+        // TRACK: a torch under the cursor. Page torch (fixed blob) lights the gaps;
+        // the hovered tile gets its own blob via --tx/--ty (translate only, CSS).
+        const torch = el.querySelector<HTMLElement>('.atmos__torch')
+        const torchX = torch ? gsap.quickTo(torch, 'x', { duration: 0.6, ease: 'power3.out' }) : null
+        const torchY = torch ? gsap.quickTo(torch, 'y', { duration: 0.6, ease: 'power3.out' }) : null
+        const BLOB = 420
+        let card: HTMLElement | null = null
+        const unTorch = subscribePointer((s) => {
+          const px = ((s.x + 1) / 2) * window.innerWidth
+          const py = ((s.y + 1) / 2) * window.innerHeight
+          if (torch) {
+            torch.style.opacity = s.active ? '1' : '0'
+            torchX?.(px - BLOB / 2)
+            torchY?.(py - BLOB / 2)
+          }
+          const next = s.active
+            ? document.elementFromPoint(px, py)?.closest<HTMLElement>('.lit-card') ?? null
+            : null
+          if (next !== card) {
+            card?.style.removeProperty('--tl')
+            card = next
+          }
+          if (card) {
+            const r = card.getBoundingClientRect()
+            card.style.setProperty('--tx', `${px - r.left - BLOB / 2}px`)
+            card.style.setProperty('--ty', `${py - r.top - BLOB / 2}px`)
+            card.style.setProperty('--tl', '1')
+          }
+        })
         return () => {
+          unTorch()
+          card?.style.removeProperty('--tl')
           unsubscribe()
           gsap.killTweensOf(el, '--atmos-dx,--atmos-dy')
           el.style.removeProperty('--atmos-dx')
@@ -84,6 +115,7 @@ export default function Atmosphere() {
     <div ref={ref} aria-hidden="true" className="atmos">
       <span className="atmos__lamp atmos__lamp--legacy" />
       <span className="atmos__lamp atmos__lamp--ai" />
+      <span className="atmos__torch" />
       <span className="atmos__grain" />
     </div>
   )

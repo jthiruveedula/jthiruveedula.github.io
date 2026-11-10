@@ -44,3 +44,55 @@
     display: none;
   }
 }
+
+/* ── Immersion: cursor torch + scroll-driven plate parallax ───────────────
+   TRACK + GRADE. Transform/opacity only: the blob is a fixed-size radial that is
+   translated to the pointer, never a gradient whose stops move. */
+.atmos__torch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, oklch(76% 0.17 215 / 0.13), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-soft);
+  pointer-events: none;
+  will-change: transform;
+}
+.lit-card { overflow: clip; }
+.lit-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, oklch(80% 0.15 215 / 0.22), transparent 70%);
+  translate: var(--tx, 0px) var(--ty, 0px);
+  opacity: var(--tl, 0);
+  transition: opacity 0.3s var(--ease-soft);
+  pointer-events: none;
+}
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .atmos__torch,
+  .lit-card::after { display: none; }
+}
+/* Plates drift against the scroll inside their tile — pure CSS, no JS, and a no-op
+   where scroll-driven animations are unsupported. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .arc-plate img {
+      scale: 1.22;
+      animation: plate-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+    @keyframes plate-drift {
+      from { translate: 0 -7%; }
+      to { translate: 0 7%; }
+    }
+  }
+}
